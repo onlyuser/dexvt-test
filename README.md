@@ -31,8 +31,8 @@ Texture files not included:
 
 <table>
     <tr>
-        <th>Texture Files</th>
-        <th>Purpose</th>
+        <th>texture files</th>
+        <th>purpose</th>
     </tr>
     <tr>
         <td>
