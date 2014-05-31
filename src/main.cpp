@@ -155,15 +155,15 @@ int init_resources()
     normal_mapped_material->add_texture(texture2);
 
     vt::Texture* texture3 = new vt::Texture(
-            "mattress_tex",
-            "data/mattress_color.png");
+            "chesterfield_color",
+            "data/chesterfield_color.png");
     scene->add_texture(texture3);
     normal_mapped_material->add_texture(texture3);
     env_mapped_material->add_texture(texture3);
 
     vt::Texture* texture4 = new vt::Texture(
-            "mattress_normal",
-            "data/mattress_normal.png");
+            "chesterfield_normal",
+            "data/chesterfield_normal.png");
     scene->add_texture(texture4);
     normal_mapped_material->add_texture(texture4);
     env_mapped_material->add_texture(texture4);
@@ -197,18 +197,18 @@ int init_resources()
     scene->add_light(light3);
 
     skybox->set_texture_index(skybox->get_material()->get_texture_index_by_name("colosseum"));
-    mesh->set_texture_index(  mesh->get_material()->get_texture_index_by_name("mattress_tex"));
-    mesh2->set_texture_index( mesh2->get_material()->get_texture_index_by_name("mattress_tex"));
-    mesh3->set_texture_index( mesh3->get_material()->get_texture_index_by_name("mattress_tex"));
-    mesh4->set_texture_index( mesh4->get_material()->get_texture_index_by_name("mattress_tex"));
-    mesh5->set_texture_index( mesh5->get_material()->get_texture_index_by_name("mattress_tex"));
+    mesh->set_texture_index(  mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh2->set_texture_index( mesh2->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh3->set_texture_index( mesh3->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh4->set_texture_index( mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh5->set_texture_index( mesh5->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh6->set_texture_index( mesh6->get_material()->get_texture_index_by_name("dex3d"));
     mesh7->set_texture_index( mesh7->get_material()->get_texture_index_by_name("dex3d"));
-    mesh->set_normal_map_texture_index( mesh->get_material()->get_texture_index_by_name("mattress_normal"));
-    mesh2->set_normal_map_texture_index(mesh2->get_material()->get_texture_index_by_name("mattress_normal"));
-    mesh3->set_normal_map_texture_index(mesh3->get_material()->get_texture_index_by_name("mattress_normal"));
-    mesh4->set_normal_map_texture_index(mesh4->get_material()->get_texture_index_by_name("mattress_normal"));
-    mesh5->set_normal_map_texture_index(mesh5->get_material()->get_texture_index_by_name("mattress_normal"));
+    mesh->set_normal_map_texture_index( mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh2->set_normal_map_texture_index(mesh2->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh3->set_normal_map_texture_index(mesh3->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh4->set_normal_map_texture_index(mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh5->set_normal_map_texture_index(mesh5->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
     return 1;
 }
