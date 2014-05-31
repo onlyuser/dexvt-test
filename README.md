@@ -64,8 +64,23 @@ References
 ----------
 
 <dl>
+    <dt>"Setting up an OpenGL development environment in Ubuntu Linux"</dt>
+    <dd>http://www.codeproject.com/Articles/182109/Setting-up-an-OpenGL-development-environment-in-Ub</dd>
+
+    <dt>"OpenGL Programming/Intermediate/Textures - A simple libpng example"</dt>
+    <dd>http://en.wikibooks.org/wiki/OpenGL_Programming/Intermediate/Textures#A_simple_libpng_example</dd>
+
     <dt>"Cube Maps: Sky Boxes and Environment Mapping"</dt>
     <dd>http://antongerdelan.net/opengl/cubemaps.html</dd>
+
+    <dt>"3D C/C++ tutorials - OpenGL - GLSL cube mapping"</dt>
+    <dd>http://www.belanecbn.sk/3dtutorials/index.php?id=24</dd>
+
+    <dt>"Skyboxes using glsl Version 330"</dt>
+    <dd>http://gamedev.stackexchange.com/questions/60313/skyboxes-using-glsl-version-330</dd>
+
+    <dt>"Rioki's Corner - GLSL Skybox"</dt>
+    <dd>http://www.rioki.org/2013/03/07/glsl-skybox.html</dd>
 
     <dt>"Humus Cube Map Textures - Colosseum"</dt>
     <dd>http://www.humus.name/index.php?page=Textures</dd>
