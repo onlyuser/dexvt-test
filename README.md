@@ -95,4 +95,4 @@ References
 Keywords
 --------
 
-    OpenGL, glsl, shader, normal map, environment map, cube map, reflectance, refractance
+    OpenGL, glsl shader, glm, normal map, environment map, cube map, reflectance, refractance
