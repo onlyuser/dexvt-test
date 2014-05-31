@@ -12,12 +12,7 @@ BIN_PATH = bin
 BIN_STEMS = main
 BINARIES = $(patsubst %, $(BIN_PATH)/%, $(BIN_STEMS))
 
-COMMON = $(PARENT)/common
-INCLUDE_PATH_COMMON = $(COMMON)/include
-SRC_PATH_COMMON = $(COMMON)/src
-BUILD_PATH_COMMON = $(BUILD_PATH)/common
-
-INCLUDE_PATHS = $(INCLUDE_PATH) $(COMMON_INCLUDE_PATH) $(EXTERN_INCLUDE_PATH)
+INCLUDE_PATHS = $(INCLUDE_PATH) $(EXTERN_INCLUDE_PATH)
 INCLUDE_PATH_FLAGS = $(patsubst %, -I%, $(INCLUDE_PATHS))
 
 LIB_PATHS = $(LIB_PATH)
@@ -43,24 +38,6 @@ TEST_PATH = test
 all : $(BINARIES)
 
 #==================
-# objects (common)
-#==================
-
-CPP_STEMS_COMMON = \
-		shader_utils
-OBJECTS_COMMON = $(patsubst %, $(BUILD_PATH_COMMON)/%.o, $(CPP_STEMS_COMMON))
-LINT_FILES_COMMON = $(patsubst %, $(BUILD_PATH_COMMON)/%.lint, $(CPP_STEMS_COMMON))
-
-$(BUILD_PATH_COMMON)/%.o : $(SRC_PATH_COMMON)/%.cpp
-	mkdir -p $(BUILD_PATH_COMMON)
-	$(CXX) -c -o $@ $< $(CXXFLAGS)
-
-.PHONY : clean_objects_common
-clean_objects_common :
-	-rm $(OBJECTS_COMMON)
-	-rmdir $(BUILD_PATH_COMMON)
-
-#==================
 # objects
 #==================
 
@@ -73,17 +50,17 @@ $(BUILD_PATH)/%.o : $(SRC_PATH)/%.c
 	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 .PHONY : clean_objects
-clean_objects : clean_objects_common
+clean_objects :
 	-rm $(OBJECTS)
 
 #==================
 # binaries
 #==================
 
-CPP_STEMS = ShaderContext Buffer Camera IdentObject Light main Material Mesh PrimitiveFactory Program res_texture res_texture2 Scene Shader Texture Util VarAttribute VarUniform XformObject
+CPP_STEMS = ShaderContext Buffer Camera IdentObject Light main Material Mesh PrimitiveFactory Program res_texture res_texture2 Scene Shader shader_utils Texture Util VarAttribute VarUniform XformObject
 OBJECTS = $(patsubst %, $(BUILD_PATH)/%.o, $(CPP_STEMS))
 
-$(BIN_PATH)/main : $(OBJECTS) $(OBJECTS_COMMON)
+$(BIN_PATH)/main : $(OBJECTS)
 	mkdir -p $(BIN_PATH)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 

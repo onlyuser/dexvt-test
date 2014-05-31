@@ -15,7 +15,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "../../common/include/shader_utils.h"
+#include <shader_utils.h>
 
 #include "res_texture.c"
 #include "res_texture2.c"

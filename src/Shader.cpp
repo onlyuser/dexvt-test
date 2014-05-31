@@ -1,5 +1,5 @@
 #include <Shader.h>
-#include <../../common/include/shader_utils.h>
+#include <shader_utils.h>
 #include <GL/glew.h>
 #include <string>
 
