@@ -1,0 +1,17 @@
+language: cpp
+compiler:
+    - gcc
+    - clang
+before_script:
+    - sudo apt-get install mesa-common-dev
+    - sudo apt-get install freeglut3-dev
+script: make
+branches:
+    only:
+        - master
+notifications:
+    recipients:
+        - onlyuser@gmail.com
+    email:
+        on_success: change
+        on_failure: always
