@@ -29,7 +29,7 @@ Texture files not included:
 
 <table>
     <tr>
-        <th>Image path</th>
+        <th>Image File</th>
         <th>Purpose</th>
     </tr>
     <tr>
