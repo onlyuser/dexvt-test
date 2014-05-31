@@ -11,7 +11,7 @@ About
 A Motivating Example
 --------------------
 
-[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_env_map.png)](dexvt-test_env_map.png)
+[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_env_map_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_env_map.png)
 
 Requirements
 ------------
