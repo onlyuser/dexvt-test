@@ -24,14 +24,27 @@ Unix tools and 3rd party components (accessible from $PATH):
 
 Texture files not included:
 
-    data/Colosseum/posx.png
-    data/Colosseum/negx.png
-    data/Colosseum/posy.png
-    data/Colosseum/negy.png
-    data/Colosseum/posz.png
-    data/Colosseum/negz.png
-    data/chesterfield_color.png
-    data/chesterfield_normal.png
+<table>
+    <tr>
+        <th>Image path</th>
+        <th>Purpose</th>
+    </tr>
+    <tr>
+        <td>
+            data/Colosseum/posx.png
+            data/Colosseum/negx.png
+            data/Colosseum/posy.png
+            data/Colosseum/negy.png
+            data/Colosseum/posz.png
+            data/Colosseum/negz.png
+        </td>
+        <td>Cube map texture (6 faces)</td>
+    </tr>
+    <tr>
+        <td>data/chesterfield_color.png</td>  <td>Color map texture</td>
+        <td>data/chesterfield_normal.png</td> <td>Normal map texture</td>
+    </tr>
+</table>
 
 Make targets
 ------------
