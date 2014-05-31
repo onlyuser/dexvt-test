@@ -9,7 +9,7 @@ About
 -----
 
 dexvt-test is a modernized version of my DexVT 3d engine.
-It features glsl Phong shading, environment-mapped reflection/refraction, normal-mapped textures, platonic primitives generation.
+It features glsl Phong shading, environment-mapped reflection/refraction (with fresnel effect and chromatic dispersion), normal-mapped textures, platonic primitives generation.
 
 Screenshots
 -----------
@@ -85,6 +85,15 @@ References
     <dt>"Rioki's Corner - GLSL Skybox"</dt>
     <dd>http://www.rioki.org/2013/03/07/glsl-skybox.html</dd>
 
+    <dt>"How would you implement chromatic aberration?"</dt>
+    <dd>http://gamedev.stackexchange.com/questions/58408/how-would-you-implement-chromatic-aberration</dd>
+
+    <dt>"How do you calculate the angle between two normals in glsl?"</dt>
+    <dd>http://stackoverflow.com/questions/338762/how-do-you-calculate-the-angle-between-two-normals-in-glsl</dd>
+
+    <dt>"Chapter 7. Environment Mapping Techniques"</dt>
+    <dd>http://http.developer.nvidia.com/CgTutorial/cg_tutorial_chapter07.html</dd>
+
     <dt>"Humus Cube Map Textures - Colosseum"</dt>
     <dd>http://www.humus.name/index.php?page=Textures</dd>
 
@@ -95,4 +104,4 @@ References
 Keywords
 --------
 
-    OpenGL, glsl shader, glm, normal map, environment map, cube map, reflectance, refractance
+    OpenGL, glsl shader, glm, normal map, environment map, cube map, normal map, bitangent, tbn matrix, reflectance, refractance, fresnel effect, chromatic dispersion
