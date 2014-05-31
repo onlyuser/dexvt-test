@@ -8,6 +8,9 @@ Copyright (C) 2011-2013 Jerry Chen <mailto:onlyuser@gmail.com>
 About
 -----
 
+dexvt-test is a modernized version of my DexVT 3d engine.
+It features glsl Phong shading, environment-mapped reflection/refraction, normal-mapped textures, platonic primitives generation.
+
 Screenshots
 -----------
 
