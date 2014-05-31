@@ -41,8 +41,12 @@ Texture files not included:
         <td>Cube map texture (6 faces)</td>
     </tr>
     <tr>
-        <td>data/chesterfield_color.png</td>  <td>Color map texture</td>
-        <td>data/chesterfield_normal.png</td> <td>Normal map texture</td>
+        <td>data/chesterfield_color.png</td>
+        <td>Color map texture</td>
+    </tr>
+    <tr>
+        <td>data/chesterfield_normal.png</td>
+        <td>Normal map texture</td>
     </tr>
 </table>
 
