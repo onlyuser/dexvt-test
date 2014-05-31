@@ -31,12 +31,14 @@ Texture files not included:
     </tr>
     <tr>
         <td>
-            data/Colosseum/posx.png
-            data/Colosseum/negx.png
-            data/Colosseum/posy.png
-            data/Colosseum/negy.png
-            data/Colosseum/posz.png
-            data/Colosseum/negz.png
+<pre>
+data/Colosseum/posx.png
+data/Colosseum/negx.png
+data/Colosseum/posy.png
+data/Colosseum/negy.png
+data/Colosseum/posz.png
+data/Colosseum/negz.png
+</pre>
         </td>
         <td>Cube map texture (6 faces)</td>
     </tr>
