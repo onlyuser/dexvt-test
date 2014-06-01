@@ -2,7 +2,7 @@
 #include <Mesh.h>
 #include <Util.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
+#include <glm/gtx/constants.hpp>
 
 namespace vt {
 
