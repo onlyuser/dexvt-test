@@ -127,13 +127,15 @@ void Scene::render()
         if((*q)->get_material()->use_texture_mapping()) {
             shader_context->set_texture_index((*q)->get_texture_index());
         }
-        if((*q)->get_material()->use_normal_mapping() || (*q)->get_material()->use_env_mapping()) {
+        if((*q)->get_material()->use_phong_shading() || (*q)->get_material()->use_env_mapping()) {
             shader_context->set_modelview_xform((*q)->get_xform());
             shader_context->set_normal_xform((*q)->get_normal_xform());
-            shader_context->set_normal_map_texture_index((*q)->get_normal_map_texture_index());
             shader_context->set_camera_pos(m_camera_pos);
         }
         if((*q)->get_material()->use_normal_mapping()) {
+            shader_context->set_normal_map_texture_index((*q)->get_normal_map_texture_index());
+        }
+        if((*q)->get_material()->use_phong_shading()) {
             shader_context->set_light_pos(NUM_LIGHTS, m_light_pos);
             shader_context->set_light_color(NUM_LIGHTS, m_light_color);
             shader_context->set_light_enabled(NUM_LIGHTS, m_light_enabled);

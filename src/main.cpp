@@ -92,6 +92,7 @@ int init_resources()
     vt::Material* normal_mapped_material = new vt::Material(
             "src/normal_mapped.v.glsl",
             "src/normal_mapped.f.glsl",
+            true,   // use_phong_shading
             true,   // use_texture_mapping
             true,   // use_normal_mapping
             false,  // use_env_mapping
@@ -101,6 +102,7 @@ int init_resources()
     vt::Material* skybox_material = new vt::Material(
             "src/skybox.v.glsl",
             "src/skybox.f.glsl",
+            false, // use_phong_shading
             false, // use_texture_mapping
             false, // use_normal_mapping
             false, // use_env_mapping
@@ -110,6 +112,7 @@ int init_resources()
     vt::Material* texture_mapped_material = new vt::Material(
             "src/texture_mapped.v.glsl",
             "src/texture_mapped.f.glsl",
+            false,  // use_phong_shading
             true,   // use_texture_mapping
             false,  // use_normal_mapping
             false,  // use_env_mapping
@@ -119,14 +122,25 @@ int init_resources()
     vt::Material* env_mapped_material = new vt::Material(
             "src/env_mapped.v.glsl",
             "src/env_mapped.f.glsl",
+            false,  // use_phong_shading
             false,  // use_texture_mapping
-            false,  // use_normal_mapping
+            true,   // use_normal_mapping
             true,   // use_env_mapping
             false); // skybox
     scene->add_material(env_mapped_material);
 
+    vt::Material* env_mapped_material_fast = new vt::Material(
+            "src/env_mapped_fast.v.glsl",
+            "src/env_mapped_fast.f.glsl",
+            false,  // use_phong_shading
+            false,  // use_texture_mapping
+            false,  // use_normal_mapping
+            true,   // use_env_mapping
+            false); // skybox
+    scene->add_material(env_mapped_material_fast);
+
     skybox->set_material(skybox_material);
-    mesh->set_material(normal_mapped_material);
+    mesh->set_material(env_mapped_material_fast);
     mesh2->set_material(normal_mapped_material);
     mesh3->set_material(normal_mapped_material);
     mesh4->set_material(env_mapped_material);
@@ -160,6 +174,7 @@ int init_resources()
     scene->add_texture(texture3);
     normal_mapped_material->add_texture(texture3);
     env_mapped_material->add_texture(texture3);
+    env_mapped_material_fast->add_texture(texture3);
 
     vt::Texture* texture4 = new vt::Texture(
             "chesterfield_normal",
@@ -167,6 +182,7 @@ int init_resources()
     scene->add_texture(texture4);
     normal_mapped_material->add_texture(texture4);
     env_mapped_material->add_texture(texture4);
+    env_mapped_material_fast->add_texture(texture4);
 
     vt::Texture* texture5 = new vt::Texture(
             "colosseum",
@@ -179,6 +195,7 @@ int init_resources()
     scene->add_texture(texture5);
     skybox_material->add_texture(texture5);
     env_mapped_material->add_texture(texture5);
+    env_mapped_material_fast->add_texture(texture5);
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera(origin+glm::vec3(0, 0, orbit_radius), origin);

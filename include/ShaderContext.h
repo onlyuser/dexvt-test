@@ -66,6 +66,7 @@ private:
             m_var_uniform_inv_normal_xform,
             m_var_uniform_reflect_to_refract_ratio;
     const textures_t &m_textures;
+    bool m_use_phong_shading;
     bool m_use_texture_mapping;
     bool m_use_normal_mapping;
     bool m_use_env_mapping;

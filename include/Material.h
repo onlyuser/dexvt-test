@@ -19,6 +19,7 @@ public:
     Material(
             std::string vertex_shader_file,
             std::string fragment_shader_file,
+            bool        use_phong_shading = false,
             bool        use_texture_mapping = false,
             bool        use_normal_mapping = false,
             bool        use_env_mapping = false,
@@ -33,6 +34,10 @@ public:
     const textures_t &get_textures() const
     {
         return m_textures;
+    }
+    bool use_phong_shading() const
+    {
+        return m_use_phong_shading;
     }
     bool use_texture_mapping() const
     {
@@ -57,6 +62,7 @@ public:
 private:
     std::unique_ptr<Program> m_program;
     textures_t               m_textures; // TODO: Material has multiple Textures
+    bool                     m_use_phong_shading;
     bool                     m_use_texture_mapping;
     bool                     m_use_normal_mapping;
     bool                     m_use_env_mapping;
