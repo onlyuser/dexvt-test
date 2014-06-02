@@ -9,17 +9,25 @@
 
 namespace vt {
 
-Texture::Texture(std::string name, const void* pixel_data, size_t width, size_t height)
+Texture::Texture(std::string name, size_t width, size_t height, const unsigned char* pixel_data)
     : m_name(name),
+      m_width(width),
+      m_height(height),
+      m_pixel_data(NULL),
       m_skybox(false)
 {
     if(pixel_data) {
         m_id = gen_texture_internal(pixel_data, width, height);
+    } else {
+        m_pixel_data = new unsigned char[width*height*sizeof(unsigned char)];
+        m_id = gen_texture_internal(m_pixel_data, width, height);
     }
 }
 
 Texture::Texture(std::string name, std::string png_filename)
     : m_name(name),
+      m_width(0),
+      m_height(0),
       m_skybox(false)
 {
     unsigned char *pixel_data = NULL;
@@ -31,6 +39,8 @@ Texture::Texture(std::string name, std::string png_filename)
     if(pixel_data) {
         m_id = gen_texture_internal(pixel_data, width, height);
         delete[] pixel_data;
+        m_width  = width;
+        m_height = height;
     }
 }
 
@@ -43,6 +53,8 @@ Texture::Texture(
         std::string png_filename_pos_z,
         std::string png_filename_neg_z)
     : m_name(name),
+      m_width(0),
+      m_height(0),
       m_skybox(true)
 {
     unsigned char *pixel_data_pos_x = NULL;
@@ -100,12 +112,17 @@ Texture::Texture(
         delete[] pixel_data_neg_y;
         delete[] pixel_data_pos_z;
         delete[] pixel_data_neg_z;
+        m_width  = width;
+        m_height = height;
     }
 }
 
 Texture::~Texture()
 {
     glDeleteTextures(1, &m_id);
+    if(m_pixel_data) {
+        delete []m_pixel_data;
+    }
 }
 
 void Texture::bind() const

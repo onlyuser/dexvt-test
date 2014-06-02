@@ -22,6 +22,7 @@
 
 #include <Buffer.h>
 #include <Camera.h>
+#include <FrameBuffer.h>
 #include <ShaderContext.h>
 #include <Light.h>
 #include <Material.h>
@@ -44,6 +45,7 @@ int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
 vt::Mesh* skybox, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7;
 vt::Light* light, *light2, *light3;
+vt::FrameBuffer* fb;
 
 bool left_mouse_down = false, right_mouse_down = false;
 glm::vec2 prev_mouse_coord, mouse_drag;
@@ -153,18 +155,18 @@ int init_resources()
 
     vt::Texture* texture = new vt::Texture(
             "dex3d",
-            res_texture.pixel_data,
             res_texture.width,
-            res_texture.height);
+            res_texture.height,
+            res_texture.pixel_data);
     scene->add_texture(texture);
     normal_mapped_material->add_texture(texture);
     texture_mapped_material->add_texture(texture);
 
     vt::Texture* texture2 = new vt::Texture(
             "lode_runner",
-            res_texture2.pixel_data,
             res_texture2.width,
-            res_texture2.height);
+            res_texture2.height,
+            res_texture2.pixel_data);
     scene->add_texture(texture2);
     normal_mapped_material->add_texture(texture2);
 
@@ -196,6 +198,12 @@ int init_resources()
     skybox_material->add_texture(texture5);
     env_mapped_material->add_texture(texture5);
     env_mapped_material_fast->add_texture(texture5);
+
+//    vt::Texture* screenshot_texture = new vt::Texture(
+//            "screenshot",
+//            800,
+//            600);
+//    fb = new vt::FrameBuffer(screenshot_texture);
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera(origin+glm::vec3(0, 0, orbit_radius), origin);
@@ -283,6 +291,14 @@ void onKeyboard(unsigned char key, int x, int y)
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             } else {
                 glPolygonMode(GL_FRONT, GL_FILL);
+            }
+            break;
+        case 's':
+            {
+//                vt::Scene *scene = vt::Scene::instance();
+//
+//                fb->bind();
+//                scene->render();
             }
             break;
         case 'f':
