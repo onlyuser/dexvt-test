@@ -13,14 +13,23 @@ Texture::Texture(std::string name, size_t width, size_t height, const unsigned c
     : m_name(name),
       m_width(width),
       m_height(height),
-      m_pixel_data(NULL),
       m_skybox(false)
 {
     if(pixel_data) {
         m_id = gen_texture_internal(pixel_data, width, height);
     } else {
-        m_pixel_data = new unsigned char[width*height*sizeof(unsigned char)];
-        m_id = gen_texture_internal(m_pixel_data, width, height);
+        unsigned char* _pixel_data = new unsigned char[width*height*sizeof(unsigned char)*3];
+        memset(_pixel_data, 0, width*height*sizeof(unsigned char)*3);
+        for(int i = 0; i < static_cast<int>(std::min(width, height)); i++) {
+            _pixel_data[(i*width+i)*3+0] = 255;
+            _pixel_data[(i*width+i)*3+1] = 0;
+            _pixel_data[(i*width+i)*3+2] = 0;
+            _pixel_data[(i*width+width-i)*3+0] = 255;
+            _pixel_data[(i*width+width-i)*3+1] = 0;
+            _pixel_data[(i*width+width-i)*3+2] = 0;
+        }
+        m_id = gen_texture_internal(_pixel_data, width, height);
+        delete[] _pixel_data;
     }
 }
 
@@ -120,9 +129,6 @@ Texture::Texture(
 Texture::~Texture()
 {
     glDeleteTextures(1, &m_id);
-    if(m_pixel_data) {
-        delete []m_pixel_data;
-    }
 }
 
 void Texture::bind() const

@@ -45,7 +45,7 @@ int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
 vt::Mesh* skybox, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7;
 vt::Light* light, *light2, *light3;
-vt::FrameBuffer* fb;
+std::unique_ptr<vt::FrameBuffer> fb;
 
 bool left_mouse_down = false, right_mouse_down = false;
 glm::vec2 prev_mouse_coord, mouse_drag;
@@ -57,6 +57,8 @@ bool debug_vert_normals = false;
 
 int texture_index = 0;
 float prev_zoom = 0, zoom = 1, ortho_dolly_speed = 0.1;
+
+GLuint screenshot_texture_id = 0;
 
 int init_resources()
 {
@@ -142,9 +144,9 @@ int init_resources()
     scene->add_material(env_mapped_material_fast);
 
     skybox->set_material(skybox_material);
-    mesh->set_material(env_mapped_material_fast);
+    mesh->set_material(normal_mapped_material);
     mesh2->set_material(normal_mapped_material);
-    mesh3->set_material(normal_mapped_material);
+    mesh3->set_material(texture_mapped_material);
     mesh4->set_material(env_mapped_material);
     mesh5->set_material(env_mapped_material);
     mesh6->set_material(texture_mapped_material);
@@ -199,11 +201,14 @@ int init_resources()
     env_mapped_material->add_texture(texture5);
     env_mapped_material_fast->add_texture(texture5);
 
-//    vt::Texture* screenshot_texture = new vt::Texture(
-//            "screenshot",
-//            800,
-//            600);
-//    fb = new vt::FrameBuffer(screenshot_texture);
+    vt::Texture* screenshot_texture = new vt::Texture(
+            "screenshot",
+            256,
+            256);
+    screenshot_texture_id = screenshot_texture->id();
+    texture_mapped_material->add_texture(screenshot_texture);
+
+    fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(screenshot_texture));
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera(origin+glm::vec3(0, 0, orbit_radius), origin);
@@ -224,7 +229,7 @@ int init_resources()
     skybox->set_texture_index(skybox->get_material()->get_texture_index_by_name("colosseum"));
     mesh->set_texture_index(  mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh2->set_texture_index( mesh2->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh3->set_texture_index( mesh3->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh3->set_texture_index( mesh3->get_material()->get_texture_index_by_name("screenshot"));
     mesh4->set_texture_index( mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh5->set_texture_index( mesh5->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh6->set_texture_index( mesh6->get_material()->get_texture_index_by_name("dex3d"));
@@ -293,14 +298,6 @@ void onKeyboard(unsigned char key, int x, int y)
                 glPolygonMode(GL_FRONT, GL_FILL);
             }
             break;
-        case 's':
-            {
-//                vt::Scene *scene = vt::Scene::instance();
-//
-//                fb->bind();
-//                scene->render();
-            }
-            break;
         case 'f':
             show_fps = !show_fps;
             if(!show_fps) {
@@ -313,11 +310,13 @@ void onKeyboard(unsigned char key, int x, int y)
             } else if(texture_index == 1) {
                 texture_index = 2; // GL_TEXTURE2
             } else if(texture_index == 2) {
+                texture_index = 4; // GL_TEXTURE3
+            } else if(texture_index == 4) {
                 texture_index = 0; // GL_TEXTURE0
             }
             mesh->set_texture_index( texture_index);
             mesh2->set_texture_index(texture_index);
-            mesh3->set_texture_index(texture_index);
+            //mesh3->set_texture_index(texture_index);
             //mesh4->set_texture_index(texture_index);
             //mesh5->set_texture_index(texture_index);
             //mesh6->set_texture_index(texture_index);

@@ -12,6 +12,8 @@ FrameBuffer::FrameBuffer(Texture* texture)
     glGenFramebuffers(1, &m_id);
     bind();
 
+    texture->bind();
+
     // The depth buffer
     glGenRenderbuffers(1, &m_depthrenderbuffer_id);
     glBindRenderbuffer(GL_RENDERBUFFER, m_depthrenderbuffer_id);
@@ -19,7 +21,7 @@ FrameBuffer::FrameBuffer(Texture* texture)
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthrenderbuffer_id);
 
     // Set "renderedTexture" as our colour attachement #0
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_texture->id(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture->id(), 0);
 
     // Set the list of draw buffers.
     GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
@@ -29,6 +31,8 @@ FrameBuffer::FrameBuffer(Texture* texture)
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "failed to generate frame buffer" << std::endl;
     }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 FrameBuffer::~FrameBuffer()
@@ -38,7 +42,7 @@ FrameBuffer::~FrameBuffer()
 
 void FrameBuffer::bind() const
 {
-    glBindFramebuffer(m_target, m_id);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_id);
     glViewport(0, 0, m_texture->width(), m_texture->height());
 }
 
