@@ -11,7 +11,7 @@ namespace vt {
 class Texture : public IdentObject, public BindableObjectIFace
 {
 public:
-    Texture(std::string name, size_t width, size_t height, const unsigned char* pixel_data = NULL);
+    Texture(std::string name, size_t width, size_t height, const unsigned char* pixel_data = NULL, bool depth_only = false);
     Texture(std::string name, std::string png_filename);
     Texture(
             std::string name,
@@ -35,23 +35,28 @@ public:
     {
         return m_height;
     }
+    bool depth_only() const
+    {
+        return m_depth_only;
+    }
 
 private:
     std::string m_name;
     size_t      m_width;
     size_t      m_height;
     bool        m_skybox;
+    bool        m_depth_only;
 
-    static GLuint gen_texture_internal(const void* pixel_data, size_t width, size_t height);
+    static GLuint gen_texture_internal(size_t width, size_t height, const void* pixel_data, bool depth_only = false);
     static GLuint gen_texture_skybox_internal(
+            size_t width,
+            size_t height,
             const void* pixel_data_pos_x,
             const void* pixel_data_neg_x,
             const void* pixel_data_pos_y,
             const void* pixel_data_neg_y,
             const void* pixel_data_pos_z,
-            const void* pixel_data_neg_z,
-            size_t width,
-            size_t height);
+            const void* pixel_data_neg_z);
     static bool read_png(std::string png_filename, void **pixel_data, size_t *width, size_t *height);
 };
 

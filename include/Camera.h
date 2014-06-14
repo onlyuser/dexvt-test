@@ -18,8 +18,8 @@ public:
             glm::vec3         origin,
             glm::vec3         target          = glm::vec3(0),
             float             fov             = 45,
-            float             width           = 800,
-            float             height          = 600,
+            size_t            width           = 800,
+            size_t            height          = 600,
             float             near_plane      = 0.1,
             float             far_plane       = 100,
             float             ortho_width     = 1,
@@ -46,11 +46,11 @@ public:
     }
     void set_fov(float fov);
 
-    float get_width() const
+    size_t get_width() const
     {
         return m_width;
     }
-    float get_height() const
+    size_t get_height() const
     {
         return m_height;
     }

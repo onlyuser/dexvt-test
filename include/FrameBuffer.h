@@ -15,6 +15,7 @@ public:
     FrameBuffer(Texture* texture);
     virtual ~FrameBuffer();
     void bind() const;
+    void unbind(size_t width, size_t height) const;
 
 private:
     Texture* m_texture;

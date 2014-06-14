@@ -204,7 +204,9 @@ int init_resources()
     vt::Texture* screenshot_texture = new vt::Texture(
             "screenshot",
             256,
-            256);
+            256,
+            NULL,
+            false); // depth only?
     screenshot_texture_id = screenshot_texture->id();
     texture_mapped_material->add_texture(screenshot_texture);
 
@@ -273,6 +275,91 @@ void onTick()
     frames++;
 }
 
+void draw()
+{
+    glBindTexture(GL_TEXTURE_2D, screenshot_texture_id);
+
+    glColor4f(1, 1, 1, 1);
+    glBegin(GL_TRIANGLES);
+        // front faces
+        glNormal3f(0,0,1);
+        // face v0-v1-v2
+        glTexCoord2f(1,1);  glVertex3f(1,1,1);
+        glTexCoord2f(0,1);  glVertex3f(-1,1,1);
+        glTexCoord2f(0,0);  glVertex3f(-1,-1,1);
+        // face v2-v3-v0
+        glTexCoord2f(0,0);  glVertex3f(-1,-1,1);
+        glTexCoord2f(1,0);  glVertex3f(1,-1,1);
+        glTexCoord2f(1,1);  glVertex3f(1,1,1);
+
+        // right faces
+        glNormal3f(1,0,0);
+        // face v0-v3-v4
+        glTexCoord2f(0,1);  glVertex3f(1,1,1);
+        glTexCoord2f(0,0);  glVertex3f(1,-1,1);
+        glTexCoord2f(1,0);  glVertex3f(1,-1,-1);
+        // face v4-v5-v0
+        glTexCoord2f(1,0);  glVertex3f(1,-1,-1);
+        glTexCoord2f(1,1);  glVertex3f(1,1,-1);
+        glTexCoord2f(0,1);  glVertex3f(1,1,1);
+
+        // top faces
+        glNormal3f(0,1,0);
+        // face v0-v5-v6
+        glTexCoord2f(1,0);  glVertex3f(1,1,1);
+        glTexCoord2f(1,1);  glVertex3f(1,1,-1);
+        glTexCoord2f(0,1);  glVertex3f(-1,1,-1);
+        // face v6-v1-v0
+        glTexCoord2f(0,1);  glVertex3f(-1,1,-1);
+        glTexCoord2f(0,0);  glVertex3f(-1,1,1);
+        glTexCoord2f(1,0);  glVertex3f(1,1,1);
+
+        // left faces
+        glNormal3f(-1,0,0);
+        // face  v1-v6-v7
+        glTexCoord2f(1,1);  glVertex3f(-1,1,1);
+        glTexCoord2f(0,1);  glVertex3f(-1,1,-1);
+        glTexCoord2f(0,0);  glVertex3f(-1,-1,-1);
+        // face v7-v2-v1
+        glTexCoord2f(0,0);  glVertex3f(-1,-1,-1);
+        glTexCoord2f(1,0);  glVertex3f(-1,-1,1);
+        glTexCoord2f(1,1);  glVertex3f(-1,1,1);
+
+        // bottom faces
+        glNormal3f(0,-1,0);
+        // face v7-v4-v3
+        glTexCoord2f(0,0);  glVertex3f(-1,-1,-1);
+        glTexCoord2f(1,0);  glVertex3f(1,-1,-1);
+        glTexCoord2f(1,1);  glVertex3f(1,-1,1);
+        // face v3-v2-v7
+        glTexCoord2f(1,1);  glVertex3f(1,-1,1);
+        glTexCoord2f(0,1);  glVertex3f(-1,-1,1);
+        glTexCoord2f(0,0);  glVertex3f(-1,-1,-1);
+
+        // back faces
+        glNormal3f(0,0,-1);
+        // face v4-v7-v6
+        glTexCoord2f(0,0);  glVertex3f(1,-1,-1);
+        glTexCoord2f(1,0);  glVertex3f(-1,-1,-1);
+        glTexCoord2f(1,1);  glVertex3f(-1,1,-1);
+        // face v6-v5-v4
+        glTexCoord2f(1,1);  glVertex3f(-1,1,-1);
+        glTexCoord2f(0,1);  glVertex3f(1,1,-1);
+        glTexCoord2f(0,0);  glVertex3f(1,-1,-1);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+// constants
+const int   SCREEN_WIDTH    = 400;
+const int   SCREEN_HEIGHT   = 300;
+const float CAMERA_DISTANCE = 6.0f;
+const int   TEXT_WIDTH      = 8;
+const int   TEXT_HEIGHT     = 13;
+const int   TEXTURE_WIDTH   = 256;  // NOTE: texture size cannot be larger than
+const int   TEXTURE_HEIGHT  = 256;  // the rendering window size in non-FBO mode
+
 void onDisplay()
 {
     vt::Scene *scene = vt::Scene::instance();
@@ -281,6 +368,42 @@ void onDisplay()
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     scene->render();
+
+    fb->bind();
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    scene->render();
+    fb->unbind(camera->get_width(), camera->get_height());
+
+//    glUseProgram(0);
+//
+//    // adjust viewport and projection matrix to texture dimension
+//    //glViewport(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+//    glMatrixMode(GL_PROJECTION);
+//    glLoadIdentity();
+//    gluPerspective(60.0f, (float)(TEXTURE_WIDTH)/TEXTURE_HEIGHT, 1.0f, 100.0f);
+//    glMatrixMode(GL_MODELVIEW);
+//
+//    // camera transform
+//    glLoadIdentity();
+//    glTranslatef(0, 0, -CAMERA_DISTANCE);
+//
+//    fb->bind();
+//
+//    // clear buffer
+//    glClearColor(1, 0, 0, 1);
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//
+//    float angle = static_cast<float>(glutGet(GLUT_ELAPSED_TIME))/1000*15; // base 15 degrees per second
+//    glRotatef(angle*0.5f, 1, 0, 0);
+//    glRotatef(angle, 0, 1, 0);
+//    glRotatef(angle*0.7f, 0, 0, 1);
+//    glTranslatef(0, -1.575f, 0);
+//    draw();
+//    glPopMatrix();
+//
+//    fb->unbind(camera->get_width(), camera->get_height());
+
     if(debug_vert_normals) {
         scene->render_vert_normals();
     }

@@ -9,14 +9,15 @@
 
 namespace vt {
 
-Texture::Texture(std::string name, size_t width, size_t height, const unsigned char* pixel_data)
+Texture::Texture(std::string name, size_t width, size_t height, const unsigned char* pixel_data, bool depth_only)
     : m_name(name),
       m_width(width),
       m_height(height),
-      m_skybox(false)
+      m_skybox(false),
+      m_depth_only(depth_only)
 {
     if(pixel_data) {
-        m_id = gen_texture_internal(pixel_data, width, height);
+        m_id = gen_texture_internal(width, height, pixel_data, m_depth_only);
     } else {
         unsigned char* _pixel_data = new unsigned char[width*height*sizeof(unsigned char)*3];
         memset(_pixel_data, 0, width*height*sizeof(unsigned char)*3);
@@ -28,7 +29,7 @@ Texture::Texture(std::string name, size_t width, size_t height, const unsigned c
             _pixel_data[(i*width+width-i)*3+1] = 0;
             _pixel_data[(i*width+width-i)*3+2] = 0;
         }
-        m_id = gen_texture_internal(_pixel_data, width, height);
+        m_id = gen_texture_internal(width, height, _pixel_data, m_depth_only);
         delete[] _pixel_data;
     }
 }
@@ -37,7 +38,8 @@ Texture::Texture(std::string name, std::string png_filename)
     : m_name(name),
       m_width(0),
       m_height(0),
-      m_skybox(false)
+      m_skybox(false),
+      m_depth_only(false)
 {
     unsigned char *pixel_data = NULL;
     size_t width  = 0;
@@ -46,7 +48,7 @@ Texture::Texture(std::string name, std::string png_filename)
         return;
     }
     if(pixel_data) {
-        m_id = gen_texture_internal(pixel_data, width, height);
+        m_id = gen_texture_internal(width, height, pixel_data);
         delete[] pixel_data;
         m_width  = width;
         m_height = height;
@@ -64,7 +66,8 @@ Texture::Texture(
     : m_name(name),
       m_width(0),
       m_height(0),
-      m_skybox(true)
+      m_skybox(true),
+      m_depth_only(false)
 {
     unsigned char *pixel_data_pos_x = NULL;
     unsigned char *pixel_data_neg_x = NULL;
@@ -107,14 +110,14 @@ Texture::Texture(
             pixel_data_neg_z)
     {
         m_id = gen_texture_skybox_internal(
+                width,
+                height,
                 pixel_data_pos_x,
                 pixel_data_neg_x,
                 pixel_data_pos_y,
                 pixel_data_neg_y,
                 pixel_data_pos_z,
-                pixel_data_neg_z,
-                width,
-                height);
+                pixel_data_neg_z);
         delete[] pixel_data_pos_x;
         delete[] pixel_data_neg_x;
         delete[] pixel_data_pos_y;
@@ -140,35 +143,48 @@ void Texture::bind() const
     }
 }
 
-GLuint Texture::gen_texture_internal(const void* pixel_data, size_t width, size_t height)
+GLuint Texture::gen_texture_internal(size_t width, size_t height, const void* pixel_data, bool depth_only)
 {
     GLuint id = 0;
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(
-            GL_TEXTURE_2D,    // target
-            0,                // level, 0 = base, no mipmap,
-            GL_RGB,           // internal format
-            width,            // width
-            height,           // height
-            0,                // border, always 0 in OpenGL ES
-            GL_RGB,           // format
-            GL_UNSIGNED_BYTE, // type
-            pixel_data);
+    if(depth_only) {
+        glTexImage2D(
+                GL_TEXTURE_2D,      // target
+                0,                  // level, 0 = base, no mipmap,
+                GL_DEPTH_COMPONENT, // internal format
+                width,              // width
+                height,             // height
+                0,                  // border, always 0 in OpenGL ES
+                GL_DEPTH_COMPONENT, // format
+                GL_FLOAT,           // type
+                pixel_data);
+    } else {
+        glTexImage2D(
+                GL_TEXTURE_2D,    // target
+                0,                // level, 0 = base, no mipmap,
+                GL_RGB,           // internal format
+                width,            // width
+                height,           // height
+                0,                // border, always 0 in OpenGL ES
+                GL_RGB,           // format
+                GL_UNSIGNED_BYTE, // type
+                pixel_data);
+    }
     return id;
 }
 
 GLuint Texture::gen_texture_skybox_internal(
+        size_t width,
+        size_t height,
         const void* pixel_data_pos_x,
         const void* pixel_data_neg_x,
         const void* pixel_data_pos_y,
         const void* pixel_data_neg_y,
         const void* pixel_data_pos_z,
-        const void* pixel_data_neg_z,
-        size_t width,
-        size_t height)
+        const void* pixel_data_neg_z)
 {
     GLuint id = 0;
     glGenTextures(1, &id);
