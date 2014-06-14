@@ -17,20 +17,31 @@ Texture::Texture(std::string name, size_t width, size_t height, const unsigned c
       m_depth_only(depth_only)
 {
     if(pixel_data) {
-        m_id = gen_texture_internal(width, height, pixel_data, m_depth_only);
+        m_id = gen_texture_internal(width, height, pixel_data, depth_only);
     } else {
-        unsigned char* _pixel_data = new unsigned char[width*height*sizeof(unsigned char)*3];
-        memset(_pixel_data, 0, width*height*sizeof(unsigned char)*3);
-        for(int i = 0; i < static_cast<int>(std::min(width, height)); i++) {
-            _pixel_data[(i*width+i)*3+0] = 255;
-            _pixel_data[(i*width+i)*3+1] = 0;
-            _pixel_data[(i*width+i)*3+2] = 0;
-            _pixel_data[(i*width+width-i)*3+0] = 255;
-            _pixel_data[(i*width+width-i)*3+1] = 0;
-            _pixel_data[(i*width+width-i)*3+2] = 0;
+        if(depth_only) {
+            float* _pixel_data = new float[width*height*sizeof(float)];
+            memset(_pixel_data, 0, width*height*sizeof(float));
+            for(int i = 0; i < static_cast<int>(std::min(width, height)); i++) {
+                _pixel_data[i*width+i]       = 1;
+                _pixel_data[i*width+width-i] = 1;
+            }
+            m_id = gen_texture_internal(width, height, _pixel_data, depth_only);
+            delete[] _pixel_data;
+        } else {
+            unsigned char* _pixel_data = new unsigned char[width*height*sizeof(unsigned char)*3];
+            memset(_pixel_data, 0, width*height*sizeof(unsigned char)*3);
+            for(int i = 0; i < static_cast<int>(std::min(width, height)); i++) {
+                _pixel_data[(i*width+i)*3+0]       = 255;
+                _pixel_data[(i*width+i)*3+1]       = 0;
+                _pixel_data[(i*width+i)*3+2]       = 0;
+                _pixel_data[(i*width+width-i)*3+0] = 255;
+                _pixel_data[(i*width+width-i)*3+1] = 0;
+                _pixel_data[(i*width+width-i)*3+2] = 0;
+            }
+            m_id = gen_texture_internal(width, height, _pixel_data, depth_only);
+            delete[] _pixel_data;
         }
-        m_id = gen_texture_internal(width, height, _pixel_data, m_depth_only);
-        delete[] _pixel_data;
     }
 }
 
