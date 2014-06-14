@@ -69,14 +69,14 @@ Texture::Texture(
       m_skybox(true),
       m_depth_only(false)
 {
+    size_t width  = 0;
+    size_t height = 0;
     unsigned char *pixel_data_pos_x = NULL;
     unsigned char *pixel_data_neg_x = NULL;
     unsigned char *pixel_data_pos_y = NULL;
     unsigned char *pixel_data_neg_y = NULL;
     unsigned char *pixel_data_pos_z = NULL;
     unsigned char *pixel_data_neg_z = NULL;
-    size_t width  = 0;
-    size_t height = 0;
     if(!read_png(png_filename_pos_x, (void**)&pixel_data_pos_x, &width, &height)) {
         std::cout << "failed to load cube map positive x" << std::endl;
         return;
@@ -118,14 +118,14 @@ Texture::Texture(
                 pixel_data_neg_y,
                 pixel_data_pos_z,
                 pixel_data_neg_z);
+        m_width  = width;
+        m_height = height;
         delete[] pixel_data_pos_x;
         delete[] pixel_data_neg_x;
         delete[] pixel_data_pos_y;
         delete[] pixel_data_neg_y;
         delete[] pixel_data_pos_z;
         delete[] pixel_data_neg_z;
-        m_width  = width;
-        m_height = height;
     }
 }
 
