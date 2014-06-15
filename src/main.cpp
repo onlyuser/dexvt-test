@@ -210,11 +210,11 @@ int init_resources()
     screenshot_texture_id = screenshot_texture->id();
     texture_mapped_material->add_texture(screenshot_texture);
 
-    fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(screenshot_texture));
-
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera(origin+glm::vec3(0, 0, orbit_radius), origin);
     scene->set_camera(camera);
+
+    fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(screenshot_texture, camera));
 
     // red light
     light = new vt::Light(origin+glm::vec3(light_distance, 0, 0), glm::vec3(1, 0, 0));
@@ -373,7 +373,7 @@ void onDisplay()
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     scene->render();
-    fb->unbind(camera->get_width(), camera->get_height());
+    fb->unbind();
 
 //    glUseProgram(0);
 //
@@ -402,7 +402,7 @@ void onDisplay()
 //    draw();
 //    glPopMatrix();
 //
-//    fb->unbind(camera->get_width(), camera->get_height());
+//    fb->unbind();
 
     if(debug_vert_normals) {
         scene->render_vert_normals();

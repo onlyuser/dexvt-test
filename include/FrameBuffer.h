@@ -8,17 +8,19 @@
 namespace vt {
 
 class Texture;
+class Camera;
 
 class FrameBuffer : public IdentObject, public BindableObjectIFace
 {
 public:
-    FrameBuffer(Texture* texture);
+    FrameBuffer(Texture* texture, Camera* camera);
     virtual ~FrameBuffer();
     void bind() const;
-    void unbind(size_t width, size_t height) const;
+    void unbind() const;
 
 private:
     Texture* m_texture;
+    Camera* m_camera;
     GLuint m_depthrenderbuffer_id;
 };
 
