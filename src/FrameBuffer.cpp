@@ -16,13 +16,21 @@ FrameBuffer::FrameBuffer(Texture* texture, Camera* camera)
 
     glGenRenderbuffers(1, &m_depthrenderbuffer_id);
     glBindRenderbuffer(GL_RENDERBUFFER, m_depthrenderbuffer_id);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_texture->width(), m_texture->height());
+    if(texture->type() == Texture::STENCIL) {
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_STENCIL, m_texture->width(), m_texture->height());
+    } else {
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_texture->width(), m_texture->height());
+    }
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-    if(texture->depth_only()) {
+    if(texture->type() == Texture::DEPTH) {
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_texture->id(), 0);
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
+    } else if(texture->type() == Texture::STENCIL) {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture->id(), 0);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthrenderbuffer_id);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_depthrenderbuffer_id);
     } else {
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture->id(), 0);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthrenderbuffer_id);

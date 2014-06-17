@@ -206,7 +206,7 @@ int init_resources()
             256,
             256,
             NULL,
-            false); // depth only?
+            vt::Texture::RGB); // depth only?
     screenshot_texture_id = screenshot_texture->id();
     texture_mapped_material->add_texture(screenshot_texture);
 
