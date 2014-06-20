@@ -98,6 +98,7 @@ int init_resources()
             true,   // use_texture_mapping
             true,   // use_normal_mapping
             false,  // use_env_mapping
+            false,  // use_depth_map
             false); // skybox
     scene->add_material(normal_mapped_material);
 
@@ -108,6 +109,7 @@ int init_resources()
             false, // use_texture_mapping
             false, // use_normal_mapping
             false, // use_env_mapping
+            false, // use_depth_map
             true); // skybox
     scene->add_material(skybox_material);
 
@@ -118,6 +120,7 @@ int init_resources()
             true,   // use_texture_mapping
             false,  // use_normal_mapping
             false,  // use_env_mapping
+            false,  // use_depth_map
             false); // skybox
     scene->add_material(texture_mapped_material);
 
@@ -128,6 +131,7 @@ int init_resources()
             false,  // use_texture_mapping
             true,   // use_normal_mapping
             true,   // use_env_mapping
+            true,   // use_depth_map
             false); // skybox
     scene->add_material(env_mapped_material);
 
@@ -138,6 +142,7 @@ int init_resources()
             false,  // use_texture_mapping
             false,  // use_normal_mapping
             true,   // use_env_mapping
+            false,  // use_depth_map
             false); // skybox
     scene->add_material(env_mapped_material_fast);
 
@@ -148,11 +153,9 @@ int init_resources()
             false,  // use_texture_mapping
             true,   // use_normal_mapping
             false,  // use_env_mapping
+            false,  // use_depth_map
             false); // skybox
     scene->add_material(normal_material);
-
-    mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh5->set_reflect_to_refract_ratio(1);    // 100% reflective
 
     vt::Texture* texture = new vt::Texture(
             "dex3d",
@@ -207,8 +210,10 @@ int init_resources()
             256,
             256,
             NULL,
-            vt::Texture::RGB); // depth only?
-    texture_mapped_material->add_texture(screenshot_texture);
+            vt::Texture::DEPTH);
+    texture_mapped_material->add_texture( screenshot_texture);
+    env_mapped_material->add_texture(     screenshot_texture);
+    env_mapped_material_fast->add_texture(screenshot_texture);
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera(origin+glm::vec3(0, 0, orbit_radius), origin);
@@ -247,13 +252,17 @@ int init_resources()
 
     // sphere
     mesh4->set_material(env_mapped_material);
+    mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
     mesh4->set_texture_index(           mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh4->set_normal_map_texture_index(mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh4->set_depth_map_texture_index( mesh4->get_material()->get_texture_index_by_name("screenshot"));
 
     // torus
     mesh5->set_material(env_mapped_material);
+    mesh5->set_reflect_to_refract_ratio(1); // 100% reflective
     mesh5->set_texture_index(           mesh5->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh5->set_normal_map_texture_index(mesh5->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh5->set_depth_map_texture_index( mesh5->get_material()->get_texture_index_by_name("screenshot"));
 
     // cylinder
     mesh6->set_material(normal_material);

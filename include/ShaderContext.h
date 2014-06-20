@@ -44,6 +44,7 @@ public:
     void set_env_map_texture_index(GLint texture_id);
     void set_inv_projection_xform(glm::mat4 inv_projection_xform);
     void set_inv_normal_xform(glm::mat4 inv_normal_xform);
+    void set_depth_map_texture_index(GLint texture_id);
     void set_reflect_to_refract_ratio(GLfloat reflect_to_refract_ratio);
 
 private:
@@ -64,12 +65,14 @@ private:
             m_var_uniform_env_map_texture,
             m_var_uniform_inv_projection_xform,
             m_var_uniform_inv_normal_xform,
+            m_var_uniform_depth_map_texture,
             m_var_uniform_reflect_to_refract_ratio;
     const textures_t &m_textures;
     bool m_use_phong_shading;
     bool m_use_texture_mapping;
     bool m_use_normal_mapping;
     bool m_use_env_mapping;
+    bool m_use_depth_map;
     bool m_skybox;
 };
 

@@ -17,11 +17,13 @@ Material::Material(
         bool        use_texture_mapping,
         bool        use_normal_mapping,
         bool        use_env_mapping,
+        bool        use_depth_map,
         bool        skybox)
     : m_use_phong_shading(use_phong_shading),
       m_use_texture_mapping(use_texture_mapping),
       m_use_normal_mapping(use_normal_mapping),
       m_use_env_mapping(use_env_mapping),
+      m_use_depth_map(use_depth_map),
       m_skybox(skybox)
 {
     std::unique_ptr<Shader> vs, fs;
