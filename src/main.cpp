@@ -58,13 +58,11 @@ bool debug_vert_normals = false;
 int texture_index = 0;
 float prev_zoom = 0, zoom = 1, ortho_dolly_speed = 0.1;
 
-GLuint screenshot_texture_id = 0;
-
 int init_resources()
 {
     vt::Scene *scene = vt::Scene::instance();
 
-    skybox = vt::PrimitiveFactory::create_skybox();
+    skybox = vt::PrimitiveFactory::create_viewport_quad();
     scene->set_skybox(skybox);
     mesh = vt::PrimitiveFactory::create_box();
     scene->add_mesh(mesh);
@@ -143,14 +141,24 @@ int init_resources()
             false); // skybox
     scene->add_material(env_mapped_material_fast);
 
+    vt::Material* normal_material = new vt::Material(
+            "src/normal.v.glsl",
+            "src/normal.f.glsl",
+            false,  // use_phong_shading
+            false,  // use_texture_mapping
+            true,   // use_normal_mapping
+            false,  // use_env_mapping
+            false); // skybox
+    scene->add_material(normal_material);
+
     skybox->set_material(skybox_material);
-    mesh->set_material(normal_mapped_material);
-    mesh2->set_material(normal_mapped_material);
-    mesh3->set_material(texture_mapped_material);
-    mesh4->set_material(env_mapped_material);
-    mesh5->set_material(env_mapped_material);
-    mesh6->set_material(texture_mapped_material);
-    mesh7->set_material(texture_mapped_material);
+    mesh->set_material(  normal_mapped_material);
+    mesh2->set_material( normal_mapped_material);
+    mesh3->set_material( texture_mapped_material);
+    mesh4->set_material( env_mapped_material);
+    mesh5->set_material( env_mapped_material);
+    mesh6->set_material( normal_material);
+    mesh7->set_material( normal_material);
 
     mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
     mesh5->set_reflect_to_refract_ratio(1);    // 100% reflective
@@ -160,8 +168,8 @@ int init_resources()
             res_texture.width,
             res_texture.height,
             res_texture.pixel_data);
-    scene->add_texture(texture);
-    normal_mapped_material->add_texture(texture);
+    scene->add_texture(                  texture);
+    normal_mapped_material->add_texture( texture);
     texture_mapped_material->add_texture(texture);
 
     vt::Texture* texture2 = new vt::Texture(
@@ -169,24 +177,26 @@ int init_resources()
             res_texture2.width,
             res_texture2.height,
             res_texture2.pixel_data);
-    scene->add_texture(texture2);
+    scene->add_texture(                 texture2);
     normal_mapped_material->add_texture(texture2);
 
     vt::Texture* texture3 = new vt::Texture(
             "chesterfield_color",
             "data/chesterfield_color.png");
-    scene->add_texture(texture3);
-    normal_mapped_material->add_texture(texture3);
-    env_mapped_material->add_texture(texture3);
+    scene->add_texture(                   texture3);
+    normal_mapped_material->add_texture(  texture3);
+    env_mapped_material->add_texture(     texture3);
     env_mapped_material_fast->add_texture(texture3);
+    normal_material->add_texture(         texture3);
 
     vt::Texture* texture4 = new vt::Texture(
             "chesterfield_normal",
             "data/chesterfield_normal.png");
-    scene->add_texture(texture4);
-    normal_mapped_material->add_texture(texture4);
-    env_mapped_material->add_texture(texture4);
+    scene->add_texture(                   texture4);
+    normal_mapped_material->add_texture(  texture4);
+    env_mapped_material->add_texture(     texture4);
     env_mapped_material_fast->add_texture(texture4);
+    normal_material->add_texture(         texture4);
 
     vt::Texture* texture5 = new vt::Texture(
             "colosseum",
@@ -196,9 +206,9 @@ int init_resources()
             "data/Colosseum/negy.png",
             "data/Colosseum/posz.png",
             "data/Colosseum/negz.png");
-    scene->add_texture(texture5);
-    skybox_material->add_texture(texture5);
-    env_mapped_material->add_texture(texture5);
+    scene->add_texture(                   texture5);
+    skybox_material->add_texture(         texture5);
+    env_mapped_material->add_texture(     texture5);
     env_mapped_material_fast->add_texture(texture5);
 
     vt::Texture* screenshot_texture = new vt::Texture(
@@ -207,7 +217,6 @@ int init_resources()
             256,
             NULL,
             vt::Texture::RGB); // depth only?
-    screenshot_texture_id = screenshot_texture->id();
     texture_mapped_material->add_texture(screenshot_texture);
 
     glm::vec3 origin = glm::vec3();
@@ -229,18 +238,24 @@ int init_resources()
     scene->add_light(light3);
 
     skybox->set_texture_index(skybox->get_material()->get_texture_index_by_name("colosseum"));
-    mesh->set_texture_index(  mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh2->set_texture_index( mesh2->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh3->set_texture_index( mesh3->get_material()->get_texture_index_by_name("screenshot"));
-    mesh4->set_texture_index( mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh5->set_texture_index( mesh5->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh6->set_texture_index( mesh6->get_material()->get_texture_index_by_name("dex3d"));
-    mesh7->set_texture_index( mesh7->get_material()->get_texture_index_by_name("dex3d"));
-    mesh->set_normal_map_texture_index( mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
+
+    mesh->set_texture_index(           mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh->set_normal_map_texture_index(mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
+
+    mesh2->set_texture_index(           mesh2->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh2->set_normal_map_texture_index(mesh2->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh3->set_normal_map_texture_index(mesh3->get_material()->get_texture_index_by_name("chesterfield_normal"));
+
+    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("screenshot"));
+
+    mesh4->set_texture_index(           mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh4->set_normal_map_texture_index(mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
+
+    mesh5->set_texture_index(           mesh5->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh5->set_normal_map_texture_index(mesh5->get_material()->get_texture_index_by_name("chesterfield_normal"));
+
+    mesh6->set_normal_map_texture_index(mesh6->get_material()->get_texture_index_by_name("chesterfield_normal"));
+
+    mesh7->set_normal_map_texture_index(mesh7->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
     return 1;
 }
@@ -275,91 +290,6 @@ void onTick()
     frames++;
 }
 
-void draw()
-{
-    glBindTexture(GL_TEXTURE_2D, screenshot_texture_id);
-
-    glColor4f(1, 1, 1, 1);
-    glBegin(GL_TRIANGLES);
-        // front faces
-        glNormal3f(0,0,1);
-        // face v0-v1-v2
-        glTexCoord2f(1,1);  glVertex3f(1,1,1);
-        glTexCoord2f(0,1);  glVertex3f(-1,1,1);
-        glTexCoord2f(0,0);  glVertex3f(-1,-1,1);
-        // face v2-v3-v0
-        glTexCoord2f(0,0);  glVertex3f(-1,-1,1);
-        glTexCoord2f(1,0);  glVertex3f(1,-1,1);
-        glTexCoord2f(1,1);  glVertex3f(1,1,1);
-
-        // right faces
-        glNormal3f(1,0,0);
-        // face v0-v3-v4
-        glTexCoord2f(0,1);  glVertex3f(1,1,1);
-        glTexCoord2f(0,0);  glVertex3f(1,-1,1);
-        glTexCoord2f(1,0);  glVertex3f(1,-1,-1);
-        // face v4-v5-v0
-        glTexCoord2f(1,0);  glVertex3f(1,-1,-1);
-        glTexCoord2f(1,1);  glVertex3f(1,1,-1);
-        glTexCoord2f(0,1);  glVertex3f(1,1,1);
-
-        // top faces
-        glNormal3f(0,1,0);
-        // face v0-v5-v6
-        glTexCoord2f(1,0);  glVertex3f(1,1,1);
-        glTexCoord2f(1,1);  glVertex3f(1,1,-1);
-        glTexCoord2f(0,1);  glVertex3f(-1,1,-1);
-        // face v6-v1-v0
-        glTexCoord2f(0,1);  glVertex3f(-1,1,-1);
-        glTexCoord2f(0,0);  glVertex3f(-1,1,1);
-        glTexCoord2f(1,0);  glVertex3f(1,1,1);
-
-        // left faces
-        glNormal3f(-1,0,0);
-        // face  v1-v6-v7
-        glTexCoord2f(1,1);  glVertex3f(-1,1,1);
-        glTexCoord2f(0,1);  glVertex3f(-1,1,-1);
-        glTexCoord2f(0,0);  glVertex3f(-1,-1,-1);
-        // face v7-v2-v1
-        glTexCoord2f(0,0);  glVertex3f(-1,-1,-1);
-        glTexCoord2f(1,0);  glVertex3f(-1,-1,1);
-        glTexCoord2f(1,1);  glVertex3f(-1,1,1);
-
-        // bottom faces
-        glNormal3f(0,-1,0);
-        // face v7-v4-v3
-        glTexCoord2f(0,0);  glVertex3f(-1,-1,-1);
-        glTexCoord2f(1,0);  glVertex3f(1,-1,-1);
-        glTexCoord2f(1,1);  glVertex3f(1,-1,1);
-        // face v3-v2-v7
-        glTexCoord2f(1,1);  glVertex3f(1,-1,1);
-        glTexCoord2f(0,1);  glVertex3f(-1,-1,1);
-        glTexCoord2f(0,0);  glVertex3f(-1,-1,-1);
-
-        // back faces
-        glNormal3f(0,0,-1);
-        // face v4-v7-v6
-        glTexCoord2f(0,0);  glVertex3f(1,-1,-1);
-        glTexCoord2f(1,0);  glVertex3f(-1,-1,-1);
-        glTexCoord2f(1,1);  glVertex3f(-1,1,-1);
-        // face v6-v5-v4
-        glTexCoord2f(1,1);  glVertex3f(-1,1,-1);
-        glTexCoord2f(0,1);  glVertex3f(1,1,-1);
-        glTexCoord2f(0,0);  glVertex3f(1,-1,-1);
-    glEnd();
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-// constants
-const int   SCREEN_WIDTH    = 400;
-const int   SCREEN_HEIGHT   = 300;
-const float CAMERA_DISTANCE = 6.0f;
-const int   TEXT_WIDTH      = 8;
-const int   TEXT_HEIGHT     = 13;
-const int   TEXTURE_WIDTH   = 256;  // NOTE: texture size cannot be larger than
-const int   TEXTURE_HEIGHT  = 256;  // the rendering window size in non-FBO mode
-
 void onDisplay()
 {
     vt::Scene *scene = vt::Scene::instance();
@@ -370,39 +300,28 @@ void onDisplay()
     scene->render();
 
     fb->bind();
+//    glEnable(GL_STENCIL_TEST);
+//
     glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+//
+//    glStencilFunc(GL_ALWAYS, 0x1, 0x1);
+//    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+//    scene->render();
+//
+//    glStencilFunc(GL_NOTEQUAL, 0x1, 0x1);
+//    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+//    glDisable(GL_LIGHTING);
+//    glColor3f(0,1,0); // outline color
+//    glLineWidth(5);
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe
     scene->render();
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // return to fill mode
+//    glLineWidth(1);
+//    glEnable(GL_LIGHTING);
+//
+//    glDisable(GL_STENCIL_TEST);
     fb->unbind();
-
-//    glUseProgram(0);
-//
-//    // adjust viewport and projection matrix to texture dimension
-//    //glViewport(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-//    glMatrixMode(GL_PROJECTION);
-//    glLoadIdentity();
-//    gluPerspective(60.0f, (float)(TEXTURE_WIDTH)/TEXTURE_HEIGHT, 1.0f, 100.0f);
-//    glMatrixMode(GL_MODELVIEW);
-//
-//    // camera transform
-//    glLoadIdentity();
-//    glTranslatef(0, 0, -CAMERA_DISTANCE);
-//
-//    fb->bind();
-//
-//    // clear buffer
-//    glClearColor(1, 0, 0, 1);
-//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//
-//    float angle = static_cast<float>(glutGet(GLUT_ELAPSED_TIME))/1000*15; // base 15 degrees per second
-//    glRotatef(angle*0.5f, 1, 0, 0);
-//    glRotatef(angle, 0, 1, 0);
-//    glRotatef(angle*0.7f, 0, 0, 1);
-//    glTranslatef(0, -1.575f, 0);
-//    draw();
-//    glPopMatrix();
-//
-//    fb->unbind();
 
     if(debug_vert_normals) {
         scene->render_vert_normals();
@@ -545,7 +464,7 @@ void onReshape(int width, int height)
 int main(int argc, char* argv[])
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGBA|GLUT_ALPHA|GLUT_DOUBLE|GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_RGBA|GLUT_ALPHA|GLUT_DOUBLE|GLUT_DEPTH|GLUT_STENCIL);
     glutInitWindowSize(init_screen_width, init_screen_height);
     glutCreateWindow(DEFAULT_CAPTION);
 

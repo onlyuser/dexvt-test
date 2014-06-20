@@ -15,7 +15,7 @@ public:
     static Mesh* create_cone(int slices, float radius = 1, float height = 1);
     static Mesh* create_torus(int slices, int stacks, float radius_major = 1, float radius_minor = 0.5);
     static Mesh* create_box(float width = 1, float height = 1, float length = 1);
-    static Mesh* create_skybox()
+    static Mesh* create_viewport_quad()
     {
         return create_grid(1, 1);
     }
