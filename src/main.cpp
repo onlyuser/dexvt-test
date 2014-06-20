@@ -151,15 +151,6 @@ int init_resources()
             false); // skybox
     scene->add_material(normal_material);
 
-    skybox->set_material(skybox_material);
-    mesh->set_material(  normal_mapped_material);
-    mesh2->set_material( normal_mapped_material);
-    mesh3->set_material( texture_mapped_material);
-    mesh4->set_material( env_mapped_material);
-    mesh5->set_material( env_mapped_material);
-    mesh6->set_material( normal_material);
-    mesh7->set_material( normal_material);
-
     mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
     mesh5->set_reflect_to_refract_ratio(1);    // 100% reflective
 
@@ -237,24 +228,39 @@ int init_resources()
     light3 = new vt::Light(origin+glm::vec3(0, 0, light_distance), glm::vec3(0, 0, 1));
     scene->add_light(light3);
 
+    skybox->set_material(skybox_material);
     skybox->set_texture_index(skybox->get_material()->get_texture_index_by_name("colosseum"));
 
+    // box
+    mesh->set_material(normal_mapped_material);
     mesh->set_texture_index(           mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh->set_normal_map_texture_index(mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
+    // scaled box
+    mesh2->set_material(normal_mapped_material);
     mesh2->set_texture_index(           mesh2->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh2->set_normal_map_texture_index(mesh2->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
+    // grid
+    mesh3->set_material(texture_mapped_material);
     mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("screenshot"));
 
+    // sphere
+    mesh4->set_material(env_mapped_material);
     mesh4->set_texture_index(           mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh4->set_normal_map_texture_index(mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
+    // torus
+    mesh5->set_material(env_mapped_material);
     mesh5->set_texture_index(           mesh5->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh5->set_normal_map_texture_index(mesh5->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
+    // cylinder
+    mesh6->set_material(normal_material);
     mesh6->set_normal_map_texture_index(mesh6->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
+    // cone
+    mesh7->set_material(normal_material);
     mesh7->set_normal_map_texture_index(mesh7->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
     return 1;
