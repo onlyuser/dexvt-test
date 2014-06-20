@@ -23,7 +23,7 @@ public:
             bool        use_texture_mapping = false,
             bool        use_normal_mapping = false,
             bool        use_env_mapping = false,
-            bool        use_depth_map = false,
+            bool        use_depth_overlay = false,
             bool        skybox = false);
     Program* get_program() const
     {
@@ -52,9 +52,9 @@ public:
     {
         return m_use_env_mapping;
     }
-    bool use_depth_map() const
+    bool use_depth_overlay() const
     {
-        return m_use_depth_map;
+        return m_use_depth_overlay;
     }
     bool skybox() const
     {
@@ -71,7 +71,7 @@ private:
     bool                     m_use_texture_mapping;
     bool                     m_use_normal_mapping;
     bool                     m_use_env_mapping;
-    bool                     m_use_depth_map;
+    bool                     m_use_depth_overlay;
     bool                     m_skybox;
 
     typedef std::map<std::string, Texture*> texture_lookup_table_t;

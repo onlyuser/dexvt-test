@@ -45,7 +45,7 @@ int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
 vt::Mesh* skybox, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7;
 vt::Light* light, *light2, *light3;
-std::unique_ptr<vt::FrameBuffer> depth_map_fb;
+std::unique_ptr<vt::FrameBuffer> depth_overlay_fb;
 
 bool left_mouse_down = false, right_mouse_down = false;
 glm::vec2 prev_mouse_coord, mouse_drag;
@@ -98,7 +98,7 @@ int init_resources()
             true,   // use_texture_mapping
             true,   // use_normal_mapping
             false,  // use_env_mapping
-            false,  // use_depth_map
+            false,  // use_depth_overlay
             false); // skybox
     scene->add_material(normal_mapped_material);
 
@@ -109,7 +109,7 @@ int init_resources()
             false, // use_texture_mapping
             false, // use_normal_mapping
             false, // use_env_mapping
-            false, // use_depth_map
+            false, // use_depth_overlay
             true); // skybox
     scene->add_material(skybox_material);
 
@@ -120,7 +120,7 @@ int init_resources()
             true,   // use_texture_mapping
             false,  // use_normal_mapping
             false,  // use_env_mapping
-            false,  // use_depth_map
+            false,  // use_depth_overlay
             false); // skybox
     scene->add_material(texture_mapped_material);
 
@@ -131,7 +131,7 @@ int init_resources()
             false,  // use_texture_mapping
             true,   // use_normal_mapping
             true,   // use_env_mapping
-            true,   // use_depth_map
+            true,   // use_depth_overlay
             false); // skybox
     scene->add_material(env_mapped_material);
 
@@ -142,7 +142,7 @@ int init_resources()
             false,  // use_texture_mapping
             false,  // use_normal_mapping
             true,   // use_env_mapping
-            false,  // use_depth_map
+            false,  // use_depth_overlay
             false); // skybox
     scene->add_material(env_mapped_material_fast);
 
@@ -153,7 +153,7 @@ int init_resources()
             false,  // use_texture_mapping
             true,   // use_normal_mapping
             false,  // use_env_mapping
-            false,  // use_depth_map
+            false,  // use_depth_overlay
             false); // skybox
     scene->add_material(normal_material);
 
@@ -205,21 +205,31 @@ int init_resources()
     env_mapped_material->add_texture(     texture5);
     env_mapped_material_fast->add_texture(texture5);
 
-    vt::Texture* depth_map_texture = new vt::Texture(
-            "depth_map",
+    vt::Texture* depth_overlay_texture = new vt::Texture(
+            "depth_overlay",
             256,
             256,
             NULL,
             vt::Texture::DEPTH);
-    texture_mapped_material->add_texture( depth_map_texture);
-    env_mapped_material->add_texture(     depth_map_texture);
-    env_mapped_material_fast->add_texture(depth_map_texture);
+    texture_mapped_material->add_texture( depth_overlay_texture);
+    env_mapped_material->add_texture(     depth_overlay_texture);
+    env_mapped_material_fast->add_texture(depth_overlay_texture);
+
+//    vt::Texture* normal_overlay_texture = new vt::Texture(
+//            "normal_overlay",
+//            256,
+//            256,
+//            NULL,
+//            vt::Texture::RGB);
+//    texture_mapped_material->add_texture( normal_overlay_texture);
+//    env_mapped_material->add_texture(     normal_overlay_texture);
+//    env_mapped_material_fast->add_texture(normal_overlay_texture);
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera(origin+glm::vec3(0, 0, orbit_radius), origin);
     scene->set_camera(camera);
 
-    depth_map_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(depth_map_texture, camera));
+    depth_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(depth_overlay_texture, camera));
 
     // red light
     light = new vt::Light(origin+glm::vec3(light_distance, 0, 0), glm::vec3(1, 0, 0));
@@ -248,21 +258,21 @@ int init_resources()
 
     // grid
     mesh3->set_material(texture_mapped_material);
-    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("depth_map"));
+    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("depth_overlay"));
 
     // sphere
     mesh4->set_material(env_mapped_material);
     mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
     mesh4->set_texture_index(           mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh4->set_normal_map_texture_index(mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh4->set_depth_map_texture_index( mesh4->get_material()->get_texture_index_by_name("depth_map"));
+    mesh4->set_depth_overlay_texture_index( mesh4->get_material()->get_texture_index_by_name("depth_overlay"));
 
     // torus
     mesh5->set_material(env_mapped_material);
     mesh5->set_reflect_to_refract_ratio(1); // 100% reflective
     mesh5->set_texture_index(           mesh5->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh5->set_normal_map_texture_index(mesh5->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh5->set_depth_map_texture_index( mesh5->get_material()->get_texture_index_by_name("depth_map"));
+    mesh5->set_depth_overlay_texture_index( mesh5->get_material()->get_texture_index_by_name("depth_overlay"));
 
     // cylinder
     mesh6->set_material(normal_material);
@@ -314,11 +324,11 @@ void onDisplay()
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     scene->render();
 
-    depth_map_fb->bind();
+    depth_overlay_fb->bind();
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     scene->render();
-    depth_map_fb->unbind();
+    depth_overlay_fb->unbind();
 
 //    stencil_fb->bind();
 //    glEnable(GL_STENCIL_TEST);

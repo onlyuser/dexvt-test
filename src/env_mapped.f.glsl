@@ -1,6 +1,6 @@
 varying vec2      f_texcoord;
 uniform sampler2D normal_map_texture;
-uniform sampler2D depth_map_texture;
+uniform sampler2D depth_overlay_texture;
 
 const float AIR_REFRACTIVE_INDEX = 1.0;
 const float WATER_REFRACTIVE_INDEX = 1.333;
@@ -47,6 +47,6 @@ void main(void) {
     float one_minus_dot = 1-clamp(dot(cameraDir, bumpy_world_normal), 0, 1);
     float fresnel_reflectance_attenuation = pow(one_minus_dot, FRESNEL_REFLECTANCE_SHARPNESS);
 
-    gl_FragColor = texture2D(depth_map_texture, vec2(gl_FragCoord.x/800, gl_FragCoord.y/600))*0.001 +
+    gl_FragColor = texture2D(depth_overlay_texture, vec2(gl_FragCoord.x/800, gl_FragCoord.y/600))*0.001 +
             mix(refracted_color, reflected_color, reflect_to_refract_ratio*fresnel_reflectance_attenuation); 
 }

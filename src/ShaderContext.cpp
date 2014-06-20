@@ -32,7 +32,7 @@ ShaderContext::ShaderContext(
       m_use_texture_mapping(material->use_texture_mapping()),
       m_use_normal_mapping(material->use_normal_mapping()),
       m_use_env_mapping(material->use_env_mapping()),
-      m_use_depth_map(material->use_depth_map()),
+      m_use_depth_overlay(material->use_depth_overlay()),
       m_skybox(material->skybox())
 {
     if(m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping) {
@@ -55,14 +55,14 @@ ShaderContext::ShaderContext(
             m_var_uniform_reflect_to_refract_ratio = std::unique_ptr<VarUniform>(m_program->get_var_uniform("reflect_to_refract_ratio"));
         }
     }
-    if(m_use_texture_mapping || m_use_normal_mapping || m_use_depth_map) {
+    if(m_use_texture_mapping || m_use_normal_mapping || m_use_depth_overlay) {
         m_var_attribute_texcoord = std::unique_ptr<VarAttribute>(m_program->get_var_attribute("texcoord"));
         if(m_use_texture_mapping) {
             m_var_uniform_mytexture = std::unique_ptr<VarUniform>(m_program->get_var_uniform("mytexture"));
         }
     }
-    if(m_use_depth_map) {
-        m_var_uniform_depth_map_texture = std::unique_ptr<VarUniform>(m_program->get_var_uniform("depth_map_texture"));
+    if(m_use_depth_overlay) {
+        m_var_uniform_depth_overlay_texture = std::unique_ptr<VarUniform>(m_program->get_var_uniform("depth_overlay_texture"));
     }
     if(m_skybox) {
         m_var_uniform_env_map_texture      = std::unique_ptr<VarUniform>(m_program->get_var_uniform("env_map_texture"));
@@ -223,11 +223,11 @@ void ShaderContext::set_inv_normal_xform(glm::mat4 inv_normal_xform)
     m_var_uniform_inv_normal_xform->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(inv_normal_xform));
 }
 
-void ShaderContext::set_depth_map_texture_index(GLint texture_id)
+void ShaderContext::set_depth_overlay_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0);
     if(texture_id < static_cast<int>(m_textures.size())) {
-        m_var_uniform_depth_map_texture->uniform_1i(texture_id);
+        m_var_uniform_depth_overlay_texture->uniform_1i(texture_id);
     }
 }
 

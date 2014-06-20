@@ -95,13 +95,13 @@ public:
         m_env_map_texture_index = env_map_texture_index;
     }
 
-    int get_depth_map_texture_index() const
+    int get_depth_overlay_texture_index() const
     {
-        return m_depth_map_texture_index;
+        return m_depth_overlay_texture_index;
     }
-    void set_depth_map_texture_index(int depth_map_texture_index)
+    void set_depth_overlay_texture_index(int depth_overlay_texture_index)
     {
-        m_depth_map_texture_index = depth_map_texture_index;
+        m_depth_overlay_texture_index = depth_overlay_texture_index;
     }
 
     float get_reflect_to_refract_ratio() const
@@ -134,7 +134,7 @@ private:
     int                            m_texture_index;
     int                            m_normal_map_texture_index;
     int                            m_env_map_texture_index;
-    int                            m_depth_map_texture_index;
+    int                            m_depth_overlay_texture_index;
     float                          m_reflect_to_refract_ratio;
 
     void update_xform();
