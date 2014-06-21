@@ -64,6 +64,8 @@ ShaderContext::ShaderContext(
     if(m_use_depth_overlay) {
         m_var_uniform_depth_overlay_texture = std::unique_ptr<VarUniform>(m_program->get_var_uniform("depth_overlay_texture"));
         m_var_uniform_viewport_size         = std::unique_ptr<VarUniform>(m_program->get_var_uniform("viewport_size"));
+        m_var_uniform_camera_near           = std::unique_ptr<VarUniform>(m_program->get_var_uniform("camera_near"));
+        m_var_uniform_camera_far            = std::unique_ptr<VarUniform>(m_program->get_var_uniform("camera_far"));
     }
     if(m_skybox) {
         m_var_uniform_env_map_texture      = std::unique_ptr<VarUniform>(m_program->get_var_uniform("env_map_texture"));
@@ -235,6 +237,16 @@ void ShaderContext::set_depth_overlay_texture_index(GLint texture_id)
 void ShaderContext::set_viewport_size(GLfloat* viewport_size_arr)
 {
     m_var_uniform_viewport_size->uniform_2fv(1, viewport_size_arr);
+}
+
+void ShaderContext::set_camera_near(GLfloat camera_near)
+{
+    m_var_uniform_camera_near->uniform_1f(camera_near);
+}
+
+void ShaderContext::set_camera_far(GLfloat camera_far)
+{
+    m_var_uniform_camera_far->uniform_1f(camera_far);
 }
 
 void ShaderContext::set_reflect_to_refract_ratio(GLfloat reflect_to_refract_ratio)

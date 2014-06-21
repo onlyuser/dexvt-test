@@ -46,6 +46,8 @@ public:
     void set_inv_normal_xform(glm::mat4 inv_normal_xform);
     void set_depth_overlay_texture_index(GLint texture_id);
     void set_viewport_size(GLfloat* viewport_size_arr);
+    void set_camera_near(GLfloat camera_near);
+    void set_camera_far(GLfloat camera_far);
     void set_reflect_to_refract_ratio(GLfloat reflect_to_refract_ratio);
 
 private:
@@ -68,6 +70,8 @@ private:
             m_var_uniform_inv_normal_xform,
             m_var_uniform_depth_overlay_texture,
             m_var_uniform_viewport_size,
+            m_var_uniform_camera_near,
+            m_var_uniform_camera_far,
             m_var_uniform_reflect_to_refract_ratio;
     const textures_t &m_textures;
     bool m_use_phong_shading;

@@ -152,6 +152,8 @@ void Scene::render()
             if(material->use_depth_overlay()) {
                 shader_context->set_depth_overlay_texture_index((*q)->get_depth_overlay_texture_index());
                 shader_context->set_viewport_size(m_viewport_size);
+                shader_context->set_camera_near(m_camera->get_near_plane());
+                shader_context->set_camera_far(m_camera->get_far_plane());
             }
         }
         if(material->use_texture_mapping()) {
