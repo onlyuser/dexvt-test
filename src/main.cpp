@@ -45,7 +45,7 @@ int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
 vt::Mesh* skybox, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7;
 vt::Light* light, *light2, *light3;
-std::unique_ptr<vt::FrameBuffer> depth_overlay_fb;
+std::unique_ptr<vt::FrameBuffer> depth_overlay_fb, normal_overlay_fb;
 
 bool left_mouse_down = false, right_mouse_down = false;
 glm::vec2 prev_mouse_coord, mouse_drag;
@@ -211,25 +211,24 @@ int init_resources()
             256,
             NULL,
             vt::Texture::DEPTH);
-    texture_mapped_material->add_texture( depth_overlay_texture);
-    env_mapped_material->add_texture(     depth_overlay_texture);
-    env_mapped_material_fast->add_texture(depth_overlay_texture);
+    texture_mapped_material->add_texture(depth_overlay_texture);
+    env_mapped_material->add_texture(    depth_overlay_texture);
 
-//    vt::Texture* normal_overlay_texture = new vt::Texture(
-//            "normal_overlay",
-//            256,
-//            256,
-//            NULL,
-//            vt::Texture::RGB);
-//    texture_mapped_material->add_texture( normal_overlay_texture);
-//    env_mapped_material->add_texture(     normal_overlay_texture);
-//    env_mapped_material_fast->add_texture(normal_overlay_texture);
+    vt::Texture* normal_overlay_texture = new vt::Texture(
+            "normal_overlay",
+            256,
+            256,
+            NULL,
+            vt::Texture::RGB);
+    texture_mapped_material->add_texture(normal_overlay_texture);
+    env_mapped_material->add_texture(    normal_overlay_texture);
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera(origin+glm::vec3(0, 0, orbit_radius), origin);
     scene->set_camera(camera);
 
     depth_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(depth_overlay_texture, camera));
+    normal_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(normal_overlay_texture, camera));
 
     // red light
     light = new vt::Light(origin+glm::vec3(light_distance, 0, 0), glm::vec3(1, 0, 0));
@@ -258,7 +257,8 @@ int init_resources()
 
     // grid
     mesh3->set_material(texture_mapped_material);
-    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("depth_overlay"));
+    //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("depth_overlay"));
+    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("normal_overlay"));
 
     // sphere
     mesh4->set_material(env_mapped_material);
@@ -326,6 +326,12 @@ void onDisplay()
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     scene->render();
     depth_overlay_fb->unbind();
+
+    normal_overlay_fb->bind();
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    scene->render();
+    normal_overlay_fb->unbind();
 
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);

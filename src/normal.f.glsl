@@ -16,5 +16,5 @@ void main(void) {
             mix(vec3(0, 0, 1), normalize(vec3(texture2D(normal_map_texture, flipped_texcoord))), BUMPINESS_FACTOR);
     vec3 bumpy_world_normal = normalize(tbn_xform*bumpy_surface_normal);
 
-    gl_FragColor = vec4(bumpy_world_normal, 0); 
+    gl_FragColor = vec4(bumpy_world_normal, 0);
 }
