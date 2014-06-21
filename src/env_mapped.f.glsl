@@ -49,6 +49,8 @@ void main(void) {
     float one_minus_dot = 1-clamp(dot(cameraDir, bumpy_world_normal), 0, 1);
     float fresnel_reflectance_attenuation = pow(one_minus_dot, FRESNEL_REFLECTANCE_SHARPNESS);
 
-    gl_FragColor = texture2D(depth_overlay_texture, vec2(gl_FragCoord.x/viewport_size.x, gl_FragCoord.y/viewport_size.y)) +
-            mix(refracted_color, reflected_color, reflect_to_refract_ratio*fresnel_reflectance_attenuation)*0.001; 
+    vec4 depth_overlay_color = texture2D(depth_overlay_texture, vec2(gl_FragCoord.x/viewport_size.x, gl_FragCoord.y/viewport_size.y));
+
+    gl_FragColor = depth_overlay_color*0.001 +
+            mix(refracted_color, reflected_color, reflect_to_refract_ratio*fresnel_reflectance_attenuation); 
 }

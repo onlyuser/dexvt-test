@@ -160,6 +160,11 @@ void Camera::update_xform()
     m_orient = offset_to_orient(m_target-m_origin);
 }
 
+void Camera::update_normal_xform()
+{
+    m_normal_xform = glm::transpose(glm::inverse(get_view_xform()));
+}
+
 void Camera::update_projection_xform()
 {
     if(m_projection_mode == PROJECTION_MODE_PERSPECTIVE) {

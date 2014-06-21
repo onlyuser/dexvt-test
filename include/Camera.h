@@ -20,8 +20,8 @@ public:
             float             fov             = 45,
             size_t            width           = 800,
             size_t            height          = 600,
-            float             near_plane      = 0.1,
-            float             far_plane       = 100,
+            float             near_plane      = 4,
+            float             far_plane       = 16,
             float             ortho_width     = 1,
             float             ortho_height    = 1,
             float             zoom            = 1,
@@ -109,6 +109,7 @@ private:
     projection_mode_t m_projection_mode;
 
     void update_xform();
+    void update_normal_xform();
     void update_projection_xform();
 };
 

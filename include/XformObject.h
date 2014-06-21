@@ -54,7 +54,7 @@ protected:
         m_need_update_normal_xform = true;
     }
     virtual void update_xform() = 0;
-    void update_normal_xform();
+    virtual void update_normal_xform();
 
 private:
     bool m_need_update_xform;
