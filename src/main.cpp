@@ -320,15 +320,16 @@ void onDisplay()
     vt::Scene *scene = vt::Scene::instance();
 
     onTick();
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    scene->render();
 
     depth_overlay_fb->bind();
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     scene->render();
     depth_overlay_fb->unbind();
+
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    scene->render();
 
 //    stencil_fb->bind();
 //    glEnable(GL_STENCIL_TEST);

@@ -77,6 +77,7 @@ private:
     textures_t  m_textures;
 
     GLfloat  m_camera_pos[3];
+    GLfloat  m_viewport_size[2];
     GLfloat* m_light_pos;
     GLfloat* m_light_color;
     GLint*   m_light_enabled;
