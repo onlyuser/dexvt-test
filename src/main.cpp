@@ -259,18 +259,18 @@ int init_resources()
     // sphere
     mesh4->set_material(env_mapped_material);
     mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh4->set_texture_index(           mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh4->set_normal_map_texture_index(mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh4->set_depth_overlay_texture_index( mesh4->get_material()->get_texture_index_by_name("front_depth_overlay"));
-    mesh4->set_depth_overlay_texture_index( mesh4->get_material()->get_texture_index_by_name("back_depth_overlay"));
+    mesh4->set_texture_index(              mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh4->set_normal_map_texture_index(   mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh4->set_depth_overlay_texture_index(mesh4->get_material()->get_texture_index_by_name("front_depth_overlay"));
+    mesh4->set_depth_overlay_texture_index(mesh4->get_material()->get_texture_index_by_name("back_depth_overlay"));
 
     // torus
     mesh5->set_material(env_mapped_material);
     mesh5->set_reflect_to_refract_ratio(1); // 100% reflective
-    mesh5->set_texture_index(           mesh5->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh5->set_normal_map_texture_index(mesh5->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh5->set_depth_overlay_texture_index( mesh5->get_material()->get_texture_index_by_name("front_depth_overlay"));
-    mesh5->set_depth_overlay_texture_index( mesh5->get_material()->get_texture_index_by_name("back_depth_overlay"));
+    mesh5->set_texture_index(              mesh5->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh5->set_normal_map_texture_index(   mesh5->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh5->set_depth_overlay_texture_index(mesh5->get_material()->get_texture_index_by_name("front_depth_overlay"));
+    mesh5->set_depth_overlay_texture_index(mesh5->get_material()->get_texture_index_by_name("back_depth_overlay"));
 
     // cylinder
     mesh6->set_material(normal_material);
