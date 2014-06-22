@@ -87,6 +87,7 @@ int init_resources()
     vt::Material* normal_mapped_material = new vt::Material(
             "src/normal_mapped.v.glsl",
             "src/normal_mapped.f.glsl",
+            false,  // use_normals
             true,   // use_phong_shading
             true,   // use_texture_mapping
             true,   // use_normal_mapping
@@ -98,6 +99,7 @@ int init_resources()
     vt::Material* skybox_material = new vt::Material(
             "src/skybox.v.glsl",
             "src/skybox.f.glsl",
+            false, // use_normals
             false, // use_phong_shading
             false, // use_texture_mapping
             false, // use_normal_mapping
@@ -109,6 +111,7 @@ int init_resources()
     vt::Material* texture_mapped_material = new vt::Material(
             "src/texture_mapped.v.glsl",
             "src/texture_mapped.f.glsl",
+            false,  // use_normals
             false,  // use_phong_shading
             true,   // use_texture_mapping
             false,  // use_normal_mapping
@@ -120,6 +123,7 @@ int init_resources()
     vt::Material* env_mapped_material = new vt::Material(
             "src/env_mapped.v.glsl",
             "src/env_mapped.f.glsl",
+            false,  // use_normals
             false,  // use_phong_shading
             false,  // use_texture_mapping
             true,   // use_normal_mapping
@@ -131,6 +135,7 @@ int init_resources()
     vt::Material* env_mapped_material_fast = new vt::Material(
             "src/env_mapped_fast.v.glsl",
             "src/env_mapped_fast.f.glsl",
+            false,  // use_normals
             false,  // use_phong_shading
             false,  // use_texture_mapping
             false,  // use_normal_mapping
@@ -142,6 +147,7 @@ int init_resources()
     vt::Material* normal_material = new vt::Material(
             "src/normal.v.glsl",
             "src/normal.f.glsl",
+            false,  // use_normals
             false,  // use_phong_shading
             false,  // use_texture_mapping
             true,   // use_normal_mapping
@@ -149,6 +155,18 @@ int init_resources()
             false,  // use_depth_overlay
             false); // skybox
     scene->add_material(normal_material);
+
+    vt::Material* normal_material_fast = new vt::Material(
+            "src/normal_fast.v.glsl",
+            "src/normal_fast.f.glsl",
+            true,   // use_normals
+            false,  // use_phong_shading
+            false,  // use_texture_mapping
+            false,  // use_normal_mapping
+            false,  // use_env_mapping
+            false,  // use_depth_overlay
+            false); // skybox
+    scene->add_material(normal_material_fast);
 
     vt::Texture* texture = new vt::Texture(
             "dex3d",
@@ -170,20 +188,17 @@ int init_resources()
     vt::Texture* texture3 = new vt::Texture(
             "chesterfield_color",
             "data/chesterfield_color.png");
-    scene->add_texture(                   texture3);
-    normal_mapped_material->add_texture(  texture3);
-    env_mapped_material->add_texture(     texture3);
-    env_mapped_material_fast->add_texture(texture3);
-    normal_material->add_texture(         texture3);
+    scene->add_texture(                 texture3);
+    normal_mapped_material->add_texture(texture3);
+    env_mapped_material->add_texture(   texture3);
 
     vt::Texture* texture4 = new vt::Texture(
             "chesterfield_normal",
             "data/chesterfield_normal.png");
-    scene->add_texture(                   texture4);
-    normal_mapped_material->add_texture(  texture4);
-    env_mapped_material->add_texture(     texture4);
-    env_mapped_material_fast->add_texture(texture4);
-    normal_material->add_texture(         texture4);
+    scene->add_texture(                 texture4);
+    normal_mapped_material->add_texture(texture4);
+    env_mapped_material->add_texture(   texture4);
+    normal_material->add_texture(       texture4);
 
     vt::Texture* texture5 = new vt::Texture(
             "colosseum",
@@ -193,10 +208,9 @@ int init_resources()
             "data/Colosseum/negy.png",
             "data/Colosseum/posz.png",
             "data/Colosseum/negz.png");
-    scene->add_texture(                   texture5);
-    skybox_material->add_texture(         texture5);
-    env_mapped_material->add_texture(     texture5);
-    env_mapped_material_fast->add_texture(texture5);
+    scene->add_texture(              texture5);
+    skybox_material->add_texture(    texture5);
+    env_mapped_material->add_texture(texture5);
 
     vt::Texture* front_depth_overlay_texture = new vt::Texture(
             "front_depth_overlay",
@@ -252,9 +266,9 @@ int init_resources()
 
     // grid
     mesh3->set_material(texture_mapped_material);
-    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("front_depth_overlay"));
+    //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("front_depth_overlay"));
     //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("back_depth_overlay"));
-    //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("normal_overlay"));
+    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("normal_overlay"));
 
     // sphere
     mesh4->set_material(env_mapped_material);
@@ -265,16 +279,13 @@ int init_resources()
     mesh4->set_depth_overlay_texture_index(mesh4->get_material()->get_texture_index_by_name("back_depth_overlay"));
 
     // torus
-    mesh5->set_material(env_mapped_material);
+    mesh5->set_material(env_mapped_material_fast);
     mesh5->set_reflect_to_refract_ratio(1); // 100% reflective
-    mesh5->set_texture_index(              mesh5->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh5->set_normal_map_texture_index(   mesh5->get_material()->get_texture_index_by_name("chesterfield_normal"));
     mesh5->set_depth_overlay_texture_index(mesh5->get_material()->get_texture_index_by_name("front_depth_overlay"));
     mesh5->set_depth_overlay_texture_index(mesh5->get_material()->get_texture_index_by_name("back_depth_overlay"));
 
     // cylinder
-    mesh6->set_material(normal_material);
-    mesh6->set_normal_map_texture_index(mesh6->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh6->set_material(normal_material_fast);
 
     // cone
     mesh7->set_material(normal_material);
