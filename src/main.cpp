@@ -64,20 +64,13 @@ int init_resources()
 
     skybox = vt::PrimitiveFactory::create_viewport_quad();
     scene->set_skybox(skybox);
-    mesh = vt::PrimitiveFactory::create_box();
-    scene->add_mesh(mesh);
-    mesh2 = vt::PrimitiveFactory::create_box();
-    scene->add_mesh(mesh2);
-    mesh3 = vt::PrimitiveFactory::create_grid(4, 4, 10, 10);
-    scene->add_mesh(mesh3);
-    mesh4 = vt::PrimitiveFactory::create_sphere(16, 16, 0.5);
-    scene->add_mesh(mesh4);
-    mesh5 = vt::PrimitiveFactory::create_torus(16, 16, 0.5, 0.25);
-    scene->add_mesh(mesh5);
-    mesh6 = vt::PrimitiveFactory::create_cylinder(16, 0.5, 1);
-    scene->add_mesh(mesh6);
-    mesh7 = vt::PrimitiveFactory::create_cone(16, 0.5, 1);
-    scene->add_mesh(mesh7);
+    scene->add_mesh(mesh  = vt::PrimitiveFactory::create_box());
+    scene->add_mesh(mesh2 = vt::PrimitiveFactory::create_box());
+    scene->add_mesh(mesh3 = vt::PrimitiveFactory::create_grid(4, 4, 10, 10));
+    scene->add_mesh(mesh4 = vt::PrimitiveFactory::create_sphere(16, 16, 0.5));
+    scene->add_mesh(mesh5 = vt::PrimitiveFactory::create_torus(16, 16, 0.5, 0.25));
+    scene->add_mesh(mesh6 = vt::PrimitiveFactory::create_cylinder(16, 0.5, 1));
+    scene->add_mesh(mesh7 = vt::PrimitiveFactory::create_cone(16, 0.5, 1));
 
     mesh->set_origin(glm::vec3(-0.5, -0.5, -0.5)); // box
     mesh2->set_scale(glm::vec3(0.5, 2, 3));        // scaled box
@@ -227,20 +220,12 @@ int init_resources()
     camera = new vt::Camera(origin+glm::vec3(0, 0, orbit_radius), origin);
     scene->set_camera(camera);
 
-    depth_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(depth_overlay_texture, camera));
+    depth_overlay_fb  = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(depth_overlay_texture, camera));
     normal_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(normal_overlay_texture, camera));
 
-    // red light
-    light = new vt::Light(origin+glm::vec3(light_distance, 0, 0), glm::vec3(1, 0, 0));
-    scene->add_light(light);
-
-    // green light
-    light2 = new vt::Light(origin+glm::vec3(0, light_distance, 0), glm::vec3(0, 1, 0));
-    scene->add_light(light2);
-
-    // blue light
-    light3 = new vt::Light(origin+glm::vec3(0, 0, light_distance), glm::vec3(0, 0, 1));
-    scene->add_light(light3);
+    scene->add_light(light  = new vt::Light(origin+glm::vec3(light_distance, 0, 0), glm::vec3(1, 0, 0)));
+    scene->add_light(light2 = new vt::Light(origin+glm::vec3(0, light_distance, 0), glm::vec3(0, 1, 0)));
+    scene->add_light(light3 = new vt::Light(origin+glm::vec3(0, 0, light_distance), glm::vec3(0, 0, 1)));
 
     skybox->set_material(skybox_material);
     skybox->set_texture_index(skybox->get_material()->get_texture_index_by_name("colosseum"));
