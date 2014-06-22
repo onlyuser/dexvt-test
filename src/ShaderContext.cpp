@@ -37,9 +37,9 @@ ShaderContext::ShaderContext(
       m_skybox(material->skybox())
 {
     if(m_use_normals || m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping) {
-        m_var_attribute_norm3d = std::unique_ptr<VarAttribute>(m_program->get_var_attribute("norm3d"));
+        m_var_attribute_norm3d     = std::unique_ptr<VarAttribute>(m_program->get_var_attribute("norm3d"));
+        m_var_uniform_normal_xform = std::unique_ptr<VarUniform>(m_program->get_var_uniform("normal_xform"));
         if(m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping) {
-            m_var_uniform_normal_xform    = std::unique_ptr<VarUniform>(m_program->get_var_uniform("normal_xform"));
             m_var_uniform_modelview_xform = std::unique_ptr<VarUniform>(m_program->get_var_uniform("modelview_xform"));
             m_var_uniform_camera_pos      = std::unique_ptr<VarUniform>(m_program->get_var_uniform("cameraPosition"));
             if(m_use_phong_shading) {

@@ -129,31 +129,37 @@ void Scene::render()
         ShaderContext* shader_context = (*q)->get_shader_context();
         shader_context->get_program()->use();
         shader_context->set_mvp_xform(m_camera->get_xform()*(*q)->get_xform());
-        if(material->use_phong_shading() ||
+        if(material->use_normals() ||
+                material->use_phong_shading() ||
                 material->use_normal_mapping() ||
                 material->use_env_mapping())
         {
-            shader_context->set_modelview_xform((*q)->get_xform());
             shader_context->set_normal_xform((*q)->get_normal_xform());
-            shader_context->set_camera_pos(m_camera_pos);
-            if(material->use_phong_shading()) {
-                shader_context->set_light_pos(NUM_LIGHTS, m_light_pos);
-                shader_context->set_light_color(NUM_LIGHTS, m_light_color);
-                shader_context->set_light_enabled(NUM_LIGHTS, m_light_enabled);
-                shader_context->set_light_count(m_lights.size());
-            }
-            if(material->use_normal_mapping()) {
-                shader_context->set_normal_map_texture_index((*q)->get_normal_map_texture_index());
-            }
-            if(material->use_env_mapping()) {
-                shader_context->set_env_map_texture_index(0);
-                shader_context->set_reflect_to_refract_ratio((*q)->get_reflect_to_refract_ratio());
-            }
-            if(material->use_depth_overlay()) {
-                shader_context->set_depth_overlay_texture_index((*q)->get_depth_overlay_texture_index());
-                shader_context->set_viewport_size(m_viewport_size);
-                shader_context->set_camera_near(m_camera->get_near_plane());
-                shader_context->set_camera_far(m_camera->get_far_plane());
+            if(material->use_phong_shading() ||
+                    material->use_normal_mapping() ||
+                    material->use_env_mapping())
+            {
+                shader_context->set_modelview_xform((*q)->get_xform());
+                shader_context->set_camera_pos(m_camera_pos);
+                if(material->use_phong_shading()) {
+                    shader_context->set_light_pos(NUM_LIGHTS, m_light_pos);
+                    shader_context->set_light_color(NUM_LIGHTS, m_light_color);
+                    shader_context->set_light_enabled(NUM_LIGHTS, m_light_enabled);
+                    shader_context->set_light_count(m_lights.size());
+                }
+                if(material->use_normal_mapping()) {
+                    shader_context->set_normal_map_texture_index((*q)->get_normal_map_texture_index());
+                }
+                if(material->use_env_mapping()) {
+                    shader_context->set_env_map_texture_index(0);
+                    shader_context->set_reflect_to_refract_ratio((*q)->get_reflect_to_refract_ratio());
+                }
+                if(material->use_depth_overlay()) {
+                    shader_context->set_depth_overlay_texture_index((*q)->get_depth_overlay_texture_index());
+                    shader_context->set_viewport_size(m_viewport_size);
+                    shader_context->set_camera_near(m_camera->get_near_plane());
+                    shader_context->set_camera_far(m_camera->get_far_plane());
+                }
             }
         }
         if(material->use_texture_mapping()) {
