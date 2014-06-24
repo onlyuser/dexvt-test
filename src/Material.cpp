@@ -13,14 +13,16 @@ namespace vt {
 Material::Material(
         std::string vertex_shader_file,
         std::string fragment_shader_file,
-        bool        use_normals,
+        bool        use_world_normal,
+        bool        use_camera_vec,
         bool        use_phong_shading,
         bool        use_texture_mapping,
         bool        use_normal_mapping,
         bool        use_env_mapping,
         bool        use_depth_overlay,
         bool        skybox)
-    : m_use_normals(use_normals),
+    : m_use_world_normal(use_world_normal),
+      m_use_camera_vec(use_camera_vec),
       m_use_phong_shading(use_phong_shading),
       m_use_texture_mapping(use_texture_mapping),
       m_use_normal_mapping(use_normal_mapping),

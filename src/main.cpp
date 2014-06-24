@@ -87,7 +87,8 @@ int init_resources()
     vt::Material* normal_mapped_material = new vt::Material(
             "src/normal_mapped.v.glsl",
             "src/normal_mapped.f.glsl",
-            false,  // use_normals
+            false,  // use_world_normal
+            false,  // use_camera_vec
             true,   // use_phong_shading
             true,   // use_texture_mapping
             true,   // use_normal_mapping
@@ -99,7 +100,8 @@ int init_resources()
     vt::Material* skybox_material = new vt::Material(
             "src/skybox.v.glsl",
             "src/skybox.f.glsl",
-            false, // use_normals
+            false, // use_world_normal
+            false, // use_camera_vec
             false, // use_phong_shading
             false, // use_texture_mapping
             false, // use_normal_mapping
@@ -111,7 +113,8 @@ int init_resources()
     vt::Material* texture_mapped_material = new vt::Material(
             "src/texture_mapped.v.glsl",
             "src/texture_mapped.f.glsl",
-            false,  // use_normals
+            false,  // use_world_normal
+            false,  // use_camera_vec
             false,  // use_phong_shading
             true,   // use_texture_mapping
             false,  // use_normal_mapping
@@ -123,7 +126,8 @@ int init_resources()
     vt::Material* env_mapped_material = new vt::Material(
             "src/env_mapped.v.glsl",
             "src/env_mapped.f.glsl",
-            false,  // use_normals
+            false,  // use_world_normal
+            false,  // use_camera_vec
             false,  // use_phong_shading
             false,  // use_texture_mapping
             true,   // use_normal_mapping
@@ -135,7 +139,8 @@ int init_resources()
     vt::Material* env_mapped_material_fast = new vt::Material(
             "src/env_mapped_fast.v.glsl",
             "src/env_mapped_fast.f.glsl",
-            false,  // use_normals
+            false,  // use_world_normal
+            false,  // use_camera_vec
             false,  // use_phong_shading
             false,  // use_texture_mapping
             false,  // use_normal_mapping
@@ -147,7 +152,8 @@ int init_resources()
     vt::Material* normal_material = new vt::Material(
             "src/normal.v.glsl",
             "src/normal.f.glsl",
-            false,  // use_normals
+            true,   // use_world_normal
+            false,  // use_camera_vec
             false,  // use_phong_shading
             false,  // use_texture_mapping
             true,   // use_normal_mapping
@@ -159,7 +165,8 @@ int init_resources()
     vt::Material* normal_material_fast = new vt::Material(
             "src/normal_fast.v.glsl",
             "src/normal_fast.f.glsl",
-            true,   // use_normals
+            true,   // use_world_normal
+            false,  // use_camera_vec
             false,  // use_phong_shading
             false,  // use_texture_mapping
             false,  // use_normal_mapping
