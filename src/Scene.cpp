@@ -129,32 +129,38 @@ void Scene::render()
         ShaderContext* shader_context = (*q)->get_shader_context();
         shader_context->get_program()->use();
         shader_context->set_mvp_xform(m_camera->get_xform()*(*q)->get_xform());
-        bool phong_normal_env = material->use_phong_shading() || material->use_normal_mapping() || material->use_env_mapping();
-        if(material->use_world_normal() || material->use_camera_vec() || phong_normal_env)
+        bool use_world_normal     = material->use_world_normal();
+        bool use_camera_vec       = material->use_camera_vec();
+        bool use_phong_shading    = material->use_phong_shading();
+        bool use_texture_mapping  = material->use_texture_mapping();
+        bool use_normal_mapping   = material->use_normal_mapping();
+        bool use_env_mapping      = material->use_env_mapping();
+        bool use_depth_overlay    = material->use_depth_overlay();
+        bool use_phong_normal_env = use_phong_shading || use_normal_mapping || use_env_mapping;
+        if(use_world_normal || use_camera_vec || use_phong_normal_env)
         {
             shader_context->set_normal_xform((*q)->get_normal_xform());
-            if(material->use_camera_vec() || phong_normal_env)
+            if(use_camera_vec || use_phong_normal_env)
             {
-                if(material->use_camera_vec() || (!material->use_world_normal() && material->use_normal_mapping()) ||
-                        material->use_env_mapping())
+                if(use_camera_vec || (!use_world_normal && use_normal_mapping) || use_env_mapping)
                 {
                     shader_context->set_modelview_xform((*q)->get_xform());
                     shader_context->set_camera_pos(m_camera_pos);
                 }
-                if(material->use_phong_shading()) {
+                if(use_phong_shading) {
                     shader_context->set_light_pos(NUM_LIGHTS, m_light_pos);
                     shader_context->set_light_color(NUM_LIGHTS, m_light_color);
                     shader_context->set_light_enabled(NUM_LIGHTS, m_light_enabled);
                     shader_context->set_light_count(m_lights.size());
                 }
-                if(material->use_normal_mapping()) {
+                if(use_normal_mapping) {
                     shader_context->set_normal_map_texture_index((*q)->get_normal_map_texture_index());
                 }
-                if(material->use_env_mapping()) {
+                if(use_env_mapping) {
                     shader_context->set_env_map_texture_index(0);
                     shader_context->set_reflect_to_refract_ratio((*q)->get_reflect_to_refract_ratio());
                 }
-                if(material->use_depth_overlay()) {
+                if(use_depth_overlay) {
                     shader_context->set_depth_overlay_texture_index((*q)->get_depth_overlay_texture_index());
                     shader_context->set_viewport_size(m_viewport_size);
                     shader_context->set_camera_near(m_camera->get_near_plane());
@@ -162,7 +168,7 @@ void Scene::render()
                 }
             }
         }
-        if(material->use_texture_mapping()) {
+        if(use_texture_mapping) {
             shader_context->set_texture_index((*q)->get_texture_index());
         }
         shader_context->render();
