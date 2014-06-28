@@ -146,13 +146,6 @@ const glm::mat4 &Camera::get_projection_xform()
     return m_projection_xform;
 }
 
-void Camera::update_xform()
-{
-    static glm::vec3 up = glm::vec3(0, 1, 0);
-    m_xform = glm::lookAt(m_origin, m_target, up);
-    m_orient = offset_to_orient(m_target-m_origin);
-}
-
 void Camera::update_projection_xform()
 {
     if(m_projection_mode == PROJECTION_MODE_PERSPECTIVE) {
@@ -175,6 +168,13 @@ void Camera::update_projection_xform()
         float top    =  half_height;
         m_projection_xform = glm::ortho(left, right, bottom, top, m_near_plane, m_far_plane);
     }
+}
+
+void Camera::update_xform()
+{
+    static glm::vec3 up = glm::vec3(0, 1, 0);
+    m_xform = glm::lookAt(m_origin, m_target, up);
+    m_orient = offset_to_orient(m_target-m_origin);
 }
 
 }

@@ -106,8 +106,8 @@ private:
     float             m_zoom;
     projection_mode_t m_projection_mode;
 
-    void update_xform();
     void update_projection_xform();
+    void update_xform();
 };
 
 }
