@@ -90,7 +90,6 @@ public:
     }
     void set_zoom(float &zoom);
 
-    const glm::mat4 &get_view_xform();
     const glm::mat4 &get_projection_xform();
 
 private:
@@ -100,16 +99,14 @@ private:
     size_t            m_height;
     float             m_near_plane;
     float             m_far_plane;
-    glm::mat4         m_view_xform;
     glm::mat4         m_projection_xform;
-    bool              m_projection_xform_need_update;
+    bool              m_need_update_projection_xform;
     float             m_ortho_width;
     float             m_ortho_height;
     float             m_zoom;
     projection_mode_t m_projection_mode;
 
     void update_xform();
-    void update_normal_xform();
     void update_projection_xform();
 };
 

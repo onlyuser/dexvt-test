@@ -31,7 +31,7 @@ Camera::Camera(
       m_height(height),
       m_near_plane(near_plane),
       m_far_plane(far_plane),
-      m_projection_xform_need_update(true),
+      m_need_update_projection_xform(true),
       m_ortho_width(ortho_width),
       m_ortho_height(ortho_height),
       m_zoom(zoom),
@@ -86,7 +86,7 @@ void Camera::orbit(glm::vec3 &orient, float &radius)
 void Camera::set_fov(float fov)
 {
     m_fov = fov;
-    m_projection_xform_need_update = true;
+    m_need_update_projection_xform = true;
     set_need_update_xform();
 }
 
@@ -94,28 +94,28 @@ void Camera::resize_viewport(float width, float height)
 {
     m_width  = width;
     m_height = height;
-    m_projection_xform_need_update = true;
+    m_need_update_projection_xform = true;
     set_need_update_xform();
 }
 
 void Camera::set_near_plane(float near_plane)
 {
     m_near_plane = near_plane;
-    m_projection_xform_need_update = true;
+    m_need_update_projection_xform = true;
     set_need_update_xform();
 }
 
 void Camera::set_far_plane(float far_plane)
 {
     m_far_plane = far_plane;
-    m_projection_xform_need_update = true;
+    m_need_update_projection_xform = true;
     set_need_update_xform();
 }
 
 void Camera::set_projection_mode(projection_mode_t projection_mode)
 {
     m_projection_mode = projection_mode;
-    m_projection_xform_need_update = true;
+    m_need_update_projection_xform = true;
     set_need_update_xform();
 }
 
@@ -123,7 +123,7 @@ void Camera::resize_ortho_viewport(float width, float height)
 {
     m_ortho_width  = width;
     m_ortho_height = height;
-    m_projection_xform_need_update = true;
+    m_need_update_projection_xform = true;
     set_need_update_xform();
 }
 
@@ -133,36 +133,24 @@ void Camera::set_zoom(float &zoom)
         zoom = MIN_ORTHO_SCALE;
     }
     m_zoom = zoom;
-    m_projection_xform_need_update = true;
+    m_need_update_projection_xform = true;
     set_need_update_xform();
 }
 
-const glm::mat4 &Camera::get_view_xform()
-{
-    update_xform();
-    return m_view_xform;
-}
 const glm::mat4 &Camera::get_projection_xform()
 {
-    update_xform();
+    if(m_need_update_projection_xform) {
+        update_projection_xform();
+        m_need_update_projection_xform = false;
+    }
     return m_projection_xform;
 }
 
 void Camera::update_xform()
 {
-    if(m_projection_xform_need_update) {
-        update_projection_xform();
-        m_projection_xform_need_update = false;
-    }
     static glm::vec3 up = glm::vec3(0, 1, 0);
-    m_view_xform = glm::lookAt(m_origin, m_target, up);
-    m_xform = m_projection_xform*m_view_xform;
+    m_xform = glm::lookAt(m_origin, m_target, up);
     m_orient = offset_to_orient(m_target-m_origin);
-}
-
-void Camera::update_normal_xform()
-{
-    m_normal_xform = glm::transpose(glm::inverse(get_view_xform()));
 }
 
 void Camera::update_projection_xform()

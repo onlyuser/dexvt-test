@@ -283,13 +283,13 @@ int init_resources()
     mesh4->set_texture_index(              mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh4->set_normal_map_texture_index(   mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
     mesh4->set_depth_overlay_texture_index(mesh4->get_material()->get_texture_index_by_name("front_depth_overlay"));
-    mesh4->set_depth_overlay_texture_index(mesh4->get_material()->get_texture_index_by_name("back_depth_overlay"));
+    //mesh4->set_depth_overlay_texture_index(mesh4->get_material()->get_texture_index_by_name("back_depth_overlay"));
 
     // torus
     mesh5->set_material(env_mapped_material_fast);
     mesh5->set_reflect_to_refract_ratio(1); // 100% reflective
     mesh5->set_depth_overlay_texture_index(mesh5->get_material()->get_texture_index_by_name("front_depth_overlay"));
-    mesh5->set_depth_overlay_texture_index(mesh5->get_material()->get_texture_index_by_name("back_depth_overlay"));
+    //mesh5->set_depth_overlay_texture_index(mesh5->get_material()->get_texture_index_by_name("back_depth_overlay"));
 
     // cylinder
     mesh6->set_material(normal_material_fast);
@@ -397,7 +397,7 @@ void onKeyboard(unsigned char key, int x, int y)
         case 'w':
             wire_frame_mode = !wire_frame_mode;
             if(wire_frame_mode) {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                glPolygonMode(GL_FRONT, GL_LINE);
             } else {
                 glPolygonMode(GL_FRONT, GL_FILL);
             }
