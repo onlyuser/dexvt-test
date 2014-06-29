@@ -1,11 +1,13 @@
 #include <Camera.h>
+#include <NamedObject.h>
 #include <Util.h>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <string>
 #include <algorithm>
 
-#define MAX_PITCH 89.999
+#define MAX_PITCH  89.999
 #define MIN_PITCH -89.999
 
 #define MIN_ORTHO_SCALE 1
@@ -13,6 +15,7 @@
 namespace vt {
 
 Camera::Camera(
+        std::string       name,
         glm::vec3         origin,
         glm::vec3         target,
         float             fov,
@@ -24,7 +27,8 @@ Camera::Camera(
         float             ortho_height,
         float             zoom,
         projection_mode_t projection_mode)
-    : XformObject(origin),
+    : NamedObject(name),
+      XformObject(origin),
       m_target(target),
       m_fov(fov),
       m_width(width),

@@ -1,5 +1,5 @@
-#ifndef VT_IDENT_OBJECT_IFACE_H_
-#define VT_IDENT_OBJECT_IFACE_H_
+#ifndef VT_IDENT_OBJECT_H_
+#define VT_IDENT_OBJECT_H_
 
 #include <GL/glew.h>
 

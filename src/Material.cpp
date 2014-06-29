@@ -1,9 +1,11 @@
 #include <Material.h>
+#include <NamedObject.h>
 #include <Program.h>
 #include <Shader.h>
 #include <Texture.h>
 #include <vector>
 #include <map>
+#include <string>
 #include <algorithm>
 #include <iterator>
 #include <memory> // std::unique_ptr
@@ -11,6 +13,7 @@
 namespace vt {
 
 Material::Material(
+        std::string name,
         std::string vertex_shader_file,
         std::string fragment_shader_file,
         bool        use_world_normal,
@@ -21,7 +24,8 @@ Material::Material(
         bool        use_env_mapping,
         bool        use_depth_overlay,
         bool        skybox)
-    : m_use_world_normal(use_world_normal),
+    : NamedObject(name),
+      m_use_world_normal(use_world_normal),
       m_use_camera_vec(use_camera_vec),
       m_use_phong_shading(use_phong_shading),
       m_use_texture_mapping(use_texture_mapping),
@@ -47,7 +51,7 @@ Material::Material(
 void Material::add_texture(Texture* texture)
 {
     m_textures.push_back(texture);
-    m_texture_lookup_table[texture->get_name()] = texture;
+    m_texture_lookup_table[texture->name()] = texture;
 }
 
 void Material::clear_textures()

@@ -1,4 +1,5 @@
 #include <Texture.h>
+#include <NamedObject.h>
 #include <GL/glew.h>
 #include <png.h>
 #include <cstdio>
@@ -9,8 +10,13 @@
 
 namespace vt {
 
-Texture::Texture(std::string name, size_t width, size_t height, const unsigned char* pixel_data, type_t type)
-    : m_name(name),
+Texture::Texture(
+        std::string          name,
+        size_t               width,
+        size_t               height,
+        const unsigned char* pixel_data,
+        type_t               type)
+    : NamedObject(name),
       m_width(width),
       m_height(height),
       m_skybox(false),
@@ -45,8 +51,10 @@ Texture::Texture(std::string name, size_t width, size_t height, const unsigned c
     }
 }
 
-Texture::Texture(std::string name, std::string png_filename)
-    : m_name(name),
+Texture::Texture(
+        std::string name,
+        std::string png_filename)
+    : NamedObject(name),
       m_width(0),
       m_height(0),
       m_skybox(false),
@@ -74,7 +82,7 @@ Texture::Texture(
         std::string png_filename_neg_y,
         std::string png_filename_pos_z,
         std::string png_filename_neg_z)
-    : m_name(name),
+    : NamedObject(name),
       m_width(0),
       m_height(0),
       m_skybox(true),

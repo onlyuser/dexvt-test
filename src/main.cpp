@@ -62,15 +62,16 @@ int init_resources()
 {
     vt::Scene *scene = vt::Scene::instance();
 
-    skybox = vt::PrimitiveFactory::create_viewport_quad();
+    skybox = vt::PrimitiveFactory::create_viewport_quad("grid");
     scene->set_skybox(skybox);
-    scene->add_mesh(mesh  = vt::PrimitiveFactory::create_box());
-    scene->add_mesh(mesh2 = vt::PrimitiveFactory::create_box());
-    scene->add_mesh(mesh3 = vt::PrimitiveFactory::create_grid(4, 4, 10, 10));
-    scene->add_mesh(mesh4 = vt::PrimitiveFactory::create_sphere(16, 16, 0.5));
-    scene->add_mesh(mesh5 = vt::PrimitiveFactory::create_torus(16, 16, 0.5, 0.25));
-    scene->add_mesh(mesh6 = vt::PrimitiveFactory::create_cylinder(16, 0.5, 1));
-    scene->add_mesh(mesh7 = vt::PrimitiveFactory::create_cone(16, 0.5, 1));
+
+    scene->add_mesh(mesh  = vt::PrimitiveFactory::create_box(     "box"));
+    scene->add_mesh(mesh2 = vt::PrimitiveFactory::create_box(     "scaled_box"));
+    scene->add_mesh(mesh3 = vt::PrimitiveFactory::create_grid(    "grid",     4,  4,   10, 10));
+    scene->add_mesh(mesh4 = vt::PrimitiveFactory::create_sphere(  "sphere",   16, 16,  0.5));
+    scene->add_mesh(mesh5 = vt::PrimitiveFactory::create_torus(   "torus",    16, 16,  0.5, 0.25));
+    scene->add_mesh(mesh6 = vt::PrimitiveFactory::create_cylinder("cylinder", 16, 0.5, 1));
+    scene->add_mesh(mesh7 = vt::PrimitiveFactory::create_cone(    "cone",     16, 0.5, 1));
 
     mesh->set_origin(glm::vec3(-0.5, -0.5, -0.5)); // box
     mesh2->set_scale(glm::vec3(0.5, 2, 3));        // scaled box
@@ -85,6 +86,7 @@ int init_resources()
     //mesh7->set_visible(false);
 
     vt::Material* normal_mapped_material = new vt::Material(
+            "normal_mapped",
             "src/normal_mapped.v.glsl",
             "src/normal_mapped.f.glsl",
             false,  // use_world_normal
@@ -98,6 +100,7 @@ int init_resources()
     scene->add_material(normal_mapped_material);
 
     vt::Material* skybox_material = new vt::Material(
+            "skybox",
             "src/skybox.v.glsl",
             "src/skybox.f.glsl",
             false, // use_world_normal
@@ -111,6 +114,7 @@ int init_resources()
     scene->add_material(skybox_material);
 
     vt::Material* texture_mapped_material = new vt::Material(
+            "texture_mapped",
             "src/texture_mapped.v.glsl",
             "src/texture_mapped.f.glsl",
             false,  // use_world_normal
@@ -124,6 +128,7 @@ int init_resources()
     scene->add_material(texture_mapped_material);
 
     vt::Material* env_mapped_material = new vt::Material(
+            "env_mapped",
             "src/env_mapped.v.glsl",
             "src/env_mapped.f.glsl",
             false,  // use_world_normal
@@ -137,6 +142,7 @@ int init_resources()
     scene->add_material(env_mapped_material);
 
     vt::Material* env_mapped_material_fast = new vt::Material(
+            "env_mapped_fast",
             "src/env_mapped_fast.v.glsl",
             "src/env_mapped_fast.f.glsl",
             false,  // use_world_normal
@@ -150,6 +156,7 @@ int init_resources()
     scene->add_material(env_mapped_material_fast);
 
     vt::Material* normal_material = new vt::Material(
+            "normal",
             "src/normal.v.glsl",
             "src/normal.f.glsl",
             true,   // use_world_normal
@@ -163,6 +170,7 @@ int init_resources()
     scene->add_material(normal_material);
 
     vt::Material* normal_material_fast = new vt::Material(
+            "normal_fast",
             "src/normal_fast.v.glsl",
             "src/normal_fast.f.glsl",
             true,   // use_world_normal
@@ -248,7 +256,7 @@ int init_resources()
     env_mapped_material->add_texture(    back_normal_overlay_texture);
 
     glm::vec3 origin = glm::vec3();
-    camera = new vt::Camera(origin+glm::vec3(0, 0, orbit_radius), origin);
+    camera = new vt::Camera("camera", origin+glm::vec3(0, 0, orbit_radius), origin);
     scene->set_camera(camera);
 
     front_depth_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(front_depth_overlay_texture, camera));

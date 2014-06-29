@@ -1,12 +1,14 @@
 #ifndef VT_CAMERA_H_
 #define VT_CAMERA_H_
 
+#include <NamedObject.h>
 #include <XformObject.h>
+#include <string>
 #include <glm/glm.hpp>
 
 namespace vt {
 
-class Camera : public XformObject
+class Camera : public NamedObject, public XformObject
 {
 public:
     enum projection_mode_t {
@@ -15,8 +17,9 @@ public:
     };
 
     Camera(
-            glm::vec3         origin,
-            glm::vec3         target          = glm::vec3(0),
+            std::string       name            = "",
+            glm::vec3         origin          = glm::vec3(0),
+            glm::vec3         target          = glm::vec3(-1),
             float             fov             = 45,
             size_t            width           = 800,
             size_t            height          = 600,
@@ -93,6 +96,7 @@ public:
     const glm::mat4 &get_projection_xform();
 
 private:
+    std::string       m_name;
     glm::vec3         m_target;
     float             m_fov;
     size_t            m_width;

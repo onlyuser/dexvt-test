@@ -3,14 +3,20 @@
 #include <Util.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/constants.hpp>
+#include <string>
 
 namespace vt {
 
-Mesh* PrimitiveFactory::create_grid(int cols, int rows, float width, float height)
+Mesh* PrimitiveFactory::create_grid(
+        std::string name,
+        int         cols,
+        int         rows,
+        float       width,
+        float       height)
 {
-    int num_vertex = (rows+1)*(cols+1);
-    int num_tri = rows*cols*2;
-    Mesh* mesh = new Mesh(num_vertex, num_tri);
+    int   num_vertex = (rows+1)*(cols+1);
+    int   num_tri    = rows*cols*2;
+    Mesh* mesh       = new Mesh(name, num_vertex, num_tri);
 
     // ==============================
     // init mesh vertex/normal coords
@@ -61,11 +67,15 @@ Mesh* PrimitiveFactory::create_grid(int cols, int rows, float width, float heigh
     return mesh;
 }
 
-Mesh* PrimitiveFactory::create_sphere(int slices, int stacks, float radius)
+Mesh* PrimitiveFactory::create_sphere(
+        std::string name,
+        int         slices,
+        int         stacks,
+        float       radius)
 {
-    int cols = slices;
-    int rows = stacks;
-    Mesh* mesh = create_grid(cols, rows);
+    int cols   = slices;
+    int rows   = stacks;
+    Mesh* mesh = create_grid(name, cols, rows);
 
     // ==============================
     // init mesh vertex/normal coords
@@ -92,11 +102,15 @@ Mesh* PrimitiveFactory::create_sphere(int slices, int stacks, float radius)
     return mesh;
 }
 
-Mesh* PrimitiveFactory::create_hemisphere(int slices, int stacks, float radius)
+Mesh* PrimitiveFactory::create_hemisphere(
+        std::string name,
+        int         slices,
+        int         stacks,
+        float       radius)
 {
-    int cols = slices;
-    int rows = stacks*0.5+1;
-    Mesh* mesh = create_grid(cols, rows);
+    int   cols = slices;
+    int   rows = stacks*0.5+1;
+    Mesh* mesh = create_grid(name, cols, rows);
 
     // ==============================
     // init mesh vertex/normal coords
@@ -128,11 +142,15 @@ Mesh* PrimitiveFactory::create_hemisphere(int slices, int stacks, float radius)
     return mesh;
 }
 
-Mesh* PrimitiveFactory::create_cylinder(int slices, float radius, float height)
+Mesh* PrimitiveFactory::create_cylinder(
+        std::string name,
+        int         slices,
+        float       radius,
+        float       height)
 {
-    int cols = slices;
-    int rows = 3;
-    Mesh* mesh = create_grid(cols, rows);
+    int   cols = slices;
+    int   rows = 3;
+    Mesh* mesh = create_grid(name, cols, rows);
 
     // ==============================
     // init mesh vertex/normal coords
@@ -176,11 +194,15 @@ Mesh* PrimitiveFactory::create_cylinder(int slices, float radius, float height)
     return mesh;
 }
 
-Mesh* PrimitiveFactory::create_cone(int slices, float radius, float height)
+Mesh* PrimitiveFactory::create_cone(
+        std::string name,
+        int         slices,
+        float       radius,
+        float       height)
 {
-    int cols = slices;
-    int rows = 2;
-    Mesh* mesh = create_grid(cols, rows);
+    int   cols = slices;
+    int   rows = 2;
+    Mesh* mesh = create_grid(name, cols, rows);
 
     // ==============================
     // init mesh vertex/normal coords
@@ -222,11 +244,16 @@ Mesh* PrimitiveFactory::create_cone(int slices, float radius, float height)
     return mesh;
 }
 
-Mesh* PrimitiveFactory::create_torus(int slices, int stacks, float radius_major, float radius_minor)
+Mesh* PrimitiveFactory::create_torus(
+        std::string name,
+        int         slices,
+        int         stacks,
+        float       radius_major,
+        float       radius_minor)
 {
-    int cols = slices;
-    int rows = stacks;
-    Mesh* mesh = create_grid(cols, rows);
+    int   cols = slices;
+    int   rows = stacks;
+    Mesh* mesh = create_grid(name, cols, rows);
 
     // ==============================
     // init mesh vertex/normal coords
@@ -256,9 +283,13 @@ Mesh* PrimitiveFactory::create_torus(int slices, int stacks, float radius_major,
     return mesh;
 }
 
-Mesh* PrimitiveFactory::create_box(float width, float height, float length)
+Mesh* PrimitiveFactory::create_box(
+        std::string name,
+        float       width,
+        float       height,
+        float       length)
 {
-    Mesh* mesh = new Mesh(24, 12);
+    Mesh* mesh = new Mesh(name, 24, 12);
 
     // ==============================
     // init mesh vertex/normal coords

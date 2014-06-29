@@ -1,20 +1,29 @@
 #ifndef VT_TEXTURE_H_
 #define VT_TEXTURE_H_
 
+#include <NamedObject.h>
 #include <IdentObject.h>
 #include <BindableObjectIFace.h>
 #include <GL/glew.h>
 #include <string>
 
+#define DEFAULT_TEXTURE_DIM 256
+
 namespace vt {
 
-class Texture : public IdentObject, public BindableObjectIFace
+class Texture : public NamedObject, public IdentObject, public BindableObjectIFace
 {
 public:
     typedef enum { RGB, DEPTH, STENCIL } type_t;
 
-    Texture(std::string name, size_t width, size_t height, const unsigned char* pixel_data = NULL, type_t type = Texture::RGB);
-    Texture(std::string name, std::string png_filename);
+    Texture(std::string          name       = "",
+            size_t               width      = DEFAULT_TEXTURE_DIM,
+            size_t               height     = DEFAULT_TEXTURE_DIM,
+            const unsigned char* pixel_data = NULL,
+            type_t               type       = Texture::RGB);
+    Texture(
+            std::string name,
+            std::string png_filename);
     Texture(
             std::string name,
             std::string png_filename_pos_x,
@@ -25,10 +34,6 @@ public:
             std::string png_filename_neg_z);
     virtual ~Texture();
     void bind() const;
-    const std::string &get_name() const
-    {
-        return m_name;
-    }
     size_t width() const
     {
         return m_width;
@@ -43,11 +48,10 @@ public:
     }
 
 private:
-    std::string m_name;
-    size_t      m_width;
-    size_t      m_height;
-    bool        m_skybox;
-    type_t      m_type;
+    size_t m_width;
+    size_t m_height;
+    bool   m_skybox;
+    type_t m_type;
 
     static GLuint gen_texture_internal(size_t width, size_t height, const void* pixel_data, type_t type = Texture::RGB);
     static GLuint gen_texture_skybox_internal(

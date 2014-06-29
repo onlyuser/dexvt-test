@@ -1,16 +1,22 @@
 #include <Mesh.h>
+#include <NamedObject.h>
 #include <Buffer.h>
 #include <Util.h>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <string>
 #include <memory> // std::unique_ptr
 #include <iostream>
 
 namespace vt {
 
-Mesh::Mesh(size_t num_vertex, size_t num_tri)
-    : m_num_vertex(num_vertex),
+Mesh::Mesh(
+        std::string name,
+        size_t num_vertex,
+        size_t num_tri)
+    : NamedObject(name),
+      m_num_vertex(num_vertex),
       m_num_tri(num_tri),
       m_visible(true),
       m_buffers_already_init(false),

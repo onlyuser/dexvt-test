@@ -1,11 +1,13 @@
 #ifndef VT_MESH_H_
 #define VT_MESH_H_
 
+#include <NamedObject.h>
 #include <ShaderContext.h>
 #include <Buffer.h>
 #include <XformObject.h>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <string>
 #include <stddef.h>
 #include <memory> // std::unique_ptr
 
@@ -13,10 +15,13 @@ namespace vt {
 
 class Material;
 
-class Mesh : public XformObject
+class Mesh : public NamedObject, public XformObject
 {
 public:
-    Mesh(size_t num_vertex = 0, size_t num_tri = 0);
+    Mesh(
+            std::string name       = "",
+            size_t      num_vertex = 0,
+            size_t      num_tri    = 0);
     virtual ~Mesh();
 
     size_t get_num_vertex() const {
@@ -132,6 +137,7 @@ public:
     }
 
 private:
+    std::string                    m_name;
     size_t                         m_num_vertex;
     size_t                         m_num_tri;
     bool                           m_visible;

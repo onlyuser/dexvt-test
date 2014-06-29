@@ -1,6 +1,7 @@
 #ifndef VT_MATERIAL_H_
 #define VT_MATERIAL_H_
 
+#include <NamedObject.h>
 #include <Program.h>
 #include <vector>
 #include <map>
@@ -11,22 +12,23 @@ namespace vt {
 
 class Texture;
 
-class Material
+class Material : public NamedObject
 {
 public:
     typedef std::vector<Texture*> textures_t;
 
     Material(
-            std::string vertex_shader_file,
-            std::string fragment_shader_file,
-            bool        use_world_normal = false,
-            bool        use_camera_vec = false,
-            bool        use_phong_shading = false,
-            bool        use_texture_mapping = false,
-            bool        use_normal_mapping = false,
-            bool        use_env_mapping = false,
-            bool        use_depth_overlay = false,
-            bool        skybox = false);
+            std::string name                 = "",
+            std::string vertex_shader_file   = "",
+            std::string fragment_shader_file = "",
+            bool        use_world_normal     = false,
+            bool        use_camera_vec       = false,
+            bool        use_phong_shading    = false,
+            bool        use_texture_mapping  = false,
+            bool        use_normal_mapping   = false,
+            bool        use_env_mapping      = false,
+            bool        use_depth_overlay    = false,
+            bool        skybox               = false);
     Program* get_program() const
     {
         return m_program.get();
