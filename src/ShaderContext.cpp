@@ -69,10 +69,10 @@ ShaderContext::ShaderContext(
         }
     }
     if(m_use_depth_overlay) {
-        m_var_uniform_depth_overlay_texture = std::unique_ptr<VarUniform>(m_program->get_var_uniform("depth_overlay_texture"));
-        m_var_uniform_viewport_size         = std::unique_ptr<VarUniform>(m_program->get_var_uniform("viewport_size"));
-        m_var_uniform_camera_near           = std::unique_ptr<VarUniform>(m_program->get_var_uniform("camera_near"));
-        m_var_uniform_camera_far            = std::unique_ptr<VarUniform>(m_program->get_var_uniform("camera_far"));
+        m_var_uniform_front_depth_overlay_texture = std::unique_ptr<VarUniform>(m_program->get_var_uniform("front_depth_overlay_texture"));
+        m_var_uniform_viewport_size               = std::unique_ptr<VarUniform>(m_program->get_var_uniform("viewport_size"));
+        m_var_uniform_camera_near                 = std::unique_ptr<VarUniform>(m_program->get_var_uniform("camera_near"));
+        m_var_uniform_camera_far                  = std::unique_ptr<VarUniform>(m_program->get_var_uniform("camera_far"));
     }
     if(m_skybox) {
         m_var_uniform_env_map_texture      = std::unique_ptr<VarUniform>(m_program->get_var_uniform("env_map_texture"));
@@ -233,11 +233,11 @@ void ShaderContext::set_inv_normal_xform(glm::mat4 inv_normal_xform)
     m_var_uniform_inv_normal_xform->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(inv_normal_xform));
 }
 
-void ShaderContext::set_depth_overlay_texture_index(GLint texture_id)
+void ShaderContext::set_front_depth_overlay_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0);
     if(texture_id < static_cast<int>(m_textures.size())) {
-        m_var_uniform_depth_overlay_texture->uniform_1i(texture_id);
+        m_var_uniform_front_depth_overlay_texture->uniform_1i(texture_id);
     }
 }
 

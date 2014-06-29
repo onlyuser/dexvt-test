@@ -19,7 +19,7 @@ Mesh::Mesh(size_t num_vertex, size_t num_tri)
       m_texture_index(-1),
       m_normal_map_texture_index(-1),
       m_env_map_texture_index(-1),
-      m_depth_overlay_texture_index(-1),
+      m_front_depth_overlay_texture_index(-1),
       m_reflect_to_refract_ratio(1)
 {
     m_vert_coords  = new GLfloat[num_vertex*3];

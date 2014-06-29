@@ -14,7 +14,7 @@ varying vec3 cameraVector;
 
 uniform samplerCube env_map_texture;
 
-uniform sampler2D depth_overlay_texture;
+uniform sampler2D front_depth_overlay_texture;
 uniform vec2      viewport_size;
 uniform float     camera_near;
 uniform float     camera_far;
@@ -51,8 +51,8 @@ void main(void) {
     float one_minus_dot = 1-clamp(dot(cameraDir, bumpy_world_normal), 0, 1);
     float fresnel_reflectance_attenuation = pow(one_minus_dot, FRESNEL_REFLECTANCE_SHARPNESS);
 
-    vec4 depth_overlay_color = texture2D(depth_overlay_texture, vec2(gl_FragCoord.x/viewport_size.x, gl_FragCoord.y/viewport_size.y));
-    float z_b = depth_overlay_color.x;
+    vec4 front_depth_overlay_color = texture2D(front_depth_overlay_texture, vec2(gl_FragCoord.x/viewport_size.x, gl_FragCoord.y/viewport_size.y));
+    float z_b = front_depth_overlay_color.x;
     float z_n = 2.0 * z_b - 1.0;
     float z_e = 2.0 * camera_near * camera_far / (camera_far + camera_near - z_n * (camera_far - camera_near));
 
@@ -61,7 +61,7 @@ void main(void) {
     } else if(z_e <= (camera_near+0.1)) {
         gl_FragColor = vec4(0,1,1,0);
     } else {
-        gl_FragColor = mix(vec4(1,0,0,0), vec4(0,0,1,0), depth_overlay_color.x)*0.001 +
+        gl_FragColor = mix(vec4(1,0,0,0), vec4(0,0,1,0), front_depth_overlay_color.x)*0.001 +
                 mix(refracted_color, reflected_color, reflect_to_refract_ratio*fresnel_reflectance_attenuation);
     }
 }
