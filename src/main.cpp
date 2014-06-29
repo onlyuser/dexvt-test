@@ -174,6 +174,7 @@ int init_resources()
             false,  // use_depth_overlay
             false); // skybox
     scene->add_material(normal_material_fast);
+    scene->set_normal_material(normal_material_fast);
 
     vt::Texture* texture = new vt::Texture(
             "dex3d",
@@ -357,7 +358,7 @@ void onDisplay()
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_FRONT);
-    scene->render();
+    scene->render(false);
     glCullFace(GL_BACK);
     back_normal_overlay_fb->unbind();
 

@@ -18,7 +18,8 @@ namespace vt {
 
 Scene::Scene()
     : m_camera(NULL),
-      m_skybox(NULL)
+      m_skybox(NULL),
+      m_normal_material(NULL)
 {
     m_camera_pos[0] = 0;
     m_camera_pos[1] = 0;
@@ -92,7 +93,7 @@ void Scene::use_program()
     }
 }
 
-void Scene::render()
+void Scene::render(bool use_normal_material)
 {
     glm::vec3 camera_pos = m_camera->get_origin();
     m_camera_pos[0] = camera_pos.x;
@@ -125,7 +126,7 @@ void Scene::render()
         if(!(*q)->get_visible()) {
             continue;
         }
-        Material*      material       = (*q)->get_material();
+        Material*      material       = use_normal_material ? m_normal_material : (*q)->get_material();
         ShaderContext* shader_context = (*q)->get_shader_context();
         shader_context->get_program()->use();
         shader_context->set_mvp_xform(m_camera->get_projection_xform()*m_camera->get_xform()*(*q)->get_xform());
@@ -164,6 +165,8 @@ void Scene::render()
         }
         if(use_depth_overlay) {
             shader_context->set_front_depth_overlay_texture_index((*q)->get_front_depth_overlay_texture_index());
+            shader_context->set_back_depth_overlay_texture_index((*q)->get_back_depth_overlay_texture_index());
+            shader_context->set_back_normal_overlay_texture_index((*q)->get_back_normal_overlay_texture_index());
             shader_context->set_viewport_size(m_viewport_size);
             shader_context->set_camera_near(m_camera->get_near_plane());
             shader_context->set_camera_far(m_camera->get_far_plane());

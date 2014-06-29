@@ -15,6 +15,8 @@ varying vec3 cameraVector;
 uniform samplerCube env_map_texture;
 
 uniform sampler2D front_depth_overlay_texture;
+uniform sampler2D back_depth_overlay_texture;
+uniform sampler2D back_normal_overlay_texture;
 uniform vec2      viewport_size;
 uniform float     camera_near;
 uniform float     camera_far;
@@ -56,12 +58,17 @@ void main(void) {
     float z_n = 2.0 * z_b - 1.0;
     float z_e = 2.0 * camera_near * camera_far / (camera_far + camera_near - z_n * (camera_far - camera_near));
 
+    vec4 back_depth_overlay_color = texture2D(back_depth_overlay_texture, vec2(gl_FragCoord.x/viewport_size.x, gl_FragCoord.y/viewport_size.y));
+    vec4 back_normal_overlay_color = texture2D(back_normal_overlay_texture, vec2(gl_FragCoord.x/viewport_size.x, gl_FragCoord.y/viewport_size.y));
+
     if(z_e >= (camera_far-0.1)) {
         gl_FragColor = vec4(1,1,0,0);
     } else if(z_e <= (camera_near+0.1)) {
         gl_FragColor = vec4(0,1,1,0);
     } else {
         gl_FragColor = mix(vec4(1,0,0,0), vec4(0,0,1,0), front_depth_overlay_color.x)*0.001 +
+                back_depth_overlay_color*0.001 +
+                back_normal_overlay_color*0.001 +
                 mix(refracted_color, reflected_color, reflect_to_refract_ratio*fresnel_reflectance_attenuation);
     }
 }

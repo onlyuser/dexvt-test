@@ -63,9 +63,18 @@ public:
         return m_skybox;
     }
 
+    void set_normal_material(Material* material)
+    {
+        m_normal_material = material;
+    }
+    Material* get_normal_material() const
+    {
+        return m_normal_material;
+    }
+
     void reset();
     void use_program();
-    void render();
+    void render(bool use_normal_material = false);
     void render_vert_normals();
 
 private:
@@ -75,6 +84,7 @@ private:
     meshes_t    m_meshes;
     materials_t m_materials;
     textures_t  m_textures;
+    Material*   m_normal_material;
 
     GLfloat  m_camera_pos[3];
     GLfloat  m_viewport_size[2];
