@@ -123,13 +123,14 @@ void Scene::render(bool use_normal_material)
         shader_context->render();
     }
     for(meshes_t::const_iterator q = m_meshes.begin(); q != m_meshes.end(); q++) {
-        if(!(*q)->get_visible()) {
+        Mesh* mesh = (*q);
+        if(!mesh->get_visible()) {
             continue;
         }
-        Material*      material       = use_normal_material ? m_normal_material : (*q)->get_material();
-        ShaderContext* shader_context = (*q)->get_shader_context();
+        Material*      material       = use_normal_material ? m_normal_material : mesh->get_material();
+        ShaderContext* shader_context = mesh->get_shader_context();
         shader_context->get_program()->use();
-        shader_context->set_mvp_xform(m_camera->get_projection_xform()*m_camera->get_xform()*(*q)->get_xform());
+        shader_context->set_mvp_xform(m_camera->get_projection_xform()*m_camera->get_xform()*mesh->get_xform());
         bool use_world_normal     = material->use_world_normal();
         bool use_camera_vec       = material->use_camera_vec();
         bool use_phong_shading    = material->use_phong_shading();
@@ -137,12 +138,16 @@ void Scene::render(bool use_normal_material)
         bool use_normal_mapping   = material->use_normal_mapping();
         bool use_env_mapping      = material->use_env_mapping();
         bool use_depth_overlay    = material->use_depth_overlay();
+        // TODO: texture mapped material has no normal_xform, causing segfault later
+        if(use_normal_material && mesh->get_material()->use_texture_mapping()) {
+            continue;
+        }
         bool use_phong_normal_env = use_phong_shading || use_normal_mapping || use_env_mapping;
         if(use_world_normal || use_camera_vec || use_phong_normal_env) {
-            shader_context->set_normal_xform((*q)->get_normal_xform());
+            shader_context->set_normal_xform(mesh->get_normal_xform());
             if(use_camera_vec || use_phong_normal_env) {
                 if(use_camera_vec || (!use_world_normal && use_normal_mapping) || use_env_mapping) {
-                    shader_context->set_modelview_xform((*q)->get_xform());
+                    shader_context->set_modelview_xform(mesh->get_xform());
                     shader_context->set_camera_pos(m_camera_pos);
                 }
                 if(use_phong_shading) {
@@ -152,21 +157,21 @@ void Scene::render(bool use_normal_material)
                     shader_context->set_light_count(m_lights.size());
                 }
                 if(use_normal_mapping) {
-                    shader_context->set_normal_map_texture_index((*q)->get_normal_map_texture_index());
+                    shader_context->set_normal_map_texture_index(mesh->get_normal_map_texture_index());
                 }
                 if(use_env_mapping) {
                     shader_context->set_env_map_texture_index(0);
-                    shader_context->set_reflect_to_refract_ratio((*q)->get_reflect_to_refract_ratio());
+                    shader_context->set_reflect_to_refract_ratio(mesh->get_reflect_to_refract_ratio());
                 }
             }
         }
         if(use_texture_mapping) {
-            shader_context->set_texture_index((*q)->get_texture_index());
+            shader_context->set_texture_index(mesh->get_texture_index());
         }
         if(use_depth_overlay) {
-            shader_context->set_front_depth_overlay_texture_index((*q)->get_front_depth_overlay_texture_index());
-            shader_context->set_back_depth_overlay_texture_index((*q)->get_back_depth_overlay_texture_index());
-            shader_context->set_back_normal_overlay_texture_index((*q)->get_back_normal_overlay_texture_index());
+            shader_context->set_front_depth_overlay_texture_index(mesh->get_front_depth_overlay_texture_index());
+            shader_context->set_back_depth_overlay_texture_index( mesh->get_back_depth_overlay_texture_index());
+            shader_context->set_back_normal_overlay_texture_index(mesh->get_back_normal_overlay_texture_index());
             shader_context->set_viewport_size(m_viewport_size);
             shader_context->set_camera_near(m_camera->get_near_plane());
             shader_context->set_camera_far(m_camera->get_far_plane());

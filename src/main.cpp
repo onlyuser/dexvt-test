@@ -263,9 +263,9 @@ int init_resources()
     back_depth_overlay_fb  = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(back_depth_overlay_texture, camera));
     back_normal_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(back_normal_overlay_texture, camera));
 
-    scene->add_light(light  = new vt::Light(origin+glm::vec3(light_distance, 0, 0), glm::vec3(1, 0, 0)));
-    scene->add_light(light2 = new vt::Light(origin+glm::vec3(0, light_distance, 0), glm::vec3(0, 1, 0)));
-    scene->add_light(light3 = new vt::Light(origin+glm::vec3(0, 0, light_distance), glm::vec3(0, 0, 1)));
+    scene->add_light(light  = new vt::Light("light1", origin+glm::vec3(light_distance, 0, 0), glm::vec3(1, 0, 0)));
+    scene->add_light(light2 = new vt::Light("light2", origin+glm::vec3(0, light_distance, 0), glm::vec3(0, 1, 0)));
+    scene->add_light(light3 = new vt::Light("light3", origin+glm::vec3(0, 0, light_distance), glm::vec3(0, 0, 1)));
 
     skybox->set_material(skybox_material);
     skybox->set_texture_index(skybox->get_material()->get_texture_index_by_name("colosseum"));
@@ -366,7 +366,7 @@ void onDisplay()
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_FRONT);
-    scene->render(false);
+    scene->render(true);
     glCullFace(GL_BACK);
     back_normal_overlay_fb->unbind();
 

@@ -1,11 +1,17 @@
 #include <Light.h>
+#include <NamedObject.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <string>
 
 namespace vt {
 
-Light::Light(glm::vec3 origin, glm::vec3 color)
-    : XformObject(origin),
+Light::Light(
+        std::string name,
+        glm::vec3   origin,
+        glm::vec3   color)
+    : NamedObject(name),
+      XformObject(origin),
       m_color(color),
       m_enabled(true)
 {
