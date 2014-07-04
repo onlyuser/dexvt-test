@@ -127,9 +127,9 @@ void Scene::render(bool use_normal_material)
         if(!mesh->get_visible()) {
             continue;
         }
-        Material*      material       = use_normal_material ? m_normal_material : mesh->get_material();
+        Material* material = use_normal_material ? m_normal_material : mesh->get_material();
+        material->get_program()->use();
         ShaderContext* shader_context = mesh->get_shader_context();
-        shader_context->get_program()->use();
         shader_context->set_mvp_xform(m_camera->get_projection_xform()*m_camera->get_xform()*mesh->get_xform());
         bool use_world_normal     = material->use_world_normal();
         bool use_camera_vec       = material->use_camera_vec();
