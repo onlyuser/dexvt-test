@@ -224,9 +224,10 @@ int init_resources()
             "data/Colosseum/negy.png",
             "data/Colosseum/posz.png",
             "data/Colosseum/negz.png");
-    scene->add_texture(              texture5);
-    skybox_material->add_texture(    texture5);
-    env_mapped_material->add_texture(texture5);
+    scene->add_texture(                   texture5);
+    skybox_material->add_texture(         texture5);
+    env_mapped_material->add_texture(     texture5);
+    env_mapped_material_fast->add_texture(texture5);
 
     vt::Texture* front_depth_overlay_texture = new vt::Texture(
             "front_depth_overlay",

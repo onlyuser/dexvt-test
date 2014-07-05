@@ -161,7 +161,7 @@ void Scene::render(bool use_normal_material)
                     shader_context->set_normal_map_texture_index(mesh->get_normal_map_texture_index());
                 }
                 if(use_env_mapping) {
-                    shader_context->set_env_map_texture_index(0);
+                    shader_context->set_env_map_texture_index(0); // skymap texture index
                     shader_context->set_reflect_to_refract_ratio(mesh->get_reflect_to_refract_ratio());
                 }
             }

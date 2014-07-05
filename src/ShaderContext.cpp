@@ -179,18 +179,14 @@ void ShaderContext::set_normal_xform(glm::mat4 normal_xform)
 
 void ShaderContext::set_texture_index(GLint texture_id)
 {
-    assert(texture_id >= 0);
-    if(texture_id < static_cast<int>(m_textures.size())) {
-        m_var_uniform_mytexture->uniform_1i(texture_id);
-    }
+    assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
+    m_var_uniform_mytexture->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_normal_map_texture_index(GLint texture_id)
 {
-    assert(texture_id >= 0);
-    if(texture_id < static_cast<int>(m_textures.size())) {
-        m_var_uniform_normal_map_texture->uniform_1i(texture_id);
-    }
+    assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
+    m_var_uniform_normal_map_texture->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_camera_pos(GLfloat* camera_pos_arr)
@@ -220,10 +216,8 @@ void ShaderContext::set_light_count(GLint light_count)
 
 void ShaderContext::set_env_map_texture_index(GLint texture_id)
 {
-    assert(texture_id >= 0);
-    if(texture_id < static_cast<int>(m_textures.size())) {
-        m_var_uniform_env_map_texture->uniform_1i(texture_id);
-    }
+    assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
+    m_var_uniform_env_map_texture->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_inv_projection_xform(glm::mat4 inv_projection_xform)
@@ -246,18 +240,14 @@ void ShaderContext::set_front_depth_overlay_texture_index(GLint texture_id)
 
 void ShaderContext::set_back_depth_overlay_texture_index(GLint texture_id)
 {
-    assert(texture_id >= 0);
-    if(texture_id < static_cast<int>(m_textures.size())) {
-        m_var_uniform_back_depth_overlay_texture->uniform_1i(texture_id);
-    }
+    assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
+    m_var_uniform_back_depth_overlay_texture->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_back_normal_overlay_texture_index(GLint texture_id)
 {
-    assert(texture_id >= 0);
-    if(texture_id < static_cast<int>(m_textures.size())) {
-        m_var_uniform_back_normal_overlay_texture->uniform_1i(texture_id);
-    }
+    assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
+    m_var_uniform_back_normal_overlay_texture->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_viewport_size(GLfloat* viewport_size_arr)
