@@ -22,7 +22,6 @@ uniform float     camera_near;
 uniform float     camera_far;
 
 void main(void) {
-    // normalize the camera direction
     vec3 camera_direction = normalize(fragment_camera_vector);
 
     vec2 flipped_texcoord = vec2(fragment_texcoord.x, 1-fragment_texcoord.y);

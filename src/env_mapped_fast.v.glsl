@@ -15,7 +15,6 @@ void main(void) {
     vec3 vertex_position_world = vec3(modelview_xform*vec4(vertex_position, 1));
     vec3 normal_world = normalize(vec3(normal_xform*vec4(vertex_normal, 0)));
 
-    // normalize the camera direction
     vec3 cameraDir = normalize(camera_position - vertex_position_world);
 
     vec3 reflected_camera_dir = reflect(-cameraDir, normal_world);
