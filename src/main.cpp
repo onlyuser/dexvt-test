@@ -304,11 +304,12 @@ int init_resources()
     mesh5->set_back_normal_overlay_texture_index(mesh5->get_material()->get_texture_index_by_name("back_normal_overlay"));
 
     // cylinder
-    mesh6->set_material(normal_material_fast);
+    mesh6->set_material(texture_mapped_material);
+    mesh6->set_texture_index(mesh6->get_material()->get_texture_index_by_name("dex3d"));
 
     // cone
-    mesh7->set_material(normal_material);
-    mesh7->set_normal_map_texture_index(mesh7->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh7->set_material(texture_mapped_material);
+    mesh7->set_texture_index(mesh7->get_material()->get_texture_index_by_name("dex3d"));
 
     return 1;
 }

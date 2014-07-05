@@ -40,8 +40,8 @@ ShaderContext::ShaderContext(
     bool use_phong_normal_env = m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping;
     Program *program = material->get_program();
     if(m_use_world_normal || m_use_camera_vec || use_phong_normal_env) {
-        m_var_attribute_vertex_normal     = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_normal"));
-        m_var_uniform_normal_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("normal_xform"));
+        m_var_attribute_vertex_normal = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_normal"));
+        m_var_uniform_normal_xform    = std::unique_ptr<VarUniform>(program->get_var_uniform("normal_xform"));
         if(m_use_camera_vec || use_phong_normal_env) {
             if(m_use_camera_vec || (!m_use_world_normal && m_use_normal_mapping) || m_use_env_mapping) {
                 m_var_uniform_modelview_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("modelview_xform"));
@@ -54,7 +54,7 @@ ShaderContext::ShaderContext(
                 m_var_uniform_light_count   = std::unique_ptr<VarUniform>(program->get_var_uniform("light_count"));
             }
             if(m_use_normal_mapping) {
-                m_var_attribute_vertex_tangent        = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_tangent"));
+                m_var_attribute_vertex_tangent   = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_tangent"));
                 m_var_uniform_normal_map_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("normal_map_texture"));
             }
             if(m_use_env_mapping) {
@@ -83,7 +83,7 @@ ShaderContext::ShaderContext(
         m_var_uniform_inv_normal_xform     = std::unique_ptr<VarUniform>(program->get_var_uniform("inv_normal_xform"));
     } else {
         m_var_attribute_vertex_position = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_position"));
-        m_var_uniform_mvp_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("mvp_xform"));
+        m_var_uniform_mvp_xform         = std::unique_ptr<VarUniform>(program->get_var_uniform("mvp_xform"));
     }
 }
 
