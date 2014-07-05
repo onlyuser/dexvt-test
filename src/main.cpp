@@ -39,6 +39,8 @@
 #include <sstream> // std::stringstream
 #include <iomanip> // std::setprecision
 
+#define LOW_RES_TEX_DIM 512
+
 const char* DEFAULT_CAPTION = "My Textured Cube";
 
 int init_screen_width = 800, init_screen_height = 600;
@@ -231,8 +233,8 @@ int init_resources()
 
     vt::Texture* front_depth_overlay_texture = new vt::Texture(
             "front_depth_overlay",
-            256,
-            256,
+            LOW_RES_TEX_DIM,
+            LOW_RES_TEX_DIM,
             NULL,
             vt::Texture::DEPTH);
     texture_mapped_material->add_texture(front_depth_overlay_texture);
@@ -240,8 +242,8 @@ int init_resources()
 
     vt::Texture* back_depth_overlay_texture = new vt::Texture(
             "back_depth_overlay",
-            256,
-            256,
+            LOW_RES_TEX_DIM,
+            LOW_RES_TEX_DIM,
             NULL,
             vt::Texture::DEPTH);
     texture_mapped_material->add_texture(back_depth_overlay_texture);
@@ -249,8 +251,8 @@ int init_resources()
 
     vt::Texture* back_normal_overlay_texture = new vt::Texture(
             "back_normal_overlay",
-            256,
-            256,
+            LOW_RES_TEX_DIM,
+            LOW_RES_TEX_DIM,
             NULL,
             vt::Texture::RGB);
     texture_mapped_material->add_texture(back_normal_overlay_texture);
