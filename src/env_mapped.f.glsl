@@ -1,4 +1,4 @@
-varying vec2      f_texcoord;
+varying vec2      fragment_texcoord;
 uniform sampler2D normal_map_texture;
 
 const float AIR_REFRACTIVE_INDEX = 1.0;
@@ -9,8 +9,8 @@ const float FRESNEL_REFLECTANCE_SHARPNESS = 2.0;
 
 uniform float reflect_to_refract_ratio;
 
-varying mat3 tbn_xform;
-varying vec3 cameraVector;
+varying mat3 fragment_tbn_xform;
+varying vec3 fragment_camera_vector;
 
 uniform samplerCube env_map_texture;
 
@@ -23,19 +23,19 @@ uniform float     camera_far;
 
 void main(void) {
     // normalize the camera direction
-    vec3 cameraDir = normalize(cameraVector);
+    vec3 camera_direction = normalize(fragment_camera_vector);
 
-    vec2 flipped_texcoord = vec2(f_texcoord.x, 1-f_texcoord.y);
+    vec2 flipped_texcoord = vec2(fragment_texcoord.x, 1-fragment_texcoord.y);
 
     vec3 bumpy_surface_normal =
             mix(vec3(0, 0, 1), normalize(vec3(texture2D(normal_map_texture, flipped_texcoord))), BUMPINESS_FACTOR);
-    vec3 bumpy_world_normal = normalize(tbn_xform*bumpy_surface_normal);
+    vec3 bumpy_world_normal = normalize(fragment_tbn_xform*bumpy_surface_normal);
 
-    vec3 reflected_camera_dir = reflect(-cameraDir, bumpy_world_normal);
+    vec3 reflected_camera_dir = reflect(-camera_direction, bumpy_world_normal);
     float etaR = AIR_REFRACTIVE_INDEX/WATER_REFRACTIVE_INDEX;
-    vec3 refracted_camera_dirR = refract(-cameraDir, bumpy_world_normal, etaR);
-    vec3 refracted_camera_dirG = refract(-cameraDir, bumpy_world_normal, etaR+0.008);
-    vec3 refracted_camera_dirB = refract(-cameraDir, bumpy_world_normal, etaR+0.016);
+    vec3 refracted_camera_dirR = refract(-camera_direction, bumpy_world_normal, etaR);
+    vec3 refracted_camera_dirG = refract(-camera_direction, bumpy_world_normal, etaR+0.008);
+    vec3 refracted_camera_dirB = refract(-camera_direction, bumpy_world_normal, etaR+0.016);
 
     vec3 reflected_flipped_cubemap_texcoord = vec3(reflected_camera_dir.x, -reflected_camera_dir.y, reflected_camera_dir.z);
     vec3 refracted_flipped_cubemap_texcoordR = vec3(refracted_camera_dirR.x, -refracted_camera_dirR.y, refracted_camera_dirR.z);
@@ -50,7 +50,7 @@ void main(void) {
     refracted_color.b = textureCube(env_map_texture, refracted_flipped_cubemap_texcoordB).b;
     refracted_color.a = 1;
 
-    float one_minus_dot = 1-clamp(dot(cameraDir, bumpy_world_normal), 0, 1);
+    float one_minus_dot = 1-clamp(dot(camera_direction, bumpy_world_normal), 0, 1);
     float fresnel_reflectance_attenuation = pow(one_minus_dot, FRESNEL_REFLECTANCE_SHARPNESS);
 
     vec4 front_depth_overlay_color = texture2D(front_depth_overlay_texture, vec2(gl_FragCoord.x/viewport_size.x, gl_FragCoord.y/viewport_size.y));

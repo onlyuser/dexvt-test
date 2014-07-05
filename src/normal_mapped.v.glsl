@@ -1,37 +1,37 @@
-attribute vec3 coord3d;
-attribute vec3 norm3d;
-attribute vec3 tangent3d;
+attribute vec3 vertex_position;
+attribute vec3 vertex_normal;
+attribute vec3 vertex_tangent;
 attribute vec2 texcoord;
 uniform   mat4 mvp_xform;
 uniform   mat4 modelview_xform;
 uniform   mat4 normal_xform;
-varying   vec2 f_texcoord;
+varying   vec2 fragment_texcoord;
 
 const int NUM_LIGHTS = 8;
-uniform int lightCount;
+uniform int light_count;
 
-uniform int lightEnabled[NUM_LIGHTS];
+uniform int light_enabled[NUM_LIGHTS];
 
-uniform vec3 cameraPosition;
-uniform vec3 lightPosition[NUM_LIGHTS];
+uniform vec3 camera_position;
+uniform vec3 light_position[NUM_LIGHTS];
 
-varying mat3 tbn_xform;
-varying vec3 cameraVector;
-varying vec3 lightVector[NUM_LIGHTS];
+varying mat3 fragment_tbn_transform;
+varying vec3 fragment_camera_vector;
+varying vec3 fragment_light_vector[NUM_LIGHTS];
 
 void main(void) {
-    vec3 normal = normalize(vec3(normal_xform*vec4(norm3d, 0)));
-    vec3 tangent = normalize(vec3(normal_xform*vec4(tangent3d, 0)));
+    vec3 normal = normalize(vec3(normal_xform*vec4(vertex_normal, 0)));
+    vec3 tangent = normalize(vec3(normal_xform*vec4(vertex_tangent, 0)));
     vec3 bitangent = normalize(cross(normal, tangent));
-    tbn_xform = mat3(tangent, bitangent, normal);
+    fragment_tbn_transform = mat3(tangent, bitangent, normal);
 
-    vec3 coord3d_world = vec3(modelview_xform*vec4(coord3d, 1));
-    cameraVector = cameraPosition - coord3d_world;
+    vec3 vertex_position_world = vec3(modelview_xform*vec4(vertex_position, 1));
+    fragment_camera_vector = camera_position - vertex_position_world;
 
     for(int i = 0; i < NUM_LIGHTS; ++i) {
-        lightVector[i] = lightPosition[i] - coord3d_world;
+        fragment_light_vector[i] = light_position[i] - vertex_position_world;
     }
 
-    gl_Position = mvp_xform*vec4(coord3d, 1);
-    f_texcoord = texcoord;
+    gl_Position = mvp_xform*vec4(vertex_position, 1);
+    fragment_texcoord = texcoord;
 }

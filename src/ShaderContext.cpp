@@ -40,21 +40,21 @@ ShaderContext::ShaderContext(
     bool use_phong_normal_env = m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping;
     Program *program = material->get_program();
     if(m_use_world_normal || m_use_camera_vec || use_phong_normal_env) {
-        m_var_attribute_norm3d     = std::unique_ptr<VarAttribute>(program->get_var_attribute("norm3d"));
+        m_var_attribute_vertex_normal     = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_normal"));
         m_var_uniform_normal_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("normal_xform"));
         if(m_use_camera_vec || use_phong_normal_env) {
             if(m_use_camera_vec || (!m_use_world_normal && m_use_normal_mapping) || m_use_env_mapping) {
                 m_var_uniform_modelview_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("modelview_xform"));
-                m_var_uniform_camera_pos      = std::unique_ptr<VarUniform>(program->get_var_uniform("cameraPosition"));
+                m_var_uniform_camera_pos      = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_position"));
             }
             if(m_use_phong_shading) {
-                m_var_uniform_light_pos     = std::unique_ptr<VarUniform>(program->get_var_uniform("lightPosition"));
-                m_var_uniform_light_color   = std::unique_ptr<VarUniform>(program->get_var_uniform("lightColor"));
-                m_var_uniform_light_enabled = std::unique_ptr<VarUniform>(program->get_var_uniform("lightEnabled"));
-                m_var_uniform_light_count   = std::unique_ptr<VarUniform>(program->get_var_uniform("lightCount"));
+                m_var_uniform_light_pos     = std::unique_ptr<VarUniform>(program->get_var_uniform("light_position"));
+                m_var_uniform_light_color   = std::unique_ptr<VarUniform>(program->get_var_uniform("light_color"));
+                m_var_uniform_light_enabled = std::unique_ptr<VarUniform>(program->get_var_uniform("light_enabled"));
+                m_var_uniform_light_count   = std::unique_ptr<VarUniform>(program->get_var_uniform("light_count"));
             }
             if(m_use_normal_mapping) {
-                m_var_attribute_tangent3d        = std::unique_ptr<VarAttribute>(program->get_var_attribute("tangent3d"));
+                m_var_attribute_vertex_tangent        = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_tangent"));
                 m_var_uniform_normal_map_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("normal_map_texture"));
             }
             if(m_use_env_mapping) {
@@ -66,7 +66,7 @@ ShaderContext::ShaderContext(
     if(m_use_texture_mapping || m_use_normal_mapping) {
         m_var_attribute_texcoord = std::unique_ptr<VarAttribute>(program->get_var_attribute("texcoord"));
         if(m_use_texture_mapping) {
-            m_var_uniform_mytexture = std::unique_ptr<VarUniform>(program->get_var_uniform("mytexture"));
+            m_var_uniform_color_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("color_texture"));
         }
     }
     if(m_use_depth_overlay) {
@@ -82,7 +82,7 @@ ShaderContext::ShaderContext(
         m_var_uniform_inv_projection_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("inv_projection_xform"));
         m_var_uniform_inv_normal_xform     = std::unique_ptr<VarUniform>(program->get_var_uniform("inv_normal_xform"));
     } else {
-        m_var_attribute_coord3d = std::unique_ptr<VarAttribute>(program->get_var_attribute("coord3d"));
+        m_var_attribute_vertex_position = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_position"));
         m_var_uniform_mvp_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("mvp_xform"));
     }
 }
@@ -108,8 +108,8 @@ void ShaderContext::render()
         glEnable(GL_DEPTH_TEST);
         return;
     }
-    m_var_attribute_coord3d->enable_vertex_attrib_array();
-    m_var_attribute_coord3d->vertex_attrib_pointer(
+    m_var_attribute_vertex_position->enable_vertex_attrib_array();
+    m_var_attribute_vertex_position->vertex_attrib_pointer(
             m_vbo_vert_coords,
             3,        // number of elements per vertex, here (x,y,z)
             GL_FLOAT, // the type of each element
@@ -117,8 +117,8 @@ void ShaderContext::render()
             0,        // no extra data between each position
             0);       // offset of first element
     if(m_use_world_normal || m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping) {
-        m_var_attribute_norm3d->enable_vertex_attrib_array();
-        m_var_attribute_norm3d->vertex_attrib_pointer(
+        m_var_attribute_vertex_normal->enable_vertex_attrib_array();
+        m_var_attribute_vertex_normal->vertex_attrib_pointer(
                 m_vbo_vert_normal,
                 3,        // number of elements per vertex, here (x,y,z)
                 GL_FLOAT, // the type of each element
@@ -126,8 +126,8 @@ void ShaderContext::render()
                 0,        // no extra data between each position
                 0);       // offset of first element
         if(m_use_normal_mapping) {
-            m_var_attribute_tangent3d->enable_vertex_attrib_array();
-            m_var_attribute_tangent3d->vertex_attrib_pointer(
+            m_var_attribute_vertex_tangent->enable_vertex_attrib_array();
+            m_var_attribute_vertex_tangent->vertex_attrib_pointer(
                     m_vbo_vert_tangent,
                     3,        // number of elements per vertex, here (x,y,z)
                     GL_FLOAT, // the type of each element
@@ -150,11 +150,11 @@ void ShaderContext::render()
         m_ibo_tri_indices->bind();
         glDrawElements(GL_TRIANGLES, m_ibo_tri_indices->size()/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
     }
-    m_var_attribute_coord3d->disable_vertex_attrib_array();
+    m_var_attribute_vertex_position->disable_vertex_attrib_array();
     if(m_use_world_normal || m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping) {
-        m_var_attribute_norm3d->disable_vertex_attrib_array();
+        m_var_attribute_vertex_normal->disable_vertex_attrib_array();
         if(m_use_normal_mapping) {
-            m_var_attribute_tangent3d->disable_vertex_attrib_array();
+            m_var_attribute_vertex_tangent->disable_vertex_attrib_array();
         }
     }
     if(m_use_texture_mapping || m_use_normal_mapping) {
@@ -180,7 +180,7 @@ void ShaderContext::set_normal_xform(glm::mat4 normal_xform)
 void ShaderContext::set_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
-    m_var_uniform_mytexture->uniform_1i(texture_id);
+    m_var_uniform_color_texture->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_normal_map_texture_index(GLint texture_id)

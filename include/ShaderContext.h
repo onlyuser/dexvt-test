@@ -55,12 +55,12 @@ public:
 private:
     Material* m_material;
     Buffer *m_vbo_vert_coords, *m_vbo_vert_normal, *m_vbo_vert_tangent, *m_vbo_tex_coords, *m_ibo_tri_indices;
-    std::unique_ptr<VarAttribute> m_var_attribute_coord3d, m_var_attribute_norm3d, m_var_attribute_tangent3d, m_var_attribute_texcoord;
+    std::unique_ptr<VarAttribute> m_var_attribute_vertex_position, m_var_attribute_vertex_normal, m_var_attribute_vertex_tangent, m_var_attribute_texcoord;
     std::unique_ptr<VarUniform>
             m_var_uniform_mvp_xform,
             m_var_uniform_modelview_xform,
             m_var_uniform_normal_xform,
-            m_var_uniform_mytexture,
+            m_var_uniform_color_texture,
             m_var_uniform_normal_map_texture,
             m_var_uniform_camera_pos,
             m_var_uniform_light_pos,
