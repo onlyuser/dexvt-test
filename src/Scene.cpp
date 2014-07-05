@@ -137,10 +137,6 @@ void Scene::render(bool use_normal_material)
         bool use_normal_mapping   = material->use_normal_mapping();
         bool use_env_mapping      = material->use_env_mapping();
         bool use_depth_overlay    = material->use_depth_overlay();
-        // TODO: texture mapped material has no normal_xform, causing segfault later
-        if(use_normal_material && mesh->get_material()->use_texture_mapping()) {
-            continue;
-        }
         material->get_program()->use();
         shader_context->set_mvp_xform(m_camera->get_projection_xform()*m_camera->get_xform()*mesh->get_xform());
         bool use_phong_normal_env = use_phong_shading || use_normal_mapping || use_env_mapping;
