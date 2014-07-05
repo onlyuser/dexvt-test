@@ -1,4 +1,4 @@
-varying vec2      fragment_texcoord;
+varying vec2      lerp_texcoord;
 uniform sampler2D normal_map_texture;
 
 const float AIR_REFRACTIVE_INDEX = 1.0;
@@ -9,8 +9,8 @@ const float FRESNEL_REFLECTANCE_SHARPNESS = 2.0;
 
 uniform float reflect_to_refract_ratio;
 
-varying mat3 fragment_tbn_xform;
-varying vec3 fragment_camera_vector;
+varying mat3 lerp_tbn_xform;
+varying vec3 lerp_camera_vector;
 
 uniform samplerCube env_map_texture;
 
@@ -22,13 +22,13 @@ uniform float     camera_near;
 uniform float     camera_far;
 
 void main(void) {
-    vec3 camera_direction = normalize(fragment_camera_vector);
+    vec3 camera_direction = normalize(lerp_camera_vector);
 
-    vec2 flipped_texcoord = vec2(fragment_texcoord.x, 1-fragment_texcoord.y);
+    vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1-lerp_texcoord.y);
 
     vec3 bumpy_surface_normal =
             mix(vec3(0, 0, 1), normalize(vec3(texture2D(normal_map_texture, flipped_texcoord))), BUMPINESS_FACTOR);
-    vec3 bumpy_world_normal = normalize(fragment_tbn_xform*bumpy_surface_normal);
+    vec3 bumpy_world_normal = normalize(lerp_tbn_xform*bumpy_surface_normal);
 
     vec3 reflected_camera_dir = reflect(-camera_direction, bumpy_world_normal);
     float etaR = AIR_REFRACTIVE_INDEX/WATER_REFRACTIVE_INDEX;
