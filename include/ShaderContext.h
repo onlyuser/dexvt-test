@@ -26,9 +26,9 @@ public:
             Buffer*   vbo_vert_tangent,
             Buffer*   vbo_tex_coords,
             Buffer*   ibo_tri_indices);
-    Program *get_program() const
+    Material* get_material() const
     {
-        return m_program;
+        return m_material;
     }
     void render();
     void set_mvp_xform(glm::mat4 mvp_xform);
@@ -53,7 +53,7 @@ public:
     void set_reflect_to_refract_ratio(GLfloat reflect_to_refract_ratio);
 
 private:
-    Program* m_program;
+    Material* m_material;
     Buffer *m_vbo_vert_coords, *m_vbo_vert_normal, *m_vbo_vert_tangent, *m_vbo_tex_coords, *m_ibo_tri_indices;
     std::unique_ptr<VarAttribute> m_var_attribute_coord3d, m_var_attribute_norm3d, m_var_attribute_tangent3d, m_var_attribute_texcoord;
     std::unique_ptr<VarUniform>

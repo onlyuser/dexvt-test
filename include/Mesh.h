@@ -72,6 +72,7 @@ public:
     }
 
     ShaderContext* get_shader_context();
+    ShaderContext* get_normal_shader_context(Material* normal_material);
 
     int get_texture_index() const
     {
@@ -155,6 +156,8 @@ private:
     Material*                      m_material; // TODO: Mesh has one Material
     std::unique_ptr<ShaderContext> m_shader_context; // TODO: Mesh has one ShaderContext
     bool                           m_shader_context_already_init;
+    std::unique_ptr<ShaderContext> m_normal_shader_context;
+    bool                           m_normal_shader_context_already_init;
     int                            m_texture_index;
     int                            m_normal_map_texture_index;
     int                            m_env_map_texture_index;

@@ -22,6 +22,7 @@ Mesh::Mesh(
       m_buffers_already_init(false),
       m_material(NULL),
       m_shader_context_already_init(false),
+      m_normal_shader_context_already_init(false),
       m_texture_index(-1),
       m_normal_map_texture_index(-1),
       m_env_map_texture_index(-1),
@@ -206,6 +207,22 @@ ShaderContext* Mesh::get_shader_context()
             get_ibo_tri_indices()));
     m_shader_context_already_init = true;
     return m_shader_context.get();
+}
+
+ShaderContext* Mesh::get_normal_shader_context(Material* normal_material)
+{
+    if(m_normal_shader_context_already_init || !normal_material) { // FIX-ME! -- potential bug if Material not set
+        return m_normal_shader_context.get();
+    }
+    m_normal_shader_context = std::unique_ptr<ShaderContext>(new ShaderContext(
+            normal_material,
+            get_vbo_vert_coords(),
+            get_vbo_vert_normal(),
+            get_vbo_vert_tangent(),
+            get_vbo_tex_coords(),
+            get_ibo_tri_indices()));
+    m_normal_shader_context_already_init = true;
+    return m_normal_shader_context.get();
 }
 
 void Mesh::update_xform()

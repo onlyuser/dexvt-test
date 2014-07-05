@@ -89,7 +89,7 @@ void Scene::reset()
 void Scene::use_program()
 {
     for(meshes_t::const_iterator q = m_meshes.begin(); q != m_meshes.end(); q++) {
-        (*q)->get_shader_context()->get_program()->use();
+        (*q)->get_shader_context()->get_material()->get_program()->use();
     }
 }
 
@@ -116,7 +116,7 @@ void Scene::render(bool use_normal_material)
     }
     if(m_skybox) {
         ShaderContext* shader_context = m_skybox->get_shader_context();
-        shader_context->get_program()->use();
+        shader_context->get_material()->get_program()->use();
         shader_context->set_env_map_texture_index(0);
         shader_context->set_inv_normal_xform(glm::inverse(m_camera->get_normal_xform()));
         shader_context->set_inv_projection_xform(glm::inverse(m_camera->get_projection_xform()));
@@ -127,10 +127,9 @@ void Scene::render(bool use_normal_material)
         if(!mesh->get_visible()) {
             continue;
         }
-        Material* material = use_normal_material ? m_normal_material : mesh->get_material();
-        material->get_program()->use();
-        ShaderContext* shader_context = mesh->get_shader_context();
-        shader_context->set_mvp_xform(m_camera->get_projection_xform()*m_camera->get_xform()*mesh->get_xform());
+        ShaderContext* shader_context =
+                use_normal_material ? mesh->get_normal_shader_context(m_normal_material) : mesh->get_shader_context();
+        Material* material = shader_context->get_material();
         bool use_world_normal     = material->use_world_normal();
         bool use_camera_vec       = material->use_camera_vec();
         bool use_phong_shading    = material->use_phong_shading();
@@ -142,6 +141,8 @@ void Scene::render(bool use_normal_material)
         if(use_normal_material && mesh->get_material()->use_texture_mapping()) {
             continue;
         }
+        material->get_program()->use();
+        shader_context->set_mvp_xform(m_camera->get_projection_xform()*m_camera->get_xform()*mesh->get_xform());
         bool use_phong_normal_env = use_phong_shading || use_normal_mapping || use_env_mapping;
         if(use_world_normal || use_camera_vec || use_phong_normal_env) {
             shader_context->set_normal_xform(mesh->get_normal_xform());

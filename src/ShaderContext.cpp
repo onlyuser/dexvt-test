@@ -21,7 +21,7 @@ ShaderContext::ShaderContext(
         Buffer*   vbo_vert_tangent,
         Buffer*   vbo_tex_coords,
         Buffer*   ibo_tri_indices)
-    : m_program(material->get_program()),
+    : m_material(material),
       m_vbo_vert_coords(vbo_vert_coords),
       m_vbo_vert_normal(vbo_vert_normal),
       m_vbo_vert_tangent(vbo_vert_tangent),
@@ -38,57 +38,58 @@ ShaderContext::ShaderContext(
       m_skybox(material->skybox())
 {
     bool use_phong_normal_env = m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping;
+    Program *program = material->get_program();
     if(m_use_world_normal || m_use_camera_vec || use_phong_normal_env) {
-        m_var_attribute_norm3d     = std::unique_ptr<VarAttribute>(m_program->get_var_attribute("norm3d"));
-        m_var_uniform_normal_xform = std::unique_ptr<VarUniform>(m_program->get_var_uniform("normal_xform"));
+        m_var_attribute_norm3d     = std::unique_ptr<VarAttribute>(program->get_var_attribute("norm3d"));
+        m_var_uniform_normal_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("normal_xform"));
         if(m_use_camera_vec || use_phong_normal_env) {
             if(m_use_camera_vec || (!m_use_world_normal && m_use_normal_mapping) || m_use_env_mapping) {
-                m_var_uniform_modelview_xform = std::unique_ptr<VarUniform>(m_program->get_var_uniform("modelview_xform"));
-                m_var_uniform_camera_pos      = std::unique_ptr<VarUniform>(m_program->get_var_uniform("cameraPosition"));
+                m_var_uniform_modelview_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("modelview_xform"));
+                m_var_uniform_camera_pos      = std::unique_ptr<VarUniform>(program->get_var_uniform("cameraPosition"));
             }
             if(m_use_phong_shading) {
-                m_var_uniform_light_pos     = std::unique_ptr<VarUniform>(m_program->get_var_uniform("lightPosition"));
-                m_var_uniform_light_color   = std::unique_ptr<VarUniform>(m_program->get_var_uniform("lightColor"));
-                m_var_uniform_light_enabled = std::unique_ptr<VarUniform>(m_program->get_var_uniform("lightEnabled"));
-                m_var_uniform_light_count   = std::unique_ptr<VarUniform>(m_program->get_var_uniform("lightCount"));
+                m_var_uniform_light_pos     = std::unique_ptr<VarUniform>(program->get_var_uniform("lightPosition"));
+                m_var_uniform_light_color   = std::unique_ptr<VarUniform>(program->get_var_uniform("lightColor"));
+                m_var_uniform_light_enabled = std::unique_ptr<VarUniform>(program->get_var_uniform("lightEnabled"));
+                m_var_uniform_light_count   = std::unique_ptr<VarUniform>(program->get_var_uniform("lightCount"));
             }
             if(m_use_normal_mapping) {
-                m_var_attribute_tangent3d        = std::unique_ptr<VarAttribute>(m_program->get_var_attribute("tangent3d"));
-                m_var_uniform_normal_map_texture = std::unique_ptr<VarUniform>(m_program->get_var_uniform("normal_map_texture"));
+                m_var_attribute_tangent3d        = std::unique_ptr<VarAttribute>(program->get_var_attribute("tangent3d"));
+                m_var_uniform_normal_map_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("normal_map_texture"));
             }
             if(m_use_env_mapping) {
-                m_var_uniform_env_map_texture          = std::unique_ptr<VarUniform>(m_program->get_var_uniform("env_map_texture"));
-                m_var_uniform_reflect_to_refract_ratio = std::unique_ptr<VarUniform>(m_program->get_var_uniform("reflect_to_refract_ratio"));
+                m_var_uniform_env_map_texture          = std::unique_ptr<VarUniform>(program->get_var_uniform("env_map_texture"));
+                m_var_uniform_reflect_to_refract_ratio = std::unique_ptr<VarUniform>(program->get_var_uniform("reflect_to_refract_ratio"));
             }
         }
     }
     if(m_use_texture_mapping || m_use_normal_mapping) {
-        m_var_attribute_texcoord = std::unique_ptr<VarAttribute>(m_program->get_var_attribute("texcoord"));
+        m_var_attribute_texcoord = std::unique_ptr<VarAttribute>(program->get_var_attribute("texcoord"));
         if(m_use_texture_mapping) {
-            m_var_uniform_mytexture = std::unique_ptr<VarUniform>(m_program->get_var_uniform("mytexture"));
+            m_var_uniform_mytexture = std::unique_ptr<VarUniform>(program->get_var_uniform("mytexture"));
         }
     }
     if(m_use_depth_overlay) {
-        m_var_uniform_front_depth_overlay_texture = std::unique_ptr<VarUniform>(m_program->get_var_uniform("front_depth_overlay_texture"));
-        m_var_uniform_back_depth_overlay_texture  = std::unique_ptr<VarUniform>(m_program->get_var_uniform("back_depth_overlay_texture"));
-        m_var_uniform_back_normal_overlay_texture = std::unique_ptr<VarUniform>(m_program->get_var_uniform("back_normal_overlay_texture"));
-        m_var_uniform_viewport_size               = std::unique_ptr<VarUniform>(m_program->get_var_uniform("viewport_size"));
-        m_var_uniform_camera_near                 = std::unique_ptr<VarUniform>(m_program->get_var_uniform("camera_near"));
-        m_var_uniform_camera_far                  = std::unique_ptr<VarUniform>(m_program->get_var_uniform("camera_far"));
+        m_var_uniform_front_depth_overlay_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("front_depth_overlay_texture"));
+        m_var_uniform_back_depth_overlay_texture  = std::unique_ptr<VarUniform>(program->get_var_uniform("back_depth_overlay_texture"));
+        m_var_uniform_back_normal_overlay_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("back_normal_overlay_texture"));
+        m_var_uniform_viewport_size               = std::unique_ptr<VarUniform>(program->get_var_uniform("viewport_size"));
+        m_var_uniform_camera_near                 = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_near"));
+        m_var_uniform_camera_far                  = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_far"));
     }
     if(m_skybox) {
-        m_var_uniform_env_map_texture      = std::unique_ptr<VarUniform>(m_program->get_var_uniform("env_map_texture"));
-        m_var_uniform_inv_projection_xform = std::unique_ptr<VarUniform>(m_program->get_var_uniform("inv_projection_xform"));
-        m_var_uniform_inv_normal_xform     = std::unique_ptr<VarUniform>(m_program->get_var_uniform("inv_normal_xform"));
+        m_var_uniform_env_map_texture      = std::unique_ptr<VarUniform>(program->get_var_uniform("env_map_texture"));
+        m_var_uniform_inv_projection_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("inv_projection_xform"));
+        m_var_uniform_inv_normal_xform     = std::unique_ptr<VarUniform>(program->get_var_uniform("inv_normal_xform"));
     } else {
-        m_var_attribute_coord3d = std::unique_ptr<VarAttribute>(m_program->get_var_attribute("coord3d"));
-        m_var_uniform_mvp_xform = std::unique_ptr<VarUniform>(m_program->get_var_uniform("mvp_xform"));
+        m_var_attribute_coord3d = std::unique_ptr<VarAttribute>(program->get_var_attribute("coord3d"));
+        m_var_uniform_mvp_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("mvp_xform"));
     }
 }
 
 void ShaderContext::render()
 {
-    m_program->use();
+    m_material->get_program()->use();
     int i = 0;
     for(vt::ShaderContext::textures_t::const_iterator p = m_textures.begin(); p != m_textures.end(); p++)
     {
