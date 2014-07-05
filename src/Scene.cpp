@@ -24,8 +24,8 @@ Scene::Scene()
     m_camera_pos[0] = 0;
     m_camera_pos[1] = 0;
     m_camera_pos[2] = 0;
-    m_viewport_size[0] = 0;
-    m_viewport_size[1] = 0;
+    m_viewport_dim[0] = 0;
+    m_viewport_dim[1] = 0;
     m_light_pos     = new GLfloat[NUM_LIGHTS*3];
     m_light_color   = new GLfloat[NUM_LIGHTS*3];
     m_light_enabled = new GLint[NUM_LIGHTS];
@@ -99,8 +99,8 @@ void Scene::render(bool use_normal_material)
     m_camera_pos[0] = camera_pos.x;
     m_camera_pos[1] = camera_pos.y;
     m_camera_pos[2] = camera_pos.z;
-    m_viewport_size[0] = m_camera->get_width();
-    m_viewport_size[1] = m_camera->get_height();
+    m_viewport_dim[0] = m_camera->get_width();
+    m_viewport_dim[1] = m_camera->get_height();
     int i = 0;
     for(lights_t::const_iterator p = m_lights.begin(); p != m_lights.end(); p++) {
         glm::vec3 light_pos = (*p)->get_origin();
@@ -169,7 +169,7 @@ void Scene::render(bool use_normal_material)
             shader_context->set_front_depth_overlay_texture_index(mesh->get_front_depth_overlay_texture_index());
             shader_context->set_back_depth_overlay_texture_index( mesh->get_back_depth_overlay_texture_index());
             shader_context->set_back_normal_overlay_texture_index(mesh->get_back_normal_overlay_texture_index());
-            shader_context->set_viewport_size(m_viewport_size);
+            shader_context->set_viewport_dim(m_viewport_dim);
             shader_context->set_camera_near(m_camera->get_near_plane());
             shader_context->set_camera_far(m_camera->get_far_plane());
         }

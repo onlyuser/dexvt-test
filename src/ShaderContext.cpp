@@ -73,7 +73,7 @@ ShaderContext::ShaderContext(
         m_var_uniform_front_depth_overlay_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("front_depth_overlay_texture"));
         m_var_uniform_back_depth_overlay_texture  = std::unique_ptr<VarUniform>(program->get_var_uniform("back_depth_overlay_texture"));
         m_var_uniform_back_normal_overlay_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("back_normal_overlay_texture"));
-        m_var_uniform_viewport_size               = std::unique_ptr<VarUniform>(program->get_var_uniform("viewport_size"));
+        m_var_uniform_viewport_dim                = std::unique_ptr<VarUniform>(program->get_var_uniform("viewport_dim"));
         m_var_uniform_camera_near                 = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_near"));
         m_var_uniform_camera_far                  = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_far"));
     }
@@ -250,9 +250,9 @@ void ShaderContext::set_back_normal_overlay_texture_index(GLint texture_id)
     m_var_uniform_back_normal_overlay_texture->uniform_1i(texture_id);
 }
 
-void ShaderContext::set_viewport_size(GLfloat* viewport_size_arr)
+void ShaderContext::set_viewport_dim(GLfloat* viewport_dim_arr)
 {
-    m_var_uniform_viewport_size->uniform_2fv(1, viewport_size_arr);
+    m_var_uniform_viewport_dim->uniform_2fv(1, viewport_dim_arr);
 }
 
 void ShaderContext::set_camera_near(GLfloat camera_near)
