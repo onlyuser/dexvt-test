@@ -50,6 +50,11 @@ public:
             float       width  = 1,
             float       height = 1,
             float       length = 1);
+    static Mesh* create_tetrahedron(
+            std::string name   = "",
+            float       width  = 1,
+            float       height = 1,
+            float       length = 1);
     static Mesh* create_viewport_quad(std::string name)
     {
         return create_grid(name, 1, 1);

@@ -436,4 +436,53 @@ Mesh* PrimitiveFactory::create_box(
     return mesh;
 }
 
+Mesh* PrimitiveFactory::create_tetrahedron(
+        std::string name,
+        float       width,
+        float       height,
+        float       length)
+{
+    Mesh* mesh = new Mesh(name, 12, 4);
+
+    // triangle opposite to origin
+    mesh->set_vert_coord(0, glm::vec3(1, 0, 0));
+    mesh->set_vert_coord(1, glm::vec3(0, 0, 1));
+    mesh->set_vert_coord(2, glm::vec3(0, 1, 0));
+
+    // triangle starting at x
+    mesh->set_vert_coord(3, glm::vec3(1, 0, 0));
+    mesh->set_vert_coord(4, glm::vec3(0, 1, 0));
+    mesh->set_vert_coord(5, glm::vec3(1, 1, 1));
+
+    // triangle starting at y
+    mesh->set_vert_coord(6, glm::vec3(0, 1, 0));
+    mesh->set_vert_coord(7, glm::vec3(0, 0, 1));
+    mesh->set_vert_coord(8, glm::vec3(1, 1, 1));
+
+    // triangle starting at z
+    mesh->set_vert_coord(9,  glm::vec3(0, 0, 1));
+    mesh->set_vert_coord(10, glm::vec3(1, 0, 0));
+    mesh->set_vert_coord(11, glm::vec3(1, 1, 1));
+
+    for(int i=0; i<4; i++) {
+        glm::vec3 p0 = mesh->get_vert_coord(i*3+0);
+        glm::vec3 p1 = mesh->get_vert_coord(i*3+1);
+        glm::vec3 p2 = mesh->get_vert_coord(i*3+2);
+        glm::vec3 e1 = p1-p0;
+        glm::vec3 e2 = p2-p0;
+        glm::vec3 n = glm::cross(e1, e2);
+        for(int j=0; j<3; j++) {
+            mesh->set_vert_normal( i*3+j, n);
+            mesh->set_vert_tangent(i*3+j, e1);
+        }
+    }
+
+    mesh->set_tri_indices(0, glm::uvec3(0, 1,  2));
+    mesh->set_tri_indices(1, glm::uvec3(3, 4,  5));
+    mesh->set_tri_indices(2, glm::uvec3(6, 7,  8));
+    mesh->set_tri_indices(3, glm::uvec3(9, 10, 11));
+
+    return mesh;
+}
+
 }
