@@ -129,6 +129,9 @@ void Scene::render(bool use_normal_material)
         }
         ShaderContext* shader_context =
                 use_normal_material ? mesh->get_normal_shader_context(m_normal_material) : mesh->get_shader_context();
+        if(!shader_context) {
+            continue;
+        }
         Material* material = shader_context->get_material();
         bool use_world_normal     = material->use_world_normal();
         bool use_camera_vec       = material->use_camera_vec();

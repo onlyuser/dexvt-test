@@ -45,7 +45,7 @@ const char* DEFAULT_CAPTION = "My Textured Cube";
 
 int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
-vt::Mesh* skybox, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7;
+vt::Mesh* skybox, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8;
 vt::Light* light, *light2, *light3;
 std::unique_ptr<vt::FrameBuffer> front_depth_overlay_fb, back_depth_overlay_fb, back_normal_overlay_fb;
 
@@ -67,13 +67,14 @@ int init_resources()
     skybox = vt::PrimitiveFactory::create_viewport_quad("grid");
     scene->set_skybox(skybox);
 
-    scene->add_mesh(mesh  = vt::PrimitiveFactory::create_box(     "box"));
-    scene->add_mesh(mesh2 = vt::PrimitiveFactory::create_box(     "scaled_box"));
-    scene->add_mesh(mesh3 = vt::PrimitiveFactory::create_grid(    "grid",     4,  4,   10, 10));
-    scene->add_mesh(mesh4 = vt::PrimitiveFactory::create_sphere(  "sphere",   16, 16,  0.5));
-    scene->add_mesh(mesh5 = vt::PrimitiveFactory::create_torus(   "torus",    16, 16,  0.5, 0.25));
-    scene->add_mesh(mesh6 = vt::PrimitiveFactory::create_cylinder("cylinder", 16, 0.5, 1));
-    scene->add_mesh(mesh7 = vt::PrimitiveFactory::create_cone(    "cone",     16, 0.5, 1));
+    scene->add_mesh(mesh  = vt::PrimitiveFactory::create_box(       "box"));
+    scene->add_mesh(mesh2 = vt::PrimitiveFactory::create_box(       "scaled_box"));
+    scene->add_mesh(mesh3 = vt::PrimitiveFactory::create_grid(      "grid",       4,  4,   10, 10));
+    scene->add_mesh(mesh4 = vt::PrimitiveFactory::create_sphere(    "sphere",     16, 16,  0.5));
+    scene->add_mesh(mesh5 = vt::PrimitiveFactory::create_torus(     "torus",      16, 16,  0.5, 0.25));
+    scene->add_mesh(mesh6 = vt::PrimitiveFactory::create_cylinder(  "cylinder",   16, 0.5, 1));
+    scene->add_mesh(mesh7 = vt::PrimitiveFactory::create_cone(      "cone",       16, 0.5, 1));
+    scene->add_mesh(mesh8 = vt::PrimitiveFactory::create_hemisphere("hemisphere", 16, 16,  0.5));
 
     mesh->set_origin(glm::vec3(-0.5, -0.5, -0.5)); // box
     mesh2->set_scale(glm::vec3(0.5, 2, 3));        // scaled box
@@ -82,6 +83,7 @@ int init_resources()
     mesh5->set_origin(glm::vec3(-2, 0, 0));        // torus
     mesh6->set_origin(glm::vec3(0, -2.5, 0));      // cylinder
     mesh7->set_origin(glm::vec3(0, 1.5, 0));       // cone
+    mesh8->set_origin(glm::vec3(2, 2, 0));         // hemisphere
 
     mesh2->set_visible(false);
     //mesh6->set_visible(false);
@@ -312,6 +314,9 @@ int init_resources()
     // cone
     mesh7->set_material(texture_mapped_material);
     mesh7->set_texture_index(mesh7->get_material()->get_texture_index_by_name("dex3d"));
+
+    // hemisphere
+    mesh8->set_material(env_mapped_material_fast);
 
     return 1;
 }
