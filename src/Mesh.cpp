@@ -13,8 +13,8 @@ namespace vt {
 
 Mesh::Mesh(
         std::string name,
-        size_t num_vertex,
-        size_t num_tri)
+        size_t      num_vertex,
+        size_t      num_tri)
     : NamedObject(name),
       m_num_vertex(num_vertex),
       m_num_tri(num_tri),

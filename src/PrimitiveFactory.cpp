@@ -2,6 +2,7 @@
 #include <Mesh.h>
 #include <Util.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/constants.hpp>
 #include <string>
 
@@ -323,63 +324,68 @@ Mesh* PrimitiveFactory::create_box(
     // ==============================
 
     // right
-    mesh->set_vert_coord(0, glm::vec3(0, 0,      0));
-    mesh->set_vert_coord(1, glm::vec3(0, 0,      length));
-    mesh->set_vert_coord(2, glm::vec3(0, height, length));
-    mesh->set_vert_coord(3, glm::vec3(0, height, 0));
+    mesh->set_vert_coord(0, glm::vec3(0, 0, 0));
+    mesh->set_vert_coord(1, glm::vec3(0, 0, 1));
+    mesh->set_vert_coord(2, glm::vec3(0, 1, 1));
+    mesh->set_vert_coord(3, glm::vec3(0, 1, 0));
     for(int i=0; i<4; i++) {
         mesh->set_vert_normal( 0*4+i, glm::vec3(-1, 0, 0));
         mesh->set_vert_tangent(0*4+i, glm::vec3( 0, 0, 1));
     }
 
     // front
-    mesh->set_vert_coord(4, glm::vec3(0,     0,      length));
-    mesh->set_vert_coord(5, glm::vec3(width, 0,      length));
-    mesh->set_vert_coord(6, glm::vec3(width, height, length));
-    mesh->set_vert_coord(7, glm::vec3(0,     height, length));
+    mesh->set_vert_coord(4, glm::vec3(0, 0, 1));
+    mesh->set_vert_coord(5, glm::vec3(1, 0, 1));
+    mesh->set_vert_coord(6, glm::vec3(1, 1, 1));
+    mesh->set_vert_coord(7, glm::vec3(0, 1, 1));
     for(int i=0; i<4; i++) {
         mesh->set_vert_normal( 1*4+i, glm::vec3(0, 0, 1));
         mesh->set_vert_tangent(1*4+i, glm::vec3(1, 0, 0));
     }
 
     // left
-    mesh->set_vert_coord( 8, glm::vec3(width, 0,      length));
-    mesh->set_vert_coord( 9, glm::vec3(width, 0,      0));
-    mesh->set_vert_coord(10, glm::vec3(width, height, 0));
-    mesh->set_vert_coord(11, glm::vec3(width, height, length));
+    mesh->set_vert_coord( 8, glm::vec3(1, 0, 1));
+    mesh->set_vert_coord( 9, glm::vec3(1, 0, 0));
+    mesh->set_vert_coord(10, glm::vec3(1, 1, 0));
+    mesh->set_vert_coord(11, glm::vec3(1, 1, 1));
     for(int i=0; i<4; i++) {
         mesh->set_vert_normal( 2*4+i, glm::vec3(1, 0,  0));
         mesh->set_vert_tangent(2*4+i, glm::vec3(0, 0, -1));
     }
 
     // back
-    mesh->set_vert_coord(12, glm::vec3(width, 0,      0));
-    mesh->set_vert_coord(13, glm::vec3(0,     0,      0));
-    mesh->set_vert_coord(14, glm::vec3(0,     height, 0));
-    mesh->set_vert_coord(15, glm::vec3(width, height, 0));
+    mesh->set_vert_coord(12, glm::vec3(1, 0, 0));
+    mesh->set_vert_coord(13, glm::vec3(0, 0, 0));
+    mesh->set_vert_coord(14, glm::vec3(0, 1, 0));
+    mesh->set_vert_coord(15, glm::vec3(1, 1, 0));
     for(int i=0; i<4; i++) {
         mesh->set_vert_normal( 3*4+i, glm::vec3( 0, 0, -1));
         mesh->set_vert_tangent(3*4+i, glm::vec3(-1, 0,  0));
     }
 
     // top
-    mesh->set_vert_coord(16, glm::vec3(width, height, 0));
-    mesh->set_vert_coord(17, glm::vec3(0,     height, 0));
-    mesh->set_vert_coord(18, glm::vec3(0,     height, length));
-    mesh->set_vert_coord(19, glm::vec3(width, height, length));
+    mesh->set_vert_coord(16, glm::vec3(1, 1, 0));
+    mesh->set_vert_coord(17, glm::vec3(0, 1, 0));
+    mesh->set_vert_coord(18, glm::vec3(0, 1, 1));
+    mesh->set_vert_coord(19, glm::vec3(1, 1, 1));
     for(int i=0; i<4; i++) {
         mesh->set_vert_normal( 4*4+i, glm::vec3( 0, 1, 0));
         mesh->set_vert_tangent(4*4+i, glm::vec3(-1, 0, 0));
     }
 
     // bottom
-    mesh->set_vert_coord(20, glm::vec3(0,     0, 0));
-    mesh->set_vert_coord(21, glm::vec3(width, 0, 0));
-    mesh->set_vert_coord(22, glm::vec3(width, 0, length));
-    mesh->set_vert_coord(23, glm::vec3(0,     0, length));
+    mesh->set_vert_coord(20, glm::vec3(0, 0, 0));
+    mesh->set_vert_coord(21, glm::vec3(1, 0, 0));
+    mesh->set_vert_coord(22, glm::vec3(1, 0, 1));
+    mesh->set_vert_coord(23, glm::vec3(0, 0, 1));
     for(int i=0; i<4; i++) {
         mesh->set_vert_normal( 5*4+i, glm::vec3(0, -1, 0));
         mesh->set_vert_tangent(5*4+i, glm::vec3(1,  0, 0));
+    }
+
+    glm::mat4 scale_xform = glm::scale(glm::mat4(1), glm::vec3(width, height, length));
+    for(int i=1; i<static_cast<int>(mesh->get_num_vertex()); i++) {
+        mesh->set_vert_coord(i, glm::vec3(glm::vec4(mesh->get_vert_coord(i), 1)*scale_xform));
     }
 
     // ========================
