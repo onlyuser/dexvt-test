@@ -119,17 +119,22 @@ Mesh* PrimitiveFactory::create_hemisphere(
     int vert_index = 0;
     for(int row = 0; row <= rows; row++) {
         for(int col = 0; col <= cols; col++) {
-            if(row == 0) {
-                mesh->set_vert_coord(vert_index, glm::vec3(0, 0, 0));
-                mesh->set_vert_normal(vert_index, glm::vec3(0, -1, 0));
-            } else {
-                glm::vec3 offset = orient_to_offset(glm::vec3(
-                        0,
-                        -(static_cast<float>(row-1)/(rows-1)*90), // pitch
-                        static_cast<float>(col)/cols*360))        // yaw
-                        *radius;
-                mesh->set_vert_coord(vert_index, offset);
-                mesh->set_vert_normal(vert_index, glm::normalize(offset));
+            switch(row) {
+                case 0:
+                    mesh->set_vert_coord(vert_index, glm::vec3(0, 0, 0));
+                    mesh->set_vert_normal(vert_index, glm::vec3(0, -1, 0));
+                    break;
+                default:
+                    {
+                        glm::vec3 offset = orient_to_offset(glm::vec3(
+                                0,
+                                -(static_cast<float>(row-1)/(rows-1)*90), // pitch
+                                static_cast<float>(col)/cols*360))        // yaw
+                                *radius;
+                        mesh->set_vert_coord(vert_index, offset);
+                        mesh->set_vert_normal(vert_index, glm::normalize(offset));
+                    }
+                    break;
             }
             mesh->set_vert_tangent(vert_index, orient_to_offset(glm::vec3(
                     0,
