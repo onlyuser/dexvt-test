@@ -109,7 +109,7 @@ Mesh* PrimitiveFactory::create_hemisphere(
         float       radius)
 {
     int   cols = slices;
-    int   rows = stacks*0.5+1;
+    int   rows = stacks*0.5+2;
     Mesh* mesh = create_grid(name, cols, rows);
 
     // ==============================
@@ -132,7 +132,8 @@ Mesh* PrimitiveFactory::create_hemisphere(
                                 static_cast<float>(col)/cols*360))        // yaw
                                 *radius;
                         mesh->set_vert_coord(vert_index, offset);
-                        mesh->set_vert_normal(vert_index, glm::normalize(offset));
+                        mesh->set_vert_normal(vert_index, (row == 1) ?
+                                glm::vec3(0, -1, 0) : glm::normalize(offset));
                     }
                     break;
             }
@@ -154,7 +155,7 @@ Mesh* PrimitiveFactory::create_cylinder(
         float       height)
 {
     int   cols = slices;
-    int   rows = 3;
+    int   rows = 5;
     Mesh* mesh = create_grid(name, cols, rows);
 
     // ==============================
@@ -170,16 +171,6 @@ Mesh* PrimitiveFactory::create_cylinder(
                     mesh->set_vert_normal(vert_index, glm::vec3(0, -1, 0));
                     break;
                 case 1:
-                    {
-                        glm::vec3 offset = orient_to_offset(glm::vec3(
-                                0,
-                                0,                                 // pitch
-                                static_cast<float>(col)/cols*360)) // yaw
-                                *radius;
-                        mesh->set_vert_coord(vert_index, glm::vec3(offset.x, 0, offset.z));
-                        mesh->set_vert_normal(vert_index, glm::normalize(offset));
-                    }
-                    break;
                 case 2:
                     {
                         glm::vec3 offset = orient_to_offset(glm::vec3(
@@ -187,11 +178,25 @@ Mesh* PrimitiveFactory::create_cylinder(
                                 0,                                 // pitch
                                 static_cast<float>(col)/cols*360)) // yaw
                                 *radius;
-                        mesh->set_vert_coord(vert_index, glm::vec3(offset.x, height, offset.z));
-                        mesh->set_vert_normal(vert_index, glm::normalize(offset));
+                        mesh->set_vert_coord(vert_index, glm::vec3(offset.x, 0, offset.z));
+                        mesh->set_vert_normal(vert_index, (row == 1) ?
+                                glm::vec3(0, -1, 0) : glm::normalize(offset));
                     }
                     break;
                 case 3:
+                case 4:
+                    {
+                        glm::vec3 offset = orient_to_offset(glm::vec3(
+                                0,
+                                0,                                 // pitch
+                                static_cast<float>(col)/cols*360)) // yaw
+                                *radius;
+                        mesh->set_vert_coord(vert_index, glm::vec3(offset.x, height, offset.z));
+                        mesh->set_vert_normal(vert_index, (row == 4) ?
+                                glm::vec3(0, 1, 0) : glm::normalize(offset));
+                    }
+                    break;
+                case 5:
                     mesh->set_vert_coord(vert_index, glm::vec3(0, height, 0));
                     mesh->set_vert_normal(vert_index, glm::vec3(0, 1, 0));
                     break;
@@ -214,7 +219,7 @@ Mesh* PrimitiveFactory::create_cone(
         float       height)
 {
     int   cols = slices;
-    int   rows = 2;
+    int   rows = 3;
     Mesh* mesh = create_grid(name, cols, rows);
 
     // ==============================
@@ -231,6 +236,7 @@ Mesh* PrimitiveFactory::create_cone(
                     mesh->set_vert_normal(vert_index, glm::vec3(0, -1, 0));
                     break;
                 case 1:
+                case 2:
                     {
                         glm::vec3 offset = orient_to_offset(glm::vec3(
                                 0,
@@ -238,10 +244,11 @@ Mesh* PrimitiveFactory::create_cone(
                                 static_cast<float>(col)/cols*360)) // yaw
                                 *radius;
                         mesh->set_vert_coord(vert_index, offset);
-                        mesh->set_vert_normal(vert_index, glm::normalize(offset+glm::vec3(0, rim_y_offset, 0)));
+                        mesh->set_vert_normal(vert_index, (row == 1) ?
+                                glm::vec3(0, -1, 0) : glm::normalize(offset+glm::vec3(0, rim_y_offset, 0)));
                     }
                     break;
-                case 2:
+                case 3:
                     {
                         glm::vec3 offset = orient_to_offset(glm::vec3(
                                 0,
