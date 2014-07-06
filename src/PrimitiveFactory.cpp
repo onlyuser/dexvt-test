@@ -93,7 +93,7 @@ Mesh* PrimitiveFactory::create_sphere(
             mesh->set_vert_normal(vert_index, glm::normalize(offset));
             mesh->set_vert_tangent(vert_index, orient_to_offset(glm::vec3(
                     0,
-                    0,                                          // pitch
+                    0,                                      // pitch
                     static_cast<float>(col)/cols*360+90))); // yaw
             vert_index++;
         }
@@ -133,7 +133,7 @@ Mesh* PrimitiveFactory::create_hemisphere(
             }
             mesh->set_vert_tangent(vert_index, orient_to_offset(glm::vec3(
                     0,
-                    0,                                          // pitch
+                    0,                                      // pitch
                     static_cast<float>(col)/cols*360+90))); // yaw
             vert_index++;
         }
@@ -168,7 +168,7 @@ Mesh* PrimitiveFactory::create_cylinder(
                     {
                         glm::vec3 offset = orient_to_offset(glm::vec3(
                                 0,
-                                0,                                     // pitch
+                                0,                                 // pitch
                                 static_cast<float>(col)/cols*360)) // yaw
                                 *radius;
                         mesh->set_vert_coord(vert_index, glm::vec3(offset.x, 0, offset.z));
@@ -179,7 +179,7 @@ Mesh* PrimitiveFactory::create_cylinder(
                     {
                         glm::vec3 offset = orient_to_offset(glm::vec3(
                                 0,
-                                0,                                     // pitch
+                                0,                                 // pitch
                                 static_cast<float>(col)/cols*360)) // yaw
                                 *radius;
                         mesh->set_vert_coord(vert_index, glm::vec3(offset.x, height, offset.z));
@@ -193,7 +193,7 @@ Mesh* PrimitiveFactory::create_cylinder(
             }
             mesh->set_vert_tangent(vert_index, orient_to_offset(glm::vec3(
                     0,
-                    0,                                          // pitch
+                    0,                                      // pitch
                     static_cast<float>(col)/cols*360+90))); // yaw
             vert_index++;
         }
@@ -229,7 +229,7 @@ Mesh* PrimitiveFactory::create_cone(
                     {
                         glm::vec3 offset = orient_to_offset(glm::vec3(
                                 0,
-                                0,                                     // pitch
+                                0,                                 // pitch
                                 static_cast<float>(col)/cols*360)) // yaw
                                 *radius;
                         mesh->set_vert_coord(vert_index, offset);
@@ -240,7 +240,7 @@ Mesh* PrimitiveFactory::create_cone(
                     {
                         glm::vec3 offset = orient_to_offset(glm::vec3(
                                 0,
-                                0,                                     // pitch
+                                0,                                 // pitch
                                 static_cast<float>(col)/cols*360)) // yaw
                                 *radius;
                         mesh->set_vert_coord(vert_index, glm::vec3(0, height, 0));
@@ -250,7 +250,7 @@ Mesh* PrimitiveFactory::create_cone(
             }
             mesh->set_vert_tangent(vert_index, orient_to_offset(glm::vec3(
                     0,
-                    0,                                          // pitch
+                    0,                                      // pitch
                     static_cast<float>(col)/cols*360+90))); // yaw
             vert_index++;
         }
@@ -279,7 +279,7 @@ Mesh* PrimitiveFactory::create_torus(
         for(int col = 0; col <= cols; col++) {
             glm::vec3 normal_major = orient_to_offset(glm::vec3(
                     0,
-                    0,                                      // pitch
+                    0,                                  // pitch
                     static_cast<float>(col)/cols*360)); // yaw
             glm::vec3 normal_minor = orient_to_offset(glm::vec3(
                     0,
@@ -289,7 +289,7 @@ Mesh* PrimitiveFactory::create_torus(
             mesh->set_vert_normal(vert_index, normal_minor);
             mesh->set_vert_tangent(vert_index, orient_to_offset(glm::vec3(
                     0,
-                    0,                                          // pitch
+                    0,                                      // pitch
                     static_cast<float>(col)/cols*360+90))); // yaw
             vert_index++;
         }
