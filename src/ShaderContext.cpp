@@ -91,7 +91,7 @@ void ShaderContext::render()
 {
     m_material->get_program()->use();
     int i = 0;
-    for(vt::ShaderContext::textures_t::const_iterator p = m_textures.begin(); p != m_textures.end(); p++)
+    for(ShaderContext::textures_t::const_iterator p = m_textures.begin(); p != m_textures.end(); p++)
     {
         glActiveTexture(GL_TEXTURE0+i);
         (*p)->bind();
