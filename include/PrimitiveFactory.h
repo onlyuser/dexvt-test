@@ -63,8 +63,8 @@ public:
             float       crown_height_to_total_height_ratio         = 0.25,
             float       upper_girdle_height_to_crown_height_ratio  = 0.75,
             float       lower_girdle_depth_to_pavilion_depth_ratio = 0.5,
-            float       girdle_thick_part_thickness                = 0,
-            float       girdle_thin_part_thickness                 = 0);
+            float       girdle_thick_part_thickness                = 0.05,
+            float       girdle_thin_part_thickness                 = 0.0125);
     static Mesh* create_viewport_quad(std::string name)
     {
         return create_grid(name, 1, 1);

@@ -674,7 +674,62 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
     }
 
     // girdle: 16*2 triangles
-    for(int i=0; i<8; i++) {
+    // TODO: connect girdle to rest of diamond facets
+    for(int i=0; i<16; i++) {
+        float left_top_y     = (i%2)     ? girdle_thin_part_top_y    : girdle_thick_part_top_y;
+        float left_bottom_y  = (i%2)     ? girdle_thin_part_bottom_y : girdle_thick_part_bottom_y;
+        float right_top_y    = ((i+1)%2) ? girdle_thin_part_top_y    : girdle_thick_part_top_y;
+        float right_bottom_y = ((i+1)%2) ? girdle_thin_part_bottom_y : girdle_thick_part_bottom_y;
+
+        // top half
+        glm::vec3 p1 = orient_to_offset(glm::vec3(
+                0,
+                0,                               // pitch
+                static_cast<float>(i+1)/16*360)) // yaw
+                *radius
+                +glm::vec3(0, right_top_y, 0);
+        glm::vec3 p2 = orient_to_offset(glm::vec3(
+                0,
+                0,                             // pitch
+                static_cast<float>(i)/16*360)) // yaw
+                *radius
+                +glm::vec3(0, left_top_y, 0);
+        glm::vec3 p3 = orient_to_offset(glm::vec3(
+                0,
+                0,                             // pitch
+                static_cast<float>(i)/16*360)) // yaw
+                *radius
+                +glm::vec3(0, left_bottom_y, 0);
+        mesh->set_vert_coord(vert_index+0, p1);
+        mesh->set_vert_coord(vert_index+1, p2);
+        mesh->set_vert_coord(vert_index+2, p3);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+        vert_index += 3;
+
+        // bottom half
+        glm::vec3 p4 = orient_to_offset(glm::vec3(
+                0,
+                0,                             // pitch
+                static_cast<float>(i)/16*360)) // yaw
+                *radius
+                +glm::vec3(0, left_bottom_y, 0);
+        glm::vec3 p5 = orient_to_offset(glm::vec3(
+                0,
+                0,                               // pitch
+                static_cast<float>(i+1)/16*360)) // yaw
+                *radius
+                +glm::vec3(0, right_bottom_y, 0);
+        glm::vec3 p6 = orient_to_offset(glm::vec3(
+                0,
+                0,                               // pitch
+                static_cast<float>(i+1)/16*360)) // yaw
+                *radius
+                +glm::vec3(0, right_top_y, 0);
+        mesh->set_vert_coord(vert_index+0, p4);
+        mesh->set_vert_coord(vert_index+1, p5);
+        mesh->set_vert_coord(vert_index+2, p6);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+        vert_index += 3;
     }
 
     // lower-girdle: 16 triangles
