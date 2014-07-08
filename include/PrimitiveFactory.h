@@ -55,6 +55,16 @@ public:
             float       width  = 1,
             float       height = 1,
             float       length = 1);
+    static Mesh* create_diamond_brilliant_cut(
+            std::string name,
+            float       radius                                     = 0.5,
+            float       table_radius                               = 0.25,
+            float       height                                     = 1,
+            float       crown_height_to_total_height_ratio         = 0.25,
+            float       upper_girdle_height_to_crown_height_ratio  = 0.75,
+            float       lower_girdle_depth_to_pavilion_depth_ratio = 0.5,
+            float       girdle_thick_part_thickness                = 0,
+            float       girdle_thin_part_thickness                 = 0);
     static Mesh* create_viewport_quad(std::string name)
     {
         return create_grid(name, 1, 1);

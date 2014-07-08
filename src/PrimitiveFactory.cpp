@@ -464,13 +464,13 @@ Mesh* PrimitiveFactory::create_tetrahedron(
     mesh->set_vert_coord(10, glm::vec3(1, 0, 0));
     mesh->set_vert_coord(11, glm::vec3(1, 1, 1));
 
-    for(int i=0; i<4; i++) {
+    for(int i=0; i<mesh->get_num_tri(); i++) {
         glm::vec3 p0 = mesh->get_vert_coord(i*3+0);
         glm::vec3 p1 = mesh->get_vert_coord(i*3+1);
         glm::vec3 p2 = mesh->get_vert_coord(i*3+2);
-        glm::vec3 e1 = p1-p0;
-        glm::vec3 e2 = p2-p0;
-        glm::vec3 n = glm::cross(e1, e2);
+        glm::vec3 e1 = glm::normalize(p1-p0);
+        glm::vec3 e2 = glm::normalize(p2-p0);
+        glm::vec3 n = glm::normalize(glm::cross(e1, e2));
         for(int j=0; j<3; j++) {
             mesh->set_vert_normal( i*3+j, n);
             mesh->set_vert_tangent(i*3+j, e1);
@@ -481,6 +481,310 @@ Mesh* PrimitiveFactory::create_tetrahedron(
     mesh->set_tri_indices(1, glm::uvec3(3, 4,  5));
     mesh->set_tri_indices(2, glm::uvec3(6, 7,  8));
     mesh->set_tri_indices(3, glm::uvec3(9, 10, 11));
+
+    return mesh;
+}
+
+Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
+        std::string name,
+        float       radius,
+        float       table_radius,
+        float       height,
+        float       crown_height_to_total_height_ratio,
+        float       upper_girdle_height_to_crown_height_ratio,
+        float       lower_girdle_depth_to_pavilion_depth_ratio,
+        float       girdle_thick_part_thickness,
+        float       girdle_thin_part_thickness)
+{
+    Mesh* mesh = new Mesh(name, 336, 112);//new Mesh(name, 336, 112);
+
+    float crown_height   = height*crown_height_to_total_height_ratio;
+    float pavilion_depth = height-crown_height;
+
+    float upper_girdle_inner_rim_y      = pavilion_depth+crown_height*upper_girdle_height_to_crown_height_ratio;
+    float upper_girdle_inner_rim_radius = radius-(radius-table_radius)*upper_girdle_height_to_crown_height_ratio;
+
+    float girdle_thick_part_top_y    = pavilion_depth+girdle_thick_part_thickness*0.5;
+    float girdle_thick_part_bottom_y = pavilion_depth-girdle_thick_part_thickness*0.5;
+    float girdle_thin_part_top_y     = pavilion_depth+girdle_thin_part_thickness*0.5;
+    float girdle_thin_part_bottom_y  = pavilion_depth-girdle_thin_part_thickness*0.5;
+
+    float lower_girdle_inner_rim_y      = pavilion_depth*(1-lower_girdle_depth_to_pavilion_depth_ratio);
+    float lower_girdle_inner_rim_radius = radius*lower_girdle_depth_to_pavilion_depth_ratio;
+
+    upper_girdle_inner_rim_radius /= cos(glm::pi<float>()*0.125);
+    lower_girdle_inner_rim_radius /= cos(glm::pi<float>()*0.125);
+
+    int vert_index = 0;
+    int tri_index  = 0;
+
+    // table: 8 triangles
+    for(int i=0; i<8; i++) {
+        glm::vec3 p1 = glm::vec3(0, height, 0);
+        glm::vec3 p2 = orient_to_offset(glm::vec3(
+                0,
+                0,                            // pitch
+                static_cast<float>(i)/8*360)) // yaw
+                *table_radius
+                +glm::vec3(0, height, 0);
+        glm::vec3 p3 = orient_to_offset(glm::vec3(
+                0,
+                0,                              // pitch
+                static_cast<float>(i+1)/8*360)) // yaw
+                *table_radius
+                +glm::vec3(0, height, 0);
+        mesh->set_vert_coord(vert_index+0, p1);
+        mesh->set_vert_coord(vert_index+1, p2);
+        mesh->set_vert_coord(vert_index+2, p3);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+        vert_index += 3;
+    }
+
+    // star: 8 triangles
+    for(int i=0; i<8; i++) {
+        glm::vec3 p1 = orient_to_offset(glm::vec3(
+                0,
+                0,                            // pitch
+                static_cast<float>(i)/8*360)) // yaw
+                *table_radius
+                +glm::vec3(0, height, 0);
+        glm::vec3 p2 = orient_to_offset(glm::vec3(
+                0,
+                0,                                // pitch
+                static_cast<float>(i+0.5)/8*360)) // yaw
+                *upper_girdle_inner_rim_radius
+                +glm::vec3(0, upper_girdle_inner_rim_y, 0);
+        glm::vec3 p3 = orient_to_offset(glm::vec3(
+                0,
+                0,                              // pitch
+                static_cast<float>(i+1)/8*360)) // yaw
+                *table_radius
+                +glm::vec3(0, height, 0);
+        mesh->set_vert_coord(vert_index+0, p1);
+        mesh->set_vert_coord(vert_index+1, p2);
+        mesh->set_vert_coord(vert_index+2, p3);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+        vert_index += 3;
+    }
+
+    // kite: 8*2 triangles
+    for(int i=0; i<8; i++) {
+        // half kite 1
+        glm::vec3 p1 = orient_to_offset(glm::vec3(
+                0,
+                0,                            // pitch
+                static_cast<float>(i)/8*360)) // yaw
+                *table_radius
+                +glm::vec3(0, height, 0);
+        glm::vec3 p2 = orient_to_offset(glm::vec3(
+                0,
+                0,                            // pitch
+                static_cast<float>(i)/8*360)) // yaw
+                *radius
+                +glm::vec3(0, pavilion_depth, 0);
+        glm::vec3 p3 = orient_to_offset(glm::vec3(
+                0,
+                0,                                // pitch
+                static_cast<float>(i+0.5)/8*360)) // yaw
+                *upper_girdle_inner_rim_radius
+                +glm::vec3(0, upper_girdle_inner_rim_y, 0);
+        mesh->set_vert_coord(vert_index+0, p1);
+        mesh->set_vert_coord(vert_index+1, p2);
+        mesh->set_vert_coord(vert_index+2, p3);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+        vert_index += 3;
+
+        // half kite 2
+        glm::vec3 p4 = orient_to_offset(glm::vec3(
+                0,
+                0,                              // pitch
+                static_cast<float>(i+1)/8*360)) // yaw
+                *table_radius
+                +glm::vec3(0, height, 0);
+        glm::vec3 p5 = orient_to_offset(glm::vec3(
+                0,
+                0,                                // pitch
+                static_cast<float>(i+0.5)/8*360)) // yaw
+                *upper_girdle_inner_rim_radius
+                +glm::vec3(0, upper_girdle_inner_rim_y, 0);
+        glm::vec3 p6 = orient_to_offset(glm::vec3(
+                0,
+                0,                              // pitch
+                static_cast<float>(i+1)/8*360)) // yaw
+                *radius
+                +glm::vec3(0, pavilion_depth, 0);
+        mesh->set_vert_coord(vert_index+0, p4);
+        mesh->set_vert_coord(vert_index+1, p5);
+        mesh->set_vert_coord(vert_index+2, p6);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+        vert_index += 3;
+    }
+
+    // upper-girdle: 16 triangles
+    for(int i=0; i<8; i++) {
+        // half upper-girdle 1
+        glm::vec3 p1 = orient_to_offset(glm::vec3(
+                0,
+                0,                                // pitch
+                static_cast<float>(i+0.5)/8*360)) // yaw
+                *upper_girdle_inner_rim_radius
+                +glm::vec3(0, upper_girdle_inner_rim_y, 0);
+        glm::vec3 p2 = orient_to_offset(glm::vec3(
+                0,
+                0,                            // pitch
+                static_cast<float>(i)/8*360)) // yaw
+                *radius
+                +glm::vec3(0, pavilion_depth, 0);
+        glm::vec3 p3 = orient_to_offset(glm::vec3(
+                0,
+                0,                                // pitch
+                static_cast<float>(i+0.5)/8*360)) // yaw
+                *radius
+                +glm::vec3(0, pavilion_depth, 0);
+        mesh->set_vert_coord(vert_index+0, p1);
+        mesh->set_vert_coord(vert_index+1, p2);
+        mesh->set_vert_coord(vert_index+2, p3);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+        vert_index += 3;
+
+        // half upper-girdle 2
+        glm::vec3 p4 = orient_to_offset(glm::vec3(
+                0,
+                0,                                // pitch
+                static_cast<float>(i+0.5)/8*360)) // yaw
+                *upper_girdle_inner_rim_radius
+                +glm::vec3(0, upper_girdle_inner_rim_y, 0);
+        glm::vec3 p5 = orient_to_offset(glm::vec3(
+                0,
+                0,                                // pitch
+                static_cast<float>(i+0.5)/8*360)) // yaw
+                *radius
+                +glm::vec3(0, pavilion_depth, 0);
+        glm::vec3 p6 = orient_to_offset(glm::vec3(
+                0,
+                0,                              // pitch
+                static_cast<float>(i+1)/8*360)) // yaw
+                *radius
+                +glm::vec3(0, pavilion_depth, 0);
+        mesh->set_vert_coord(vert_index+0, p4);
+        mesh->set_vert_coord(vert_index+1, p5);
+        mesh->set_vert_coord(vert_index+2, p6);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+        vert_index += 3;
+    }
+
+    // girdle: 16*2 triangles
+    for(int i=0; i<8; i++) {
+    }
+
+    // lower-girdle: 16 triangles
+    for(int i=0; i<8; i++) {
+        // half lower-girdle 1
+        glm::vec3 p1 = orient_to_offset(glm::vec3(
+                0,
+                0,                                // pitch
+                static_cast<float>(i+0.5)/8*360)) // yaw
+                *lower_girdle_inner_rim_radius
+                +glm::vec3(0, lower_girdle_inner_rim_y, 0);
+        glm::vec3 p2 = orient_to_offset(glm::vec3(
+                0,
+                0,                                // pitch
+                static_cast<float>(i+0.5)/8*360)) // yaw
+                *radius
+                +glm::vec3(0, pavilion_depth, 0);
+        glm::vec3 p3 = orient_to_offset(glm::vec3(
+                0,
+                0,                            // pitch
+                static_cast<float>(i)/8*360)) // yaw
+                *radius
+                +glm::vec3(0, pavilion_depth, 0);
+        mesh->set_vert_coord(vert_index+0, p1);
+        mesh->set_vert_coord(vert_index+1, p2);
+        mesh->set_vert_coord(vert_index+2, p3);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+        vert_index += 3;
+
+        // half lower-girdle 2
+        glm::vec3 p4 = orient_to_offset(glm::vec3(
+                0,
+                0,                                // pitch
+                static_cast<float>(i+0.5)/8*360)) // yaw
+                *lower_girdle_inner_rim_radius
+                +glm::vec3(0, lower_girdle_inner_rim_y, 0);
+        glm::vec3 p5 = orient_to_offset(glm::vec3(
+                0,
+                0,                              // pitch
+                static_cast<float>(i+1)/8*360)) // yaw
+                *radius
+                +glm::vec3(0, pavilion_depth, 0);
+        glm::vec3 p6 = orient_to_offset(glm::vec3(
+                0,
+                0,                                // pitch
+                static_cast<float>(i+0.5)/8*360)) // yaw
+                *radius
+                +glm::vec3(0, pavilion_depth, 0);
+        mesh->set_vert_coord(vert_index+0, p4);
+        mesh->set_vert_coord(vert_index+1, p5);
+        mesh->set_vert_coord(vert_index+2, p6);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+        vert_index += 3;
+    }
+
+    // pavilion main: 8*2 triangles
+    for(int i=0; i<8; i++) {
+        // half pavilion main 1
+        glm::vec3 p1 = glm::vec3(0, 0, 0);
+        glm::vec3 p2 = orient_to_offset(glm::vec3(
+                0,
+                0,                                // pitch
+                static_cast<float>(i+0.5)/8*360)) // yaw
+                *lower_girdle_inner_rim_radius
+                +glm::vec3(0, lower_girdle_inner_rim_y, 0);
+        glm::vec3 p3 = orient_to_offset(glm::vec3(
+                0,
+                0,                            // pitch
+                static_cast<float>(i)/8*360)) // yaw
+                *radius
+                +glm::vec3(0, pavilion_depth, 0);
+        mesh->set_vert_coord(vert_index+0, p1);
+        mesh->set_vert_coord(vert_index+1, p2);
+        mesh->set_vert_coord(vert_index+2, p3);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+        vert_index += 3;
+
+        // half pavilion main 2
+        glm::vec3 p4 = glm::vec3(0, 0, 0);
+        glm::vec3 p5 = orient_to_offset(glm::vec3(
+                0,
+                0,                              // pitch
+                static_cast<float>(i+1)/8*360)) // yaw
+                *radius
+                +glm::vec3(0, pavilion_depth, 0);
+        glm::vec3 p6 = orient_to_offset(glm::vec3(
+                0,
+                0,                                // pitch
+                static_cast<float>(i+0.5)/8*360)) // yaw
+                *lower_girdle_inner_rim_radius
+                +glm::vec3(0, lower_girdle_inner_rim_y, 0);
+        mesh->set_vert_coord(vert_index+0, p4);
+        mesh->set_vert_coord(vert_index+1, p5);
+        mesh->set_vert_coord(vert_index+2, p6);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+        vert_index += 3;
+    }
+
+    for(int i=0; i<mesh->get_num_tri(); i++) {
+        glm::vec3 p0 = mesh->get_vert_coord(i*3+0);
+        glm::vec3 p1 = mesh->get_vert_coord(i*3+1);
+        glm::vec3 p2 = mesh->get_vert_coord(i*3+2);
+        glm::vec3 e1 = glm::normalize(p1-p0);
+        glm::vec3 e2 = glm::normalize(p2-p0);
+        glm::vec3 n = glm::normalize(glm::cross(e1, e2));
+        for(int j=0; j<3; j++) {
+            mesh->set_vert_normal( i*3+j, n);
+            mesh->set_vert_tangent(i*3+j, e1);
+        }
+    }
 
     return mesh;
 }
