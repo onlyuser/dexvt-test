@@ -52,13 +52,15 @@ void main(void) {
     float one_minus_dot = 1-clamp(dot(camera_direction, bumpy_world_normal), 0, 1);
     float fresnel_reflectance_attenuation = pow(one_minus_dot, FRESNEL_REFLECTANCE_SHARPNESS);
 
-    vec4 front_depth_overlay_color = texture2D(front_depth_overlay_texture, vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y));
+    vec2 overlay_tex_coord = vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y);
+
+    vec4 front_depth_overlay_color = texture2D(front_depth_overlay_texture, overlay_tex_coord);
     float z_b = front_depth_overlay_color.x;
     float z_n = 2.0 * z_b - 1.0;
     float z_e = 2.0 * camera_near * camera_far / (camera_far + camera_near - z_n * (camera_far - camera_near));
 
-    vec4 back_depth_overlay_color = texture2D(back_depth_overlay_texture, vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y));
-    vec4 back_normal_overlay_color = texture2D(back_normal_overlay_texture, vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y));
+    vec4 back_depth_overlay_color = texture2D(back_depth_overlay_texture, overlay_tex_coord);
+    vec4 back_normal_overlay_color = texture2D(back_normal_overlay_texture, overlay_tex_coord);
 
     if(z_e >= (camera_far-0.1)) {
         gl_FragColor = vec4(1,1,0,0);
