@@ -21,6 +21,11 @@ uniform vec2      viewport_dim;
 uniform float     camera_near;
 uniform float     camera_far;
 
+void map_depth_to_actual_depth(in float near, in float far, in float z_b, inout float z_e) {
+    float z_n = 2.0 * z_b - 1.0;
+    z_e = 2.0 * near * far / (far + near - z_n * (far - near));
+}
+
 void main(void) {
     vec3 camera_direction = normalize(lerp_camera_vector);
 
@@ -55,18 +60,28 @@ void main(void) {
     vec2 overlay_tex_coord = vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y);
 
     float front_depth = texture2D(front_depth_overlay_texture, overlay_tex_coord).x;
-    float z_n = 2.0 * front_depth - 1.0;
-    float z_e = 2.0 * camera_near * camera_far / (camera_far + camera_near - z_n * (camera_far - camera_near));
+    float back_depth  = texture2D(back_depth_overlay_texture, overlay_tex_coord).x;
 
+    float front_depth_actual = 0;
+    float back_depth_actual  = 0;
+
+    map_depth_to_actual_depth(camera_near, camera_far, front_depth, front_depth_actual);
+    map_depth_to_actual_depth(camera_near, camera_far, back_depth, back_depth_actual);
+
+    float thickness = back_depth_actual - front_depth_actual;
+
+    vec4 front_depth_overlay_color = texture2D(front_depth_overlay_texture, overlay_tex_coord);
     vec4 back_depth_overlay_color  = texture2D(back_depth_overlay_texture, overlay_tex_coord);
     vec4 back_normal_overlay_color = texture2D(back_normal_overlay_texture, overlay_tex_coord);
 
-    if(z_e >= (camera_far-0.1)) {
+    if(front_depth_actual >= (camera_far-0.1)) {
         gl_FragColor = vec4(1,1,0,0);
-    } else if(z_e <= (camera_near+0.1)) {
+    } else if(front_depth_actual <= (camera_near+0.1)) {
         gl_FragColor = vec4(0,1,1,0);
     } else {
         gl_FragColor = mix(vec4(1,0,0,0), vec4(0,0,1,0), front_depth)*0.001 +
+                mix(vec4(1,0,0,0), vec4(0,0,1,0), thickness)*0.001 +
+                front_depth_overlay_color*0.001 +
                 back_depth_overlay_color*0.001 +
                 back_normal_overlay_color*0.001 +
                 mix(refracted_color, reflected_color, reflect_to_refract_ratio*fresnel_reflectance_attenuation);
