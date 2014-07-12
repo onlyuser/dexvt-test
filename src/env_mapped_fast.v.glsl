@@ -15,10 +15,10 @@ void main(void) {
     vec3 vertex_position_world = vec3(modelview_xform*vec4(vertex_position, 1));
     vec3 normal_world = normalize(vec3(normal_xform*vec4(vertex_normal, 0)));
 
-    vec3 cameraDir = normalize(camera_position - vertex_position_world);
+    vec3 camera_direction = normalize(camera_position - vertex_position_world);
 
-    vec3 reflected_camera_dir = reflect(-cameraDir, normal_world);
-    vec3 refracted_camera_dir = refract(-cameraDir, normal_world, AIR_REFRACTIVE_INDEX/WATER_REFRACTIVE_INDEX);
+    vec3 reflected_camera_dir = reflect(-camera_direction, normal_world);
+    vec3 refracted_camera_dir = refract(-camera_direction, normal_world, AIR_REFRACTIVE_INDEX/WATER_REFRACTIVE_INDEX);
 
     lerp_reflected_flipped_cubemap_texcoord = vec3(reflected_camera_dir.x, -reflected_camera_dir.y, reflected_camera_dir.z);
     lerp_refracted_flipped_cubemap_texcoord = vec3(refracted_camera_dir.x, -refracted_camera_dir.y, refracted_camera_dir.z);

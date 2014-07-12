@@ -68,7 +68,7 @@ void main(void) {
     map_depth_to_actual_depth(camera_near, camera_far, front_depth, front_depth_actual);
     map_depth_to_actual_depth(camera_near, camera_far, back_depth, back_depth_actual);
 
-    float thickness = back_depth_actual-front_depth_actual;
+    float thickness = back_depth_actual - front_depth_actual;
 
     vec4 front_depth_overlay_color = texture2D(front_depth_overlay_texture, overlay_texcoord);
     vec4 back_depth_overlay_color  = texture2D(back_depth_overlay_texture, overlay_texcoord);
