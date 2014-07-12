@@ -21,9 +21,9 @@ uniform vec2      viewport_dim;
 uniform float     camera_near;
 uniform float     camera_far;
 
-void map_depth_to_actual_depth(in float near, in float far, in float z_b, inout float z_e) {
+void map_depth_to_actual_depth(in float z_near, in float z_far, in float z_b, inout float z_e) {
     float z_n = 2.0 * z_b - 1.0;
-    z_e = 2.0 * near * far / (far + near - z_n * (far - near));
+    z_e = 2.0 * z_near * z_far / (z_far + z_near - z_n * (z_far - z_near));
 }
 
 void main(void) {
