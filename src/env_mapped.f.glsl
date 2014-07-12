@@ -54,12 +54,11 @@ void main(void) {
 
     vec2 overlay_tex_coord = vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y);
 
-    vec4 front_depth_overlay_color = texture2D(front_depth_overlay_texture, overlay_tex_coord);
-    float z_b = front_depth_overlay_color.x;
-    float z_n = 2.0 * z_b - 1.0;
+    float front_depth = texture2D(front_depth_overlay_texture, overlay_tex_coord).x;
+    float z_n = 2.0 * front_depth - 1.0;
     float z_e = 2.0 * camera_near * camera_far / (camera_far + camera_near - z_n * (camera_far - camera_near));
 
-    vec4 back_depth_overlay_color = texture2D(back_depth_overlay_texture, overlay_tex_coord);
+    vec4 back_depth_overlay_color  = texture2D(back_depth_overlay_texture, overlay_tex_coord);
     vec4 back_normal_overlay_color = texture2D(back_normal_overlay_texture, overlay_tex_coord);
 
     if(z_e >= (camera_far-0.1)) {
@@ -67,7 +66,7 @@ void main(void) {
     } else if(z_e <= (camera_near+0.1)) {
         gl_FragColor = vec4(0,1,1,0);
     } else {
-        gl_FragColor = mix(vec4(1,0,0,0), vec4(0,0,1,0), front_depth_overlay_color.x)*0.001 +
+        gl_FragColor = mix(vec4(1,0,0,0), vec4(0,0,1,0), front_depth)*0.001 +
                 back_depth_overlay_color*0.001 +
                 back_normal_overlay_color*0.001 +
                 mix(refracted_color, reflected_color, reflect_to_refract_ratio*fresnel_reflectance_attenuation);
