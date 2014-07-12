@@ -57,10 +57,10 @@ void main(void) {
     float one_minus_dot = 1-clamp(dot(camera_direction, bumpy_world_normal), 0, 1);
     float fresnel_reflectance_attenuation = pow(one_minus_dot, FRESNEL_REFLECTANCE_SHARPNESS);
 
-    vec2 overlay_tex_coord = vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y);
+    vec2 fragment_texcoord = vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y);
 
-    float front_depth = texture2D(front_depth_overlay_texture, overlay_tex_coord).x;
-    float back_depth  = texture2D(back_depth_overlay_texture, overlay_tex_coord).x;
+    float front_depth = texture2D(front_depth_overlay_texture, fragment_texcoord).x;
+    float back_depth  = texture2D(back_depth_overlay_texture, fragment_texcoord).x;
 
     float front_depth_actual = 0;
     float back_depth_actual  = 0;
@@ -70,9 +70,9 @@ void main(void) {
 
     float thickness = back_depth_actual - front_depth_actual;
 
-    vec4 front_depth_overlay_color = texture2D(front_depth_overlay_texture, overlay_tex_coord);
-    vec4 back_depth_overlay_color  = texture2D(back_depth_overlay_texture, overlay_tex_coord);
-    vec4 back_normal_overlay_color = texture2D(back_normal_overlay_texture, overlay_tex_coord);
+    vec4 front_depth_overlay_color = texture2D(front_depth_overlay_texture, fragment_texcoord);
+    vec4 back_depth_overlay_color  = texture2D(back_depth_overlay_texture, fragment_texcoord);
+    vec4 back_normal_overlay_color = texture2D(back_normal_overlay_texture, fragment_texcoord);
 
     if(front_depth_actual >= (camera_far-0.1)) {
         gl_FragColor = vec4(1,1,0,0);
