@@ -10,6 +10,7 @@ const float FRESNEL_REFLECTANCE_SHARPNESS = 2.0;
 uniform float reflect_to_refract_ratio;
 
 varying mat3 lerp_tbn_xform;
+varying vec3 lerp_vertex_position_world;
 varying vec3 lerp_camera_vector;
 
 uniform samplerCube env_map_texture;
@@ -20,6 +21,8 @@ uniform sampler2D back_normal_overlay_texture;
 uniform vec2      viewport_dim;
 uniform float     camera_near;
 uniform float     camera_far;
+
+uniform vec3 camera_position;
 
 void map_depth_to_actual_depth(in float z_near, in float z_far, in float z_b, inout float z_e) {
     float z_n = 2.0 * z_b - 1.0;
@@ -57,10 +60,15 @@ void main(void) {
     float one_minus_dot = 1-clamp(dot(camera_direction, bumpy_world_normal), 0, 1);
     float fresnel_reflectance_attenuation = pow(one_minus_dot, FRESNEL_REFLECTANCE_SHARPNESS);
 
+    //
+    // BEGIN TEST
+    //
+
     vec2 overlay_texcoord = vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y);
 
     float front_depth = texture2D(front_depth_overlay_texture, overlay_texcoord).x;
     float back_depth  = texture2D(back_depth_overlay_texture, overlay_texcoord).x;
+    vec3 back_normal  = texture2D(back_normal_overlay_texture, overlay_texcoord).xyz;
 
     float front_depth_actual = 0;
     float back_depth_actual  = 0;
@@ -68,11 +76,21 @@ void main(void) {
     map_depth_to_actual_depth(camera_near, camera_far, front_depth, front_depth_actual);
     map_depth_to_actual_depth(camera_near, camera_far, back_depth, back_depth_actual);
 
-    float thickness = back_depth_actual - front_depth_actual;
+    float frag_thickness = back_depth_actual - front_depth_actual;
 
-    vec4 front_depth_overlay_color = texture2D(front_depth_overlay_texture, overlay_texcoord);
-    vec4 back_depth_overlay_color  = texture2D(back_depth_overlay_texture, overlay_texcoord);
-    vec4 back_normal_overlay_color = texture2D(back_normal_overlay_texture, overlay_texcoord);
+    vec3 back_frag_position_world = camera_position - camera_direction*back_depth_actual;
+    //vec3 refracted_camera_dir_back_normal_plane_isect = lerp_vertex_position_world + refracted_camera_dirR*???;
+
+    vec3 p0 = back_frag_position_world;
+    vec3 n = back_normal;
+    vec3 I0 = lerp_vertex_position_world;
+    vec3 I = refracted_camera_dirR;
+    float d = dot((p0 - I0), n) / dot(I, n);
+    vec3 refracted_camera_dir_back_normal_plane_isect = d*I + I0;
+
+    //
+    // END TEST
+    //
 
     if(front_depth_actual >= (camera_far-0.1)) {
         gl_FragColor = vec4(1,1,0,0);
@@ -80,10 +98,9 @@ void main(void) {
         gl_FragColor = vec4(0,1,1,0);
     } else {
         gl_FragColor = mix(vec4(1,0,0,0), vec4(0,0,1,0), front_depth)*0.001 +
-                mix(vec4(1,0,0,0), vec4(0,0,1,0), thickness)*0.001 +
-                front_depth_overlay_color*0.001 +
-                back_depth_overlay_color*0.001 +
-                back_normal_overlay_color*0.001 +
+                mix(vec4(1,0,0,0), vec4(0,0,1,0), back_depth)*0.001 +
+                mix(vec4(1,0,0,0), vec4(0,0,1,0), frag_thickness)*0.001 +
+                vec4(back_normal, 0)*0.001 +
                 mix(refracted_color, reflected_color, reflect_to_refract_ratio*fresnel_reflectance_attenuation);
     }
 }
