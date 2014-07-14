@@ -32,7 +32,7 @@ public:
     }
     void render();
     void set_mvp_xform(glm::mat4 mvp_xform);
-    void set_modelview_xform(glm::mat4 modelview_xform);
+    void set_model_xform(glm::mat4 model_xform);
     void set_normal_xform(glm::mat4 normal_xform);
     void set_texture_index(GLint texture_id);
     void set_normal_map_texture_index(GLint texture_id);
@@ -58,7 +58,7 @@ private:
     std::unique_ptr<VarAttribute> m_var_attribute_vertex_position, m_var_attribute_vertex_normal, m_var_attribute_vertex_tangent, m_var_attribute_texcoord;
     std::unique_ptr<VarUniform>
             m_var_uniform_mvp_xform,
-            m_var_uniform_modelview_xform,
+            m_var_uniform_model_xform,
             m_var_uniform_normal_xform,
             m_var_uniform_color_texture,
             m_var_uniform_normal_map_texture,

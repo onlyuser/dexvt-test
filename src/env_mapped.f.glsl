@@ -68,7 +68,7 @@ void main(void) {
 
     float front_depth = texture2D(front_depth_overlay_texture, overlay_texcoord).x;
     float back_depth  = texture2D(back_depth_overlay_texture, overlay_texcoord).x;
-    vec3 back_normal  = texture2D(back_normal_overlay_texture, overlay_texcoord).xyz;
+    vec3  back_normal = texture2D(back_normal_overlay_texture, overlay_texcoord).xyz;
 
     float front_depth_actual = 0;
     float back_depth_actual  = 0;
@@ -97,7 +97,8 @@ void main(void) {
     } else if(front_depth_actual <= (camera_near+0.1)) {
         gl_FragColor = vec4(0,1,1,0);
     } else {
-        gl_FragColor = mix(vec4(1,0,0,0), vec4(0,0,1,0), front_depth)*0.001 +
+        gl_FragColor =
+                mix(vec4(1,0,0,0), vec4(0,0,1,0), front_depth)*0.001 +
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), back_depth)*0.001 +
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), frag_thickness)*0.001 +
                 vec4(back_normal, 0)*0.001 +

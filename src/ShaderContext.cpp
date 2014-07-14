@@ -44,8 +44,8 @@ ShaderContext::ShaderContext(
         m_var_uniform_normal_xform    = std::unique_ptr<VarUniform>(program->get_var_uniform("normal_xform"));
         if(m_use_camera_vec || use_phong_normal_env) {
             if(m_use_camera_vec || (!m_use_world_normal && m_use_normal_mapping) || m_use_env_mapping) {
-                m_var_uniform_modelview_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("modelview_xform"));
-                m_var_uniform_camera_pos      = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_position"));
+                m_var_uniform_model_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("model_xform"));
+                m_var_uniform_camera_pos  = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_position"));
             }
             if(m_use_phong_shading) {
                 m_var_uniform_light_pos     = std::unique_ptr<VarUniform>(program->get_var_uniform("light_position"));
@@ -167,9 +167,9 @@ void ShaderContext::set_mvp_xform(glm::mat4 mvp_xform)
     m_var_uniform_mvp_xform->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(mvp_xform));
 }
 
-void ShaderContext::set_modelview_xform(glm::mat4 modelview_xform)
+void ShaderContext::set_model_xform(glm::mat4 model_xform)
 {
-    m_var_uniform_modelview_xform->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(modelview_xform));
+    m_var_uniform_model_xform->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(model_xform));
 }
 
 void ShaderContext::set_normal_xform(glm::mat4 normal_xform)

@@ -3,7 +3,7 @@ attribute vec3 vertex_normal;
 attribute vec3 vertex_tangent;
 attribute vec2 texcoord;
 uniform   mat4 mvp_xform;
-uniform   mat4 modelview_xform;
+uniform   mat4 model_xform;
 uniform   mat4 normal_xform;
 varying   vec2 lerp_texcoord;
 
@@ -19,7 +19,7 @@ void main(void) {
     vec3 bitangent = normalize(cross(normal, tangent));
     lerp_tbn_xform = mat3(tangent, bitangent, normal);
 
-    lerp_vertex_position_world = vec3(modelview_xform*vec4(vertex_position, 1));
+    lerp_vertex_position_world = vec3(model_xform*vec4(vertex_position, 1));
     lerp_camera_vector = camera_position - lerp_vertex_position_world;
 
     gl_Position = mvp_xform*vec4(vertex_position, 1);

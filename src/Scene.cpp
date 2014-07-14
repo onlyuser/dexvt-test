@@ -147,7 +147,7 @@ void Scene::render(bool use_normal_material)
             shader_context->set_normal_xform(mesh->get_normal_xform());
             if(use_camera_vec || use_phong_normal_env) {
                 if(use_camera_vec || (!use_world_normal && use_normal_mapping) || use_env_mapping) {
-                    shader_context->set_modelview_xform(mesh->get_xform());
+                    shader_context->set_model_xform(mesh->get_xform());
                     shader_context->set_camera_pos(m_camera_pos);
                 }
                 if(use_phong_shading) {
@@ -193,16 +193,16 @@ void Scene::render_vert_normals()
     glPushMatrix();
     glColor3f(1, 1, 0);
     for(lights_t::const_iterator p = m_lights.begin(); p != m_lights.end(); p++) {
-        glm::mat4 modelview_xform = m_camera->get_xform()*(*p)->get_xform();
-        glLoadMatrixf((const GLfloat*) &modelview_xform[0]);
+        glm::mat4 model_xform = m_camera->get_xform()*(*p)->get_xform();
+        glLoadMatrixf((const GLfloat*) &model_xform[0]);
         glutWireSphere(light_radius, 4, 2);
     }
     for(meshes_t::const_iterator q = m_meshes.begin(); q != m_meshes.end(); q++) {
         if(!(*q)->get_visible()) {
             continue;
         }
-        glm::mat4 modelview_xform = m_camera->get_xform()*(*q)->get_xform();
-        glLoadMatrixf((const GLfloat*) &modelview_xform[0]);
+        glm::mat4 model_xform = m_camera->get_xform()*(*q)->get_xform();
+        glLoadMatrixf((const GLfloat*) &model_xform[0]);
         glColor3f(0, 0, 1);
         glBegin(GL_LINES);
         for (int i=0; i<static_cast<int>((*q)->get_num_vertex()); i++){
