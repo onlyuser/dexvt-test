@@ -23,10 +23,29 @@ uniform float     camera_near;
 uniform float     camera_far;
 
 uniform vec3 camera_position;
+uniform mat4 mvp_xform;
 
-void map_depth_to_actual_depth(in float z_near, in float z_far, in float z_b, inout float z_e) {
-    float z_n = 2.0 * z_b - 1.0;
+// http://stackoverflow.com/questions/6652253/getting-the-true-z-value-from-the-depth-buffer?answertab=votes#tab-top
+void map_depth_to_actual_depth(
+        in    float z_near, // camera near-clipping plane distance from camera
+        in    float z_far,  // camera far-clipping plane distance from camera
+        in    float z_b,    // projected depth
+        inout float z_e)    // actual depth
+{
+    float z_n = 2.0 * z_b - 1.0; // projected depth scaled from [0, 1] to [-1, 1]
     z_e = 2.0 * z_near * z_far / (z_far + z_near - z_n * (z_far - z_near));
+}
+
+// http://glm.g-truc.net/0.9.5/api/a00203.html#ga6203e3a0822575ced2b2cd500b396b0c
+// http://en.wikipedia.org/wiki/Line%E2%80%93plane_intersection#Algebraic_form
+void intersect_ray_plane(
+        in    vec3  orig,                  // point on ray
+        in    vec3  dir,                   // ray direction
+        in    vec3  plane_orig,            // point on plane
+        in    vec3  plane_normal,          // plane normal
+        inout float intersection_distance) // distance between ray-plane intersection and plane
+{
+    intersection_distance = dot((plane_orig - orig), plane_normal) / dot(dir, plane_normal);
 }
 
 void main(void) {
@@ -79,14 +98,21 @@ void main(void) {
     float frag_thickness = back_depth_actual - front_depth_actual;
 
     vec3 back_frag_position_world = camera_position - camera_direction*back_depth_actual;
-    //vec3 refracted_camera_dir_back_normal_plane_isect = lerp_vertex_position_world + refracted_camera_dirR*???;
+    //vec3 ray_plane_isect = lerp_vertex_position_world + refracted_camera_dirR*???;
 
-    vec3 p0 = back_frag_position_world;
-    vec3 n = back_normal;
-    vec3 I0 = lerp_vertex_position_world;
-    vec3 I = refracted_camera_dirR;
-    float d = dot((p0 - I0), n) / dot(I, n);
-    vec3 refracted_camera_dir_back_normal_plane_isect = d*I + I0;
+    float intersection_distance = 0;
+    intersect_ray_plane(
+            lerp_vertex_position_world, // point on ray
+            refracted_camera_dirR,      // ray direction
+            back_frag_position_world,   // point on plane
+            back_normal,                // plane normal
+            intersection_distance);     // distance between ray-plane intersection and plane
+
+    vec3  ray_plane_isect              = intersection_distance*back_normal + back_frag_position_world;
+    vec2  ray_plane_isect_texcoord     = vec2(mvp_xform*vec4(ray_plane_isect, 1));
+    float new_back_depth               = texture2D(back_depth_overlay_texture, ray_plane_isect_texcoord).x;
+    float new_back_normal              = texture2D(back_normal_overlay_texture, ray_plane_isect_texcoord).x;
+    vec3  new_back_frag_position_world = camera_position + normalize(ray_plane_isect-camera_position)*new_back_depth;
 
     //
     // END TEST
