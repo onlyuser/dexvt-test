@@ -7,6 +7,8 @@ const float WATER_REFRACTIVE_INDEX = 1.333;
 const float BUMPINESS_FACTOR = 0.001;
 const float FRESNEL_REFLECTANCE_SHARPNESS = 2.0;
 
+const int NEWTONS_METHOD_ITERS = 3;
+
 uniform float reflect_to_refract_ratio;
 
 varying mat3 lerp_tbn_xform;
@@ -100,19 +102,29 @@ void main(void) {
     vec3 back_frag_position_world = camera_position - camera_direction*back_depth_actual;
     //vec3 ray_plane_isect = lerp_vertex_position_world + refracted_camera_dirR*???;
 
-    float intersection_distance = 0;
-    intersect_ray_plane(
-            lerp_vertex_position_world, // point on ray
-            refracted_camera_dirR,      // ray direction
-            back_frag_position_world,   // point on plane
-            back_normal,                // plane normal
-            intersection_distance);     // distance between ray-plane intersection and plane
+    vec3  orig         = lerp_vertex_position_world;
+    vec3  dir          = refracted_camera_dirR;
+    vec3  plane_orig   = back_frag_position_world;
+    vec3  plane_normal = back_normal;
 
-    vec3  ray_plane_isect              = intersection_distance*back_normal + back_frag_position_world;
-    vec2  ray_plane_isect_texcoord     = vec2(mvp_xform*vec4(ray_plane_isect, 1));
-    float new_back_depth               = texture2D(back_depth_overlay_texture, ray_plane_isect_texcoord).x;
-    float new_back_normal              = texture2D(back_normal_overlay_texture, ray_plane_isect_texcoord).x;
-    vec3  new_back_frag_position_world = camera_position + normalize(ray_plane_isect-camera_position)*new_back_depth;
+    for(int i = 0; i<NEWTONS_METHOD_ITERS; i++) {
+        float intersection_distance = 0;
+        intersect_ray_plane(
+                orig,                   // point on ray
+                dir,                    // ray direction
+                plane_orig,             // point on plane
+                plane_normal,           // plane normal
+                intersection_distance); // distance between ray-plane intersection and plane
+
+        vec3  ray_plane_isect              = intersection_distance*plane_normal + plane_orig;
+        vec2  ray_plane_isect_texcoord     = vec2(mvp_xform*vec4(ray_plane_isect, 1));
+        float new_back_depth               = texture2D(back_depth_overlay_texture,  ray_plane_isect_texcoord).x;
+        vec3  new_back_frag_position_world = camera_position + normalize(ray_plane_isect-camera_position)*new_back_depth;
+        vec3  new_back_normal              = texture2D(back_normal_overlay_texture, ray_plane_isect_texcoord).xyz;
+
+        plane_orig   = new_back_frag_position_world;
+        plane_normal = new_back_normal;
+    }
 
     //
     // END TEST
