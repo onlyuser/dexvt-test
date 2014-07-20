@@ -97,7 +97,7 @@ int init_resources()
             "normal_mapped",
             "src/normal_mapped.v.glsl",
             "src/normal_mapped.f.glsl",
-            false,  // use_world_normal
+            false,  // use_normal_only
             false,  // use_camera_vec
             true,   // use_phong_shading
             true,   // use_texture_mapping
@@ -111,7 +111,7 @@ int init_resources()
             "skybox",
             "src/skybox.v.glsl",
             "src/skybox.f.glsl",
-            false, // use_world_normal
+            false, // use_normal_only
             false, // use_camera_vec
             false, // use_phong_shading
             false, // use_texture_mapping
@@ -125,7 +125,7 @@ int init_resources()
             "texture_mapped",
             "src/texture_mapped.v.glsl",
             "src/texture_mapped.f.glsl",
-            false,  // use_world_normal
+            false,  // use_normal_only
             false,  // use_camera_vec
             false,  // use_phong_shading
             true,   // use_texture_mapping
@@ -139,7 +139,7 @@ int init_resources()
             "env_mapped",
             "src/env_mapped.v.glsl",
             "src/env_mapped.f.glsl",
-            false,  // use_world_normal
+            false,  // use_normal_only
             false,  // use_camera_vec
             false,  // use_phong_shading
             false,  // use_texture_mapping
@@ -153,7 +153,7 @@ int init_resources()
             "env_mapped_fast",
             "src/env_mapped_fast.v.glsl",
             "src/env_mapped_fast.f.glsl",
-            false,  // use_world_normal
+            false,  // use_normal_only
             false,  // use_camera_vec
             false,  // use_phong_shading
             false,  // use_texture_mapping
@@ -167,7 +167,7 @@ int init_resources()
             "normal",
             "src/normal.v.glsl",
             "src/normal.f.glsl",
-            true,   // use_world_normal
+            true,   // use_normal_only
             false,  // use_camera_vec
             false,  // use_phong_shading
             false,  // use_texture_mapping
@@ -181,7 +181,7 @@ int init_resources()
             "normal_fast",
             "src/normal_fast.v.glsl",
             "src/normal_fast.f.glsl",
-            true,   // use_world_normal
+            true,   // use_normal_only
             false,  // use_camera_vec
             false,  // use_phong_shading
             false,  // use_texture_mapping

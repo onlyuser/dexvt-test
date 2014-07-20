@@ -133,7 +133,7 @@ void Scene::render(bool use_normal_material)
             continue;
         }
         Material* material = shader_context->get_material();
-        bool use_world_normal     = material->use_world_normal();
+        bool use_normal_only     = material->use_normal_only();
         bool use_camera_vec       = material->use_camera_vec();
         bool use_phong_shading    = material->use_phong_shading();
         bool use_texture_mapping  = material->use_texture_mapping();
@@ -143,10 +143,10 @@ void Scene::render(bool use_normal_material)
         material->get_program()->use();
         shader_context->set_mvp_xform(m_camera->get_projection_xform()*m_camera->get_xform()*mesh->get_xform());
         bool use_phong_normal_env = use_phong_shading || use_normal_mapping || use_env_mapping;
-        if(use_world_normal || use_camera_vec || use_phong_normal_env) {
+        if(use_normal_only || use_camera_vec || use_phong_normal_env) {
             shader_context->set_normal_xform(mesh->get_normal_xform());
             if(use_camera_vec || use_phong_normal_env) {
-                if(use_camera_vec || (!use_world_normal && use_normal_mapping) || use_env_mapping) {
+                if(use_camera_vec || (!use_normal_only && use_normal_mapping) || use_env_mapping) {
                     shader_context->set_model_xform(mesh->get_xform());
                     shader_context->set_camera_pos(m_camera_pos);
                 }

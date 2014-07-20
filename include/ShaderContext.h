@@ -78,7 +78,7 @@ private:
             m_var_uniform_camera_far,
             m_var_uniform_reflect_to_refract_ratio;
     const textures_t &m_textures;
-    bool m_use_world_normal;
+    bool m_use_normal_only;
     bool m_use_camera_vec;
     bool m_use_phong_shading;
     bool m_use_texture_mapping;

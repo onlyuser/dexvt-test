@@ -21,7 +21,7 @@ public:
             std::string name                 = "",
             std::string vertex_shader_file   = "",
             std::string fragment_shader_file = "",
-            bool        use_world_normal     = false,
+            bool        use_normal_only     = false,
             bool        use_camera_vec       = false,
             bool        use_phong_shading    = false,
             bool        use_texture_mapping  = false,
@@ -40,9 +40,9 @@ public:
     {
         return m_textures;
     }
-    bool use_world_normal() const
+    bool use_normal_only() const
     {
-        return m_use_world_normal;
+        return m_use_normal_only;
     }
     bool use_camera_vec() const
     {
@@ -79,7 +79,7 @@ public:
 private:
     std::unique_ptr<Program> m_program;
     textures_t               m_textures; // TODO: Material has multiple Textures
-    bool                     m_use_world_normal;
+    bool                     m_use_normal_only;
     bool                     m_use_camera_vec;
     bool                     m_use_phong_shading;
     bool                     m_use_texture_mapping;

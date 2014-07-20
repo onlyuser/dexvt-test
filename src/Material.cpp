@@ -16,7 +16,7 @@ Material::Material(
         std::string name,
         std::string vertex_shader_file,
         std::string fragment_shader_file,
-        bool        use_world_normal,
+        bool        use_normal_only,
         bool        use_camera_vec,
         bool        use_phong_shading,
         bool        use_texture_mapping,
@@ -25,7 +25,7 @@ Material::Material(
         bool        use_depth_overlay,
         bool        skybox)
     : NamedObject(name),
-      m_use_world_normal(use_world_normal),
+      m_use_normal_only(use_normal_only),
       m_use_camera_vec(use_camera_vec),
       m_use_phong_shading(use_phong_shading),
       m_use_texture_mapping(use_texture_mapping),
