@@ -102,6 +102,8 @@ void main(void) {
     vec3 back_frag_position_world = camera_position - camera_direction*back_depth_actual;
     //vec3 ray_plane_isect = lerp_vertex_position_world + refracted_camera_dirR*???;
 
+    // apply newton's method to find backface intersection with refracted ray from camera
+
     vec3  orig         = lerp_vertex_position_world;
     vec3  dir          = refracted_camera_dirR;
     vec3  plane_orig   = back_frag_position_world;
@@ -118,7 +120,7 @@ void main(void) {
 
         vec3  ray_plane_isect              = intersection_distance*plane_normal + plane_orig;
         vec2  ray_plane_isect_texcoord     = vec2(mvp_xform*vec4(ray_plane_isect, 1));
-        float new_back_depth               = texture2D(back_depth_overlay_texture,  ray_plane_isect_texcoord).x;
+        float new_back_depth               = texture2D(back_depth_overlay_texture, ray_plane_isect_texcoord).x;
         vec3  new_back_frag_position_world = camera_position + normalize(ray_plane_isect-camera_position)*new_back_depth;
         vec3  new_back_normal              = texture2D(back_normal_overlay_texture, ray_plane_isect_texcoord).xyz;
 
