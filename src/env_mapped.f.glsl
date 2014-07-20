@@ -7,7 +7,7 @@ const float WATER_REFRACTIVE_INDEX = 1.333;
 const float BUMP_FACTOR = 0.001;
 const float FRESNEL_REFLECTANCE_SHARPNESS = 2.0;
 
-const int NEWTONS_METHOD_ITERS = 3;
+const int NUM_NEWTONS_METHOD_ITERS = 3;
 
 uniform float reflect_to_refract_ratio;
 
@@ -109,7 +109,7 @@ void main(void) {
     vec3  plane_orig   = back_frag_position_world;
     vec3  plane_normal = back_normal;
 
-    for(int i = 0; i<NEWTONS_METHOD_ITERS; i++) {
+    for(int i = 0; i<NUM_NEWTONS_METHOD_ITERS; i++) {
         float intersection_distance = 0;
         intersect_ray_plane(
                 orig,                   // point on ray
