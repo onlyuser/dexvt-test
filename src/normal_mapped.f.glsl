@@ -24,8 +24,8 @@ void main(void) {
 
     vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1-lerp_texcoord.y);
 
-    vec3 normal_bump_surface = normalize(vec3(texture2D(normal_map_texture, flipped_texcoord)));
-    vec3 normal_bump_world = normalize(lerp_tbn_transform*normal_bump_surface);
+    vec3 normal_surface = normalize(vec3(texture2D(normal_map_texture, flipped_texcoord)));
+    vec3 normal = normalize(lerp_tbn_transform*normal_surface);
 
     for(int i = 0; i < NUM_LIGHTS && i < light_count; ++i) {
         if(light_enabled[i] == 0) {
@@ -36,12 +36,12 @@ void main(void) {
         float distance_factor = 1.0 - dist;
 
         vec3 light_direction = normalize(lerp_light_vector[i]);
-        float diffuse_per_light = dot(normal_bump_world, light_direction);
+        float diffuse_per_light = dot(normal, light_direction);
         diffuse_sum += light_color[i] * clamp(diffuse_per_light, 0.0, 1.0) * distance_factor;
 
         vec3 half_angle = normalize(camera_direction + light_direction);
         vec3 specular_color = min(light_color[i] + 0.5, 1.0);
-        float specular_per_light = dot(normal_bump_world, half_angle);
+        float specular_per_light = dot(normal, half_angle);
         specular_sum += specular_color * pow(clamp(specular_per_light, 0.0, 1.0), 16.0) * distance_factor;
     }
 

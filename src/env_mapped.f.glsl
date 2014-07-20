@@ -55,15 +55,15 @@ void main(void) {
 
     vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1-lerp_texcoord.y);
 
-    vec3 normal_bump_surface =
+    vec3 normal_surface =
             mix(vec3(0, 0, 1), normalize(vec3(texture2D(normal_map_texture, flipped_texcoord))), BUMP_FACTOR);
-    vec3 normal_bump_world = normalize(lerp_tbn_xform*normal_bump_surface);
+    vec3 normal = normalize(lerp_tbn_xform*normal_surface);
 
-    vec3 reflected_camera_dir = reflect(-camera_direction, normal_bump_world);
+    vec3 reflected_camera_dir = reflect(-camera_direction, normal);
     float etaR = AIR_REFRACTIVE_INDEX/WATER_REFRACTIVE_INDEX;
-    vec3 refracted_camera_dirR = refract(-camera_direction, normal_bump_world, etaR);
-    vec3 refracted_camera_dirG = refract(-camera_direction, normal_bump_world, etaR+0.008);
-    vec3 refracted_camera_dirB = refract(-camera_direction, normal_bump_world, etaR+0.016);
+    vec3 refracted_camera_dirR = refract(-camera_direction, normal, etaR);
+    vec3 refracted_camera_dirG = refract(-camera_direction, normal, etaR+0.008);
+    vec3 refracted_camera_dirB = refract(-camera_direction, normal, etaR+0.016);
 
     vec3 reflected_flipped_cubemap_texcoord = vec3(reflected_camera_dir.x, -reflected_camera_dir.y, reflected_camera_dir.z);
     vec3 refracted_flipped_cubemap_texcoordR = vec3(refracted_camera_dirR.x, -refracted_camera_dirR.y, refracted_camera_dirR.z);
@@ -78,7 +78,7 @@ void main(void) {
     refracted_color.b = textureCube(env_map_texture, refracted_flipped_cubemap_texcoordB).b;
     refracted_color.a = 1;
 
-    float one_minus_dot = 1-clamp(dot(camera_direction, normal_bump_world), 0, 1);
+    float one_minus_dot = 1-clamp(dot(camera_direction, normal), 0, 1);
     float fresnel_reflectance_attenuation = pow(one_minus_dot, FRESNEL_REFLECTANCE_SHARPNESS);
 
     //
