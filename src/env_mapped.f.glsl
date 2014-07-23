@@ -7,7 +7,9 @@ const float WATER_REFRACTIVE_INDEX = 1.333;
 const float BUMP_FACTOR = 0.001;
 const float FRESNEL_REFLECTANCE_SHARPNESS = 2.0;
 
-const int NUM_NEWTONS_METHOD_ITERS = 3;
+const int NUM_NEWTONS_METHOD_ITERS = 1;
+
+const float EPSILON = 0.001;
 
 uniform float reflect_to_refract_ratio;
 
@@ -25,7 +27,7 @@ uniform float     camera_near;
 uniform float     camera_far;
 
 uniform vec3 camera_position;
-uniform mat4 mvp_xform;
+uniform mat4 view_proj_xform;
 
 // http://stackoverflow.com/questions/6652253/getting-the-true-z-value-from-the-depth-buffer?answertab=votes#tab-top
 void map_depth_to_actual_depth(
@@ -41,17 +43,26 @@ void map_depth_to_actual_depth(
 // http://glm.g-truc.net/0.9.5/api/a00203.html#ga6203e3a0822575ced2b2cd500b396b0c
 // http://en.wikipedia.org/wiki/Line%E2%80%93plane_intersection#Algebraic_form
 void intersect_ray_plane(
-        in    vec3  orig,                  // point on ray
-        in    vec3  dir,                   // ray direction
-        in    vec3  plane_orig,            // point on plane
-        in    vec3  plane_normal,          // plane normal
-        inout float intersection_distance) // distance between ray-plane intersection and plane
+        in    vec3  orig,                       // point on ray   (I0)
+        in    vec3  dir,                        // ray direction  (I)
+        in    vec3  plane_orig,                 // point on plane (p0)
+        in    vec3  plane_normal,               // plane normal   (n)
+        inout float orig_intersection_distance) // distance between ray-plane intersection and plane
 {
-    intersection_distance = dot((plane_orig - orig), plane_normal) / dot(dir, plane_normal);
+    // d = dot(p0 - I0, n) / dot(I, n)
+    float num   = dot((plane_orig - orig), plane_normal);
+    float denom = dot(dir, plane_normal);
+    if((sign(num) != sign(denom)) || (abs(denom) < EPSILON)) {
+        orig_intersection_distance = -1;
+        return;
+    }
+    orig_intersection_distance = num / denom;
 }
 
 void main(void) {
     vec3 camera_direction = normalize(lerp_camera_vector);
+    //vec3 camera_vector = camera_position - lerp_vertex_position_world;
+    //vec3 camera_direction = normalize(camera_vector);
 
     vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1-lerp_texcoord.y);
 
@@ -87,9 +98,10 @@ void main(void) {
 
     vec2 overlay_texcoord = vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y);
 
-    float front_depth = texture2D(front_depth_overlay_texture, overlay_texcoord).x;
-    float back_depth  = texture2D(back_depth_overlay_texture, overlay_texcoord).x;
-    vec3  back_normal = texture2D(back_normal_overlay_texture, overlay_texcoord).xyz;
+    float front_depth       = texture2D(front_depth_overlay_texture, overlay_texcoord).x;
+    float back_depth        = texture2D(back_depth_overlay_texture, overlay_texcoord).x;
+    vec3  back_normal_color = texture2D(back_normal_overlay_texture, overlay_texcoord).xyz;
+    vec3  back_normal       = (back_normal_color - vec3(0.5))*2;
 
     float front_depth_actual = 0;
     float back_depth_actual  = 0;
@@ -105,21 +117,54 @@ void main(void) {
     // apply newton's method to find backface intersection with refracted ray from camera
 
     vec3  orig         = lerp_vertex_position_world;
-    vec3  dir          = refracted_camera_dirR;
+    vec3  dir          = refracted_camera_dirR;//-camera_direction;
     vec3  plane_orig   = back_frag_position_world;
     vec3  plane_normal = back_normal;
 
-    for(int i = 0; i<NUM_NEWTONS_METHOD_ITERS; i++) {
-        float intersection_distance = 0;
-        intersect_ray_plane(
-                orig,                   // point on ray
-                dir,                    // ray direction
-                plane_orig,             // point on plane
-                plane_normal,           // plane normal
-                intersection_distance); // distance between ray-plane intersection and plane
+    // effect: right half window red
+    //if(overlay_texcoord.x > 0.5) {
+    //    gl_FragColor = vec4(1,0,0,0);
+    //    return;
+    //}
 
-        vec3  ray_plane_isect              = intersection_distance*plane_normal + plane_orig;
-        vec2  ray_plane_isect_texcoord     = vec2(mvp_xform*vec4(ray_plane_isect, 1));
+    // effect: center big red dot (doesn't link "view_proj_xform")
+    //if(dot(normalize(plane_orig - orig), normalize(dir)) >= 0.99) {
+    //    gl_FragColor = vec4(1,0,0,0);
+    //    return;
+    //}
+
+    for(int i = 0; i<NUM_NEWTONS_METHOD_ITERS; i++) {
+        float orig_intersection_distance = 0;
+        intersect_ray_plane(
+                orig,                        // point on ray
+                dir,                         // ray direction
+                plane_orig,                  // point on plane
+                plane_normal,                // plane normal
+                orig_intersection_distance); // distance between ray-plane intersection and plane
+
+        // effect: thin green border
+        if(abs(orig_intersection_distance - (-1)) < EPSILON) {
+            gl_FragColor = vec4(0,1,0,0);
+            return;
+        }
+
+        vec3 ray_plane_isect = orig + dir*orig_intersection_distance;
+
+        // effect: center big red dot (with jagged-edge)
+        //if(dot(normalize(plane_orig - orig), plane_normal) >= 0.9) {
+        //    gl_FragColor = vec4(1,0,0,0);
+        //    return;
+        //}
+
+        vec2 ray_plane_isect_texcoord = vec2(view_proj_xform*vec4(ray_plane_isect, 1));
+
+        // effect: off-centered big red dot only visible at certain angle (when mesh is off-centered)
+        //         also thin red border only visible at certain angle (when mesh is off-centered)
+        if(distance(overlay_texcoord, ray_plane_isect_texcoord) < 0.25) {
+            gl_FragColor = vec4(1,0,0,0);
+            return;
+        }
+
         float new_back_depth               = texture2D(back_depth_overlay_texture, ray_plane_isect_texcoord).x;
         vec3  new_back_frag_position_world = camera_position + normalize(ray_plane_isect-camera_position)*new_back_depth;
         vec3  new_back_normal              = texture2D(back_normal_overlay_texture, ray_plane_isect_texcoord).xyz;
@@ -141,7 +186,7 @@ void main(void) {
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), front_depth)*0.001 +
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), back_depth)*0.001 +
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), frag_thickness)*0.001 +
-                vec4(back_normal, 0)*0.001 +
+                vec4(back_normal_color, 0)*0.001 +
                 mix(refracted_color, reflected_color, reflect_to_refract_ratio*fresnel_reflectance_attenuation);
     }
 }

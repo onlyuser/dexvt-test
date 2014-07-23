@@ -76,6 +76,7 @@ ShaderContext::ShaderContext(
         m_var_uniform_viewport_dim                = std::unique_ptr<VarUniform>(program->get_var_uniform("viewport_dim"));
         m_var_uniform_camera_near                 = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_near"));
         m_var_uniform_camera_far                  = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_far"));
+        m_var_uniform_view_proj_xform             = std::unique_ptr<VarUniform>(program->get_var_uniform("view_proj_xform"));
     }
     if(m_skybox) {
         m_var_uniform_env_map_texture      = std::unique_ptr<VarUniform>(program->get_var_uniform("env_map_texture"));
@@ -170,6 +171,11 @@ void ShaderContext::set_mvp_xform(glm::mat4 mvp_xform)
 void ShaderContext::set_model_xform(glm::mat4 model_xform)
 {
     m_var_uniform_model_xform->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(model_xform));
+}
+
+void ShaderContext::set_view_proj_xform(glm::mat4 view_proj_xform)
+{
+    m_var_uniform_view_proj_xform->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(view_proj_xform));
 }
 
 void ShaderContext::set_normal_xform(glm::mat4 normal_xform)

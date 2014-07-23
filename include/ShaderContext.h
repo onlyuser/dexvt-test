@@ -33,6 +33,7 @@ public:
     void render();
     void set_mvp_xform(glm::mat4 mvp_xform);
     void set_model_xform(glm::mat4 model_xform);
+    void set_view_proj_xform(glm::mat4 view_proj_xform);
     void set_normal_xform(glm::mat4 normal_xform);
     void set_texture_index(GLint texture_id);
     void set_normal_map_texture_index(GLint texture_id);
@@ -76,6 +77,7 @@ private:
             m_var_uniform_viewport_dim,
             m_var_uniform_camera_near,
             m_var_uniform_camera_far,
+            m_var_uniform_view_proj_xform,
             m_var_uniform_reflect_to_refract_ratio;
     const textures_t &m_textures;
     bool m_use_normal_only;

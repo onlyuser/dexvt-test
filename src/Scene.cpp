@@ -175,6 +175,7 @@ void Scene::render(bool use_normal_material)
             shader_context->set_viewport_dim(m_viewport_dim);
             shader_context->set_camera_near(m_camera->get_near_plane());
             shader_context->set_camera_far(m_camera->get_far_plane());
+            shader_context->set_view_proj_xform(m_camera->get_projection_xform()*m_camera->get_xform());
         }
         shader_context->render();
     }
