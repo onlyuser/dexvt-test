@@ -64,7 +64,7 @@ void main(void) {
     //vec3 camera_vector = camera_position - lerp_vertex_position_world;
     //vec3 camera_direction = normalize(camera_vector);
 
-    vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1-lerp_texcoord.y);
+    vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1 - lerp_texcoord.y);
 
     vec3 normal_surface =
             mix(vec3(0, 0, 1), normalize(vec3(texture2D(normal_map_texture, flipped_texcoord))), BUMP_FACTOR);
@@ -76,7 +76,7 @@ void main(void) {
     vec3 refracted_camera_dirG = refract(-camera_direction, normal, etaR+0.008);
     vec3 refracted_camera_dirB = refract(-camera_direction, normal, etaR+0.016);
 
-    vec3 reflected_flipped_cubemap_texcoord = vec3(reflected_camera_dir.x, -reflected_camera_dir.y, reflected_camera_dir.z);
+    vec3 reflected_flipped_cubemap_texcoord  = vec3(reflected_camera_dir.x,  -reflected_camera_dir.y,  reflected_camera_dir.z);
     vec3 refracted_flipped_cubemap_texcoordR = vec3(refracted_camera_dirR.x, -refracted_camera_dirR.y, refracted_camera_dirR.z);
     vec3 refracted_flipped_cubemap_texcoordG = vec3(refracted_camera_dirG.x, -refracted_camera_dirG.y, refracted_camera_dirG.z);
     vec3 refracted_flipped_cubemap_texcoordB = vec3(refracted_camera_dirB.x, -refracted_camera_dirB.y, refracted_camera_dirB.z);
@@ -89,7 +89,7 @@ void main(void) {
     refracted_color.b = textureCube(env_map_texture, refracted_flipped_cubemap_texcoordB).b;
     refracted_color.a = 1;
 
-    float one_minus_dot = 1-clamp(dot(camera_direction, normal), 0, 1);
+    float one_minus_dot = 1 - clamp(dot(camera_direction, normal), 0, 1);
     float fresnel_reflectance_attenuation = pow(one_minus_dot, FRESNEL_REFLECTANCE_SHARPNESS);
 
     //
@@ -158,6 +158,13 @@ void main(void) {
 
         vec2 ray_plane_isect_texcoord = vec2(view_proj_xform*vec4(ray_plane_isect, 1));
 
+        // effect: refraction of right half window red
+        if(ray_plane_isect_texcoord.x > 0.5) {
+            gl_FragColor = vec4(1,0,0,0);
+            return;
+        }
+
+        /*
         // effect: off-centered big red dot only visible at certain angle (when mesh is off-centered)
         //         also thin red border only visible at certain angle (when mesh is off-centered)
         if(distance(overlay_texcoord, ray_plane_isect_texcoord) < 0.25) {
@@ -172,10 +179,12 @@ void main(void) {
             gl_FragColor = vec4((ray_plane_isect_texcoord-overlay_texcoord+vec2(1))*0.5,0,0); // map from [-1,1] to [0,1]
             return;
         }
+        */
 
         float new_back_depth               = texture2D(back_depth_overlay_texture, ray_plane_isect_texcoord).x;
         vec3  new_back_frag_position_world = camera_position + normalize(ray_plane_isect-camera_position)*new_back_depth;
-        vec3  new_back_normal              = texture2D(back_normal_overlay_texture, ray_plane_isect_texcoord).xyz;
+        vec3  new_back_normal_color        = texture2D(back_normal_overlay_texture, ray_plane_isect_texcoord).xyz;
+        vec3  new_back_normal              = new_back_normal_color*2 - vec3(1); // map from [0,1] to [-1,1]
 
         plane_orig   = new_back_frag_position_world;
         plane_normal = new_back_normal;
