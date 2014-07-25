@@ -81,7 +81,7 @@ int init_resources()
     mesh->set_origin(glm::vec3(-0.5, -0.5, -0.5)); // box
     mesh2->set_scale(glm::vec3(0.5, 2, 3));        // scaled box
     mesh3->set_origin(glm::vec3(-5, -5, -1));      // grid
-    mesh4->set_origin(glm::vec3(2, 0, 0));         // sphere
+    mesh4->set_origin(glm::vec3(2, -2, 0));        // sphere
     mesh5->set_origin(glm::vec3(-2, 0, 0));        // torus
     mesh6->set_origin(glm::vec3(0, -2.5, 0));      // cylinder
     mesh7->set_origin(glm::vec3(0, 1.5, 0));       // cone

@@ -53,7 +53,7 @@ void intersect_ray_plane(
     float num   = dot((plane_orig - orig), plane_normal);
     float denom = dot(dir, plane_normal);
     if((sign(num) != sign(denom)) || (abs(denom) < EPSILON)) {
-        orig_intersection_distance = -1;
+        orig_intersection_distance = 0;
         return;
     }
     orig_intersection_distance = num / denom;
@@ -101,7 +101,7 @@ void main(void) {
     float front_depth       = texture2D(front_depth_overlay_texture, overlay_texcoord).x;
     float back_depth        = texture2D(back_depth_overlay_texture, overlay_texcoord).x;
     vec3  back_normal_color = texture2D(back_normal_overlay_texture, overlay_texcoord).xyz;
-    vec3  back_normal       = (back_normal_color - vec3(0.5))*2; // map from [0,1] to [-1,1]
+    vec3  back_normal       = back_normal_color*2 - vec3(1); // map from [0,1] to [-1,1]
 
     float front_depth_actual = 0;
     float back_depth_actual  = 0;
@@ -143,8 +143,8 @@ void main(void) {
                 orig_intersection_distance); // distance between ray-plane intersection and plane
 
         // effect: thin green border
-        if(abs(orig_intersection_distance - (-1)) < EPSILON) {
-            gl_FragColor = vec4(0,1,0,0);
+        if(abs(orig_intersection_distance) < EPSILON) {
+            gl_FragColor = vec4(1,0,1,0);
             return;
         }
 
@@ -168,8 +168,8 @@ void main(void) {
         // effect: gradient from red to green.
         //         red when refracted x is bigger.
         //         green when refracted y is bigger.
-        if(distance(overlay_texcoord, ray_plane_isect_texcoord) > 0.001) {
-            gl_FragColor = vec4((ray_plane_isect_texcoord-overlay_texcoord)*0.5+vec2(0.5),0,0); // map from [-1,1] to [0,1]
+        if(distance(overlay_texcoord, ray_plane_isect_texcoord) >= 0.25) {
+            gl_FragColor = vec4((ray_plane_isect_texcoord-overlay_texcoord+vec2(1))*0.5,0,0); // map from [-1,1] to [0,1]
             return;
         }
 
