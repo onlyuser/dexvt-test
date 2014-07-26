@@ -2,7 +2,8 @@ varying vec2      lerp_texcoord;
 uniform sampler2D normal_map_texture;
 
 const float AIR_REFRACTIVE_INDEX = 1.0;
-const float WATER_REFRACTIVE_INDEX = 1.333;
+//const float WATER_REFRACTIVE_INDEX = 1.333;
+const float GLASS_REFRACTIVE_INDEX = 1.5;
 
 const float BUMP_FACTOR = 0.001;
 const float FRESNEL_REFLECTANCE_SHARPNESS = 2.0;
@@ -59,6 +60,9 @@ void intersect_ray_plane(
     orig_intersection_distance = num / denom;
 }
 
+// http://en.wikipedia.org/wiki/Chromatic_aberration
+// http://en.wikipedia.org/wiki/Dispersion_(optics)
+// http://www.opticampus.com/cecourse.php?url=chromatic_aberration
 void main(void) {
     vec3 camera_direction = normalize(lerp_camera_vector);
 
@@ -77,10 +81,11 @@ void main(void) {
     vec4 reflected_color = textureCube(env_map_texture, reflected_flipped_cubemap_texcoord);
 
     // refraction component + chromatic dispersion
-    float etaR = AIR_REFRACTIVE_INDEX/WATER_REFRACTIVE_INDEX;
-    vec3 refracted_camera_dirR = refract(-camera_direction, normal, etaR);
-    vec3 refracted_camera_dirG = refract(-camera_direction, normal, etaR+0.008);
-    vec3 refracted_camera_dirB = refract(-camera_direction, normal, etaR+0.016);
+    // wiki: refraction indices of most transparent materials (e.g., air, glasses) decrease with increasing wavelength
+    float eta = AIR_REFRACTIVE_INDEX/GLASS_REFRACTIVE_INDEX;
+    vec3 refracted_camera_dirR = refract(-camera_direction, normal, eta-0.01);
+    vec3 refracted_camera_dirG = refract(-camera_direction, normal, eta);
+    vec3 refracted_camera_dirB = refract(-camera_direction, normal, eta+0.01);
     vec3 refracted_flipped_cubemap_texcoordR = vec3(refracted_camera_dirR.x, -refracted_camera_dirR.y, refracted_camera_dirR.z);
     vec3 refracted_flipped_cubemap_texcoordG = vec3(refracted_camera_dirG.x, -refracted_camera_dirG.y, refracted_camera_dirG.z);
     vec3 refracted_flipped_cubemap_texcoordB = vec3(refracted_camera_dirB.x, -refracted_camera_dirB.y, refracted_camera_dirB.z);
@@ -114,12 +119,12 @@ void main(void) {
     float frag_thickness = back_depth_actual - front_depth_actual;
 
     vec3 back_frag_position_world = camera_position - camera_direction*back_depth_actual;
-    //vec3 ray_plane_isect = lerp_vertex_position_world + refracted_camera_dirR*???;
+    //vec3 ray_plane_isect = lerp_vertex_position_world + refracted_camera_dirG*???;
 
     // apply newton's method to find backface intersection with refracted ray from camera
 
     vec3  orig         = lerp_vertex_position_world;
-    vec3  dir          = refracted_camera_dirR;//-camera_direction;
+    vec3  dir          = refracted_camera_dirG;//-camera_direction;
     vec3  plane_orig   = back_frag_position_world;
     vec3  plane_normal = back_normal;
 
