@@ -80,7 +80,6 @@ void refract_into_env_map(
         inout vec4        refracted_color,
         inout vec3        refracted_camera_dir)
 {
-    // refraction component + chromatic dispersion
     // wiki: refraction indices of most transparent materials (e.g., air, glasses) decrease with increasing wavelength
     vec3 refracted_camera_dirR = refract(camera_direction, surface_normal, eta-eta_rgb_offset);
     vec3 refracted_camera_dirG = refract(camera_direction, surface_normal, eta);
