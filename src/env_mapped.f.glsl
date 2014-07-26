@@ -71,6 +71,9 @@ void reflect_into_env_map(
     reflected_color = textureCube(env_map_texture, reflected_flipped_cubemap_texcoord);
 }
 
+// http://en.wikipedia.org/wiki/Chromatic_aberration
+// http://en.wikipedia.org/wiki/Dispersion_(optics)
+// http://www.opticampus.com/cecourse.php?url=chromatic_aberration
 void refract_into_env_map(
         in    vec3        camera_direction,
         in    vec3        surface_normal,
@@ -94,9 +97,6 @@ void refract_into_env_map(
     refracted_camera_dir = refracted_camera_dirG;
 }
 
-// http://en.wikipedia.org/wiki/Chromatic_aberration
-// http://en.wikipedia.org/wiki/Dispersion_(optics)
-// http://www.opticampus.com/cecourse.php?url=chromatic_aberration
 void main(void) {
     vec3 camera_direction = normalize(lerp_camera_vector);
 
