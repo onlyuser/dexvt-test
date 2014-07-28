@@ -70,7 +70,8 @@ int init_resources()
     scene->add_mesh(mesh   = vt::PrimitiveFactory::create_box(        "box"));
     scene->add_mesh(mesh2  = vt::PrimitiveFactory::create_box(        "scaled_box"));
     scene->add_mesh(mesh3  = vt::PrimitiveFactory::create_grid(       "grid",       4,  4,   10, 10));
-    scene->add_mesh(mesh4  = vt::PrimitiveFactory::create_sphere(     "sphere",     16, 16,  0.5));
+    //scene->add_mesh(mesh4  = vt::PrimitiveFactory::create_sphere(     "sphere",     16, 16,  0.5));
+    scene->add_mesh(mesh4  = vt::PrimitiveFactory::create_box(        "sphere"));
     scene->add_mesh(mesh5  = vt::PrimitiveFactory::create_torus(      "torus",      16, 16,  0.5, 0.25));
     scene->add_mesh(mesh6  = vt::PrimitiveFactory::create_cylinder(   "cylinder",   16, 0.5, 1));
     scene->add_mesh(mesh7  = vt::PrimitiveFactory::create_cone(       "cone",       16, 0.5, 1));

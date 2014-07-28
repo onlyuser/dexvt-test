@@ -188,10 +188,10 @@ void main(void) {
 
     // apply newton's method to find backface intersection with refracted ray from camera
 
-    vec3  orig         = lerp_vertex_position_world;
-    vec3  dir          = refracted_camera_dir;//-camera_direction;
-    vec3  plane_orig   = back_frag_position_world;
-    vec3  plane_normal = back_normal;
+    vec3 orig         = lerp_vertex_position_world;
+    vec3 dir          = normalize(refracted_camera_dir);//-camera_direction;
+    vec3 plane_orig   = back_frag_position_world;
+    vec3 plane_normal = normalize(back_normal);
 
     for(int i = 0; i<NUM_NEWTONS_METHOD_ITERS; i++) {
         float orig_intersection_distance = 0;
@@ -203,12 +203,12 @@ void main(void) {
                 orig_intersection_distance); // distance between ray-plane intersection and plane
 
         // effect: thin green border
-        if(abs(orig_intersection_distance) < EPSILON) {
-            gl_FragColor = vec4(1,0,1,0);
-            return;
-        }
+        //if(abs(orig_intersection_distance) < EPSILON) {
+        //    gl_FragColor = vec4(1,0,1,0);
+        //    return;
+        //}
 
-        vec3 ray_plane_isect = orig + dir*orig_intersection_distance;
+        vec3 ray_plane_isect = orig + normalize(dir)*orig_intersection_distance;
 
         // effect: center big red dot (with jagged-edge)
         //if(dot(normalize(plane_orig - orig), plane_normal) >= 0.9) {
@@ -216,21 +216,31 @@ void main(void) {
         //    return;
         //}
 
-        vec2 ray_plane_isect_texcoord = vec2(view_proj_xform*vec4(ray_plane_isect, 1));
+        vec4 ray_plane_isect_texcoord_raw = view_proj_xform*vec4(ray_plane_isect, 1);
 
-        // effect: refraction of right half window red
-        if(ray_plane_isect_texcoord.x > 0.5) {
-            gl_FragColor = vec4(1,0,0,0);
-            return;
-        }
+        // perspective divide
+        vec2 ray_plane_isect_texcoord_raw2 = vec2(ray_plane_isect_texcoord_raw / ray_plane_isect_texcoord_raw.w);
 
-        float new_back_depth               = texture2D(back_depth_overlay_texture, ray_plane_isect_texcoord).x;
-        vec3  new_back_frag_position_world = camera_position + normalize(ray_plane_isect-camera_position)*new_back_depth;
-        vec3  new_back_normal_color        = texture2D(back_normal_overlay_texture, ray_plane_isect_texcoord).xyz;
-        vec3  new_back_normal              = normalize(new_back_normal_color*2 - vec3(1)); // map from [0,1] to [-1,1]
+        vec2 ray_plane_isect_texcoord = (ray_plane_isect_texcoord_raw2 + vec2(1))*0.5; // map from [-1,1] to [0,1]
+
+        float new_back_depth = texture2D(back_depth_overlay_texture, ray_plane_isect_texcoord).x;
+
+        float new_back_depth_actual = 0;
+        map_depth_to_actual_depth(camera_near, camera_far, new_back_depth, new_back_depth_actual);
+
+        vec3 new_back_frag_position_world = camera_position + normalize(ray_plane_isect-camera_position)*new_back_depth_actual;
+        vec3 new_back_normal_color        = texture2D(back_normal_overlay_texture, ray_plane_isect_texcoord).xyz;
+        vec3 new_back_normal              = normalize(new_back_normal_color*2 - vec3(1)); // map from [0,1] to [-1,1]
 
         plane_orig   = new_back_frag_position_world;
         plane_normal = new_back_normal;
+
+        // effect: refraction of right half window red
+        if(ray_plane_isect_texcoord.x > 0.5) {
+            //gl_FragColor = vec4(1,0,0,0);
+            gl_FragColor = texture2D(back_normal_overlay_texture, ray_plane_isect_texcoord);
+            return;
+        }
     }
 
     //
