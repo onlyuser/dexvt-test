@@ -133,22 +133,6 @@ void main(void) {
     vec4 reflected_color;
     reflect_into_env_map(-camera_direction, normal, env_map_texture, reflected_color);
 
-    // refraction component
-    //float eta = AIR_REFRACTIVE_INDEX/GLASS_REFRACTIVE_INDEX;
-    //vec4 refracted_color;
-    //vec3 refracted_camera_dir;
-    //refract_into_env_map(
-    //        -camera_direction,
-    //        normal,
-    //        eta,
-    //        env_map_texture,
-    //        refracted_color,
-    //        refracted_camera_dir);
-
-    // refraction component
-    //float frontface_eta = AIR_REFRACTIVE_INDEX/GLASS_REFRACTIVE_INDEX;
-    //vec3 frontface_refracted_camera_dir = refract(-camera_direction, normal, frontface_eta);
-
     // frontface refraction component with chromatic dispersion
     float frontface_eta = AIR_REFRACTIVE_INDEX/GLASS_REFRACTIVE_INDEX;
     float frontface_eta_red = AIR_REFRACTIVE_INDEX/(GLASS_REFRACTIVE_INDEX - GLASS_REFRACTIVE_INDEX_RGB_OFFSET);
@@ -167,10 +151,6 @@ void main(void) {
     // fresnel component
     float one_minus_dot = 1 - clamp(dot(camera_direction, normal), 0, 1);
     float fresnel_reflectance_attenuation = pow(one_minus_dot, FRESNEL_REFLECTANCE_SHARPNESS);
-
-    //
-    // BEGIN TEST
-    //
 
     vec2 overlay_texcoord = vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y);
 
@@ -193,7 +173,7 @@ void main(void) {
     // apply newton's method to find backface intersection with refracted ray from camera
 
     vec3 orig         = lerp_vertex_position_world;
-    vec3 dir          = normalize(frontface_refracted_camera_dir);//-camera_direction;
+    vec3 dir          = normalize(frontface_refracted_camera_dir);
     vec3 plane_orig   = back_frag_position_world;
     vec3 plane_normal = normalize(back_normal);
 
@@ -206,19 +186,13 @@ void main(void) {
                 plane_normal,                // plane normal
                 orig_intersection_distance); // distance between ray-plane intersection and plane
 
-        // effect: thin green border
-        //if(abs(orig_intersection_distance) < EPSILON) {
-        //    gl_FragColor = vec4(1,0,1,0);
-        //    return;
-        //}
+        // 1st chance abort on glancing edge
+        if(abs(orig_intersection_distance) < EPSILON) {
+            gl_FragColor = frontface_refracted_color;
+            return;
+        }
 
         vec3 ray_plane_isect = orig + normalize(dir)*orig_intersection_distance;
-
-        // effect: center big red dot (with jagged-edge)
-        //if(dot(normalize(plane_orig - orig), plane_normal) >= 0.9) {
-        //    gl_FragColor = vec4(1,0,0,0);
-        //    return;
-        //}
 
         vec4 ray_plane_isect_texcoord_raw = view_proj_xform*vec4(ray_plane_isect, 1);
 
@@ -238,18 +212,7 @@ void main(void) {
 
         plane_orig   = new_back_frag_position_world;
         plane_normal = new_back_normal;
-
-        // effect: refraction of left half window red
-        //if(ray_plane_isect_texcoord.x < 0.5) {
-        //    //gl_FragColor = vec4(1,0,0,0);
-        //    gl_FragColor = texture2D(back_normal_overlay_texture, ray_plane_isect_texcoord);
-        //    return;
-        //}
     }
-
-    //
-    // END TEST
-    //
 
     // backface refraction component with chromatic dispersion
     float backface_eta = GLASS_REFRACTIVE_INDEX/AIR_REFRACTIVE_INDEX;
@@ -266,30 +229,11 @@ void main(void) {
             backface_refracted_color,
             backface_refracted_camera_dir);
 
-    // TODO: FIX-ME!
-    //backface_refracted_color = vec4((backface_refracted_camera_dir + vec3(1))*0.5, 0); // map from [-1,1] to [0,1]
-
-    //vec3 qwe = refract(dir, -plane_normal, backface_eta);
-    //if(abs(distance(qwe, vec3(0)) - 0) < EPSILON) {
-    //    //gl_FragColor = vec4((dir + vec3(1))*0.5, 0);
-    //    //gl_FragColor = vec4((-plane_normal + vec3(1))*0.5, 0);
-    //    //gl_FragColor = vec4(1,0,0,0);
-    //    //gl_FragColor = reflected_color;
-    //    gl_FragColor = frontface_refracted_color;
-    //    return;
-    //}
-
-    // effect: side-faces red
-    if(abs(distance(backface_refracted_camera_dir, vec3(0)) - 0) < EPSILON) {
+    // 2nd chance abort on total internal reflection
+    if(distance(backface_refracted_camera_dir, vec3(0)) < EPSILON) {
         gl_FragColor = frontface_refracted_color;
         return;
     }
-
-    // effect: backface red
-    //if(abs(dot(normalize(backface_refracted_camera_dir), normalize(-camera_direction)) - 1) < EPSILON) {
-    //    gl_FragColor = vec4(1,0,0,0);
-    //    return;
-    //}
 
     if(front_depth_actual >= (camera_far-0.1)) {
         gl_FragColor = vec4(1,1,0,0);
