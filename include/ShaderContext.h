@@ -45,9 +45,9 @@ public:
     void set_env_map_texture_index(GLint texture_id);
     void set_inv_projection_xform(glm::mat4 inv_projection_xform);
     void set_inv_normal_xform(glm::mat4 inv_normal_xform);
-    void set_front_depth_overlay_texture_index(GLint texture_id);
-    void set_back_depth_overlay_texture_index(GLint texture_id);
-    void set_back_normal_overlay_texture_index(GLint texture_id);
+    void set_frontface_depth_overlay_texture_index(GLint texture_id);
+    void set_backface_depth_overlay_texture_index(GLint texture_id);
+    void set_backface_normal_overlay_texture_index(GLint texture_id);
     void set_viewport_dim(GLfloat* viewport_dim_arr);
     void set_camera_near(GLfloat camera_near);
     void set_camera_far(GLfloat camera_far);
@@ -71,9 +71,9 @@ private:
             m_var_uniform_env_map_texture,
             m_var_uniform_inv_projection_xform,
             m_var_uniform_inv_normal_xform,
-            m_var_uniform_front_depth_overlay_texture,
-            m_var_uniform_back_depth_overlay_texture,
-            m_var_uniform_back_normal_overlay_texture,
+            m_var_uniform_frontface_depth_overlay_texture,
+            m_var_uniform_backface_depth_overlay_texture,
+            m_var_uniform_backface_normal_overlay_texture,
             m_var_uniform_viewport_dim,
             m_var_uniform_camera_near,
             m_var_uniform_camera_far,

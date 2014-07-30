@@ -169,9 +169,9 @@ void Scene::render(bool use_normal_material)
             shader_context->set_texture_index(mesh->get_texture_index());
         }
         if(use_depth_overlay) {
-            shader_context->set_front_depth_overlay_texture_index(mesh->get_front_depth_overlay_texture_index());
-            shader_context->set_back_depth_overlay_texture_index( mesh->get_back_depth_overlay_texture_index());
-            shader_context->set_back_normal_overlay_texture_index(mesh->get_back_normal_overlay_texture_index());
+            shader_context->set_frontface_depth_overlay_texture_index(mesh->get_frontface_depth_overlay_texture_index());
+            shader_context->set_backface_depth_overlay_texture_index( mesh->get_backface_depth_overlay_texture_index());
+            shader_context->set_backface_normal_overlay_texture_index(mesh->get_backface_normal_overlay_texture_index());
             shader_context->set_viewport_dim(m_viewport_dim);
             shader_context->set_camera_near(m_camera->get_near_plane());
             shader_context->set_camera_far(m_camera->get_far_plane());

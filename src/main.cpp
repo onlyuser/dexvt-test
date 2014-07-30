@@ -47,7 +47,7 @@ int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
 vt::Mesh* skybox, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10;
 vt::Light* light, *light2, *light3;
-std::unique_ptr<vt::FrameBuffer> front_depth_overlay_fb, back_depth_overlay_fb, back_normal_overlay_fb;
+std::unique_ptr<vt::FrameBuffer> frontface_depth_overlay_fb, backface_depth_overlay_fb, backface_normal_overlay_fb;
 
 bool left_mouse_down = false, right_mouse_down = false;
 glm::vec2 prev_mouse_coord, mouse_drag;
@@ -238,40 +238,40 @@ int init_resources()
     env_mapped_material->add_texture(     texture5);
     env_mapped_material_fast->add_texture(texture5);
 
-    vt::Texture* front_depth_overlay_texture = new vt::Texture(
-            "front_depth_overlay",
+    vt::Texture* frontface_depth_overlay_texture = new vt::Texture(
+            "frontface_depth_overlay",
             LOW_RES_TEX_DIM,
             LOW_RES_TEX_DIM,
             NULL,
             vt::Texture::DEPTH);
-    texture_mapped_material->add_texture(front_depth_overlay_texture);
-    env_mapped_material->add_texture(    front_depth_overlay_texture);
+    texture_mapped_material->add_texture(frontface_depth_overlay_texture);
+    env_mapped_material->add_texture(    frontface_depth_overlay_texture);
 
-    vt::Texture* back_depth_overlay_texture = new vt::Texture(
-            "back_depth_overlay",
+    vt::Texture* backface_depth_overlay_texture = new vt::Texture(
+            "backface_depth_overlay",
             LOW_RES_TEX_DIM,
             LOW_RES_TEX_DIM,
             NULL,
             vt::Texture::DEPTH);
-    texture_mapped_material->add_texture(back_depth_overlay_texture);
-    env_mapped_material->add_texture(    back_depth_overlay_texture);
+    texture_mapped_material->add_texture(backface_depth_overlay_texture);
+    env_mapped_material->add_texture(    backface_depth_overlay_texture);
 
-    vt::Texture* back_normal_overlay_texture = new vt::Texture(
-            "back_normal_overlay",
+    vt::Texture* backface_normal_overlay_texture = new vt::Texture(
+            "backface_normal_overlay",
             LOW_RES_TEX_DIM,
             LOW_RES_TEX_DIM,
             NULL,
             vt::Texture::RGB);
-    texture_mapped_material->add_texture(back_normal_overlay_texture);
-    env_mapped_material->add_texture(    back_normal_overlay_texture);
+    texture_mapped_material->add_texture(backface_normal_overlay_texture);
+    env_mapped_material->add_texture(    backface_normal_overlay_texture);
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera("camera", origin+glm::vec3(0, 0, orbit_radius), origin);
     scene->set_camera(camera);
 
-    front_depth_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(front_depth_overlay_texture, camera));
-    back_depth_overlay_fb  = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(back_depth_overlay_texture, camera));
-    back_normal_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(back_normal_overlay_texture, camera));
+    frontface_depth_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(frontface_depth_overlay_texture, camera));
+    backface_depth_overlay_fb  = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(backface_depth_overlay_texture, camera));
+    backface_normal_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(backface_normal_overlay_texture, camera));
 
     scene->add_light(light  = new vt::Light("light1", origin+glm::vec3(light_distance, 0, 0), glm::vec3(1, 0, 0)));
     scene->add_light(light2 = new vt::Light("light2", origin+glm::vec3(0, light_distance, 0), glm::vec3(0, 1, 0)));
@@ -292,25 +292,25 @@ int init_resources()
 
     // grid
     mesh3->set_material(texture_mapped_material);
-    //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("front_depth_overlay"));
-    //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("back_depth_overlay"));
-    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("back_normal_overlay"));
+    //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // sphere
     mesh4->set_material(env_mapped_material);
     mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh4->set_texture_index(                    mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh4->set_normal_map_texture_index(         mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh4->set_front_depth_overlay_texture_index(mesh4->get_material()->get_texture_index_by_name("front_depth_overlay"));
-    mesh4->set_back_depth_overlay_texture_index( mesh4->get_material()->get_texture_index_by_name("back_depth_overlay"));
-    mesh4->set_back_normal_overlay_texture_index(mesh4->get_material()->get_texture_index_by_name("back_normal_overlay"));
+    mesh4->set_texture_index(                        mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh4->set_normal_map_texture_index(             mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh4->set_frontface_depth_overlay_texture_index(mesh4->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    mesh4->set_backface_depth_overlay_texture_index( mesh4->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    mesh4->set_backface_normal_overlay_texture_index(mesh4->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // torus
     mesh5->set_material(env_mapped_material_fast);
     mesh5->set_reflect_to_refract_ratio(1); // 100% reflective
-    mesh5->set_front_depth_overlay_texture_index(mesh5->get_material()->get_texture_index_by_name("front_depth_overlay"));
-    mesh5->set_back_depth_overlay_texture_index( mesh5->get_material()->get_texture_index_by_name("back_depth_overlay"));
-    mesh5->set_back_normal_overlay_texture_index(mesh5->get_material()->get_texture_index_by_name("back_normal_overlay"));
+    mesh5->set_frontface_depth_overlay_texture_index(mesh5->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    mesh5->set_backface_depth_overlay_texture_index( mesh5->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    mesh5->set_backface_normal_overlay_texture_index(mesh5->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // cylinder
     mesh6->set_material(texture_mapped_material);
@@ -369,27 +369,27 @@ void onDisplay()
 
     onTick();
 
-    front_depth_overlay_fb->bind();
+    frontface_depth_overlay_fb->bind();
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     scene->render();
-    front_depth_overlay_fb->unbind();
+    frontface_depth_overlay_fb->unbind();
 
-    back_depth_overlay_fb->bind();
+    backface_depth_overlay_fb->bind();
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_FRONT);
     scene->render();
     glCullFace(GL_BACK);
-    back_depth_overlay_fb->unbind();
+    backface_depth_overlay_fb->unbind();
 
-    back_normal_overlay_fb->bind();
+    backface_normal_overlay_fb->bind();
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_FRONT);
     scene->render(true);
     glCullFace(GL_BACK);
-    back_normal_overlay_fb->unbind();
+    backface_normal_overlay_fb->unbind();
 
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
