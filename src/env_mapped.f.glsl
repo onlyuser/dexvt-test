@@ -157,7 +157,7 @@ void main(void) {
     float frontface_depth       = texture2D(frontface_depth_overlay_texture, overlay_texcoord).x;
     float backface_depth        = texture2D(backface_depth_overlay_texture, overlay_texcoord).x;
     vec4  backface_normal_color = texture2D(backface_normal_overlay_texture, overlay_texcoord);
-    vec3  backface_normal       = normalize(backface_normal_color.xyz*2 - vec3(1)); // map from [0,1] to [-1,1]
+    vec3  backface_normal       = -normalize(backface_normal_color.xyz*2 - vec3(1)); // map from [0,1] to [-1,1]
 
     float frontface_depth_actual = 0;
     float backface_depth_actual  = 0;
@@ -188,7 +188,7 @@ void main(void) {
 
         // 1st chance abort on glancing edge
         if(abs(orig_intersection_distance) < EPSILON) {
-            gl_FragColor = frontface_refracted_color;
+            gl_FragColor = vec4(0,1,0,0);//frontface_refracted_color;
             return;
         }
 
@@ -208,7 +208,7 @@ void main(void) {
 
         vec3 new_backface_frag_position_world = camera_position + normalize(ray_plane_isect-camera_position)*new_backface_depth_actual;
         vec4 new_backface_normal_color        = texture2D(backface_normal_overlay_texture, ray_plane_isect_texcoord);
-        vec3 new_backface_normal              = normalize(new_backface_normal_color.xyz*2 - vec3(1)); // map from [0,1] to [-1,1]
+        vec3 new_backface_normal              = -normalize(new_backface_normal_color.xyz*2 - vec3(1)); // map from [0,1] to [-1,1]
 
         plane_orig   = new_backface_frag_position_world;
         plane_normal = new_backface_normal;
@@ -222,7 +222,7 @@ void main(void) {
     vec3 backface_refracted_camera_dir;
     refract_into_env_map_ex(
             dir,
-            -plane_normal,
+            plane_normal,
             backface_eta,
             -backface_eta_rgb_offset,
             env_map_texture,
@@ -234,7 +234,7 @@ void main(void) {
         vec3 backface_reflected_camera_dir = reflect(frontface_refracted_camera_dir, -plane_normal);
         vec4 reflected_color;
         sample_env_map(backface_reflected_camera_dir, env_map_texture, reflected_color);
-        gl_FragColor = reflected_color;
+        gl_FragColor = vec4(1,0,0,0);//reflected_color;
         return;
     }
 
