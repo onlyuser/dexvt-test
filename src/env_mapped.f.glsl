@@ -7,6 +7,7 @@ const float GLASS_REFRACTIVE_INDEX_RGB_OFFSET = 0.01;
 
 const float BUMP_FACTOR = 0.001;
 const float FRESNEL_REFLECTANCE_SHARPNESS = 2.0;
+const float BEERS_LAW_FALLOFF_SHARPNESS = 1;
 
 const int NUM_NEWTONS_METHOD_ITERS = 3;
 
@@ -129,11 +130,11 @@ void main(void) {
             mix(vec3(0, 0, 1), normalize(vec3(texture2D(normal_map_texture, flipped_texcoord))), BUMP_FACTOR);
     vec3 normal = normalize(lerp_tbn_xform*normal_surface);
 
-    // reflection component
+    // frontface reflection component
     vec4 reflected_color;
     reflect_into_env_map(-camera_direction, normal, env_map_texture, reflected_color);
 
-    // front refraction component with chromatic dispersion
+    // frontface refraction component with chromatic dispersion
     float frontface_eta = AIR_REFRACTIVE_INDEX/GLASS_REFRACTIVE_INDEX;
     float frontface_eta_red = AIR_REFRACTIVE_INDEX/(GLASS_REFRACTIVE_INDEX - GLASS_REFRACTIVE_INDEX_RGB_OFFSET);
     float frontface_eta_rgb_offset = abs(frontface_eta - frontface_eta_red);
@@ -147,10 +148,6 @@ void main(void) {
             env_map_texture,
             frontface_refracted_color,
             frontface_refracted_camera_dir);
-
-    // fresnel component
-    float one_minus_dot = 1 - clamp(dot(camera_direction, normal), 0, 1);
-    float fresnel_reflectance_attenuation = pow(one_minus_dot, FRESNEL_REFLECTANCE_SHARPNESS);
 
     vec2 overlay_texcoord = vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y);
 
@@ -170,7 +167,7 @@ void main(void) {
     vec3 backface_frag_position_world = camera_position - camera_direction*backface_depth_actual;
     //vec3 ray_plane_isect = lerp_vertex_position_world + frontface_refracted_camera_dir*???;
 
-    // apply newton's method to find back intersection with refracted ray from camera
+    // apply newton's method to find backface intersection with refracted ray from camera
 
     vec3 orig         = lerp_vertex_position_world;
     vec3 dir          = normalize(frontface_refracted_camera_dir);
@@ -214,7 +211,7 @@ void main(void) {
         plane_normal = new_backface_normal;
     }
 
-    // back refraction component with chromatic dispersion
+    // backface refraction component with chromatic dispersion
     float backface_eta = GLASS_REFRACTIVE_INDEX/AIR_REFRACTIVE_INDEX;
     float backface_eta_red = (GLASS_REFRACTIVE_INDEX - GLASS_REFRACTIVE_INDEX_RGB_OFFSET)/AIR_REFRACTIVE_INDEX;
     float backface_eta_rgb_offset = abs(backface_eta - backface_eta_red);
@@ -229,25 +226,39 @@ void main(void) {
             backface_refracted_color,
             backface_refracted_camera_dir);
 
+    // backface reflection component
     // 2nd chance abort on total internal reflection
     if(distance(backface_refracted_camera_dir, vec3(0)) < EPSILON) {
-        vec3 backface_reflected_camera_dir = reflect(frontface_refracted_camera_dir, -plane_normal);
+        vec3 backface_reflected_camera_dir = reflect(frontface_refracted_camera_dir, plane_normal);
         vec4 total_internal_reflected_color;
         sample_env_map(backface_reflected_camera_dir, env_map_texture, total_internal_reflected_color);
-        gl_FragColor = mix(frontface_refracted_color, total_internal_reflected_color, 0.5); // TODO: FIX-ME!
-        return;
+        backface_refracted_color = total_internal_reflected_color;
     }
+
+    float beers_law_transmittance = exp(-frag_thickness*BEERS_LAW_FALLOFF_SHARPNESS);
+
+    // backface fresnel component
+    float backface_fresnel_reflectance =
+            pow(1 - clamp(dot(camera_direction, plane_normal), 0, 1), FRESNEL_REFLECTANCE_SHARPNESS);
+
+    vec4 inside_color =
+            mix(frontface_refracted_color, backface_refracted_color,
+            //mix(vec4(1,0,0,0), vec4(0,1,0,0),
+                    beers_law_transmittance*backface_fresnel_reflectance);
 
     if(frontface_depth_actual >= (camera_far - 0.1)) {
         gl_FragColor = vec4(1,1,0,0);
     } else if(frontface_depth_actual <= (camera_near + 0.1)) {
         gl_FragColor = vec4(0,1,1,0);
     } else {
+        // frontface fresnel component
+        float frontface_fresnel_reflectance =
+                pow(1 - clamp(dot(camera_direction, normal), 0, 1), FRESNEL_REFLECTANCE_SHARPNESS);
         gl_FragColor =
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), frontface_depth)*0.001 +
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), backface_depth)*0.001 +
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), frag_thickness)*0.001 +
                 backface_normal_color*0.001 +
-                mix(backface_refracted_color, reflected_color, reflect_to_refract_ratio*fresnel_reflectance_attenuation);
+                mix(inside_color, reflected_color, reflect_to_refract_ratio*frontface_fresnel_reflectance);
     }
 }
