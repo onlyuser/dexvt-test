@@ -51,7 +51,7 @@ void intersect_ray_plane(
         inout float orig_intersection_distance) // distance between ray-plane intersection and plane
 {
     // d = dot(p0 - I0, n) / dot(I, n)
-    float num   = dot((plane_orig - orig), plane_normal);
+    float num   = dot(plane_orig - orig, plane_normal);
     float denom = dot(dir, plane_normal);
     if((sign(num) != sign(denom)) || (abs(denom) < EPSILON)) {
         orig_intersection_distance = 0;
@@ -187,10 +187,10 @@ void main(void) {
                 orig_intersection_distance); // distance between ray-plane intersection and plane
 
         // 1st chance abort on glancing edge
-        if(abs(orig_intersection_distance) < EPSILON) {
-            gl_FragColor = vec4(0,1,0,0);//frontface_refracted_color;
-            return;
-        }
+        //if(abs(orig_intersection_distance) < EPSILON) {
+        //    gl_FragColor = vec4(0,1,0,0);//frontface_refracted_color;
+        //    return;
+        //}
 
         vec3 ray_plane_isect = orig + normalize(dir)*orig_intersection_distance;
 
@@ -232,9 +232,9 @@ void main(void) {
     // 2nd chance abort on total internal reflection
     if(distance(backface_refracted_camera_dir, vec3(0)) < EPSILON) {
         vec3 backface_reflected_camera_dir = reflect(frontface_refracted_camera_dir, -plane_normal);
-        vec4 reflected_color;
-        sample_env_map(backface_reflected_camera_dir, env_map_texture, reflected_color);
-        gl_FragColor = vec4(1,0,0,0);//reflected_color;
+        vec4 total_internal_reflected_color;
+        sample_env_map(backface_reflected_camera_dir, env_map_texture, total_internal_reflected_color);
+        gl_FragColor = mix(frontface_refracted_color, total_internal_reflected_color, 0.5); // TODO: FIX-ME!
         return;
     }
 
