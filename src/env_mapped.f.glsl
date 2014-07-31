@@ -156,8 +156,8 @@ void main(void) {
 
     float frontface_depth       = texture2D(frontface_depth_overlay_texture, overlay_texcoord).x;
     float backface_depth        = texture2D(backface_depth_overlay_texture, overlay_texcoord).x;
-    vec3  backface_normal_color = texture2D(backface_normal_overlay_texture, overlay_texcoord).xyz;
-    vec3  backface_normal       = normalize(backface_normal_color*2 - vec3(1)); // map from [0,1] to [-1,1]
+    vec4  backface_normal_color = texture2D(backface_normal_overlay_texture, overlay_texcoord);
+    vec3  backface_normal       = normalize(backface_normal_color.xyz*2 - vec3(1)); // map from [0,1] to [-1,1]
 
     float frontface_depth_actual = 0;
     float backface_depth_actual  = 0;
@@ -207,8 +207,8 @@ void main(void) {
         map_depth_to_actual_depth(camera_near, camera_far, new_backface_depth, new_backface_depth_actual);
 
         vec3 new_backface_frag_position_world = camera_position + normalize(ray_plane_isect-camera_position)*new_backface_depth_actual;
-        vec3 new_backface_normal_color        = texture2D(backface_normal_overlay_texture, ray_plane_isect_texcoord).xyz;
-        vec3 new_backface_normal              = normalize(new_backface_normal_color*2 - vec3(1)); // map from [0,1] to [-1,1]
+        vec4 new_backface_normal_color        = texture2D(backface_normal_overlay_texture, ray_plane_isect_texcoord);
+        vec3 new_backface_normal              = normalize(new_backface_normal_color.xyz*2 - vec3(1)); // map from [0,1] to [-1,1]
 
         plane_orig   = new_backface_frag_position_world;
         plane_normal = new_backface_normal;
@@ -231,7 +231,10 @@ void main(void) {
 
     // 2nd chance abort on total internal reflection
     if(distance(backface_refracted_camera_dir, vec3(0)) < EPSILON) {
-        gl_FragColor = frontface_refracted_color;
+        vec3 backface_reflected_camera_dir = reflect(frontface_refracted_camera_dir, -plane_normal);
+        vec4 reflected_color;
+        sample_env_map(backface_reflected_camera_dir, env_map_texture, reflected_color);
+        gl_FragColor = reflected_color;
         return;
     }
 
@@ -244,7 +247,7 @@ void main(void) {
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), frontface_depth)*0.001 +
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), backface_depth)*0.001 +
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), frag_thickness)*0.001 +
-                vec4(backface_normal_color, 0)*0.001 +
+                backface_normal_color*0.001 +
                 mix(backface_refracted_color, reflected_color, reflect_to_refract_ratio*fresnel_reflectance_attenuation);
     }
 }
