@@ -106,4 +106,4 @@ References
 Keywords
 --------
 
-    OpenGL, glsl shader, glm, normal map, environment map, cube map, normal map, bitangent, tbn matrix, reflectance, refractance, fresnel effect, chromatic dispersion
+    OpenGL, glsl shader, glm, normal map, environment map, cube map, normal map, bitangent, tbn matrix, backface refraction, fresnel effect, chromatic dispersion, beer's law, snell's law
