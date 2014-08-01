@@ -192,11 +192,9 @@ void main(void) {
         vec3 ray_plane_isect = orig + normalize(dir)*orig_intersection_distance;
 
         vec4 ray_plane_isect_texcoord_raw = view_proj_xform*vec4(ray_plane_isect, 1);
+        ray_plane_isect_texcoord_raw /= ray_plane_isect_texcoord_raw.w;
 
-        // perspective divide
-        vec2 ray_plane_isect_texcoord_raw2 = vec2(ray_plane_isect_texcoord_raw) / ray_plane_isect_texcoord_raw.w;
-
-        vec2 ray_plane_isect_texcoord = (ray_plane_isect_texcoord_raw2 + vec2(1))*0.5; // map from [-1,1] to [0,1]
+        vec2 ray_plane_isect_texcoord = (vec2(ray_plane_isect_texcoord_raw) + vec2(1))*0.5; // map from [-1,1] to [0,1]
 
         float new_backface_depth = texture2D(backface_depth_overlay_texture, ray_plane_isect_texcoord).x;
 
@@ -243,8 +241,7 @@ void main(void) {
 
     vec4 inside_color =
             mix(frontface_refracted_color, backface_refracted_color,
-            //mix(vec4(1,0,0,0), vec4(0,1,0,0),
-                    beers_law_transmittance*backface_fresnel_reflectance);
+                    min(max(beers_law_transmittance, backface_fresnel_reflectance), 1));
 
     if(frontface_depth_actual >= (camera_far - 0.1)) {
         gl_FragColor = vec4(1,1,0,0);
