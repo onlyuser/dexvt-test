@@ -27,7 +27,7 @@ Mesh::Mesh(
       m_normal_map_texture_index(-1),
       m_env_map_texture_index(-1),
       m_frontface_depth_overlay_texture_index(-1),
-      m_reflect_to_refract_ratio(1)
+      m_reflect_to_refract_ratio(1) // 100% reflective
 {
     m_vert_coords  = new GLfloat[num_vertex*3];
     m_vert_normal  = new GLfloat[num_vertex*3];

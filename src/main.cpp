@@ -146,9 +146,23 @@ int init_resources()
             false,  // use_texture_mapping
             true,   // use_normal_mapping
             true,   // use_env_mapping
-            true,   // use_depth_overlay
+            false,  // use_depth_overlay
             false); // skybox
     scene->add_material(env_mapped_material);
+
+    vt::Material* env_mapped_ex_material = new vt::Material(
+            "env_mapped_ex",
+            "src/env_mapped_ex.v.glsl",
+            "src/env_mapped_ex.f.glsl",
+            false,  // use_normal_only
+            false,  // use_camera_vec
+            false,  // use_phong_shading
+            false,  // use_texture_mapping
+            true,   // use_normal_mapping
+            true,   // use_env_mapping
+            true,   // use_depth_overlay
+            false); // skybox
+    scene->add_material(env_mapped_ex_material);
 
     vt::Material* env_mapped_material_fast = new vt::Material(
             "env_mapped_fast",
@@ -216,6 +230,7 @@ int init_resources()
     scene->add_texture(                 texture3);
     normal_mapped_material->add_texture(texture3);
     env_mapped_material->add_texture(   texture3);
+    env_mapped_ex_material->add_texture(texture3);
 
     vt::Texture* texture4 = new vt::Texture(
             "chesterfield_normal",
@@ -223,6 +238,7 @@ int init_resources()
     scene->add_texture(                 texture4);
     normal_mapped_material->add_texture(texture4);
     env_mapped_material->add_texture(   texture4);
+    env_mapped_ex_material->add_texture(texture4);
     normal_material->add_texture(       texture4);
 
     vt::Texture* texture5 = new vt::Texture(
@@ -236,6 +252,7 @@ int init_resources()
     scene->add_texture(                   texture5);
     skybox_material->add_texture(         texture5);
     env_mapped_material->add_texture(     texture5);
+    env_mapped_ex_material->add_texture(  texture5);
     env_mapped_material_fast->add_texture(texture5);
 
     vt::Texture* frontface_depth_overlay_texture = new vt::Texture(
@@ -245,7 +262,7 @@ int init_resources()
             NULL,
             vt::Texture::DEPTH);
     texture_mapped_material->add_texture(frontface_depth_overlay_texture);
-    env_mapped_material->add_texture(    frontface_depth_overlay_texture);
+    env_mapped_ex_material->add_texture( frontface_depth_overlay_texture);
 
     vt::Texture* backface_depth_overlay_texture = new vt::Texture(
             "backface_depth_overlay",
@@ -254,7 +271,7 @@ int init_resources()
             NULL,
             vt::Texture::DEPTH);
     texture_mapped_material->add_texture(backface_depth_overlay_texture);
-    env_mapped_material->add_texture(    backface_depth_overlay_texture);
+    env_mapped_ex_material->add_texture( backface_depth_overlay_texture);
 
     vt::Texture* backface_normal_overlay_texture = new vt::Texture(
             "backface_normal_overlay",
@@ -263,7 +280,7 @@ int init_resources()
             NULL,
             vt::Texture::RGB);
     texture_mapped_material->add_texture(backface_normal_overlay_texture);
-    env_mapped_material->add_texture(    backface_normal_overlay_texture);
+    env_mapped_ex_material->add_texture( backface_normal_overlay_texture);
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera("camera", origin+glm::vec3(0, 0, orbit_radius), origin);
@@ -297,7 +314,7 @@ int init_resources()
     mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // sphere
-    mesh4->set_material(env_mapped_material);
+    mesh4->set_material(env_mapped_ex_material);
     mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
     mesh4->set_texture_index(                        mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh4->set_normal_map_texture_index(             mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
@@ -306,11 +323,10 @@ int init_resources()
     mesh4->set_backface_normal_overlay_texture_index(mesh4->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // torus
-    mesh5->set_material(env_mapped_material_fast);
+    mesh5->set_material(env_mapped_material);
     mesh5->set_reflect_to_refract_ratio(1); // 100% reflective
-    mesh5->set_frontface_depth_overlay_texture_index(mesh5->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    mesh5->set_backface_depth_overlay_texture_index( mesh5->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    mesh5->set_backface_normal_overlay_texture_index(mesh5->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    mesh5->set_texture_index(           mesh5->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh5->set_normal_map_texture_index(mesh5->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
     // cylinder
     mesh6->set_material(texture_mapped_material);
