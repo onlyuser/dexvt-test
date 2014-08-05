@@ -184,7 +184,7 @@ void main(void) {
     vec3 plane_orig   = backface_frag_position_world;
     vec3 plane_normal = normalize(backface_normal);
 
-    for(int i = 0; i<NUM_NEWTONS_METHOD_ITERS; i++) {
+    for(int i = 0; i < NUM_NEWTONS_METHOD_ITERS; i++) {
         float orig_intersection_distance = 0;
         intersect_ray_plane(
                 orig,                        // point on ray

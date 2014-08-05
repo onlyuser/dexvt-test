@@ -32,7 +32,7 @@ void main(void) {
             continue;
         }
 
-        float dist = min(dot(lerp_light_vector[i], lerp_light_vector[i]), MAX_DIST_SQUARED) / MAX_DIST_SQUARED;
+        float dist = min(dot(lerp_light_vector[i], lerp_light_vector[i]), MAX_DIST_SQUARED)/MAX_DIST_SQUARED;
         float distance_factor = 1.0 - dist;
 
         vec3 light_direction = normalize(lerp_light_vector[i]);

@@ -16,8 +16,6 @@ varying vec3 lerp_camera_vector;
 
 uniform samplerCube env_map_texture;
 
-uniform vec2 viewport_dim;
-
 uniform vec3 camera_position;
 
 void sample_env_map(
@@ -107,8 +105,6 @@ void main(void) {
             env_map_texture,
             frontface_refracted_color,
             frontface_refracted_camera_dir);
-
-    vec2 overlay_texcoord = vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y);
 
     // fresnel component
     float frontface_fresnel_reflectance =
