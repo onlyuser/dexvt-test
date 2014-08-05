@@ -38,8 +38,8 @@ void map_depth_to_actual_depth(
         in    float z_b,    // projected depth
         inout float z_e)    // actual depth
 {
-    float z_n = 2.0 * z_b - 1.0; // projected depth scaled from [0, 1] to [-1, 1]
-    z_e = 2.0 * z_near * z_far / (z_far + z_near - z_n * (z_far - z_near));
+    float z_n = 2.0*z_b - 1.0; // projected depth scaled from [0,1] to [-1,1]
+    z_e = 2.0*z_near*z_far/(z_far + z_near - z_n*(z_far - z_near));
 }
 
 // http://glm.g-truc.net/0.9.5/api/a00203.html#ga6203e3a0822575ced2b2cd500b396b0c
@@ -51,14 +51,14 @@ void intersect_ray_plane(
         in    vec3  plane_normal,               // plane normal   (n)
         inout float orig_intersection_distance) // distance between ray-plane intersection and plane
 {
-    // d = dot(p0 - I0, n) / dot(I, n)
+    // d = dot(p0 - I0, n)/dot(I, n)
     float num   = dot(plane_orig - orig, plane_normal);
     float denom = dot(dir, plane_normal);
     if((sign(num) != sign(denom)) || (abs(denom) < EPSILON)) {
         orig_intersection_distance = 0;
         return;
     }
-    orig_intersection_distance = num / denom;
+    orig_intersection_distance = num/denom;
 }
 
 void sample_env_map(
