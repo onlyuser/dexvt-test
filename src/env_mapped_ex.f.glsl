@@ -118,6 +118,48 @@ void refract_into_env_map_ex(
     refracted_camera_dir = refracted_camera_dirG;
 }
 
+void newtons_method_update(
+        in    sampler2D _backface_depth_overlay_texture,
+        in    sampler2D _backface_normal_overlay_texture,
+        in    vec3      orig,
+        in    vec3      dir,
+        inout vec3      plane_orig,
+        inout vec3      plane_normal)
+{
+    float orig_intersection_distance = 0;
+    intersect_ray_plane(
+            orig,                        // point on ray
+            dir,                         // ray direction
+            plane_orig,                  // point on plane
+            plane_normal,                // plane normal
+            orig_intersection_distance); // distance between ray-plane intersection and plane
+
+    // 1st chance abort on glancing edge
+    //if(abs(orig_intersection_distance) < EPSILON) {
+    //    gl_FragColor = vec4(0,1,0,0);//frontface_refracted_color;
+    //    return;
+    //}
+
+    vec3 ray_plane_isect = orig + normalize(dir)*orig_intersection_distance;
+
+    vec4 ray_plane_isect_texcoord_raw = view_proj_xform*vec4(ray_plane_isect, 1);
+    ray_plane_isect_texcoord_raw /= ray_plane_isect_texcoord_raw.w; // perspective divide
+
+    vec2 ray_plane_isect_texcoord = (vec2(ray_plane_isect_texcoord_raw) + vec2(1))*0.5; // map from [-1,1] to [0,1]
+
+    float new_backface_depth = texture2D(_backface_depth_overlay_texture, ray_plane_isect_texcoord).x;
+
+    float new_backface_depth_actual = 0;
+    map_depth_to_actual_depth(camera_near, camera_far, new_backface_depth, new_backface_depth_actual);
+
+    vec3 new_backface_frag_position_world = camera_position + normalize(ray_plane_isect-camera_position)*new_backface_depth_actual;
+    vec4 new_backface_normal_color        = texture2D(_backface_normal_overlay_texture, ray_plane_isect_texcoord);
+    vec3 new_backface_normal              = -normalize(new_backface_normal_color.xyz*2 - vec3(1)); // map from [0,1] to [-1,1]
+
+    plane_orig   = new_backface_frag_position_world;
+    plane_normal = new_backface_normal;
+}
+
 void main(void) {
     vec3 camera_direction = normalize(lerp_camera_vector);
 
@@ -185,38 +227,13 @@ void main(void) {
     vec3 plane_normal = normalize(backface_normal);
 
     for(int i = 0; i < NUM_NEWTONS_METHOD_ITERS; i++) {
-        float orig_intersection_distance = 0;
-        intersect_ray_plane(
-                orig,                        // point on ray
-                dir,                         // ray direction
-                plane_orig,                  // point on plane
-                plane_normal,                // plane normal
-                orig_intersection_distance); // distance between ray-plane intersection and plane
-
-        // 1st chance abort on glancing edge
-        //if(abs(orig_intersection_distance) < EPSILON) {
-        //    gl_FragColor = vec4(0,1,0,0);//frontface_refracted_color;
-        //    return;
-        //}
-
-        vec3 ray_plane_isect = orig + normalize(dir)*orig_intersection_distance;
-
-        vec4 ray_plane_isect_texcoord_raw = view_proj_xform*vec4(ray_plane_isect, 1);
-        ray_plane_isect_texcoord_raw /= ray_plane_isect_texcoord_raw.w; // perspective divide
-
-        vec2 ray_plane_isect_texcoord = (vec2(ray_plane_isect_texcoord_raw) + vec2(1))*0.5; // map from [-1,1] to [0,1]
-
-        float new_backface_depth = texture2D(backface_depth_overlay_texture, ray_plane_isect_texcoord).x;
-
-        float new_backface_depth_actual = 0;
-        map_depth_to_actual_depth(camera_near, camera_far, new_backface_depth, new_backface_depth_actual);
-
-        vec3 new_backface_frag_position_world = camera_position + normalize(ray_plane_isect-camera_position)*new_backface_depth_actual;
-        vec4 new_backface_normal_color        = texture2D(backface_normal_overlay_texture, ray_plane_isect_texcoord);
-        vec3 new_backface_normal              = -normalize(new_backface_normal_color.xyz*2 - vec3(1)); // map from [0,1] to [-1,1]
-
-        plane_orig   = new_backface_frag_position_world;
-        plane_normal = new_backface_normal;
+        newtons_method_update(
+                backface_depth_overlay_texture,
+                backface_normal_overlay_texture,
+                orig,
+                dir,
+                plane_orig,
+                plane_normal);
     }
 
     // backface refraction component with chromatic dispersion
