@@ -474,8 +474,8 @@ void onKeyboard(unsigned char key, int x, int y)
             } else if(texture_index == 1) {
                 texture_index = 2; // GL_TEXTURE2
             } else if(texture_index == 2) {
-                texture_index = 4; // GL_TEXTURE3
-            } else if(texture_index == 4) {
+                texture_index = 3; // GL_TEXTURE3
+            } else if(texture_index == 3) {
                 texture_index = 0; // GL_TEXTURE0
             }
             mesh->set_texture_index( texture_index);
