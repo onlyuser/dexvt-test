@@ -55,7 +55,8 @@ glm::vec3 prev_orient, orient, orbit_speed = glm::vec3(0, -0.5, -0.5);
 float prev_orbit_radius = 0, orbit_radius = 8, dolly_speed = 0.1, light_distance = 4;
 bool wire_frame_mode = false;
 bool show_fps = false;
-bool debug_vert_normals = false;
+bool show_vert_normals = false;
+bool show_lights = false;
 
 int texture_index = 0;
 float prev_zoom = 0, zoom = 1, ortho_dolly_speed = 0.1;
@@ -340,7 +341,13 @@ int init_resources()
     mesh8->set_material(env_mapped_material_fast);
 
     // tetrahedron
-    mesh9->set_material(env_mapped_material_fast);
+    mesh9->set_material(env_mapped_ex_material);
+    mesh9->set_reflect_to_refract_ratio(0.33); // 33% reflective
+    mesh9->set_texture_index(                        mesh9->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh9->set_normal_map_texture_index(             mesh9->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh9->set_frontface_depth_overlay_texture_index(mesh9->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    mesh9->set_backface_depth_overlay_texture_index( mesh9->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    mesh9->set_backface_normal_overlay_texture_index(mesh9->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // diamond
     mesh10->set_material(env_mapped_material_fast);
@@ -435,8 +442,11 @@ void onDisplay()
 //    glDisable(GL_STENCIL_TEST);
 //    stencil_fb->unbind();
 
-    if(debug_vert_normals) {
+    if(show_vert_normals) {
         scene->render_vert_normals();
+    }
+    if(show_lights) {
+        scene->render_lights();
     }
     glutSwapBuffers();
 }
@@ -477,7 +487,10 @@ void onKeyboard(unsigned char key, int x, int y)
             //mesh7->set_texture_index(texture_index);
             break;
         case 'n':
-            debug_vert_normals = !debug_vert_normals;
+            show_vert_normals = !show_vert_normals;
+            break;
+        case 'l':
+            show_lights = !show_lights;
             break;
         case 'p':
             if(camera->get_projection_mode() == vt::Camera::PROJECTION_MODE_PERSPECTIVE) {

@@ -202,7 +202,7 @@ void main(void) {
         vec3 ray_plane_isect = orig + normalize(dir)*orig_intersection_distance;
 
         vec4 ray_plane_isect_texcoord_raw = view_proj_xform*vec4(ray_plane_isect, 1);
-        ray_plane_isect_texcoord_raw /= ray_plane_isect_texcoord_raw.w;
+        ray_plane_isect_texcoord_raw /= ray_plane_isect_texcoord_raw.w; // perspective divide
 
         vec2 ray_plane_isect_texcoord = (vec2(ray_plane_isect_texcoord_raw) + vec2(1))*0.5; // map from [-1,1] to [0,1]
 

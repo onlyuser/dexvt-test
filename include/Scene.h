@@ -75,7 +75,8 @@ public:
     void reset();
     void use_program();
     void render(bool use_normal_material = false);
-    void render_vert_normals();
+    void render_vert_normals() const;
+    void render_lights() const;
 
 private:
     Camera*     m_camera;

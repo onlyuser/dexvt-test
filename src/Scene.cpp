@@ -181,23 +181,16 @@ void Scene::render(bool use_normal_material)
     }
 }
 
-void Scene::render_vert_normals()
+void Scene::render_vert_normals() const
 {
     const float axis_surface_distance = 0.05;
     const float axis_arm_length       = 0.1;
-    const float light_radius          = 0.125;
 
     glUseProgram(0);
     glMatrixMode(GL_PROJECTION);
     glLoadMatrixf((const GLfloat*) &m_camera->get_projection_xform());
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glColor3f(1, 1, 0);
-    for(lights_t::const_iterator p = m_lights.begin(); p != m_lights.end(); p++) {
-        glm::mat4 model_xform = m_camera->get_xform()*(*p)->get_xform();
-        glLoadMatrixf((const GLfloat*) &model_xform[0]);
-        glutWireSphere(light_radius, 4, 2);
-    }
     for(meshes_t::const_iterator q = m_meshes.begin(); q != m_meshes.end(); q++) {
         if(!(*q)->get_visible()) {
             continue;
@@ -237,6 +230,23 @@ void Scene::render_vert_normals()
         glEnd();
     }
     glPopMatrix();
+}
+
+void Scene::render_lights() const
+{
+    const float light_radius = 0.125;
+
+    glUseProgram(0);
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf((const GLfloat*) &m_camera->get_projection_xform());
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glColor3f(1, 1, 0);
+    for(lights_t::const_iterator p = m_lights.begin(); p != m_lights.end(); p++) {
+        glm::mat4 model_xform = m_camera->get_xform()*(*p)->get_xform();
+        glLoadMatrixf((const GLfloat*) &model_xform[0]);
+        glutWireSphere(light_radius, 4, 2);
+    }
 }
 
 }

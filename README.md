@@ -106,4 +106,4 @@ References
 Keywords
 --------
 
-    OpenGL, glsl shader, glm, environment map, cube map, normal map, bitangent, tbn matrix, backface refraction, double refraction, backface sampling, fresnel effect, chromatic dispersion, chromatic aberration, Beer's law, Snell's law, Newton's method
+    OpenGL, glsl shader, glm, environment map, cube map, normal map, bitangent, tbn matrix, backface refraction, double refraction, second refraction, backface sampling, fresnel effect, chromatic dispersion, chromatic aberration, Beer's law, Snell's law, Newton's method
