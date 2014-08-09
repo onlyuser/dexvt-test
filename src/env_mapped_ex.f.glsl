@@ -266,6 +266,7 @@ void main(void) {
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), backface_depth)*0.001 +
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), frag_thickness)*0.001 +
                 backface_normal_color*0.001 +
-                mix(inside_color, reflected_color, reflect_to_refract_ratio*frontface_fresnel_reflectance);
+                mix(inside_color, reflected_color,
+                        max(reflect_to_refract_ratio, frontface_fresnel_reflectance));
     }
 }
