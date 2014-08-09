@@ -124,7 +124,8 @@ void newtons_method_update(
         in    vec3      orig,
         in    vec3      dir,
         inout vec3      plane_orig,
-        inout vec3      plane_normal)
+        inout vec3      plane_normal,
+        inout bool      abort)
 {
     float orig_intersection_distance = 0;
     intersect_ray_plane(
@@ -136,7 +137,7 @@ void newtons_method_update(
 
     // 1st chance abort on glancing edge
     //if(abs(orig_intersection_distance) < EPSILON) {
-    //    gl_FragColor = vec4(0,1,0,0);//frontface_refracted_color;
+    //    abort = true;
     //    return;
     //}
 
@@ -226,6 +227,7 @@ void main(void) {
     vec3 plane_orig   = backface_frag_position_world;
     vec3 plane_normal = normalize(backface_normal);
 
+    bool abort = false;
     for(int i = 0; i < NUM_NEWTONS_METHOD_ITERS; i++) {
         newtons_method_update(
                 backface_depth_overlay_texture,
@@ -233,7 +235,12 @@ void main(void) {
                 orig,
                 dir,
                 plane_orig,
-                plane_normal);
+                plane_normal,
+                abort);
+        if(abort) {
+            //gl_FragColor = vec4(0,1,0,0);//frontface_refracted_color;
+            return;
+        }
     }
 
     // backface refraction component with chromatic dispersion
