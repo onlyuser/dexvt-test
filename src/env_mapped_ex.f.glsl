@@ -123,6 +123,7 @@ void newtons_method_update(
         in    sampler2D _backface_depth_overlay_texture,
         in    sampler2D _backface_normal_overlay_texture,
         in    mat4      _view_proj_xform,
+        in    vec3      _camera_position,
         in    vec3      orig,         // point on ray
         in    vec3      dir,          // ray direction
         inout vec3      plane_orig,   // point on plane
@@ -155,7 +156,7 @@ void newtons_method_update(
     float new_backface_depth_actual = 0;
     map_depth_to_actual_depth(camera_near, camera_far, new_backface_depth, new_backface_depth_actual);
 
-    vec3 new_backface_frag_position_world = camera_position + normalize(ray_plane_isect-camera_position)*new_backface_depth_actual;
+    vec3 new_backface_frag_position_world = _camera_position + normalize(ray_plane_isect - _camera_position)*new_backface_depth_actual;
     vec4 new_backface_normal_color        = texture2D(_backface_normal_overlay_texture, ray_plane_isect_texcoord);
     vec3 new_backface_normal              = -normalize(new_backface_normal_color.xyz*2 - vec3(1)); // map from [0,1] to [-1,1]
 
@@ -235,6 +236,7 @@ void main(void) {
                 backface_depth_overlay_texture,
                 backface_normal_overlay_texture,
                 view_proj_xform,
+                camera_position,
                 orig,
                 dir,
                 plane_orig,
