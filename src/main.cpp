@@ -395,14 +395,14 @@ void onDisplay()
     frontface_depth_overlay_fb->bind();
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    scene->render();
+    scene->render(false);
     frontface_depth_overlay_fb->unbind();
 
     backface_depth_overlay_fb->bind();
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_FRONT);
-    scene->render();
+    scene->render(false);
     glCullFace(GL_BACK);
     backface_depth_overlay_fb->unbind();
 
@@ -410,7 +410,7 @@ void onDisplay()
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_FRONT);
-    scene->render(true);
+    scene->render(false, true);
     glCullFace(GL_BACK);
     backface_normal_overlay_fb->unbind();
 

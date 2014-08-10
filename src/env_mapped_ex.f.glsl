@@ -7,7 +7,8 @@ const float GLASS_REFRACTIVE_INDEX_RGB_OFFSET = 0.01;
 
 const float BUMP_FACTOR = 0.001;
 const float FRESNEL_REFLECTANCE_SHARPNESS = 2.0;
-const float BEERS_LAW_FALLOFF_SHARPNESS = 1;
+const float BEERS_LAW_FALLOFF_SHARPNESS = 0.5;
+const vec4  MATERIAL_AMBIENT_COLOR = vec4(0);
 
 const int NUM_NEWTONS_METHOD_ITERS = 3;
 
@@ -194,15 +195,15 @@ void main(void) {
 
     vec2 overlay_texcoord = vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y);
 
-    if(overlay_texcoord.x < 0.5) {
-        // frontface fresnel component
-        float frontface_fresnel_reflectance =
-                pow(1 - clamp(dot(camera_direction, normal), 0, 1), FRESNEL_REFLECTANCE_SHARPNESS);
-        gl_FragColor =
-                mix(frontface_refracted_color, reflected_color,
-                        max(reflect_to_refract_ratio, frontface_fresnel_reflectance));
-        return;
-    }
+    //if(overlay_texcoord.x < 0.5) {
+    //    // frontface fresnel component
+    //    float frontface_fresnel_reflectance =
+    //            pow(1 - clamp(dot(camera_direction, normal), 0, 1), FRESNEL_REFLECTANCE_SHARPNESS);
+    //    gl_FragColor =
+    //            mix(frontface_refracted_color, reflected_color,
+    //                    max(reflect_to_refract_ratio, frontface_fresnel_reflectance));
+    //    return;
+    //}
 
     float frontface_depth       = texture2D(frontface_depth_overlay_texture, overlay_texcoord).x;
     float backface_depth        = texture2D(backface_depth_overlay_texture, overlay_texcoord).x;
@@ -274,7 +275,7 @@ void main(void) {
             pow(1 - clamp(dot(camera_direction, plane_normal), 0, 1), FRESNEL_REFLECTANCE_SHARPNESS);
 
     vec4 inside_color =
-            mix(frontface_refracted_color, backface_refracted_color,
+            mix(MATERIAL_AMBIENT_COLOR, backface_refracted_color,
                     max(beers_law_transmittance, backface_fresnel_reflectance));
 
     if(frontface_depth_actual >= (camera_far - 0.1)) {

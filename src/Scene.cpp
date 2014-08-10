@@ -93,7 +93,7 @@ void Scene::use_program()
     }
 }
 
-void Scene::render(bool use_normal_material)
+void Scene::render(bool render_skybox, bool use_normal_material)
 {
     glm::vec3 camera_pos = m_camera->get_origin();
     m_camera_pos[0] = camera_pos.x;
@@ -114,7 +114,7 @@ void Scene::render(bool use_normal_material)
         m_light_enabled[i] = (*p)->get_enabled();
         i++;
     }
-    if(m_skybox) {
+    if(render_skybox && m_skybox) {
         ShaderContext* shader_context = m_skybox->get_shader_context();
         shader_context->get_material()->get_program()->use();
         shader_context->set_env_map_texture_index(0);
