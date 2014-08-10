@@ -122,10 +122,11 @@ void refract_into_env_map_ex(
 void newtons_method_update(
         in    sampler2D _backface_depth_overlay_texture,
         in    sampler2D _backface_normal_overlay_texture,
-        in    vec3      orig,
-        in    vec3      dir,
-        inout vec3      plane_orig,
-        inout vec3      plane_normal,
+        in    mat4      _view_proj_xform,
+        in    vec3      orig,         // point on ray
+        in    vec3      dir,          // ray direction
+        inout vec3      plane_orig,   // point on plane
+        inout vec3      plane_normal, // plane normal
         inout bool      abort)
 {
     float orig_intersection_distance = 0;
@@ -144,7 +145,7 @@ void newtons_method_update(
 
     vec3 ray_plane_isect = orig + normalize(dir)*orig_intersection_distance;
 
-    vec4 ray_plane_isect_texcoord_raw = view_proj_xform*vec4(ray_plane_isect, 1);
+    vec4 ray_plane_isect_texcoord_raw = _view_proj_xform*vec4(ray_plane_isect, 1);
     ray_plane_isect_texcoord_raw /= ray_plane_isect_texcoord_raw.w; // perspective divide
 
     vec2 ray_plane_isect_texcoord = (vec2(ray_plane_isect_texcoord_raw) + vec2(1))*0.5; // map from [-1,1] to [0,1]
@@ -233,6 +234,7 @@ void main(void) {
         newtons_method_update(
                 backface_depth_overlay_texture,
                 backface_normal_overlay_texture,
+                view_proj_xform,
                 orig,
                 dir,
                 plane_orig,
