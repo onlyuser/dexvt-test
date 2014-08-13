@@ -45,7 +45,7 @@ const char* DEFAULT_CAPTION = "My Textured Cube";
 
 int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
-vt::Mesh* skybox, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10, *mesh11, *mesh12;
+vt::Mesh* skybox, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10, *mesh11, *mesh12, *mesh13, *mesh14;
 vt::Light* light, *light2, *light3;
 std::unique_ptr<vt::FrameBuffer> frontface_depth_overlay_fb, backface_depth_overlay_fb, backface_normal_overlay_fb;
 
@@ -60,6 +60,7 @@ bool show_lights = false;
 bool show_diamond = false;
 
 int texture_index = 0;
+int demo_mode = 0;
 float prev_zoom = 0, zoom = 1, ortho_dolly_speed = 0.1;
 
 int init_resources()
@@ -81,6 +82,8 @@ int init_resources()
     scene->add_mesh(mesh10 = vt::PrimitiveFactory::create_diamond_brilliant_cut("diamond"));
     scene->add_mesh(mesh11 = vt::PrimitiveFactory::create_box(        "box3"));
     scene->add_mesh(mesh12 = vt::PrimitiveFactory::create_diamond_brilliant_cut("diamond2"));
+    scene->add_mesh(mesh13 = vt::PrimitiveFactory::create_sphere(     "sphere2",    16, 16,  0.5));
+    scene->add_mesh(mesh14 = vt::PrimitiveFactory::create_box(        "box4"));
 
     mesh->set_origin(glm::vec3(-0.5, -0.5, -0.5));  // box
     mesh2->set_scale(glm::vec3(0.5, 2, 3));         // box2
@@ -94,14 +97,20 @@ int init_resources()
     mesh10->set_origin(glm::vec3(-2, -2.5, 0));     // diamond
     mesh11->set_origin(glm::vec3(1.5, -2.5, -0.5)); // box3
     mesh12->set_origin(glm::vec3(0, -1, 0));        // diamond2
+    mesh13->set_origin(glm::vec3(0, 0, 0));         // sphere2
+    mesh14->set_origin(glm::vec3(-1, -1, -1));      // box4
 
     mesh2->set_visible(false);
     mesh3->set_visible(false);
     //mesh6->set_visible(false);
     //mesh7->set_visible(false);
     mesh12->set_visible(false);
+    mesh13->set_visible(false);
+    mesh14->set_visible(false);
 
     mesh12->set_scale(glm::vec3(2, 2, 2));
+    mesh13->set_scale(glm::vec3(2, 2, 2));
+    mesh14->set_scale(glm::vec3(2, 2, 2));
 
     vt::Material* normal_mapped_material = new vt::Material(
             "normal_mapped",
@@ -379,6 +388,24 @@ int init_resources()
     mesh12->set_backface_depth_overlay_texture_index( mesh12->get_material()->get_texture_index_by_name("backface_depth_overlay"));
     mesh12->set_backface_normal_overlay_texture_index(mesh12->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
+    // sphere2
+    mesh13->set_material(env_mapped_ex_material);
+    mesh13->set_reflect_to_refract_ratio(0.33); // 33% reflective
+    mesh13->set_texture_index(                        mesh13->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh13->set_normal_map_texture_index(             mesh13->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh13->set_frontface_depth_overlay_texture_index(mesh13->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    mesh13->set_backface_depth_overlay_texture_index( mesh13->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    mesh13->set_backface_normal_overlay_texture_index(mesh13->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+
+    // box4
+    mesh14->set_material(env_mapped_ex_material);
+    mesh14->set_reflect_to_refract_ratio(0.33); // 33% reflective
+    mesh14->set_texture_index(                        mesh14->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh14->set_normal_map_texture_index(             mesh14->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh14->set_frontface_depth_overlay_texture_index(mesh14->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    mesh14->set_backface_depth_overlay_texture_index( mesh14->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    mesh14->set_backface_normal_overlay_texture_index(mesh14->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+
     return 1;
 }
 
@@ -519,33 +546,70 @@ void onKeyboard(unsigned char key, int x, int y)
             show_lights = !show_lights;
             break;
         case 'd':
-            show_diamond = !show_diamond;
-            if(show_diamond) {
-                mesh->set_visible(false);
-                //mesh2->set_visible(false);
-                //mesh3->set_visible(false);
-                mesh4->set_visible(false);
-                mesh5->set_visible(false);
-                mesh6->set_visible(false);
-                mesh7->set_visible(false);
-                mesh8->set_visible(false);
-                mesh9->set_visible(false);
-                mesh10->set_visible(false);
-                mesh11->set_visible(false);
-                mesh12->set_visible(true);
-            } else {
-                mesh->set_visible(true);
-                //mesh2->set_visible(true);
-                //mesh3->set_visible(true);
-                mesh4->set_visible(true);
-                mesh5->set_visible(true);
-                mesh6->set_visible(true);
-                mesh7->set_visible(true);
-                mesh8->set_visible(true);
-                mesh9->set_visible(true);
-                mesh10->set_visible(true);
-                mesh11->set_visible(true);
-                mesh12->set_visible(false);
+            if(demo_mode == 0) {
+                mesh->set_visible(false);    // box
+                //mesh2->set_visible(false); // box2
+                //mesh3->set_visible(false); // grid
+                mesh4->set_visible(false);   // sphere
+                mesh5->set_visible(false);   // torus
+                mesh6->set_visible(false);   // cylinder
+                mesh7->set_visible(false);   // cone
+                mesh8->set_visible(false);   // hemisphe
+                mesh9->set_visible(false);   // tetrahed
+                mesh10->set_visible(false);  // diamond
+                mesh11->set_visible(false);  // box3
+                mesh12->set_visible(true);   // diamond2
+                mesh13->set_visible(false);  // sphere2
+                mesh14->set_visible(false);  // box4
+                demo_mode = 1;
+            } else if(demo_mode == 1) {
+                mesh->set_visible(false);    // box
+                //mesh2->set_visible(false); // box2
+                //mesh3->set_visible(false); // grid
+                mesh4->set_visible(false);   // sphere
+                mesh5->set_visible(false);   // torus
+                mesh6->set_visible(false);   // cylinder
+                mesh7->set_visible(false);   // cone
+                mesh8->set_visible(false);   // hemisphe
+                mesh9->set_visible(false);   // tetrahed
+                mesh10->set_visible(false);  // diamond
+                mesh11->set_visible(false);  // box3
+                mesh12->set_visible(false);  // diamond2
+                mesh13->set_visible(true);   // sphere2
+                mesh14->set_visible(false);  // box4
+                demo_mode = 2;
+            } else if(demo_mode == 2) {
+                mesh->set_visible(false);    // box
+                //mesh2->set_visible(false); // box2
+                //mesh3->set_visible(false); // grid
+                mesh4->set_visible(false);   // sphere
+                mesh5->set_visible(false);   // torus
+                mesh6->set_visible(false);   // cylinder
+                mesh7->set_visible(false);   // cone
+                mesh8->set_visible(false);   // hemisphe
+                mesh9->set_visible(false);   // tetrahed
+                mesh10->set_visible(false);  // diamond
+                mesh11->set_visible(false);  // box3
+                mesh12->set_visible(false);  // diamond2
+                mesh13->set_visible(false);  // sphere2
+                mesh14->set_visible(true);   // box4
+                demo_mode = 3;
+            } else if(demo_mode == 3) {
+                mesh->set_visible(true);    // box
+                //mesh2->set_visible(true); // box2
+                //mesh3->set_visible(true); // grid
+                mesh4->set_visible(true);   // sphere
+                mesh5->set_visible(true);   // torus
+                mesh6->set_visible(true);   // cylinder
+                mesh7->set_visible(true);   // cone
+                mesh8->set_visible(true);   // hemisphe
+                mesh9->set_visible(true);   // tetrahed
+                mesh10->set_visible(true);  // diamond
+                mesh11->set_visible(true);  // box3
+                mesh12->set_visible(false); // diamond2
+                mesh13->set_visible(false); // sphere2
+                mesh14->set_visible(false); // box4
+                demo_mode = 0;
             }
             break;
         case 'p':
