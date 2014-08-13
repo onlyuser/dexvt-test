@@ -32,6 +32,19 @@ uniform float     camera_far;
 uniform vec3 camera_position;
 uniform mat4 view_proj_xform;
 
+const int NUM_LIGHTS = 8;
+uniform int light_count;
+
+const vec3 AMBIENT = vec3(0.1, 0.1, 0.1);
+const float MAX_DIST = 20;
+const float MAX_DIST_SQUARED = MAX_DIST*MAX_DIST;
+const int SPECULAR_SHARPNESS = 64;
+
+uniform vec3 light_color[NUM_LIGHTS];
+uniform int light_enabled[NUM_LIGHTS];
+varying vec3 lerp_light_vector[NUM_LIGHTS];
+uniform vec3 light_position[NUM_LIGHTS];
+
 // http://stackoverflow.com/questions/6652253/getting-the-true-z-value-from-the-depth-buffer?answertab=votes#tab-top
 void map_depth_to_actual_depth(
         in    float z_near, // camera near-clipping plane distance from camera
@@ -106,15 +119,16 @@ void refract_into_env_map_ex(
         inout vec3        refracted_camera_dir)
 {
     // wiki: refraction indices of most transparent materials (e.g., air, glasses) decrease with increasing wavelength
-    vec3 refracted_camera_dirR = refract(ray_direction, surface_normal, eta - eta_rgb_offset);
-    vec3 refracted_camera_dirG = refract(ray_direction, surface_normal, eta);
-    vec3 refracted_camera_dirB = refract(ray_direction, surface_normal, eta + eta_rgb_offset);
-    vec3 refracted_flipped_cubemap_texcoordR = vec3(refracted_camera_dirR.x, -refracted_camera_dirR.y, refracted_camera_dirR.z);
-    vec3 refracted_flipped_cubemap_texcoordG = vec3(refracted_camera_dirG.x, -refracted_camera_dirG.y, refracted_camera_dirG.z);
-    vec3 refracted_flipped_cubemap_texcoordB = vec3(refracted_camera_dirB.x, -refracted_camera_dirB.y, refracted_camera_dirB.z);
-    refracted_color.r = textureCube(env_map_texture, refracted_flipped_cubemap_texcoordR).r;
-    refracted_color.g = textureCube(env_map_texture, refracted_flipped_cubemap_texcoordG).g;
-    refracted_color.b = textureCube(env_map_texture, refracted_flipped_cubemap_texcoordB).b;
+    vec3 refracted_camera_dirR;
+    vec3 refracted_camera_dirG;
+    vec3 refracted_camera_dirB;
+    vec4 color; // TODO: need better variable name
+    refract_into_env_map(ray_direction, surface_normal, eta - eta_rgb_offset, env_map_texture, color, refracted_camera_dirR);
+    refracted_color.r = color.r;
+    refract_into_env_map(ray_direction, surface_normal, eta,                  env_map_texture, color, refracted_camera_dirG);
+    refracted_color.g = color.g;
+    refract_into_env_map(ray_direction, surface_normal, eta + eta_rgb_offset, env_map_texture, color, refracted_camera_dirB);
+    refracted_color.b = color.b;
     refracted_color.a = 1;
     refracted_camera_dir = refracted_camera_dirG;
 }
@@ -164,6 +178,39 @@ void newtons_method_update(
     plane_normal = new_backface_normal;
 }
 
+void calculate_light_contrib(
+        in    vec3 camera_direction,
+        in    vec3 plane_orig,
+        in    vec3 plane_normal,
+        inout vec4 light_contrib)
+{
+    vec3 diffuse_sum = vec3(0.0, 0.0, 0.0);
+    vec3 specular_sum = vec3(0.0, 0.0, 0.0);
+
+    for(int i = 0; i < NUM_LIGHTS && i < light_count; i++) {
+        if(light_enabled[i] == 0) {
+            continue;
+        }
+
+        vec3 light_vector = light_position[i] - plane_orig;
+        float dist = min(dot(light_vector, light_vector), MAX_DIST_SQUARED)/MAX_DIST_SQUARED;
+        float distance_factor = 1.0 - dist;
+
+        vec3 light_direction = normalize(light_vector);
+        float diffuse_per_light = dot(plane_normal, light_direction);
+        vec3 _light_color = light_color[i];
+        diffuse_sum += _light_color*clamp(diffuse_per_light, 0.0, 1.0)*distance_factor;
+
+        vec3 half_angle = normalize(camera_direction + light_direction);
+        vec3 specular_color = min(_light_color + 0.5, 1.0);
+        float specular_per_light = dot(plane_normal, half_angle);
+        specular_sum += specular_color*pow(clamp(specular_per_light, 0.0, 1.0), SPECULAR_SHARPNESS)*distance_factor;
+    }
+
+    vec4 sample = vec4(1);
+    light_contrib = vec4(clamp(sample.rgb*(diffuse_sum + AMBIENT)*0 + specular_sum, 0.0, 1.0), sample.a);
+}
+
 void main(void) {
     vec3 camera_direction = normalize(lerp_camera_vector);
 
@@ -175,6 +222,13 @@ void main(void) {
     vec3 normal_surface =
             mix(vec3(0, 0, 1), normalize(vec3(texture2D(normal_map_texture, flipped_texcoord))), BUMP_FACTOR);
     vec3 normal = normalize(lerp_tbn_xform*normal_surface);
+
+    vec4 frontface_light_contrib;
+    calculate_light_contrib(
+            camera_direction,
+            lerp_vertex_position_world,
+            normal,
+            frontface_light_contrib);
 
     // frontface reflection component
     vec4 reflected_color;
@@ -282,15 +336,16 @@ void main(void) {
             mix(MATERIAL_AMBIENT_COLOR, backface_refracted_color,
                     max(beers_law_transmittance, backface_fresnel_reflectance));
 
+    vec4 result; // TODO: need better variable name
     if(frontface_depth_actual >= (camera_far - 0.1)) {
-        gl_FragColor = vec4(1,1,0,0);
+        result = vec4(1,1,0,0);
     } else if(frontface_depth_actual <= (camera_near + 0.1)) {
-        gl_FragColor = vec4(0,1,1,0);
+        result = vec4(0,1,1,0);
     } else {
         // frontface fresnel component
         float frontface_fresnel_reflectance =
                 pow(1 - clamp(dot(camera_direction, normal), 0, 1), FRESNEL_REFLECTANCE_SHARPNESS);
-        gl_FragColor =
+        result =
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), frontface_depth)*0.001 +
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), backface_depth)*0.001 +
                 mix(vec4(1,0,0,0), vec4(0,0,1,0), frag_thickness)*0.001 +
@@ -298,4 +353,13 @@ void main(void) {
                 mix(inside_color, reflected_color,
                         max(reflect_to_refract_ratio, frontface_fresnel_reflectance));
     }
+
+    vec4 backface_light_contrib;
+    calculate_light_contrib(
+            -normalize(frontface_refracted_camera_dir),
+            plane_orig,
+            plane_normal,
+            backface_light_contrib);
+
+    gl_FragColor = min(frontface_light_contrib + result + backface_light_contrib, 1);
 }

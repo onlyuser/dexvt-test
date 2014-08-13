@@ -157,7 +157,7 @@ int init_resources()
             "src/env_mapped_ex.f.glsl",
             false,  // use_normal_only
             false,  // use_camera_vec
-            false,  // use_phong_shading
+            true,   // use_phong_shading
             false,  // use_texture_mapping
             true,   // use_normal_mapping
             true,   // use_env_mapping

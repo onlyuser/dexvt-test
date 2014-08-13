@@ -28,7 +28,10 @@ void main(void) {
     vec3 vertex_position_world = vec3(model_xform*vec4(vertex_position, 1));
     lerp_camera_vector = camera_position - vertex_position_world;
 
-    for(int i = 0; i < NUM_LIGHTS; i++) {
+    for(int i = 0; i < NUM_LIGHTS && i < light_count; i++) {
+        if(light_enabled[i] == 0) {
+            continue;
+        }
         lerp_light_vector[i] = light_position[i] - vertex_position_world;
     }
 

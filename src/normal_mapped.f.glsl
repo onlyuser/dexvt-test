@@ -8,6 +8,7 @@ uniform int light_count;
 const vec3 AMBIENT = vec3(0.1, 0.1, 0.1);
 const float MAX_DIST = 20;
 const float MAX_DIST_SQUARED = MAX_DIST*MAX_DIST;
+const int SPECULAR_SHARPNESS = 16;
 
 uniform vec3 light_color[NUM_LIGHTS];
 uniform int light_enabled[NUM_LIGHTS];
@@ -42,7 +43,7 @@ void main(void) {
         vec3 half_angle = normalize(camera_direction + light_direction);
         vec3 specular_color = min(light_color[i] + 0.5, 1.0);
         float specular_per_light = dot(normal, half_angle);
-        specular_sum += specular_color*pow(clamp(specular_per_light, 0.0, 1.0), 16.0)*distance_factor;
+        specular_sum += specular_color*pow(clamp(specular_per_light, 0.0, 1.0), SPECULAR_SHARPNESS)*distance_factor;
     }
 
     vec4 sample = texture2D(color_texture, flipped_texcoord);
