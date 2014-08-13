@@ -92,6 +92,7 @@ int init_resources()
     mesh10->set_origin(glm::vec3(-2, -2.5, 0));    // diamond
 
     mesh2->set_visible(false);
+    mesh3->set_visible(false);
     //mesh6->set_visible(false);
     //mesh7->set_visible(false);
 

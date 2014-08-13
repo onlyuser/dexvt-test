@@ -122,13 +122,13 @@ void refract_into_env_map_ex(
     vec3 refracted_camera_dirR;
     vec3 refracted_camera_dirG;
     vec3 refracted_camera_dirB;
-    vec4 color; // TODO: need better variable name
-    refract_into_env_map(ray_direction, surface_normal, eta - eta_rgb_offset, env_map_texture, color, refracted_camera_dirR);
-    refracted_color.r = color.r;
-    refract_into_env_map(ray_direction, surface_normal, eta,                  env_map_texture, color, refracted_camera_dirG);
-    refracted_color.g = color.g;
-    refract_into_env_map(ray_direction, surface_normal, eta + eta_rgb_offset, env_map_texture, color, refracted_camera_dirB);
-    refracted_color.b = color.b;
+    vec4 _refracted_color;
+    refract_into_env_map(ray_direction, surface_normal, eta - eta_rgb_offset, env_map_texture, _refracted_color, refracted_camera_dirR);
+    refracted_color.r = _refracted_color.r;
+    refract_into_env_map(ray_direction, surface_normal, eta,                  env_map_texture, _refracted_color, refracted_camera_dirG);
+    refracted_color.g = _refracted_color.g;
+    refract_into_env_map(ray_direction, surface_normal, eta + eta_rgb_offset, env_map_texture, _refracted_color, refracted_camera_dirB);
+    refracted_color.b = _refracted_color.b;
     refracted_color.a = 1;
     refracted_camera_dir = refracted_camera_dirG;
 }
@@ -332,28 +332,6 @@ void main(void) {
     float backface_fresnel_reflectance =
             pow(1 - clamp(dot(camera_direction, plane_normal), 0, 1), FRESNEL_REFLECTANCE_SHARPNESS);
 
-    vec4 inside_color =
-            mix(MATERIAL_AMBIENT_COLOR, backface_refracted_color,
-                    max(beers_law_transmittance, backface_fresnel_reflectance));
-
-    vec4 result; // TODO: need better variable name
-    if(frontface_depth_actual >= (camera_far - 0.1)) {
-        result = vec4(1,1,0,0);
-    } else if(frontface_depth_actual <= (camera_near + 0.1)) {
-        result = vec4(0,1,1,0);
-    } else {
-        // frontface fresnel component
-        float frontface_fresnel_reflectance =
-                pow(1 - clamp(dot(camera_direction, normal), 0, 1), FRESNEL_REFLECTANCE_SHARPNESS);
-        result =
-                mix(vec4(1,0,0,0), vec4(0,0,1,0), frontface_depth)*0.001 +
-                mix(vec4(1,0,0,0), vec4(0,0,1,0), backface_depth)*0.001 +
-                mix(vec4(1,0,0,0), vec4(0,0,1,0), frag_thickness)*0.001 +
-                backface_normal_color*0.001 +
-                mix(inside_color, reflected_color,
-                        max(reflect_to_refract_ratio, frontface_fresnel_reflectance));
-    }
-
     vec4 backface_light_contrib;
     calculate_light_contrib(
             -normalize(frontface_refracted_camera_dir),
@@ -361,5 +339,26 @@ void main(void) {
             plane_normal,
             backface_light_contrib);
 
-    gl_FragColor = min(frontface_light_contrib + result + backface_light_contrib, 1);
+    vec4 inside_color =
+            mix(MATERIAL_AMBIENT_COLOR, min(backface_refracted_color + backface_light_contrib, 1),
+                    max(beers_law_transmittance, backface_fresnel_reflectance));
+
+    //if(frontface_depth_actual >= (camera_far - 0.1)) {
+    //    gl_FragColor = vec4(1,1,0,0);
+    //    return;
+    //} else if(frontface_depth_actual <= (camera_near + 0.1)) {
+    //    gl_FragColor = vec4(0,1,1,0);
+    //    return;
+    //}
+
+    // frontface fresnel component
+    float frontface_fresnel_reflectance =
+            pow(1 - clamp(dot(camera_direction, normal), 0, 1), FRESNEL_REFLECTANCE_SHARPNESS);
+    gl_FragColor =
+            mix(vec4(1,0,0,0), vec4(0,0,1,0), frontface_depth)*0.001 +
+            mix(vec4(1,0,0,0), vec4(0,0,1,0), backface_depth)*0.001 +
+            mix(vec4(1,0,0,0), vec4(0,0,1,0), frag_thickness)*0.001 +
+            backface_normal_color*0.001 +
+            mix(inside_color, min(reflected_color + frontface_light_contrib, 1),
+                    max(reflect_to_refract_ratio, frontface_fresnel_reflectance));
 }
