@@ -19,6 +19,11 @@ Screenshots
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_env_map_refractance_detail_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_env_map_refractance_detail.png)
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_env_map_fresnel_effect_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_env_map_fresnel_effect.png)
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_env_map_chromatic_dispersion_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_env_map_chromatic_dispersion.png)
+[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_cube_double_refraction_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_cube_double_refraction.png)
+[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_diamond_refraction_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_diamond_refraction.png)
+[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_diamond_specular_reflection_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_diamond_specular_reflection.png)
+[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_nine_shape_ground_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_nine_shape_ground.png)
+[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_sphere_backface_reflection_halo_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_sphere_backface_reflection_halo.png)
 
 Requirements
 ------------
@@ -36,12 +41,12 @@ Texture files not included:
     </tr>
     <tr>
         <td>
-            data/Colosseum/posx.png<br>
-            data/Colosseum/negx.png<br>
-            data/Colosseum/posy.png<br>
-            data/Colosseum/negy.png<br>
-            data/Colosseum/posz.png<br>
-            data/Colosseum/negz.png
+            data/SaintPetersSquare2/posx.png<br>
+            data/SaintPetersSquare2/negx.png<br>
+            data/SaintPetersSquare2/posy.png<br>
+            data/SaintPetersSquare2/negy.png<br>
+            data/SaintPetersSquare2/posz.png<br>
+            data/SaintPetersSquare2/negz.png
         </td>
         <td>Cube map texture (6 faces)</td>
     </tr>
@@ -106,4 +111,4 @@ References
 Keywords
 --------
 
-    OpenGL, glsl shader, glm, environment map, cube map, normal map, bitangent, tbn matrix, backface refraction, double refraction, second refraction, backface sampling, fresnel effect, chromatic dispersion, chromatic aberration, Beer's law, Snell's law, Newton's method
+    OpenGL, glsl shader, glm, environment map, cube map, normal map, bitangent, tbn matrix, backface refraction, double refraction, second refraction, backface sampling, fresnel effect, chromatic dispersion, chromatic aberration, Beer's law, Snell's law, Newton's method, diamond rendering, gemstone rendering

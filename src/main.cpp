@@ -260,13 +260,13 @@ int init_resources()
     normal_material->add_texture(       texture4);
 
     vt::Texture* texture5 = new vt::Texture(
-            "colosseum",
-            "data/Colosseum/posx.png",
-            "data/Colosseum/negx.png",
-            "data/Colosseum/posy.png",
-            "data/Colosseum/negy.png",
-            "data/Colosseum/posz.png",
-            "data/Colosseum/negz.png");
+            "skybox_texture",
+            "data/SaintPetersSquare2/posx.png",
+            "data/SaintPetersSquare2/negx.png",
+            "data/SaintPetersSquare2/posy.png",
+            "data/SaintPetersSquare2/negy.png",
+            "data/SaintPetersSquare2/posz.png",
+            "data/SaintPetersSquare2/negz.png");
     scene->add_texture(                   texture5);
     skybox_material->add_texture(         texture5);
     env_mapped_material->add_texture(     texture5);
@@ -313,7 +313,7 @@ int init_resources()
     scene->add_light(light3 = new vt::Light("light3", origin+glm::vec3(0, 0, light_distance), glm::vec3(0, 0, 1)));
 
     skybox->set_material(skybox_material);
-    skybox->set_texture_index(skybox->get_material()->get_texture_index_by_name("colosseum"));
+    skybox->set_texture_index(skybox->get_material()->get_texture_index_by_name("skybox_texture"));
 
     // box
     mesh->set_material(normal_mapped_material);
