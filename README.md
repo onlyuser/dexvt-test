@@ -9,7 +9,7 @@ About
 -----
 
 dexvt-test is a modernized version of my DexVT 3d engine.
-It features glsl Phong shading, environment-mapped reflection/refraction (with fresnel effect and chromatic dispersion), normal-mapped textures, platonic primitives generation.
+It features glsl Phong shading, environment-mapped reflection/refraction (with fresnel effect and chromatic dispersion), double refraction, bump mapping, platonic primitives generation.
 
 Screenshots
 -----------
@@ -19,6 +19,7 @@ Screenshots
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_env_map_refractance_detail_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_env_map_refractance_detail.png)
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_env_map_fresnel_effect_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_env_map_fresnel_effect.png)
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_env_map_chromatic_dispersion_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_env_map_chromatic_dispersion.png)
+[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_env_map_wireframe_normals_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_env_map_wireframe_normals.png)
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_cube_double_refraction_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_cube_double_refraction.png)
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_diamond_refraction_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_diamond_refraction.png)
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_diamond_specular_reflection_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_diamond_specular_reflection.png)
