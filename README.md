@@ -23,7 +23,10 @@ Screenshots
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_diamond_refraction_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_diamond_refraction.png)
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_diamond_specular_reflection_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_diamond_specular_reflection.png)
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_nine_shape_ground_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_nine_shape_ground.png)
+[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_nine_shape_horizon_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_nine_shape_horizon.png)
+[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_nine_shape_sky_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_nine_shape_sky.png)
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_sphere_backface_reflection_halo_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_sphere_backface_reflection_halo.png)
+[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_sphere_specular_reflection_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_sphere_specular_reflection.png)
 
 Requirements
 ------------
