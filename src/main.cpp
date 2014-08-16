@@ -504,6 +504,24 @@ void onDisplay()
     glutSwapBuffers();
 }
 
+void set_mesh_visibility(bool visible)
+{
+    mesh->set_visible(visible);    // box
+    //mesh2->set_visible(visible); // box2
+    //mesh3->set_visible(visible); // grid
+    mesh4->set_visible(visible);   // sphere
+    mesh5->set_visible(visible);   // torus
+    mesh6->set_visible(visible);   // cylinder
+    mesh7->set_visible(visible);   // cone
+    mesh8->set_visible(visible);   // hemisphe
+    mesh9->set_visible(visible);   // tetrahed
+    mesh10->set_visible(visible);  // diamond
+    mesh11->set_visible(visible);  // box3
+    mesh12->set_visible(visible);  // diamond2
+    mesh13->set_visible(visible);  // sphere2
+    mesh14->set_visible(visible);  // box4
+}
+
 void onKeyboard(unsigned char key, int x, int y)
 {
     switch(key) {
@@ -547,65 +565,19 @@ void onKeyboard(unsigned char key, int x, int y)
             break;
         case 'd':
             if(demo_mode == 0) {
-                mesh->set_visible(false);    // box
-                //mesh2->set_visible(false); // box2
-                //mesh3->set_visible(false); // grid
-                mesh4->set_visible(false);   // sphere
-                mesh5->set_visible(false);   // torus
-                mesh6->set_visible(false);   // cylinder
-                mesh7->set_visible(false);   // cone
-                mesh8->set_visible(false);   // hemisphe
-                mesh9->set_visible(false);   // tetrahed
-                mesh10->set_visible(false);  // diamond
-                mesh11->set_visible(false);  // box3
-                mesh12->set_visible(true);   // diamond2
-                mesh13->set_visible(false);  // sphere2
-                mesh14->set_visible(false);  // box4
+                set_mesh_visibility(false);
+                mesh12->set_visible(true); // diamond2
                 demo_mode = 1;
             } else if(demo_mode == 1) {
-                mesh->set_visible(false);    // box
-                //mesh2->set_visible(false); // box2
-                //mesh3->set_visible(false); // grid
-                mesh4->set_visible(false);   // sphere
-                mesh5->set_visible(false);   // torus
-                mesh6->set_visible(false);   // cylinder
-                mesh7->set_visible(false);   // cone
-                mesh8->set_visible(false);   // hemisphe
-                mesh9->set_visible(false);   // tetrahed
-                mesh10->set_visible(false);  // diamond
-                mesh11->set_visible(false);  // box3
-                mesh12->set_visible(false);  // diamond2
-                mesh13->set_visible(true);   // sphere2
-                mesh14->set_visible(false);  // box4
+                set_mesh_visibility(false);
+                mesh13->set_visible(true); // sphere2
                 demo_mode = 2;
             } else if(demo_mode == 2) {
-                mesh->set_visible(false);    // box
-                //mesh2->set_visible(false); // box2
-                //mesh3->set_visible(false); // grid
-                mesh4->set_visible(false);   // sphere
-                mesh5->set_visible(false);   // torus
-                mesh6->set_visible(false);   // cylinder
-                mesh7->set_visible(false);   // cone
-                mesh8->set_visible(false);   // hemisphe
-                mesh9->set_visible(false);   // tetrahed
-                mesh10->set_visible(false);  // diamond
-                mesh11->set_visible(false);  // box3
-                mesh12->set_visible(false);  // diamond2
-                mesh13->set_visible(false);  // sphere2
-                mesh14->set_visible(true);   // box4
+                set_mesh_visibility(false);
+                mesh14->set_visible(true); // box4
                 demo_mode = 3;
             } else if(demo_mode == 3) {
-                mesh->set_visible(true);    // box
-                //mesh2->set_visible(true); // box2
-                //mesh3->set_visible(true); // grid
-                mesh4->set_visible(true);   // sphere
-                mesh5->set_visible(true);   // torus
-                mesh6->set_visible(true);   // cylinder
-                mesh7->set_visible(true);   // cone
-                mesh8->set_visible(true);   // hemisphe
-                mesh9->set_visible(true);   // tetrahed
-                mesh10->set_visible(true);  // diamond
-                mesh11->set_visible(true);  // box3
+                set_mesh_visibility(true);
                 mesh12->set_visible(false); // diamond2
                 mesh13->set_visible(false); // sphere2
                 mesh14->set_visible(false); // box4
