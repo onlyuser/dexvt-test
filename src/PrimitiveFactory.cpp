@@ -496,7 +496,18 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
         float       girdle_thick_part_thickness,
         float       girdle_thin_part_thickness)
 {
-    Mesh* mesh = new Mesh(name, 336, 112);//new Mesh(name, 336, 112);
+    // table:         8    triangles
+    // star:          8    triangles
+    // kite:          8*2  triangles
+    // upper-girdle:  16   triangles
+    // girdle:        16*2 triangles
+    // lower-girdle:  16   triangles
+    // pavilion main: 8*2  triangles
+    // =============================
+    // total (faces):     16*7=112
+    // total (vertices):  112*3=336
+
+    Mesh* mesh = new Mesh(name, 336, 112);
 
     float crown_height   = height*crown_height_to_total_height_ratio;
     float pavilion_depth = height-crown_height;
@@ -827,6 +838,7 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
         vert_index += 3;
     }
 
+    // all triangles
     for(int i=0; i<static_cast<int>(mesh->get_num_tri()); i++) {
         glm::vec3 p0 = mesh->get_vert_coord(i*3+0);
         glm::vec3 p1 = mesh->get_vert_coord(i*3+1);
