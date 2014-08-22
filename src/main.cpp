@@ -45,7 +45,7 @@ const char* DEFAULT_CAPTION = "My Textured Cube";
 
 int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
-vt::Mesh* skybox, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10, *mesh11, *mesh12, *mesh13, *mesh14;
+vt::Mesh* skybox, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10, *mesh11, *mesh12, *mesh13, *mesh14, *mesh15;
 vt::Light* light, *light2, *light3;
 std::unique_ptr<vt::FrameBuffer> frontface_depth_overlay_fb, backface_depth_overlay_fb, backface_normal_overlay_fb;
 
@@ -72,7 +72,7 @@ int init_resources()
 
     scene->add_mesh(mesh   = vt::PrimitiveFactory::create_box(        "box"));
     scene->add_mesh(mesh2  = vt::PrimitiveFactory::create_box(        "box2"));
-    scene->add_mesh(mesh3  = vt::PrimitiveFactory::create_grid(       "grid",       4,  4,   10, 10));
+    scene->add_mesh(mesh3  = vt::PrimitiveFactory::create_grid(       "grid",       16, 16,  10, 10));
     scene->add_mesh(mesh4  = vt::PrimitiveFactory::create_sphere(     "sphere",     16, 16,  0.5));
     scene->add_mesh(mesh5  = vt::PrimitiveFactory::create_torus(      "torus",      16, 16,  0.5, 0.25));
     scene->add_mesh(mesh6  = vt::PrimitiveFactory::create_cylinder(   "cylinder",   16, 0.5, 1));
@@ -84,10 +84,11 @@ int init_resources()
     scene->add_mesh(mesh12 = vt::PrimitiveFactory::create_diamond_brilliant_cut("diamond2"));
     scene->add_mesh(mesh13 = vt::PrimitiveFactory::create_sphere(     "sphere2",    16, 16,  0.5));
     scene->add_mesh(mesh14 = vt::PrimitiveFactory::create_box(        "box4"));
+    scene->add_mesh(mesh15 = vt::PrimitiveFactory::create_grid(       "grid2",      32, 32,  1, 1));
 
     mesh->set_origin(glm::vec3(-0.5, -0.5, -0.5));  // box
     mesh2->set_scale(glm::vec3(0.5, 2, 3));         // box2
-    mesh3->set_origin(glm::vec3(-5, -5, -1));       // grid
+    mesh3->set_origin(glm::vec3(-5, 5, -2.5));      // grid
     mesh4->set_origin(glm::vec3(2, 0, 0));          // sphere
     mesh5->set_origin(glm::vec3(-2, 0, 0));         // torus
     mesh6->set_origin(glm::vec3(0, -2.5, 0));       // cylinder
@@ -99,6 +100,9 @@ int init_resources()
     mesh12->set_origin(glm::vec3(0, -1, 0));        // diamond2
     mesh13->set_origin(glm::vec3(0, 0, 0));         // sphere2
     mesh14->set_origin(glm::vec3(-1, -1, -1));      // box4
+    mesh15->set_origin(glm::vec3(-2, 0, -2));       // grid2
+
+    mesh3->set_orient(glm::vec3(0, -90, 0));
 
     mesh2->set_visible(false);
     mesh3->set_visible(false);
@@ -107,10 +111,12 @@ int init_resources()
     mesh12->set_visible(false);
     mesh13->set_visible(false);
     mesh14->set_visible(false);
+    mesh15->set_visible(false);
 
-    mesh12->set_scale(glm::vec3(2, 2, 2));
-    mesh13->set_scale(glm::vec3(2, 2, 2));
-    mesh14->set_scale(glm::vec3(2, 2, 2));
+    mesh12->set_scale(glm::vec3(2, 2, 2)); // diamond2
+    mesh13->set_scale(glm::vec3(2, 2, 2)); // sphere2
+    mesh14->set_scale(glm::vec3(2, 2, 2)); // box4
+    mesh15->set_scale(glm::vec3(4, 4, 4)); // grid2
 
     vt::Material* normal_mapped_material = new vt::Material(
             "normal_mapped",
@@ -406,6 +412,10 @@ int init_resources()
     mesh14->set_backface_depth_overlay_texture_index( mesh14->get_material()->get_texture_index_by_name("backface_depth_overlay"));
     mesh14->set_backface_normal_overlay_texture_index(mesh14->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
+    // grid2
+    mesh15->set_material(env_mapped_material_fast);
+    mesh15->set_reflect_to_refract_ratio(0.33); // 33% reflective
+
     return 1;
 }
 
@@ -413,6 +423,8 @@ void onIdle()
 {
     float angle = static_cast<float>(glutGet(GLUT_ELAPSED_TIME))/1000*15; // base 15 degrees per second
     mesh2->set_orient(glm::vec3(angle*3, angle*2, angle*4));
+    mesh_apply_ripple(mesh15, glm::vec3(0.5, 0, 0.5), 0.1, 0.5, -angle*0.1);
+    mesh15->update_buffers();
     glutPostRedisplay();
 }
 
@@ -520,6 +532,7 @@ void set_mesh_visibility(bool visible)
     mesh12->set_visible(visible);  // diamond2
     mesh13->set_visible(visible);  // sphere2
     mesh14->set_visible(visible);  // box4
+    mesh15->set_visible(visible);  // grid2
 }
 
 void onKeyboard(unsigned char key, int x, int y)
@@ -577,10 +590,15 @@ void onKeyboard(unsigned char key, int x, int y)
                 mesh14->set_visible(true); // box4
                 demo_mode = 3;
             } else if(demo_mode == 3) {
+                set_mesh_visibility(false);
+                mesh15->set_visible(true); // grid2
+                demo_mode = 4;
+            } else if(demo_mode == 4) {
                 set_mesh_visibility(true);
                 mesh12->set_visible(false); // diamond2
                 mesh13->set_visible(false); // sphere2
                 mesh14->set_visible(false); // box4
+                mesh15->set_visible(false); // grid2
                 demo_mode = 0;
             }
             break;

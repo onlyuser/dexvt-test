@@ -12,6 +12,7 @@ class Buffer : public IdentObject, public BindableObjectIFace
 public:
     Buffer(GLenum target, size_t size, void* data);
     virtual ~Buffer();
+    void update() const;
     void bind() const;
     size_t size() const
     {
@@ -21,6 +22,7 @@ public:
 private:
     GLenum m_target;
     size_t m_size;
+    void* m_data;
 };
 
 }

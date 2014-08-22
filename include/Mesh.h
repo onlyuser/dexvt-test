@@ -24,11 +24,13 @@ public:
             size_t      num_tri    = 0);
     virtual ~Mesh();
 
-    size_t get_num_vertex() const {
+    size_t get_num_vertex() const
+    {
         return m_num_vertex;
     }
 
-    size_t get_num_tri() const {
+    size_t get_num_tri() const
+    {
         return m_num_tri;
     }
 
@@ -56,6 +58,7 @@ public:
     void       set_tri_indices(int index, glm::uvec3 indices);
 
     void init_buffers();
+    void update_buffers() const;
     Buffer* get_vbo_vert_coords();
     Buffer* get_vbo_vert_normal();
     Buffer* get_vbo_vert_tangent();

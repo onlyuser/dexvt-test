@@ -13,7 +13,7 @@ Mesh* PrimitiveFactory::create_grid(
         int         cols,
         int         rows,
         float       width,
-        float       height)
+        float       length)
 {
     int   num_vertex = (rows+1)*(cols+1);
     int   num_tri    = rows*cols*2;
@@ -28,9 +28,9 @@ Mesh* PrimitiveFactory::create_grid(
         for(int col = 0; col <= cols; col++) {
             mesh->set_vert_coord(vert_index, glm::vec3(
                     width*(static_cast<float>(col)/cols),
-                    height*(static_cast<float>(row)/rows),
-                    0));
-            mesh->set_vert_normal( vert_index, glm::vec3(0, 0, 1));
+                    0,
+                    length*(1 - static_cast<float>(row)/rows)));
+            mesh->set_vert_normal( vert_index, glm::vec3(0, 1, 0));
             mesh->set_vert_tangent(vert_index, glm::vec3(1, 0, 0));
             vert_index++;
         }
@@ -45,7 +45,7 @@ Mesh* PrimitiveFactory::create_grid(
         for(int col = 0; col <= cols; col++) {
             mesh->set_tex_coord(tex_vert_index++, glm::vec2(
                     static_cast<float>(col)/cols,
-                    1-static_cast<float>(row)/rows));
+                    1 - static_cast<float>(row)/rows));
         }
     }
 
@@ -56,15 +56,17 @@ Mesh* PrimitiveFactory::create_grid(
     int tri_index = 0;
     for(int row = 0; row<rows; row++) {
         for(int col = 0; col<cols; col++) {
-            int lower_left  = row*(cols+1)+col;
-            int lower_right = lower_left+1;
-            int upper_left  = (row+1)*(cols+1)+col;
-            int upper_right = upper_left+1;
+            int lower_left  = row*(cols + 1) + col;
+            int lower_right = lower_left + 1;
+            int upper_left  = (row + 1)*(cols + 1) + col;
+            int upper_right = upper_left + 1;
             mesh->set_tri_indices(tri_index++, glm::uvec3(lower_left, lower_right, upper_right));
             mesh->set_tri_indices(tri_index++, glm::uvec3(upper_right, upper_left, lower_left));
         }
     }
 
+    assert(vert_index == num_vertex);
+    assert(tri_index  == num_tri);
     return mesh;
 }
 
@@ -507,7 +509,9 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
     // total (faces):     16*7=112
     // total (vertices):  112*3=336
 
-    Mesh* mesh = new Mesh(name, 336, 112);
+    int   num_vertex = 336;
+    int   num_tri    = 112;
+    Mesh* mesh = new Mesh(name, num_vertex, num_tri);
 
     float crown_height   = height*crown_height_to_total_height_ratio;
     float pavilion_depth = height-crown_height;
@@ -838,20 +842,10 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
         vert_index += 3;
     }
 
-    // all triangles
-    for(int i=0; i<static_cast<int>(mesh->get_num_tri()); i++) {
-        glm::vec3 p0 = mesh->get_vert_coord(i*3+0);
-        glm::vec3 p1 = mesh->get_vert_coord(i*3+1);
-        glm::vec3 p2 = mesh->get_vert_coord(i*3+2);
-        glm::vec3 e1 = glm::normalize(p1-p0);
-        glm::vec3 e2 = glm::normalize(p2-p0);
-        glm::vec3 n = glm::normalize(glm::cross(e1, e2));
-        for(int j=0; j<3; j++) {
-            mesh->set_vert_normal( i*3+j, n);
-            mesh->set_vert_tangent(i*3+j, e1);
-        }
-    }
+    mesh_calc_normals_and_tangents(mesh);
 
+    assert(vert_index == num_vertex);
+    assert(tri_index  == num_tri);
     return mesh;
 }
 

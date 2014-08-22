@@ -1,6 +1,9 @@
 #include <Util.h>
+#include <Mesh.h>
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtx/constants.hpp>
 #include <math.h>
 
 #define ROLL(v)  v.x
@@ -44,6 +47,38 @@ glm::vec3 offset_to_orient(glm::vec3 offset)
     if(offset.x < 0) YAW(r) *= -1;
     if(offset.y > 0) PITCH(r) *= -1;
     return r;
+}
+
+void mesh_calc_normals_and_tangents(Mesh* mesh)
+{
+    for(int i=0; i<static_cast<int>(mesh->get_num_tri()); i++)
+    {
+        glm::uvec3 tri_indices = mesh->get_tri_indices(i);
+        glm::vec3 p0 = mesh->get_vert_coord(tri_indices[0]);
+        glm::vec3 p1 = mesh->get_vert_coord(tri_indices[1]);
+        glm::vec3 p2 = mesh->get_vert_coord(tri_indices[2]);
+        glm::vec3 e1 = glm::normalize(p1 - p0);
+        glm::vec3 e2 = glm::normalize(p2 - p0);
+        glm::vec3 n = glm::normalize(glm::cross(e1, e2));
+        for(int j=0; j<3; j++)
+        {
+            mesh->set_vert_normal( tri_indices[j], n);
+            mesh->set_vert_tangent(tri_indices[j], e1);
+        }
+    }
+}
+
+void mesh_apply_ripple(Mesh* mesh, glm::vec3 origin, float amplitude, float wavelength, float phase)
+{
+    for(int i=0; i<static_cast<int>(mesh->get_num_vertex()); i++)
+    {
+        glm::vec3 pos = mesh->get_vert_coord(i);
+        glm::vec3 new_pos = pos;
+        new_pos.y = origin.y + static_cast<float>(sin(glm::distance(glm::vec2(origin.x, origin.z), glm::vec2(pos.x, pos.z))/(wavelength/(glm::pi<float>()*2)) + phase))*amplitude;
+        mesh->set_vert_coord(i, new_pos);
+    }
+
+    mesh_calc_normals_and_tangents(mesh);
 }
 
 }

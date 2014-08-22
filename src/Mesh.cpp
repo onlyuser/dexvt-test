@@ -163,6 +163,18 @@ void Mesh::init_buffers()
     m_buffers_already_init = true;
 }
 
+void Mesh::update_buffers() const
+{
+    if(!m_buffers_already_init) {
+        return;
+    }
+    m_vbo_vert_coords->update();
+    m_vbo_vert_normal->update();
+    m_vbo_vert_tangent->update();
+    m_vbo_tex_coords->update();
+    m_ibo_tri_indices->update();
+}
+
 Buffer* Mesh::get_vbo_vert_coords()
 {
     init_buffers();

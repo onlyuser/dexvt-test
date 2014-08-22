@@ -18,7 +18,7 @@ public:
             int         cols   = 1,
             int         rows   = 1,
             float       width  = 1,
-            float       height = 1);
+            float       length = 1);
     static Mesh* create_sphere(
             std::string name = "",
             int         slices = DEFAULT_SLICES,
