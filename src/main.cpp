@@ -63,6 +63,8 @@ int texture_index = 0;
 int demo_mode = 0;
 float prev_zoom = 0, zoom = 1, ortho_dolly_speed = 0.1;
 
+float angle = 0;
+
 int init_resources()
 {
     vt::Scene *scene = vt::Scene::instance();
@@ -421,10 +423,6 @@ int init_resources()
 
 void onIdle()
 {
-    float angle = static_cast<float>(glutGet(GLUT_ELAPSED_TIME))/1000*15; // base 15 degrees per second
-    mesh2->set_orient(glm::vec3(angle*3, angle*2, angle*4));
-    mesh_apply_ripple(mesh15, glm::vec3(0.5, 0, 0.5), 0.1, 0.5, -angle*0.1);
-    mesh15->update_buffers();
     glutPostRedisplay();
 }
 
@@ -449,10 +447,16 @@ void onTick()
         glutSetWindowTitle(ss.str().c_str());
     }
     frames++;
+
+    angle = static_cast<float>(glutGet(GLUT_ELAPSED_TIME))/1000*15; // base 15 degrees per second
 }
 
 void onDisplay()
 {
+    mesh2->set_orient(glm::vec3(angle*3, angle*2, angle*4));
+    mesh_apply_ripple(mesh15, glm::vec3(0.5, 0, 0.5), 0.1, 0.5, -angle*0.1);
+    mesh15->update_buffers();
+
     vt::Scene *scene = vt::Scene::instance();
 
     onTick();
