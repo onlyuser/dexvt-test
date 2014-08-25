@@ -35,7 +35,8 @@ ShaderContext::ShaderContext(
       m_use_normal_mapping(material->use_normal_mapping()),
       m_use_env_mapping(material->use_env_mapping()),
       m_use_depth_overlay(material->use_depth_overlay()),
-      m_skybox(material->skybox())
+      m_skybox(material->skybox()),
+      m_overlay(material->overlay())
 {
     bool use_phong_normal_env = m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping;
     Program *program = material->get_program();
@@ -82,6 +83,7 @@ ShaderContext::ShaderContext(
         m_var_uniform_env_map_texture      = std::unique_ptr<VarUniform>(program->get_var_uniform("env_map_texture"));
         m_var_uniform_inv_projection_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("inv_projection_xform"));
         m_var_uniform_inv_normal_xform     = std::unique_ptr<VarUniform>(program->get_var_uniform("inv_normal_xform"));
+    } else if(m_overlay) {
     } else {
         m_var_attribute_vertex_position = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_position"));
         m_var_uniform_mvp_xform         = std::unique_ptr<VarUniform>(program->get_var_uniform("mvp_xform"));
@@ -98,7 +100,7 @@ void ShaderContext::render()
         (*p)->bind();
         i++;
     }
-    if(m_skybox) {
+    if(m_skybox || m_overlay) {
         glDisable(GL_DEPTH_TEST);
         glBegin(GL_QUADS);
             glVertex3f(-1.0, -1.0, 0.0);

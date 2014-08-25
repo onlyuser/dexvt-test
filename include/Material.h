@@ -21,14 +21,15 @@ public:
             std::string name                 = "",
             std::string vertex_shader_file   = "",
             std::string fragment_shader_file = "",
-            bool        use_normal_only     = false,
+            bool        use_normal_only      = false,
             bool        use_camera_vec       = false,
             bool        use_phong_shading    = false,
             bool        use_texture_mapping  = false,
             bool        use_normal_mapping   = false,
             bool        use_env_mapping      = false,
             bool        use_depth_overlay    = false,
-            bool        skybox               = false);
+            bool        skybox               = false,
+            bool        overlay              = false);
     Program* get_program() const
     {
         return m_program.get();
@@ -72,6 +73,10 @@ public:
     {
         return m_skybox;
     }
+    bool overlay() const
+    {
+        return m_overlay;
+    }
 
     Texture* get_texture_by_name(std::string name) const;
     int get_texture_index_by_name(std::string name) const;
@@ -87,6 +92,7 @@ private:
     bool                     m_use_env_mapping;
     bool                     m_use_depth_overlay;
     bool                     m_skybox;
+    bool                     m_overlay;
 
     typedef std::map<std::string, Texture*> texture_lookup_table_t;
     texture_lookup_table_t m_texture_lookup_table;

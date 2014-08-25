@@ -45,9 +45,9 @@ const char* DEFAULT_CAPTION = "My Textured Cube";
 
 int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
-vt::Mesh* skybox, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10, *mesh11, *mesh12, *mesh13, *mesh14, *mesh15;
+vt::Mesh* mesh_skybox, *mesh_overlay, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10, *mesh11, *mesh12, *mesh13, *mesh14, *mesh15;
 vt::Light* light, *light2, *light3;
-std::unique_ptr<vt::FrameBuffer> frontface_depth_overlay_fb, backface_depth_overlay_fb, backface_normal_overlay_fb;
+std::unique_ptr<vt::FrameBuffer> frontface_depth_overlay_fb, backface_depth_overlay_fb, backface_normal_overlay_fb, final_color_overlay_fb;
 
 bool left_mouse_down = false, right_mouse_down = false;
 glm::vec2 prev_mouse_coord, mouse_drag;
@@ -69,8 +69,11 @@ int init_resources()
 {
     vt::Scene *scene = vt::Scene::instance();
 
-    skybox = vt::PrimitiveFactory::create_viewport_quad("grid");
-    scene->set_skybox(skybox);
+    mesh_skybox = vt::PrimitiveFactory::create_viewport_quad("grid");
+    scene->set_skybox(mesh_skybox);
+
+    mesh_overlay = vt::PrimitiveFactory::create_viewport_quad("grid3");
+    scene->set_overlay(mesh_overlay);
 
     scene->add_mesh(mesh   = vt::PrimitiveFactory::create_box(        "box"));
     scene->add_mesh(mesh2  = vt::PrimitiveFactory::create_box(        "box2"));
@@ -107,7 +110,7 @@ int init_resources()
     mesh3->set_orient(glm::vec3(0, -90, 0));
 
     mesh2->set_visible(false);
-    mesh3->set_visible(false);
+    //mesh3->set_visible(false);
     //mesh6->set_visible(false);
     //mesh7->set_visible(false);
     mesh12->set_visible(false);
@@ -131,21 +134,23 @@ int init_resources()
             true,   // use_normal_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
-            false); // skybox
+            false,  // skybox
+            false); // overlay
     scene->add_material(normal_mapped_material);
 
     vt::Material* skybox_material = new vt::Material(
             "skybox",
             "src/skybox.v.glsl",
             "src/skybox.f.glsl",
-            false, // use_normal_only
-            false, // use_camera_vec
-            false, // use_phong_shading
-            false, // use_texture_mapping
-            false, // use_normal_mapping
-            false, // use_env_mapping
-            false, // use_depth_overlay
-            true); // skybox
+            false,  // use_normal_only
+            false,  // use_camera_vec
+            false,  // use_phong_shading
+            false,  // use_texture_mapping
+            false,  // use_normal_mapping
+            false,  // use_env_mapping
+            false,  // use_depth_overlay
+            true,   // skybox
+            false); // overlay
     scene->add_material(skybox_material);
 
     vt::Material* texture_mapped_material = new vt::Material(
@@ -159,7 +164,8 @@ int init_resources()
             false,  // use_normal_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
-            false); // skybox
+            false,  // skybox
+            false); // overlay
     scene->add_material(texture_mapped_material);
 
     vt::Material* env_mapped_material = new vt::Material(
@@ -173,7 +179,8 @@ int init_resources()
             true,   // use_normal_mapping
             true,   // use_env_mapping
             false,  // use_depth_overlay
-            false); // skybox
+            false,  // skybox
+            false); // overlay
     scene->add_material(env_mapped_material);
 
     vt::Material* env_mapped_ex_material = new vt::Material(
@@ -187,7 +194,8 @@ int init_resources()
             true,   // use_normal_mapping
             true,   // use_env_mapping
             true,   // use_depth_overlay
-            false); // skybox
+            false,  // skybox
+            false); // overlay
     scene->add_material(env_mapped_ex_material);
 
     vt::Material* env_mapped_material_fast = new vt::Material(
@@ -201,7 +209,8 @@ int init_resources()
             false,  // use_normal_mapping
             true,   // use_env_mapping
             false,  // use_depth_overlay
-            false); // skybox
+            false,  // skybox
+            false); // overlay
     scene->add_material(env_mapped_material_fast);
 
     vt::Material* normal_material = new vt::Material(
@@ -215,7 +224,8 @@ int init_resources()
             true,   // use_normal_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
-            false); // skybox
+            false,  // skybox
+            false); // overlay
     scene->add_material(normal_material);
 
     vt::Material* normal_material_fast = new vt::Material(
@@ -229,7 +239,8 @@ int init_resources()
             false,  // use_normal_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
-            false); // skybox
+            false,  // skybox
+            false); // overlay
     scene->add_material(normal_material_fast);
     scene->set_normal_material(normal_material_fast);
 
@@ -308,6 +319,15 @@ int init_resources()
     texture_mapped_material->add_texture(backface_normal_overlay_texture);
     env_mapped_ex_material->add_texture( backface_normal_overlay_texture);
 
+    vt::Texture* final_color_overlay_texture = new vt::Texture(
+            "final_color_overlay",
+            LOW_RES_TEX_DIM,
+            LOW_RES_TEX_DIM,
+            NULL,
+            vt::Texture::RGB);
+    texture_mapped_material->add_texture(final_color_overlay_texture);
+    env_mapped_ex_material->add_texture( final_color_overlay_texture);
+
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera("camera", origin+glm::vec3(0, 0, orbit_radius), origin);
     scene->set_camera(camera);
@@ -315,13 +335,14 @@ int init_resources()
     frontface_depth_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(frontface_depth_overlay_texture, camera));
     backface_depth_overlay_fb  = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(backface_depth_overlay_texture, camera));
     backface_normal_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(backface_normal_overlay_texture, camera));
+    final_color_overlay_fb     = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(final_color_overlay_texture, camera));
 
     scene->add_light(light  = new vt::Light("light1", origin+glm::vec3(light_distance, 0, 0), glm::vec3(1, 0, 0)));
     scene->add_light(light2 = new vt::Light("light2", origin+glm::vec3(0, light_distance, 0), glm::vec3(0, 1, 0)));
     scene->add_light(light3 = new vt::Light("light3", origin+glm::vec3(0, 0, light_distance), glm::vec3(0, 0, 1)));
 
-    skybox->set_material(skybox_material);
-    skybox->set_texture_index(skybox->get_material()->get_texture_index_by_name("skybox_texture"));
+    mesh_skybox->set_material(skybox_material);
+    mesh_skybox->set_texture_index(mesh_skybox->get_material()->get_texture_index_by_name("skybox_texture"));
 
     // box
     mesh->set_material(normal_mapped_material);
@@ -337,7 +358,8 @@ int init_resources()
     mesh3->set_material(texture_mapped_material);
     //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
     //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("final_color_overlay"));
 
     // sphere
     mesh4->set_material(env_mapped_ex_material);
@@ -453,25 +475,25 @@ void onTick()
 
 void onDisplay()
 {
+    onTick();
+
     mesh2->set_orient(glm::vec3(angle*3, angle*2, angle*4));
     mesh_apply_ripple(mesh15, glm::vec3(0.5, 0, 0.5), 0.1, 0.5, -angle*0.1);
     mesh15->update_buffers();
 
     vt::Scene *scene = vt::Scene::instance();
 
-    onTick();
-
     frontface_depth_overlay_fb->bind();
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    scene->render(false);
+    scene->render(false, false);
     frontface_depth_overlay_fb->unbind();
 
     backface_depth_overlay_fb->bind();
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_FRONT);
-    scene->render(false);
+    scene->render(false, false);
     glCullFace(GL_BACK);
     backface_depth_overlay_fb->unbind();
 
@@ -479,9 +501,15 @@ void onDisplay()
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_FRONT);
-    scene->render(false, true);
+    scene->render(false, false, true);
     glCullFace(GL_BACK);
     backface_normal_overlay_fb->unbind();
+
+    final_color_overlay_fb->bind();
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    scene->render(false, false);
+    final_color_overlay_fb->unbind();
 
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -703,7 +731,7 @@ void onReshape(int width, int height)
 int main(int argc, char* argv[])
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGBA|GLUT_ALPHA|GLUT_DOUBLE|GLUT_DEPTH|GLUT_STENCIL);
+    glutInitDisplayMode(GLUT_RGBA|GLUT_ALPHA|GLUT_DOUBLE|GLUT_DEPTH/*|GLUT_STENCIL*/);
     glutInitWindowSize(init_screen_width, init_screen_height);
     glutCreateWindow(DEFAULT_CAPTION);
 

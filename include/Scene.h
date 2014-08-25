@@ -63,6 +63,15 @@ public:
         return m_skybox;
     }
 
+    void set_overlay(Mesh* overlay)
+    {
+        m_overlay = overlay;
+    }
+    Mesh* get_overlay() const
+    {
+        return m_overlay;
+    }
+
     void set_normal_material(Material* material)
     {
         m_normal_material = material;
@@ -74,13 +83,14 @@ public:
 
     void reset();
     void use_program();
-    void render(bool render_skybox = true, bool use_normal_material = false);
+    void render(bool render_skybox = true, bool render_overlay = false, bool use_normal_material = false);
     void render_vert_normals() const;
     void render_lights() const;
 
 private:
     Camera*     m_camera;
     Mesh*       m_skybox;
+    Mesh*       m_overlay;
     lights_t    m_lights;
     meshes_t    m_meshes;
     materials_t m_materials;

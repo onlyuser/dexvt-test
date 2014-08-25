@@ -88,6 +88,7 @@ private:
     bool m_use_env_mapping;
     bool m_use_depth_overlay;
     bool m_skybox;
+    bool m_overlay;
 };
 
 }

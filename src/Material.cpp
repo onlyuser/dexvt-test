@@ -23,7 +23,8 @@ Material::Material(
         bool        use_normal_mapping,
         bool        use_env_mapping,
         bool        use_depth_overlay,
-        bool        skybox)
+        bool        skybox,
+        bool        overlay)
     : NamedObject(name),
       m_use_normal_only(use_normal_only),
       m_use_camera_vec(use_camera_vec),
@@ -32,7 +33,8 @@ Material::Material(
       m_use_normal_mapping(use_normal_mapping),
       m_use_env_mapping(use_env_mapping),
       m_use_depth_overlay(use_depth_overlay),
-      m_skybox(skybox)
+      m_skybox(skybox),
+      m_overlay(overlay)
 {
     std::unique_ptr<Shader> vs, fs;
     vs = std::unique_ptr<Shader>(new Shader(vertex_shader_file, GL_VERTEX_SHADER));

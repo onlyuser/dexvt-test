@@ -19,6 +19,7 @@ namespace vt {
 Scene::Scene()
     : m_camera(NULL),
       m_skybox(NULL),
+      m_overlay(NULL),
       m_normal_material(NULL)
 {
     m_camera_pos[0] = 0;
@@ -93,8 +94,22 @@ void Scene::use_program()
     }
 }
 
-void Scene::render(bool render_skybox, bool use_normal_material)
+void Scene::render(bool render_skybox, bool render_overlay, bool use_normal_material)
 {
+    if(render_skybox && m_skybox) {
+        ShaderContext* shader_context = m_skybox->get_shader_context();
+        shader_context->get_material()->get_program()->use();
+        shader_context->set_env_map_texture_index(0);
+        shader_context->set_inv_normal_xform(glm::inverse(m_camera->get_normal_xform()));
+        shader_context->set_inv_projection_xform(glm::inverse(m_camera->get_projection_xform()));
+        shader_context->render();
+    }
+    if(render_overlay && m_overlay) {
+        ShaderContext* shader_context = m_overlay->get_shader_context();
+        shader_context->get_material()->get_program()->use();
+        shader_context->set_env_map_texture_index(0);
+        shader_context->render();
+    }
     glm::vec3 camera_pos = m_camera->get_origin();
     m_camera_pos[0] = camera_pos.x;
     m_camera_pos[1] = camera_pos.y;
@@ -113,14 +128,6 @@ void Scene::render(bool render_skybox, bool use_normal_material)
         m_light_color[i*3+2] = light_color.b;
         m_light_enabled[i] = (*p)->get_enabled();
         i++;
-    }
-    if(render_skybox && m_skybox) {
-        ShaderContext* shader_context = m_skybox->get_shader_context();
-        shader_context->get_material()->get_program()->use();
-        shader_context->set_env_map_texture_index(0);
-        shader_context->set_inv_normal_xform(glm::inverse(m_camera->get_normal_xform()));
-        shader_context->set_inv_projection_xform(glm::inverse(m_camera->get_projection_xform()));
-        shader_context->render();
     }
     for(meshes_t::const_iterator q = m_meshes.begin(); q != m_meshes.end(); q++) {
         Mesh* mesh = (*q);
