@@ -59,6 +59,7 @@ bool show_fps = false;
 bool show_vert_normals = false;
 bool show_lights = false;
 bool show_diamond = false;
+bool post_process_blur = false;
 
 int texture_index = 0;
 int demo_mode = 0;
@@ -111,7 +112,7 @@ int init_resources()
     mesh3->set_orient(glm::vec3(0, -90, 0));
 
     mesh2->set_visible(false);
-    //mesh3->set_visible(false);
+    mesh3->set_visible(false);
     //mesh6->set_visible(false);
     //mesh7->set_visible(false);
     mesh12->set_visible(false);
@@ -527,21 +528,23 @@ void onDisplay()
     final_color_overlay_fb->bind();
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    scene->render(false, false);
+    scene->render(false, true);
     final_color_overlay_fb->unbind();
 
-    // blur
-    for(int i = 0; i < BLUR_ITERS; i++) {
-        final_color_overlay_fb->bind();
-        //glClearColor(0, 0, 0, 1);
-        //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(true);
-        final_color_overlay_fb->unbind();
+    if(post_process_blur) {
+        // blur
+        for(int i = 0; i < BLUR_ITERS; i++) {
+            final_color_overlay_fb->bind();
+            //glClearColor(0, 0, 0, 1);
+            //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+            scene->render(true);
+            final_color_overlay_fb->unbind();
+        }
     }
 
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    scene->render(true);
+    scene->render(post_process_blur);
 
 //    stencil_fb->bind();
 //    glEnable(GL_STENCIL_TEST);
@@ -598,43 +601,8 @@ void set_mesh_visibility(bool visible)
 void onKeyboard(unsigned char key, int x, int y)
 {
     switch(key) {
-        case 'w':
-            wire_frame_mode = !wire_frame_mode;
-            if(wire_frame_mode) {
-                glPolygonMode(GL_FRONT, GL_LINE);
-            } else {
-                glPolygonMode(GL_FRONT, GL_FILL);
-            }
-            break;
-        case 'f':
-            show_fps = !show_fps;
-            if(!show_fps) {
-                glutSetWindowTitle(DEFAULT_CAPTION);
-            }
-            break;
-        case 't':
-            if(texture_index == 0) {
-                texture_index = 1; // GL_TEXTURE1
-            } else if(texture_index == 1) {
-                texture_index = 2; // GL_TEXTURE2
-            } else if(texture_index == 2) {
-                texture_index = 3; // GL_TEXTURE3
-            } else if(texture_index == 3) {
-                texture_index = 0; // GL_TEXTURE0
-            }
-            mesh->set_texture_index( texture_index);
-            mesh2->set_texture_index(texture_index);
-            //mesh3->set_texture_index(texture_index);
-            //mesh4->set_texture_index(texture_index);
-            //mesh5->set_texture_index(texture_index);
-            //mesh6->set_texture_index(texture_index);
-            //mesh7->set_texture_index(texture_index);
-            break;
-        case 'n':
-            show_vert_normals = !show_vert_normals;
-            break;
-        case 'l':
-            show_lights = !show_lights;
+        case 'b':
+            post_process_blur = !post_process_blur;
             break;
         case 'd':
             if(demo_mode == 0) {
@@ -662,11 +630,49 @@ void onKeyboard(unsigned char key, int x, int y)
                 demo_mode = 0;
             }
             break;
+        case 'f':
+            show_fps = !show_fps;
+            if(!show_fps) {
+                glutSetWindowTitle(DEFAULT_CAPTION);
+            }
+            break;
+        case 'l':
+            show_lights = !show_lights;
+            break;
+        case 'n':
+            show_vert_normals = !show_vert_normals;
+            break;
         case 'p':
             if(camera->get_projection_mode() == vt::Camera::PROJECTION_MODE_PERSPECTIVE) {
                 camera->set_projection_mode(vt::Camera::PROJECTION_MODE_ORTHO);
             } else if(camera->get_projection_mode() == vt::Camera::PROJECTION_MODE_ORTHO) {
                 camera->set_projection_mode(vt::Camera::PROJECTION_MODE_PERSPECTIVE);
+            }
+            break;
+        case 't':
+            if(texture_index == 0) {
+                texture_index = 1; // GL_TEXTURE1
+            } else if(texture_index == 1) {
+                texture_index = 2; // GL_TEXTURE2
+            } else if(texture_index == 2) {
+                texture_index = 3; // GL_TEXTURE3
+            } else if(texture_index == 3) {
+                texture_index = 0; // GL_TEXTURE0
+            }
+            mesh->set_texture_index( texture_index);
+            mesh2->set_texture_index(texture_index);
+            //mesh3->set_texture_index(texture_index);
+            //mesh4->set_texture_index(texture_index);
+            //mesh5->set_texture_index(texture_index);
+            //mesh6->set_texture_index(texture_index);
+            //mesh7->set_texture_index(texture_index);
+            break;
+        case 'w':
+            wire_frame_mode = !wire_frame_mode;
+            if(wire_frame_mode) {
+                glPolygonMode(GL_FRONT, GL_LINE);
+            } else {
+                glPolygonMode(GL_FRONT, GL_FILL);
             }
             break;
         case 27:
