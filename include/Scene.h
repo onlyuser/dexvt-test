@@ -83,7 +83,7 @@ public:
 
     void reset();
     void use_program();
-    void render(bool render_skybox = true, bool render_overlay = false, bool use_normal_material = false);
+    void render(bool render_overlay = false, bool render_skybox = true, bool use_normal_material = false);
     void render_vert_normals() const;
     void render_lights() const;
 

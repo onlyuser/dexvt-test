@@ -40,6 +40,7 @@
 #include <iomanip> // std::setprecision
 
 #define LOW_RES_TEX_DIM 512
+#define BLUR_ITERS      5
 
 const char* DEFAULT_CAPTION = "My Textured Cube";
 
@@ -152,6 +153,21 @@ int init_resources()
             true,   // skybox
             false); // overlay
     scene->add_material(skybox_material);
+
+    vt::Material* overlay_material = new vt::Material(
+            "overlay_blur",
+            "src/overlay_blur.v.glsl",
+            "src/overlay_blur.f.glsl",
+            false, // use_normal_only
+            false, // use_camera_vec
+            false, // use_phong_shading
+            false, // use_texture_mapping
+            false, // use_normal_mapping
+            false, // use_env_mapping
+            false, // use_depth_overlay
+            false, // skybox
+            true); // overlay
+    scene->add_material(overlay_material);
 
     vt::Material* texture_mapped_material = new vt::Material(
             "texture_mapped",
@@ -326,7 +342,7 @@ int init_resources()
             NULL,
             vt::Texture::RGB);
     texture_mapped_material->add_texture(final_color_overlay_texture);
-    env_mapped_ex_material->add_texture( final_color_overlay_texture);
+    overlay_material->add_texture(final_color_overlay_texture);
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera("camera", origin+glm::vec3(0, 0, orbit_radius), origin);
@@ -343,6 +359,9 @@ int init_resources()
 
     mesh_skybox->set_material(skybox_material);
     mesh_skybox->set_texture_index(mesh_skybox->get_material()->get_texture_index_by_name("skybox_texture"));
+
+    mesh_overlay->set_material(overlay_material);
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("final_color_overlay"));
 
     // box
     mesh->set_material(normal_mapped_material);
@@ -511,9 +530,18 @@ void onDisplay()
     scene->render(false, false);
     final_color_overlay_fb->unbind();
 
+    // blur
+    for(int i = 0; i < BLUR_ITERS; i++) {
+        final_color_overlay_fb->bind();
+        //glClearColor(0, 0, 0, 1);
+        //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        scene->render(true);
+        final_color_overlay_fb->unbind();
+    }
+
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    scene->render();
+    scene->render(true);
 
 //    stencil_fb->bind();
 //    glEnable(GL_STENCIL_TEST);

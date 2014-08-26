@@ -84,6 +84,8 @@ ShaderContext::ShaderContext(
         m_var_uniform_inv_projection_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("inv_projection_xform"));
         m_var_uniform_inv_normal_xform     = std::unique_ptr<VarUniform>(program->get_var_uniform("inv_normal_xform"));
     } else if(m_overlay) {
+        m_var_uniform_color_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("color_texture"));
+        m_var_uniform_viewport_dim  = std::unique_ptr<VarUniform>(program->get_var_uniform("viewport_dim"));
     } else {
         m_var_attribute_vertex_position = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_position"));
         m_var_uniform_mvp_xform         = std::unique_ptr<VarUniform>(program->get_var_uniform("mvp_xform"));
