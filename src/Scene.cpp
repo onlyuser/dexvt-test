@@ -98,9 +98,12 @@ void Scene::render(bool render_overlay, bool render_skybox, bool use_normal_mate
 {
     if(render_overlay && m_overlay) {
         ShaderContext* shader_context = m_overlay->get_shader_context();
-        shader_context->get_material()->get_program()->use();
+        Material* material = shader_context->get_material();
+        material->get_program()->use();
         shader_context->set_texture_index(m_overlay->get_texture_index());
-        shader_context->set_viewport_dim(m_viewport_dim);
+        if(material->use_viewport_dim()) {
+            shader_context->set_viewport_dim(m_viewport_dim);
+        }
         shader_context->render();
         return;
     }

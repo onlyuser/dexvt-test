@@ -28,6 +28,7 @@ public:
             bool        use_normal_mapping   = false,
             bool        use_env_mapping      = false,
             bool        use_depth_overlay    = false,
+            bool        use_viewport_dim     = false,
             bool        skybox               = false,
             bool        overlay              = false);
     Program* get_program() const
@@ -69,6 +70,10 @@ public:
     {
         return m_use_depth_overlay;
     }
+    bool use_viewport_dim() const
+    {
+        return m_use_viewport_dim;
+    }
     bool skybox() const
     {
         return m_skybox;
@@ -91,6 +96,7 @@ private:
     bool                     m_use_normal_mapping;
     bool                     m_use_env_mapping;
     bool                     m_use_depth_overlay;
+    bool                     m_use_viewport_dim;
     bool                     m_skybox;
     bool                     m_overlay;
 

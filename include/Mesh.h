@@ -76,6 +76,7 @@ public:
 
     ShaderContext* get_shader_context();
     ShaderContext* get_normal_shader_context(Material* normal_material);
+    void reset_shader_context();
 
     int get_texture_index() const
     {
