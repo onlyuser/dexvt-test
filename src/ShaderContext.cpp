@@ -35,7 +35,7 @@ ShaderContext::ShaderContext(
       m_use_normal_mapping(material->use_normal_mapping()),
       m_use_env_mapping(material->use_env_mapping()),
       m_use_depth_overlay(material->use_depth_overlay()),
-      m_use_viewport_dim(material->use_viewport_dim()),
+      m_use_bloom_kernel(material->use_bloom_kernel()),
       m_skybox(material->skybox()),
       m_overlay(material->overlay())
 {
@@ -86,8 +86,9 @@ ShaderContext::ShaderContext(
         m_var_uniform_inv_normal_xform     = std::unique_ptr<VarUniform>(program->get_var_uniform("inv_normal_xform"));
     } else if(m_overlay) {
         m_var_uniform_color_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("color_texture"));
-        if(m_use_viewport_dim) {
+        if(m_use_bloom_kernel) {
             m_var_uniform_viewport_dim = std::unique_ptr<VarUniform>(program->get_var_uniform("viewport_dim"));
+            m_var_uniform_bloom_kernel = std::unique_ptr<VarUniform>(program->get_var_uniform("bloom_kernel"));
         }
     } else {
         m_var_attribute_vertex_position = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_position"));
@@ -266,6 +267,11 @@ void ShaderContext::set_backface_normal_overlay_texture_index(GLint texture_id)
 void ShaderContext::set_viewport_dim(GLfloat* viewport_dim_arr)
 {
     m_var_uniform_viewport_dim->uniform_2fv(1, viewport_dim_arr);
+}
+
+void ShaderContext::set_bloom_kernel(GLfloat* bloom_kernel_arr)
+{
+    m_var_uniform_bloom_kernel->uniform_1fv(25, bloom_kernel_arr);
 }
 
 void ShaderContext::set_camera_near(GLfloat camera_near)

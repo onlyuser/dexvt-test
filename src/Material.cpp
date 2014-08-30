@@ -23,7 +23,7 @@ Material::Material(
         bool        use_normal_mapping,
         bool        use_env_mapping,
         bool        use_depth_overlay,
-        bool        use_viewport_dim,
+        bool        use_bloom_kernel,
         bool        skybox,
         bool        overlay)
     : NamedObject(name),
@@ -34,7 +34,7 @@ Material::Material(
       m_use_normal_mapping(use_normal_mapping),
       m_use_env_mapping(use_env_mapping),
       m_use_depth_overlay(use_depth_overlay),
-      m_use_viewport_dim(use_viewport_dim),
+      m_use_bloom_kernel(use_bloom_kernel),
       m_skybox(skybox),
       m_overlay(overlay)
 {

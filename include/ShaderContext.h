@@ -49,6 +49,7 @@ public:
     void set_backface_depth_overlay_texture_index(GLint texture_id);
     void set_backface_normal_overlay_texture_index(GLint texture_id);
     void set_viewport_dim(GLfloat* viewport_dim_arr);
+    void set_bloom_kernel(GLfloat* bloom_kernel_arr);
     void set_camera_near(GLfloat camera_near);
     void set_camera_far(GLfloat camera_far);
     void set_reflect_to_refract_ratio(GLfloat reflect_to_refract_ratio);
@@ -75,6 +76,7 @@ private:
             m_var_uniform_backface_depth_overlay_texture,
             m_var_uniform_backface_normal_overlay_texture,
             m_var_uniform_viewport_dim,
+            m_var_uniform_bloom_kernel,
             m_var_uniform_camera_near,
             m_var_uniform_camera_far,
             m_var_uniform_view_proj_xform,
@@ -87,7 +89,7 @@ private:
     bool m_use_normal_mapping;
     bool m_use_env_mapping;
     bool m_use_depth_overlay;
-    bool m_use_viewport_dim;
+    bool m_use_bloom_kernel;
     bool m_skybox;
     bool m_overlay;
 };

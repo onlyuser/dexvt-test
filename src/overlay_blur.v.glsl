@@ -2,7 +2,7 @@ varying vec2 lerp_texcoord;
 uniform vec2 viewport_dim;
 varying vec2 lerp_pixel_offset;
 
-const int SAMPLE_DISTANCE = 5;
+const int SAMPLE_DISTANCE = 2;
 
 void main(void) {
     gl_Position = gl_Vertex;

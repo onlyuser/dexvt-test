@@ -40,7 +40,7 @@
 #include <iomanip> // std::setprecision
 
 #define LOW_RES_TEX_DIM 512
-#define BLUR_ITERS      5
+#define BLUR_ITERS      3
 
 const char* DEFAULT_CAPTION = "My Textured Cube";
 
@@ -140,7 +140,7 @@ int init_resources()
             true,   // use_normal_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
-            false,  // use_viewport_dim
+            false,  // use_bloom_kernel
             false,  // skybox
             false); // overlay
     scene->add_material(normal_mapped_material);
@@ -156,7 +156,7 @@ int init_resources()
             false,  // use_normal_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
-            false,  // use_viewport_dim
+            false,  // use_bloom_kernel
             true,   // skybox
             false); // overlay
     scene->add_material(skybox_material);
@@ -172,7 +172,7 @@ int init_resources()
             false, // use_normal_mapping
             false, // use_env_mapping
             false, // use_depth_overlay
-            false, // use_viewport_dim
+            false, // use_bloom_kernel
             false, // skybox
             true); // overlay
     scene->add_material(overlay_write_through_material);
@@ -188,7 +188,7 @@ int init_resources()
             false, // use_normal_mapping
             false, // use_env_mapping
             false, // use_depth_overlay
-            true,  // use_viewport_dim
+            true,  // use_bloom_kernel
             false, // skybox
             true); // overlay
     scene->add_material(overlay_blur_material);
@@ -204,7 +204,7 @@ int init_resources()
             false,  // use_normal_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
-            false,  // use_viewport_dim
+            false,  // use_bloom_kernel
             false,  // skybox
             false); // overlay
     scene->add_material(texture_mapped_material);
@@ -220,7 +220,7 @@ int init_resources()
             true,   // use_normal_mapping
             true,   // use_env_mapping
             false,  // use_depth_overlay
-            false,  // use_viewport_dim
+            false,  // use_bloom_kernel
             false,  // skybox
             false); // overlay
     scene->add_material(env_mapped_material);
@@ -236,7 +236,7 @@ int init_resources()
             true,   // use_normal_mapping
             true,   // use_env_mapping
             true,   // use_depth_overlay
-            false,  // use_viewport_dim
+            false,  // use_bloom_kernel
             false,  // skybox
             false); // overlay
     scene->add_material(env_mapped_ex_material);
@@ -252,7 +252,7 @@ int init_resources()
             false,  // use_normal_mapping
             true,   // use_env_mapping
             false,  // use_depth_overlay
-            false,  // use_viewport_dim
+            false,  // use_bloom_kernel
             false,  // skybox
             false); // overlay
     scene->add_material(env_mapped_material_fast);
@@ -268,7 +268,7 @@ int init_resources()
             true,   // use_normal_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
-            false,  // use_viewport_dim
+            false,  // use_bloom_kernel
             false,  // skybox
             false); // overlay
     scene->add_material(normal_material);
@@ -284,7 +284,7 @@ int init_resources()
             false,  // use_normal_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
-            false,  // use_viewport_dim
+            false,  // use_bloom_kernel
             false,  // skybox
             false); // overlay
     scene->add_material(normal_material_fast);

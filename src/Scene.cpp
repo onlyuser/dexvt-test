@@ -27,17 +27,31 @@ Scene::Scene()
     m_camera_pos[2] = 0;
     m_viewport_dim[0] = 0;
     m_viewport_dim[1] = 0;
+    const int bloom_kernel_row[] = {1, 4, 6, 4, 1};
+    for(int i = 0; i<5; i++) {
+        for(int j = 0; j<5; j++) {
+            m_bloom_kernel[i*5 + j] = bloom_kernel_row[i]*bloom_kernel_row[j];
+        }
+    }
+    float sum_weights = 0;
+    for(int k = 0; k<25; k++) {
+        sum_weights += m_bloom_kernel[k];
+    }
+    float sum_weights_inv = 1/sum_weights;
+    for(int p = 0; p<25; p++) {
+        m_bloom_kernel[p] *= sum_weights_inv;
+    }
     m_light_pos     = new GLfloat[NUM_LIGHTS*3];
     m_light_color   = new GLfloat[NUM_LIGHTS*3];
     m_light_enabled = new GLint[NUM_LIGHTS];
-    for(int i = 0; i<NUM_LIGHTS; i++) {
-        m_light_pos[i*3+0]   = 0;
-        m_light_pos[i*3+1]   = 0;
-        m_light_pos[i*3+2]   = 0;
-        m_light_color[i*3+0] = 0;
-        m_light_color[i*3+1] = 0;
-        m_light_color[i*3+2] = 0;
-        m_light_enabled[i]   = 0;
+    for(int q = 0; q<NUM_LIGHTS; q++) {
+        m_light_pos[q*3+0]   = 0;
+        m_light_pos[q*3+1]   = 0;
+        m_light_pos[q*3+2]   = 0;
+        m_light_color[q*3+0] = 0;
+        m_light_color[q*3+1] = 0;
+        m_light_color[q*3+2] = 0;
+        m_light_enabled[q]   = 0;
     }
 }
 
@@ -96,13 +110,17 @@ void Scene::use_program()
 
 void Scene::render(bool render_overlay, bool render_skybox, bool use_normal_material)
 {
+    glm::vec3 camera_pos = m_camera->get_origin();
+    m_viewport_dim[0] = m_camera->get_width();
+    m_viewport_dim[1] = m_camera->get_height();
     if(render_overlay && m_overlay) {
         ShaderContext* shader_context = m_overlay->get_shader_context();
         Material* material = shader_context->get_material();
         material->get_program()->use();
         shader_context->set_texture_index(m_overlay->get_texture_index());
-        if(material->use_viewport_dim()) {
+        if(material->use_bloom_kernel()) {
             shader_context->set_viewport_dim(m_viewport_dim);
+            shader_context->set_bloom_kernel(m_bloom_kernel);
         }
         shader_context->render();
         return;
@@ -115,12 +133,9 @@ void Scene::render(bool render_overlay, bool render_skybox, bool use_normal_mate
         shader_context->set_inv_projection_xform(glm::inverse(m_camera->get_projection_xform()));
         shader_context->render();
     }
-    glm::vec3 camera_pos = m_camera->get_origin();
     m_camera_pos[0] = camera_pos.x;
     m_camera_pos[1] = camera_pos.y;
     m_camera_pos[2] = camera_pos.z;
-    m_viewport_dim[0] = m_camera->get_width();
-    m_viewport_dim[1] = m_camera->get_height();
     int i = 0;
     for(lights_t::const_iterator p = m_lights.begin(); p != m_lights.end(); p++) {
         glm::vec3 light_pos = (*p)->get_origin();

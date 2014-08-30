@@ -1,24 +1,19 @@
 varying vec2      lerp_texcoord;
 uniform sampler2D color_texture;
 varying vec2      lerp_pixel_offset;
+uniform float     bloom_kernel[25];
 
 void main(void) {
-    vec2 up     = vec2(lerp_texcoord.x, lerp_texcoord.y + lerp_pixel_offset.y);
-    vec2 up2    = vec2(lerp_texcoord.x, lerp_texcoord.y + lerp_pixel_offset.y*2);
-    vec2 down   = vec2(lerp_texcoord.x, lerp_texcoord.y - lerp_pixel_offset.y);
-    vec2 down2  = vec2(lerp_texcoord.x, lerp_texcoord.y - lerp_pixel_offset.y*2);
-    vec2 left   = vec2(lerp_texcoord.x - lerp_pixel_offset.x,   lerp_texcoord.y);
-    vec2 left2  = vec2(lerp_texcoord.x - lerp_pixel_offset.x*2, lerp_texcoord.y);
-    vec2 right  = vec2(lerp_texcoord.x + lerp_pixel_offset.x,   lerp_texcoord.y);
-    vec2 right2 = vec2(lerp_texcoord.x + lerp_pixel_offset.x*2, lerp_texcoord.y);
-    gl_FragColor =
-            (texture2D(color_texture, lerp_texcoord)*6 +
-             texture2D(color_texture, up)*4 +
-             texture2D(color_texture, up2) +
-             texture2D(color_texture, down)*4 +
-             texture2D(color_texture, down2) +
-             texture2D(color_texture, left)*4 +
-             texture2D(color_texture, left2) +
-             texture2D(color_texture, right)*4 +
-             texture2D(color_texture, right2))/(6+(1+4)*4);
+    vec4 sum_color;
+    for(int i = 0; i<5; i++) {
+        for(int j = 0; j<5; j++) {
+            ivec2 kernel_offset = ivec2(i - 2, j - 2);
+            vec2 sample_coord = vec2(lerp_texcoord.x + lerp_pixel_offset.x*kernel_offset.x,
+                                     lerp_texcoord.y + lerp_pixel_offset.y*kernel_offset.y);
+            vec4 sample_color = texture2D(color_texture, sample_coord);
+            float sample_weight = bloom_kernel[i*5 + j];
+            sum_color += clamp(sample_color*sample_weight, 0, 1);
+        }
+    }
+    gl_FragColor = sum_color;
 }
