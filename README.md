@@ -33,6 +33,8 @@ Screenshots
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_ripple_refraction_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_ripple_refraction.png)
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_ripple_wireframe_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_ripple_wireframe.png)
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_ripple_wireframe_normals_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_ripple_wireframe_normals.png)
+[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_nine_shape_bloom_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_nine_shape_bloom.png)
+[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_cube_bloom_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_cube_bloom.png)
 
 Requirements
 ------------
