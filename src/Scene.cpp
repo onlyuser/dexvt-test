@@ -29,17 +29,15 @@ Scene::Scene()
     m_viewport_dim[1] = 0;
     const int bloom_kernel_row[] = {1, 4, 6, 4, 1};
     for(int i = 0; i<5; i++) {
-        for(int j = 0; j<5; j++) {
-            m_bloom_kernel[i*5 + j] = bloom_kernel_row[i]*bloom_kernel_row[j];
-        }
+        m_bloom_kernel[i] = bloom_kernel_row[i];
     }
     float sum_weights = 0;
-    for(int k = 0; k<25; k++) {
-        sum_weights += m_bloom_kernel[k];
+    for(int j = 0; j<5; j++) {
+        sum_weights += m_bloom_kernel[j];
     }
     float sum_weights_inv = 1/sum_weights;
-    for(int p = 0; p<25; p++) {
-        m_bloom_kernel[p] *= sum_weights_inv;
+    for(int k = 0; k<5; k++) {
+        m_bloom_kernel[k] *= sum_weights_inv;
     }
     m_light_pos     = new GLfloat[NUM_LIGHTS*3];
     m_light_color   = new GLfloat[NUM_LIGHTS*3];
