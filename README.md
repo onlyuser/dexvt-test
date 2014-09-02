@@ -8,8 +8,8 @@ Copyright (C) 2011-2013 Jerry Chen <mailto:onlyuser@gmail.com>
 About
 -----
 
-dexvt-test is a modernized version of my DexVT 3d engine.
-It features glsl environment-mapped reflection/refraction/double refraction (with Fresnel effect, chromatic dispersion, and Beer's law), bump mapping, Phong shading, and platonic primitives generation.
+dexvt-test is a c++/glsl/glm-based 3d engine.
+It features environment-mapped reflection/refraction/double refraction (with Fresnel effect, chromatic dispersion, and Beer's law), bump mapping, Phong shading, and platonic primitives generation.
 Platonic primitives supported include sphere, cube, cylinder, cone, grid, tetrahedron, and round brilliant diamond.
 Many features still experimental.
 
@@ -120,4 +120,4 @@ References
 Keywords
 --------
 
-    OpenGL, glsl shader, glm, environment map, cube map, normal map, bitangent, tbn matrix, backface refraction, double refraction, second refraction, backface sampling, Fresnel effect, chromatic dispersion, chromatic aberration, Beer's law, Snell's law, Newton's method, round brilliant diamond rendering, gemstone rendering
+    OpenGL, glsl shader, glm, environment map, cube map, normal map, bitangent, tbn matrix, backface refraction, double refraction, second refraction, backface sampling, Fresnel effect, chromatic dispersion, chromatic aberration, bloom filter, Beer's law, Snell's law, Newton's method, round brilliant diamond rendering, gemstone rendering
