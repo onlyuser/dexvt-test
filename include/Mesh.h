@@ -67,6 +67,8 @@ public:
 
     void set_material(Material* material)
     {
+        m_shader_context.reset();
+        m_shader_context_already_init = false;
         m_material = material;
     }
     Material* get_material() const
@@ -76,7 +78,6 @@ public:
 
     ShaderContext* get_shader_context();
     ShaderContext* get_normal_shader_context(Material* normal_material);
-    void reset_shader_context();
 
     int get_texture_index() const
     {

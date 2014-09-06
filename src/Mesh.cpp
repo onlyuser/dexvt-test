@@ -237,12 +237,6 @@ ShaderContext* Mesh::get_normal_shader_context(Material* normal_material)
     return m_normal_shader_context.get();
 }
 
-void Mesh::reset_shader_context()
-{
-    m_shader_context.reset();
-    m_shader_context_already_init = false;
-}
-
 void Mesh::update_xform()
 {
     glm::mat4 translate_xform = glm::translate(glm::mat4(1), m_origin);

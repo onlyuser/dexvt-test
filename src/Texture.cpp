@@ -168,7 +168,7 @@ GLuint Texture::gen_texture_internal(size_t width, size_t height, const void* pi
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR /*GL_NEAREST*/);
     if(type == Texture::DEPTH) {
         glTexImage2D(
                 GL_TEXTURE_2D,      // target

@@ -39,8 +39,9 @@
 #include <sstream> // std::stringstream
 #include <iomanip> // std::setprecision
 
-#define LOW_RES_TEX_DIM 512
-#define BLUR_ITERS      3
+#define HI_RES_TEX_DIM 512
+#define LO_RES_TEX_DIM 256
+#define BLUR_ITERS     3
 
 const char* DEFAULT_CAPTION = "My Textured Cube";
 
@@ -48,7 +49,7 @@ int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
 vt::Mesh* mesh_skybox, *mesh_overlay, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10, *mesh11, *mesh12, *mesh13, *mesh14, *mesh15;
 vt::Light* light, *light2, *light3;
-std::unique_ptr<vt::FrameBuffer> frontface_depth_overlay_fb, backface_depth_overlay_fb, backface_normal_overlay_fb, final_color_overlay_fb;
+std::unique_ptr<vt::FrameBuffer> frontface_depth_overlay_fb, backface_depth_overlay_fb, backface_normal_overlay_fb, hi_res_color_overlay_fb, med_res_color_overlay_fb, lo_res_color_overlay_fb;
 
 bool left_mouse_down = false, right_mouse_down = false;
 glm::vec2 prev_mouse_coord, mouse_drag;
@@ -340,8 +341,8 @@ int init_resources()
 
     vt::Texture* frontface_depth_overlay_texture = new vt::Texture(
             "frontface_depth_overlay",
-            LOW_RES_TEX_DIM,
-            LOW_RES_TEX_DIM,
+            HI_RES_TEX_DIM,
+            HI_RES_TEX_DIM,
             NULL,
             vt::Texture::DEPTH);
     texture_mapped_material->add_texture(       frontface_depth_overlay_texture);
@@ -351,8 +352,8 @@ int init_resources()
 
     vt::Texture* backface_depth_overlay_texture = new vt::Texture(
             "backface_depth_overlay",
-            LOW_RES_TEX_DIM,
-            LOW_RES_TEX_DIM,
+            HI_RES_TEX_DIM,
+            HI_RES_TEX_DIM,
             NULL,
             vt::Texture::DEPTH);
     texture_mapped_material->add_texture(       backface_depth_overlay_texture);
@@ -362,8 +363,8 @@ int init_resources()
 
     vt::Texture* backface_normal_overlay_texture = new vt::Texture(
             "backface_normal_overlay",
-            LOW_RES_TEX_DIM,
-            LOW_RES_TEX_DIM,
+            HI_RES_TEX_DIM,
+            HI_RES_TEX_DIM,
             NULL,
             vt::Texture::RGB);
     texture_mapped_material->add_texture(       backface_normal_overlay_texture);
@@ -371,15 +372,25 @@ int init_resources()
     overlay_write_through_material->add_texture(backface_normal_overlay_texture);
     overlay_blur_material->add_texture(         backface_normal_overlay_texture);
 
-    vt::Texture* final_color_overlay_texture = new vt::Texture(
-            "final_color_overlay",
-            LOW_RES_TEX_DIM,
-            LOW_RES_TEX_DIM,
+    vt::Texture* hi_res_color_overlay_texture = new vt::Texture(
+            "hi_res_color_overlay",
+            HI_RES_TEX_DIM,
+            HI_RES_TEX_DIM,
             NULL,
             vt::Texture::RGB);
-    texture_mapped_material->add_texture(       final_color_overlay_texture);
-    overlay_write_through_material->add_texture(final_color_overlay_texture);
-    overlay_blur_material->add_texture(         final_color_overlay_texture);
+    texture_mapped_material->add_texture(       hi_res_color_overlay_texture);
+    overlay_write_through_material->add_texture(hi_res_color_overlay_texture);
+    overlay_blur_material->add_texture(         hi_res_color_overlay_texture);
+
+    vt::Texture* lo_res_color_overlay_texture = new vt::Texture(
+            "lo_res_color_overlay",
+            LO_RES_TEX_DIM,
+            LO_RES_TEX_DIM,
+            NULL,
+            vt::Texture::RGB);
+    texture_mapped_material->add_texture(       lo_res_color_overlay_texture);
+    overlay_write_through_material->add_texture(lo_res_color_overlay_texture);
+    overlay_blur_material->add_texture(         lo_res_color_overlay_texture);
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera("camera", origin+glm::vec3(0, 0, orbit_radius), origin);
@@ -388,7 +399,8 @@ int init_resources()
     frontface_depth_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(frontface_depth_overlay_texture, camera));
     backface_depth_overlay_fb  = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(backface_depth_overlay_texture, camera));
     backface_normal_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(backface_normal_overlay_texture, camera));
-    final_color_overlay_fb     = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(final_color_overlay_texture, camera));
+    hi_res_color_overlay_fb    = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(hi_res_color_overlay_texture, camera));
+    lo_res_color_overlay_fb    = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(lo_res_color_overlay_texture, camera));
 
     scene->add_light(light  = new vt::Light("light1", origin+glm::vec3(light_distance, 0, 0), glm::vec3(1, 0, 0)));
     scene->add_light(light2 = new vt::Light("light2", origin+glm::vec3(0, light_distance, 0), glm::vec3(0, 1, 0)));
@@ -398,7 +410,7 @@ int init_resources()
     mesh_skybox->set_texture_index(mesh_skybox->get_material()->get_texture_index_by_name("skybox_texture"));
 
     mesh_overlay->set_material(overlay_write_through_material);
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("final_color_overlay"));
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
 
     // box
     mesh->set_material(normal_mapped_material);
@@ -415,7 +427,7 @@ int init_resources()
     //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
     //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_depth_overlay"));
     //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
-    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("final_color_overlay"));
+    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
 
     // sphere
     mesh4->set_material(env_mapped_ex_material);
@@ -561,21 +573,40 @@ void onDisplay()
     glCullFace(GL_BACK);
     backface_normal_overlay_fb->unbind();
 
-    final_color_overlay_fb->bind();
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    scene->render(false, true);
-    final_color_overlay_fb->unbind();
-
     if(post_process_blur) {
+        mesh_overlay->set_material(overlay_write_through_material);
+
+        // set output texture
+        hi_res_color_overlay_fb->bind();
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        scene->render(false, true);
+        hi_res_color_overlay_fb->unbind();
+
+        // set input texture
+        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+
+        // set output texture
+        lo_res_color_overlay_fb->bind();
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        scene->render(false, true);
+        lo_res_color_overlay_fb->unbind();
+
+        // set input texture
+        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
+
         // blur
+        mesh_overlay->set_material(overlay_blur_material);
         for(int i = 0; i < BLUR_ITERS; i++) {
-            final_color_overlay_fb->bind();
+            lo_res_color_overlay_fb->bind();
             //glClearColor(0, 0, 0, 1);
             //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
             scene->render(true);
-            final_color_overlay_fb->unbind();
+            lo_res_color_overlay_fb->unbind();
         }
+
+        mesh_overlay->set_material(overlay_write_through_material);
     }
 
     glClearColor(0, 0, 0, 1);
@@ -637,16 +668,15 @@ void set_mesh_visibility(bool visible)
 void onKeyboard(unsigned char key, int x, int y)
 {
     switch(key) {
-        case 'b':
+        case 'b': // blur
             post_process_blur = !post_process_blur;
-            mesh_overlay->reset_shader_context();
             if(post_process_blur) {
                 mesh_overlay->set_material(overlay_blur_material);
             } else {
                 mesh_overlay->set_material(overlay_write_through_material);
             }
             break;
-        case 'd':
+        case 'd': // demo
             if(demo_mode == 0) {
                 set_mesh_visibility(false);
                 mesh12->set_visible(true); // diamond2
@@ -672,19 +702,19 @@ void onKeyboard(unsigned char key, int x, int y)
                 demo_mode = 0;
             }
             break;
-        case 'f':
+        case 'f': // frame rate
             show_fps = !show_fps;
             if(!show_fps) {
                 glutSetWindowTitle(DEFAULT_CAPTION);
             }
             break;
-        case 'l':
+        case 'l': // lights
             show_lights = !show_lights;
             break;
-        case 'n':
+        case 'n': // normals
             show_vert_normals = !show_vert_normals;
             break;
-        case 'o':
+        case 'o': // overlay
             if(overlay_mode == 0) {
                 mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("backface_normal_overlay"));
                 overlay_mode = 1;
@@ -695,18 +725,18 @@ void onKeyboard(unsigned char key, int x, int y)
                 mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("backface_depth_overlay"));
                 overlay_mode = 3;
             } else if(overlay_mode == 3) {
-                mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("final_color_overlay"));
+                mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
                 overlay_mode = 0;
             }
             break;
-        case 'p':
+        case 'p': // projection
             if(camera->get_projection_mode() == vt::Camera::PROJECTION_MODE_PERSPECTIVE) {
                 camera->set_projection_mode(vt::Camera::PROJECTION_MODE_ORTHO);
             } else if(camera->get_projection_mode() == vt::Camera::PROJECTION_MODE_ORTHO) {
                 camera->set_projection_mode(vt::Camera::PROJECTION_MODE_PERSPECTIVE);
             }
             break;
-        case 't':
+        case 't': // texture
             if(texture_index == 0) {
                 texture_index = 1; // GL_TEXTURE1
             } else if(texture_index == 1) {
@@ -724,7 +754,7 @@ void onKeyboard(unsigned char key, int x, int y)
             //mesh6->set_texture_index(texture_index);
             //mesh7->set_texture_index(texture_index);
             break;
-        case 'w':
+        case 'w': // wireframe
             wire_frame_mode = !wire_frame_mode;
             if(wire_frame_mode) {
                 glPolygonMode(GL_FRONT, GL_LINE);
@@ -732,7 +762,7 @@ void onKeyboard(unsigned char key, int x, int y)
                 glPolygonMode(GL_FRONT, GL_FILL);
             }
             break;
-        case 27:
+        case 27: // escape
             exit(0);
             break;
     }
