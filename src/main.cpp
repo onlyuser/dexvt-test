@@ -574,30 +574,34 @@ void onDisplay()
     backface_normal_overlay_fb->unbind();
 
     if(post_process_blur) {
+        // switch to write-through mode to perform downsampling
         mesh_overlay->set_material(overlay_write_through_material);
 
-        // set output texture
+        // init texture
         hi_res_color_overlay_fb->bind();
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         scene->render(false, true);
         hi_res_color_overlay_fb->unbind();
 
-        // set input texture
+        // downsample texture
         mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
-
-        // set output texture
+        lo_res_color_overlay_fb->bind();
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        scene->render(false, true);
+        lo_res_color_overlay_fb->unbind();
+        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
         lo_res_color_overlay_fb->bind();
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         scene->render(false, true);
         lo_res_color_overlay_fb->unbind();
 
-        // set input texture
-        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
-
-        // blur
+        // switch to blur mode to apply bloom filter
         mesh_overlay->set_material(overlay_blur_material);
+
+        // blur texture
         for(int i = 0; i < BLUR_ITERS; i++) {
             lo_res_color_overlay_fb->bind();
             //glClearColor(0, 0, 0, 1);
@@ -606,6 +610,7 @@ void onDisplay()
             lo_res_color_overlay_fb->unbind();
         }
 
+        // switch to write-through mode to display final output texture
         mesh_overlay->set_material(overlay_write_through_material);
     }
 
