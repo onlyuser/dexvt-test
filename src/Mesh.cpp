@@ -1,6 +1,8 @@
 #include <Mesh.h>
 #include <NamedObject.h>
 #include <Buffer.h>
+#include <Material.h>
+#include <Texture.h>
 #include <Util.h>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -203,6 +205,24 @@ Buffer* Mesh::get_ibo_tri_indices()
 {
     init_buffers();
     return m_ibo_tri_indices.get();
+}
+
+void Mesh::set_material(Material* material)
+{
+    if(material == m_material) {
+        return;
+    }
+    std::string texture_name;
+    if(m_material) {
+        vt::Texture* texture = m_material->get_texture_by_index(m_texture_index);
+        if(texture) {
+            texture_name = texture->name();
+        }
+    }
+    m_shader_context.reset();
+    m_shader_context_already_init = false;
+    m_material = material;
+    m_texture_index = material ? material->get_texture_index_by_name(texture_name) : -1;
 }
 
 ShaderContext* Mesh::get_shader_context()

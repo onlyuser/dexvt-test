@@ -83,6 +83,7 @@ public:
         return m_overlay;
     }
 
+    Texture* get_texture_by_index(int index) const;
     Texture* get_texture_by_name(std::string name) const;
     int get_texture_index_by_name(std::string name) const;
 

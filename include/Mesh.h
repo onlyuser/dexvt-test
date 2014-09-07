@@ -65,12 +65,7 @@ public:
     Buffer* get_vbo_tex_coords();
     Buffer* get_ibo_tri_indices();
 
-    void set_material(Material* material)
-    {
-        m_shader_context.reset();
-        m_shader_context_already_init = false;
-        m_material = material;
-    }
+    void set_material(Material* material);
     Material* get_material() const
     {
         return m_material;

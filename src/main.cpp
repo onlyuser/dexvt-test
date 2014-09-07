@@ -42,7 +42,7 @@
 #define HI_RES_TEX_DIM  512
 #define MED_RES_TEX_DIM 256
 #define LO_RES_TEX_DIM  128
-#define BLUR_ITERS      3
+#define BLUR_ITERS      10
 
 const char* DEFAULT_CAPTION = "My Textured Cube";
 
@@ -72,6 +72,7 @@ float angle = 0;
 
 vt::Material* overlay_write_through_material;
 vt::Material* overlay_blur_material;
+vt::Material* overlay_bloom_material;
 
 int init_resources()
 {
@@ -194,6 +195,22 @@ int init_resources()
             false, // skybox
             true); // overlay
     scene->add_material(overlay_blur_material);
+
+    overlay_bloom_material = new vt::Material(
+            "overlay_bloom",
+            "src/overlay_bloom.v.glsl",
+            "src/overlay_bloom.f.glsl",
+            false, // use_normal_only
+            false, // use_camera_vec
+            false, // use_phong_shading
+            false, // use_texture_mapping
+            false, // use_normal_mapping
+            false, // use_env_mapping
+            false, // use_depth_overlay
+            false, // use_bloom_kernel
+            false, // skybox
+            true); // overlay
+    scene->add_material(overlay_bloom_material);
 
     vt::Material* texture_mapped_material = new vt::Material(
             "texture_mapped",
@@ -382,6 +399,7 @@ int init_resources()
     texture_mapped_material->add_texture(       hi_res_color_overlay_texture);
     overlay_write_through_material->add_texture(hi_res_color_overlay_texture);
     overlay_blur_material->add_texture(         hi_res_color_overlay_texture);
+    overlay_bloom_material->add_texture(        hi_res_color_overlay_texture);
 
     vt::Texture* med_res_color_overlay_texture = new vt::Texture(
             "med_res_color_overlay",
@@ -402,6 +420,7 @@ int init_resources()
     texture_mapped_material->add_texture(       lo_res_color_overlay_texture);
     overlay_write_through_material->add_texture(lo_res_color_overlay_texture);
     overlay_blur_material->add_texture(         lo_res_color_overlay_texture);
+    overlay_bloom_material->add_texture(        lo_res_color_overlay_texture);
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera("camera", origin+glm::vec3(0, 0, orbit_radius), origin);
@@ -624,6 +643,15 @@ void onDisplay()
             scene->render(true);
             lo_res_color_overlay_fb->unbind();
         }
+
+        // switch to write-through mode to merge blurred texture with hi-res texture
+        mesh_overlay->set_material(overlay_bloom_material);
+
+        hi_res_color_overlay_fb->bind();
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        scene->render(true);
+        hi_res_color_overlay_fb->unbind();
 
         // switch to write-through mode to display final output texture
         mesh_overlay->set_material(overlay_write_through_material);

@@ -64,6 +64,14 @@ void Material::clear_textures()
     m_texture_lookup_table.clear();
 }
 
+Texture* Material::get_texture_by_index(int index) const
+{
+    if(index >= m_textures.size()) {
+        return NULL;
+    }
+    return m_textures[index];
+}
+
 Texture* Material::get_texture_by_name(std::string name) const
 {
     texture_lookup_table_t::const_iterator p = m_texture_lookup_table.find(name);
