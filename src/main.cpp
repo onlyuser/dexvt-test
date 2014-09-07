@@ -577,7 +577,7 @@ void onDisplay()
         // switch to write-through mode to perform downsampling
         mesh_overlay->set_material(overlay_write_through_material);
 
-        // init texture
+        // render to initial hi-res texture
         hi_res_color_overlay_fb->bind();
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -592,11 +592,6 @@ void onDisplay()
         scene->render(false, true);
         lo_res_color_overlay_fb->unbind();
         mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
-        lo_res_color_overlay_fb->bind();
-        glClearColor(0, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(false, true);
-        lo_res_color_overlay_fb->unbind();
 
         // switch to blur mode to apply bloom filter
         mesh_overlay->set_material(overlay_blur_material);
