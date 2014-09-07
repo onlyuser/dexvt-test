@@ -644,17 +644,20 @@ void onDisplay()
             lo_res_color_overlay_fb->unbind();
         }
 
-        // switch to write-through mode to merge blurred texture with hi-res texture
+        // switch to bloom mode to merge blurred texture with hi-res texture
         mesh_overlay->set_material(overlay_bloom_material);
 
         hi_res_color_overlay_fb->bind();
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(true);
+        scene->render(false, true);
         hi_res_color_overlay_fb->unbind();
 
         // switch to write-through mode to display final output texture
         mesh_overlay->set_material(overlay_write_through_material);
+
+        // set overlay to final output texture
+        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
     }
 
     glClearColor(0, 0, 0, 1);
