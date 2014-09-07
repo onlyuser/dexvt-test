@@ -41,6 +41,7 @@
 
 #define HI_RES_TEX_DIM 512
 #define LO_RES_TEX_DIM 256
+#define VERY_LO_RES_TEX_DIM 128
 #define BLUR_ITERS     3
 
 const char* DEFAULT_CAPTION = "My Textured Cube";
@@ -382,10 +383,20 @@ int init_resources()
     overlay_write_through_material->add_texture(hi_res_color_overlay_texture);
     overlay_blur_material->add_texture(         hi_res_color_overlay_texture);
 
+    vt::Texture* med_res_color_overlay_texture = new vt::Texture(
+            "med_res_color_overlay",
+            LO_RES_TEX_DIM,
+            LO_RES_TEX_DIM,
+            NULL,
+            vt::Texture::RGB);
+    texture_mapped_material->add_texture(       med_res_color_overlay_texture);
+    overlay_write_through_material->add_texture(med_res_color_overlay_texture);
+    overlay_blur_material->add_texture(         med_res_color_overlay_texture);
+
     vt::Texture* lo_res_color_overlay_texture = new vt::Texture(
             "lo_res_color_overlay",
-            LO_RES_TEX_DIM,
-            LO_RES_TEX_DIM,
+            VERY_LO_RES_TEX_DIM,
+            VERY_LO_RES_TEX_DIM,
             NULL,
             vt::Texture::RGB);
     texture_mapped_material->add_texture(       lo_res_color_overlay_texture);
@@ -400,6 +411,7 @@ int init_resources()
     backface_depth_overlay_fb  = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(backface_depth_overlay_texture, camera));
     backface_normal_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(backface_normal_overlay_texture, camera));
     hi_res_color_overlay_fb    = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(hi_res_color_overlay_texture, camera));
+    med_res_color_overlay_fb   = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(med_res_color_overlay_texture, camera));
     lo_res_color_overlay_fb    = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(lo_res_color_overlay_texture, camera));
 
     scene->add_light(light  = new vt::Light("light1", origin+glm::vec3(light_distance, 0, 0), glm::vec3(1, 0, 0)));
@@ -577,26 +589,34 @@ void onDisplay()
         // switch to write-through mode to perform downsampling
         mesh_overlay->set_material(overlay_write_through_material);
 
-        // render to initial hi-res texture
+        // render-to-texture for initial input texture
         hi_res_color_overlay_fb->bind();
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         scene->render(false, true);
         hi_res_color_overlay_fb->unbind();
 
-        // downsample texture
+        // linear downsample texture from hi-res to med-res
         mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+        med_res_color_overlay_fb->bind();
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        scene->render(true);
+        med_res_color_overlay_fb->unbind();
+
+        // linear downsample texture from med-res to lo-res
+        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("med_res_color_overlay"));
         lo_res_color_overlay_fb->bind();
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(false, true);
+        scene->render(true);
         lo_res_color_overlay_fb->unbind();
-        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
 
         // switch to blur mode to apply bloom filter
         mesh_overlay->set_material(overlay_blur_material);
 
-        // blur texture
+        // blur texture in low-res
+        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
         for(int i = 0; i < BLUR_ITERS; i++) {
             lo_res_color_overlay_fb->bind();
             //glClearColor(0, 0, 0, 1);
