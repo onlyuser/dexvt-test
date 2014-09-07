@@ -39,10 +39,10 @@
 #include <sstream> // std::stringstream
 #include <iomanip> // std::setprecision
 
-#define HI_RES_TEX_DIM 512
-#define LO_RES_TEX_DIM 256
-#define VERY_LO_RES_TEX_DIM 128
-#define BLUR_ITERS     3
+#define HI_RES_TEX_DIM  512
+#define MED_RES_TEX_DIM 256
+#define LO_RES_TEX_DIM  128
+#define BLUR_ITERS      3
 
 const char* DEFAULT_CAPTION = "My Textured Cube";
 
@@ -385,8 +385,8 @@ int init_resources()
 
     vt::Texture* med_res_color_overlay_texture = new vt::Texture(
             "med_res_color_overlay",
-            LO_RES_TEX_DIM,
-            LO_RES_TEX_DIM,
+            MED_RES_TEX_DIM,
+            MED_RES_TEX_DIM,
             NULL,
             vt::Texture::RGB);
     texture_mapped_material->add_texture(       med_res_color_overlay_texture);
@@ -395,8 +395,8 @@ int init_resources()
 
     vt::Texture* lo_res_color_overlay_texture = new vt::Texture(
             "lo_res_color_overlay",
-            VERY_LO_RES_TEX_DIM,
-            VERY_LO_RES_TEX_DIM,
+            LO_RES_TEX_DIM,
+            LO_RES_TEX_DIM,
             NULL,
             vt::Texture::RGB);
     texture_mapped_material->add_texture(       lo_res_color_overlay_texture);
