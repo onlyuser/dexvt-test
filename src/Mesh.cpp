@@ -26,6 +26,7 @@ Mesh::Mesh(
       m_shader_context_already_init(false),
       m_normal_shader_context_already_init(false),
       m_texture_index(-1),
+      m_texture2_index(-1),
       m_normal_map_texture_index(-1),
       m_env_map_texture_index(-1),
       m_frontface_depth_overlay_texture_index(-1),
@@ -209,6 +210,7 @@ Buffer* Mesh::get_ibo_tri_indices()
 
 void Mesh::set_material(Material* material)
 {
+    // NOTE: texture index for same texture varies from material to material
     if(material == m_material) {
         return;
     }

@@ -83,6 +83,15 @@ public:
         m_texture_index = texture_index;
     }
 
+    int get_texture2_index() const
+    {
+        return m_texture2_index;
+    }
+    void set_texture2_index(int texture_index)
+    {
+        m_texture2_index = texture_index;
+    }
+
     int get_normal_map_texture_index() const
     {
         return m_normal_map_texture_index;
@@ -159,6 +168,7 @@ private:
     std::unique_ptr<ShaderContext> m_normal_shader_context;
     bool                           m_normal_shader_context_already_init;
     int                            m_texture_index;
+    int                            m_texture2_index;
     int                            m_normal_map_texture_index;
     int                            m_env_map_texture_index;
     int                            m_frontface_depth_overlay_texture_index;

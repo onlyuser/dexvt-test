@@ -144,6 +144,7 @@ int init_resources()
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_bloom_kernel
+            false,  // use_bloom_texture
             false,  // skybox
             false); // overlay
     scene->add_material(normal_mapped_material);
@@ -160,6 +161,7 @@ int init_resources()
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_bloom_kernel
+            false,  // use_bloom_texture
             true,   // skybox
             false); // overlay
     scene->add_material(skybox_material);
@@ -176,6 +178,7 @@ int init_resources()
             false, // use_env_mapping
             false, // use_depth_overlay
             false, // use_bloom_kernel
+            false, // use_bloom_texture
             false, // skybox
             true); // overlay
     scene->add_material(overlay_write_through_material);
@@ -192,6 +195,7 @@ int init_resources()
             false, // use_env_mapping
             false, // use_depth_overlay
             true,  // use_bloom_kernel
+            false, // use_bloom_texture
             false, // skybox
             true); // overlay
     scene->add_material(overlay_blur_material);
@@ -208,6 +212,7 @@ int init_resources()
             false, // use_env_mapping
             false, // use_depth_overlay
             false, // use_bloom_kernel
+            true,  // use_bloom_texture
             false, // skybox
             true); // overlay
     scene->add_material(overlay_bloom_material);
@@ -224,6 +229,7 @@ int init_resources()
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_bloom_kernel
+            false,  // use_bloom_texture
             false,  // skybox
             false); // overlay
     scene->add_material(texture_mapped_material);
@@ -240,6 +246,7 @@ int init_resources()
             true,   // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_bloom_kernel
+            false,  // use_bloom_texture
             false,  // skybox
             false); // overlay
     scene->add_material(env_mapped_material);
@@ -256,6 +263,7 @@ int init_resources()
             true,   // use_env_mapping
             true,   // use_depth_overlay
             false,  // use_bloom_kernel
+            false,  // use_bloom_texture
             false,  // skybox
             false); // overlay
     scene->add_material(env_mapped_ex_material);
@@ -272,6 +280,7 @@ int init_resources()
             true,   // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_bloom_kernel
+            false,  // use_bloom_texture
             false,  // skybox
             false); // overlay
     scene->add_material(env_mapped_material_fast);
@@ -288,6 +297,7 @@ int init_resources()
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_bloom_kernel
+            false,  // use_bloom_texture
             false,  // skybox
             false); // overlay
     scene->add_material(normal_material);
@@ -304,6 +314,7 @@ int init_resources()
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_bloom_kernel
+            false,  // use_bloom_texture
             false,  // skybox
             false); // overlay
     scene->add_material(normal_material_fast);
@@ -646,17 +657,17 @@ void onDisplay()
 
         // switch to bloom mode to merge blurred texture with hi-res texture
         mesh_overlay->set_material(overlay_bloom_material);
+        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+        mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
 
         hi_res_color_overlay_fb->bind();
-        glClearColor(0, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(false, true);
+        //glClearColor(0, 0, 0, 1);
+        //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        scene->render(true);
         hi_res_color_overlay_fb->unbind();
 
         // switch to write-through mode to display final output texture
         mesh_overlay->set_material(overlay_write_through_material);
-
-        // set overlay to final output texture
         mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
     }
 

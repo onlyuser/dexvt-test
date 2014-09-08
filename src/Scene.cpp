@@ -120,6 +120,9 @@ void Scene::render(bool render_overlay, bool render_skybox, bool use_normal_mate
             shader_context->set_viewport_dim(m_viewport_dim);
             shader_context->set_bloom_kernel(m_bloom_kernel);
         }
+        if(material->use_bloom_texture()) {
+            shader_context->set_texture2_index(m_overlay->get_texture2_index());
+        }
         shader_context->render();
         return;
     }

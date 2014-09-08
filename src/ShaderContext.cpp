@@ -36,6 +36,7 @@ ShaderContext::ShaderContext(
       m_use_env_mapping(material->use_env_mapping()),
       m_use_depth_overlay(material->use_depth_overlay()),
       m_use_bloom_kernel(material->use_bloom_kernel()),
+      m_use_bloom_texture(material->use_bloom_texture()),
       m_skybox(material->skybox()),
       m_overlay(material->overlay())
 {
@@ -89,6 +90,9 @@ ShaderContext::ShaderContext(
         if(m_use_bloom_kernel) {
             m_var_uniform_viewport_dim = std::unique_ptr<VarUniform>(program->get_var_uniform("viewport_dim"));
             m_var_uniform_bloom_kernel = std::unique_ptr<VarUniform>(program->get_var_uniform("bloom_kernel"));
+        }
+        if(m_use_bloom_texture) {
+            m_var_uniform_color_texture2 = std::unique_ptr<VarUniform>(program->get_var_uniform("bloom_texture"));
         }
     } else {
         m_var_attribute_vertex_position = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_position"));
@@ -195,6 +199,12 @@ void ShaderContext::set_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
     m_var_uniform_color_texture->uniform_1i(texture_id);
+}
+
+void ShaderContext::set_texture2_index(GLint texture_id)
+{
+    assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
+    m_var_uniform_color_texture2->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_normal_map_texture_index(GLint texture_id)

@@ -36,6 +36,7 @@ public:
     void set_view_proj_xform(glm::mat4 view_proj_xform);
     void set_normal_xform(glm::mat4 normal_xform);
     void set_texture_index(GLint texture_id);
+    void set_texture2_index(GLint texture_id);
     void set_normal_map_texture_index(GLint texture_id);
     void set_camera_pos(GLfloat* camera_pos_arr);
     void set_light_pos(size_t num_lights, GLfloat* light_pos_arr);
@@ -63,6 +64,7 @@ private:
             m_var_uniform_model_xform,
             m_var_uniform_normal_xform,
             m_var_uniform_color_texture,
+            m_var_uniform_color_texture2,
             m_var_uniform_normal_map_texture,
             m_var_uniform_camera_pos,
             m_var_uniform_light_pos,
@@ -90,6 +92,7 @@ private:
     bool m_use_env_mapping;
     bool m_use_depth_overlay;
     bool m_use_bloom_kernel;
+    bool m_use_bloom_texture;
     bool m_skybox;
     bool m_overlay;
 };
