@@ -92,7 +92,7 @@ private:
     bool m_use_env_mapping;
     bool m_use_depth_overlay;
     bool m_use_bloom_kernel;
-    bool m_use_bloom_texture;
+    bool m_use_texture2;
     bool m_skybox;
     bool m_overlay;
 };

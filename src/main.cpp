@@ -144,7 +144,7 @@ int init_resources()
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_bloom_kernel
-            false,  // use_bloom_texture
+            false,  // use_texture2
             false,  // skybox
             false); // overlay
     scene->add_material(normal_mapped_material);
@@ -161,7 +161,7 @@ int init_resources()
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_bloom_kernel
-            false,  // use_bloom_texture
+            false,  // use_texture2
             true,   // skybox
             false); // overlay
     scene->add_material(skybox_material);
@@ -178,7 +178,7 @@ int init_resources()
             false, // use_env_mapping
             false, // use_depth_overlay
             false, // use_bloom_kernel
-            false, // use_bloom_texture
+            false, // use_texture2
             false, // skybox
             true); // overlay
     scene->add_material(overlay_write_through_material);
@@ -195,7 +195,7 @@ int init_resources()
             false, // use_env_mapping
             false, // use_depth_overlay
             true,  // use_bloom_kernel
-            false, // use_bloom_texture
+            false, // use_texture2
             false, // skybox
             true); // overlay
     scene->add_material(overlay_bloom_filter_material);
@@ -212,7 +212,7 @@ int init_resources()
             false, // use_env_mapping
             false, // use_depth_overlay
             false, // use_bloom_kernel
-            true,  // use_bloom_texture
+            true,  // use_texture2
             false, // skybox
             true); // overlay
     scene->add_material(overlay_max_material);
@@ -229,7 +229,7 @@ int init_resources()
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_bloom_kernel
-            false,  // use_bloom_texture
+            false,  // use_texture2
             false,  // skybox
             false); // overlay
     scene->add_material(texture_mapped_material);
@@ -246,7 +246,7 @@ int init_resources()
             true,   // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_bloom_kernel
-            false,  // use_bloom_texture
+            false,  // use_texture2
             false,  // skybox
             false); // overlay
     scene->add_material(env_mapped_material);
@@ -263,7 +263,7 @@ int init_resources()
             true,   // use_env_mapping
             true,   // use_depth_overlay
             false,  // use_bloom_kernel
-            false,  // use_bloom_texture
+            false,  // use_texture2
             false,  // skybox
             false); // overlay
     scene->add_material(env_mapped_ex_material);
@@ -280,7 +280,7 @@ int init_resources()
             true,   // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_bloom_kernel
-            false,  // use_bloom_texture
+            false,  // use_texture2
             false,  // skybox
             false); // overlay
     scene->add_material(env_mapped_material_fast);
@@ -297,7 +297,7 @@ int init_resources()
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_bloom_kernel
-            false,  // use_bloom_texture
+            false,  // use_texture2
             false,  // skybox
             false); // overlay
     scene->add_material(normal_material);
@@ -314,7 +314,7 @@ int init_resources()
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_bloom_kernel
-            false,  // use_bloom_texture
+            false,  // use_texture2
             false,  // skybox
             false); // overlay
     scene->add_material(normal_material_fast);
