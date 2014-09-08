@@ -33,6 +33,5 @@ void main(void) {
         }
         sum_color += (hblur_sample_color + vblur_sample_color)*sample_weight;
     }
-    sum_color = clamp(sum_color*0.5, 0, 1);
-    gl_FragColor = sum_color;
+    gl_FragColor = clamp(sum_color*0.5, 0, 1);
 }
