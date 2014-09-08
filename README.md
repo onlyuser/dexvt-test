@@ -117,6 +117,12 @@ References
 
     <dt>"Kay's Blog Texture and game development freebies! - Well Preserved Chesterfield"</dt>
     <dd>http://kay-vriend.blogspot.tw/2012/11/well-preserved-chesterfield.html</dd>
+
+    <dt>"Philip Rideout's OpenGL Bloom Tutorial"</dt>
+    <dd>http://prideout.net/archive/bloom/</dd>
+
+    <dt>"An investigation of fast real-time GPU-based image blur algorithms"</dt>
+    <dd>https://software.intel.com/en-us/blogs/2014/07/15/an-investigation-of-fast-real-time-gpu-based-image-blur-algorithms</dd>
 </dl>
 
 Keywords
