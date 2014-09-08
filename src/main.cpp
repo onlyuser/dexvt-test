@@ -42,7 +42,7 @@
 #define HI_RES_TEX_DIM  512
 #define MED_RES_TEX_DIM 256
 #define LO_RES_TEX_DIM  128
-#define BLUR_ITERS      10
+#define BLUR_ITERS      5
 
 const char* DEFAULT_CAPTION = "My Textured Cube";
 
