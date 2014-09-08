@@ -642,25 +642,27 @@ void onDisplay()
         scene->render(true);
         lo_res_color_overlay_fb->unbind();
 
-        // switch to blur mode to apply bloom filter
+        // switch to bloom filter mode
         mesh_overlay->set_material(overlay_bloom_filter_material);
 
         // blur texture in low-res
         mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
         for(int i = 0; i < BLUR_ITERS; i++) {
             lo_res_color_overlay_fb->bind();
+            // don't clear since we're using same texture for input/output
             //glClearColor(0, 0, 0, 1);
             //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
             scene->render(true);
             lo_res_color_overlay_fb->unbind();
         }
 
-        // switch to bloom mode to merge blurred texture with hi-res texture
+        // switch to max mode to merge bloom filter applied texture with hi-res texture
         mesh_overlay->set_material(overlay_max_material);
         mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
         mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
 
         hi_res_color_overlay_fb->bind();
+        // don't clear since we're using same texture for input/output
         //glClearColor(0, 0, 0, 1);
         //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         scene->render(true);
