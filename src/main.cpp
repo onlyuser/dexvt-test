@@ -71,8 +71,8 @@ float prev_zoom = 0, zoom = 1, ortho_dolly_speed = 0.1;
 float angle = 0;
 
 vt::Material* overlay_write_through_material;
-vt::Material* overlay_blur_material;
-vt::Material* overlay_bloom_material;
+vt::Material* overlay_bloom_filter_material;
+vt::Material* overlay_max_material;
 
 int init_resources()
 {
@@ -183,10 +183,10 @@ int init_resources()
             true); // overlay
     scene->add_material(overlay_write_through_material);
 
-    overlay_blur_material = new vt::Material(
-            "overlay_blur",
-            "src/overlay_blur.v.glsl",
-            "src/overlay_blur.f.glsl",
+    overlay_bloom_filter_material = new vt::Material(
+            "overlay_bloom_filter",
+            "src/overlay_bloom_filter.v.glsl",
+            "src/overlay_bloom_filter.f.glsl",
             false, // use_normal_only
             false, // use_camera_vec
             false, // use_phong_shading
@@ -198,12 +198,12 @@ int init_resources()
             false, // use_bloom_texture
             false, // skybox
             true); // overlay
-    scene->add_material(overlay_blur_material);
+    scene->add_material(overlay_bloom_filter_material);
 
-    overlay_bloom_material = new vt::Material(
-            "overlay_bloom",
-            "src/overlay_bloom.v.glsl",
-            "src/overlay_bloom.f.glsl",
+    overlay_max_material = new vt::Material(
+            "overlay_max",
+            "src/overlay_max.v.glsl",
+            "src/overlay_max.f.glsl",
             false, // use_normal_only
             false, // use_camera_vec
             false, // use_phong_shading
@@ -215,7 +215,7 @@ int init_resources()
             true,  // use_bloom_texture
             false, // skybox
             true); // overlay
-    scene->add_material(overlay_bloom_material);
+    scene->add_material(overlay_max_material);
 
     vt::Material* texture_mapped_material = new vt::Material(
             "texture_mapped",
@@ -377,7 +377,7 @@ int init_resources()
     texture_mapped_material->add_texture(       frontface_depth_overlay_texture);
     env_mapped_ex_material->add_texture(        frontface_depth_overlay_texture);
     overlay_write_through_material->add_texture(frontface_depth_overlay_texture);
-    overlay_blur_material->add_texture(         frontface_depth_overlay_texture);
+    overlay_bloom_filter_material->add_texture(         frontface_depth_overlay_texture);
 
     vt::Texture* backface_depth_overlay_texture = new vt::Texture(
             "backface_depth_overlay",
@@ -388,7 +388,7 @@ int init_resources()
     texture_mapped_material->add_texture(       backface_depth_overlay_texture);
     env_mapped_ex_material->add_texture(        backface_depth_overlay_texture);
     overlay_write_through_material->add_texture(backface_depth_overlay_texture);
-    overlay_blur_material->add_texture(         backface_depth_overlay_texture);
+    overlay_bloom_filter_material->add_texture(         backface_depth_overlay_texture);
 
     vt::Texture* backface_normal_overlay_texture = new vt::Texture(
             "backface_normal_overlay",
@@ -399,7 +399,7 @@ int init_resources()
     texture_mapped_material->add_texture(       backface_normal_overlay_texture);
     env_mapped_ex_material->add_texture(        backface_normal_overlay_texture);
     overlay_write_through_material->add_texture(backface_normal_overlay_texture);
-    overlay_blur_material->add_texture(         backface_normal_overlay_texture);
+    overlay_bloom_filter_material->add_texture(         backface_normal_overlay_texture);
 
     vt::Texture* hi_res_color_overlay_texture = new vt::Texture(
             "hi_res_color_overlay",
@@ -409,8 +409,8 @@ int init_resources()
             vt::Texture::RGB);
     texture_mapped_material->add_texture(       hi_res_color_overlay_texture);
     overlay_write_through_material->add_texture(hi_res_color_overlay_texture);
-    overlay_blur_material->add_texture(         hi_res_color_overlay_texture);
-    overlay_bloom_material->add_texture(        hi_res_color_overlay_texture);
+    overlay_bloom_filter_material->add_texture(         hi_res_color_overlay_texture);
+    overlay_max_material->add_texture(        hi_res_color_overlay_texture);
 
     vt::Texture* med_res_color_overlay_texture = new vt::Texture(
             "med_res_color_overlay",
@@ -420,7 +420,7 @@ int init_resources()
             vt::Texture::RGB);
     texture_mapped_material->add_texture(       med_res_color_overlay_texture);
     overlay_write_through_material->add_texture(med_res_color_overlay_texture);
-    overlay_blur_material->add_texture(         med_res_color_overlay_texture);
+    overlay_bloom_filter_material->add_texture(         med_res_color_overlay_texture);
 
     vt::Texture* lo_res_color_overlay_texture = new vt::Texture(
             "lo_res_color_overlay",
@@ -430,8 +430,8 @@ int init_resources()
             vt::Texture::RGB);
     texture_mapped_material->add_texture(       lo_res_color_overlay_texture);
     overlay_write_through_material->add_texture(lo_res_color_overlay_texture);
-    overlay_blur_material->add_texture(         lo_res_color_overlay_texture);
-    overlay_bloom_material->add_texture(        lo_res_color_overlay_texture);
+    overlay_bloom_filter_material->add_texture(         lo_res_color_overlay_texture);
+    overlay_max_material->add_texture(        lo_res_color_overlay_texture);
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera("camera", origin+glm::vec3(0, 0, orbit_radius), origin);
@@ -643,7 +643,7 @@ void onDisplay()
         lo_res_color_overlay_fb->unbind();
 
         // switch to blur mode to apply bloom filter
-        mesh_overlay->set_material(overlay_blur_material);
+        mesh_overlay->set_material(overlay_bloom_filter_material);
 
         // blur texture in low-res
         mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
@@ -656,7 +656,7 @@ void onDisplay()
         }
 
         // switch to bloom mode to merge blurred texture with hi-res texture
-        mesh_overlay->set_material(overlay_bloom_material);
+        mesh_overlay->set_material(overlay_max_material);
         mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
         mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
 
@@ -733,7 +733,7 @@ void onKeyboard(unsigned char key, int x, int y)
         case 'b': // blur
             post_process_blur = !post_process_blur;
             if(post_process_blur) {
-                mesh_overlay->set_material(overlay_blur_material);
+                mesh_overlay->set_material(overlay_bloom_filter_material);
             } else {
                 mesh_overlay->set_material(overlay_write_through_material);
             }
