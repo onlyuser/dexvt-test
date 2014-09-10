@@ -14,11 +14,13 @@ class PrimitiveFactory
 {
 public:
     static Mesh* create_grid(
-            std::string name   = "",
-            int         cols   = 1,
-            int         rows   = 1,
-            float       width  = 1,
-            float       length = 1);
+            std::string name             = "",
+            int         cols             = 1,
+            int         rows             = 1,
+            float       width            = 1,
+            float       length           = 1,
+            float       tex_width_scale  = 1,
+            float       tex_length_scale = 1);
     static Mesh* create_sphere(
             std::string name = "",
             int         slices = DEFAULT_SLICES,

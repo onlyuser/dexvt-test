@@ -13,7 +13,9 @@ Mesh* PrimitiveFactory::create_grid(
         int         cols,
         int         rows,
         float       width,
-        float       length)
+        float       length,
+        float       tex_width_scale,
+        float       tex_length_scale)
 {
     int   num_vertex = (rows+1)*(cols+1);
     int   num_tri    = rows*cols*2;
@@ -44,8 +46,8 @@ Mesh* PrimitiveFactory::create_grid(
     for(int row = 0; row <= rows; row++) {
         for(int col = 0; col <= cols; col++) {
             mesh->set_tex_coord(tex_vert_index++, glm::vec2(
-                    static_cast<float>(col)/cols,
-                    1 - static_cast<float>(row)/rows));
+                    static_cast<float>(col)/cols*tex_width_scale,
+                    1 - static_cast<float>(row)/rows*tex_length_scale));
         }
     }
 

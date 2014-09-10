@@ -28,8 +28,9 @@ public:
             bool        use_normal_mapping   = false,
             bool        use_env_mapping      = false,
             bool        use_depth_overlay    = false,
+            bool        use_ssao             = false,
             bool        use_bloom_kernel     = false,
-            bool        use_texture2    = false,
+            bool        use_texture2         = false,
             bool        skybox               = false,
             bool        overlay              = false);
     Program* get_program() const
@@ -71,6 +72,10 @@ public:
     {
         return m_use_depth_overlay;
     }
+    bool use_ssao() const
+    {
+        return m_use_ssao;
+    }
     bool use_bloom_kernel() const
     {
         return m_use_bloom_kernel;
@@ -102,6 +107,7 @@ private:
     bool                     m_use_normal_mapping;
     bool                     m_use_env_mapping;
     bool                     m_use_depth_overlay;
+    bool                     m_use_ssao;
     bool                     m_use_bloom_kernel;
     bool                     m_use_texture2;
     bool                     m_skybox;

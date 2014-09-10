@@ -20,10 +20,12 @@ public:
             size_t               width      = DEFAULT_TEXTURE_DIM,
             size_t               height     = DEFAULT_TEXTURE_DIM,
             const unsigned char* pixel_data = NULL,
-            type_t               type       = Texture::RGB);
+            type_t               type       = Texture::RGB,
+            bool                 smooth     = true);
     Texture(
             std::string name,
-            std::string png_filename);
+            std::string png_filename,
+            bool        smooth = true);
     Texture(
             std::string name,
             std::string png_filename_pos_x,
@@ -53,10 +55,15 @@ private:
     bool   m_skybox;
     type_t m_type;
 
-    static GLuint gen_texture_internal(size_t width, size_t height, const void* pixel_data, type_t type = Texture::RGB);
+    static GLuint gen_texture_internal(
+            size_t      width,
+            size_t      height,
+            const void* pixel_data,
+            type_t      type   = Texture::RGB,
+            bool        smooth = true);
     static GLuint gen_texture_skybox_internal(
-            size_t width,
-            size_t height,
+            size_t      width,
+            size_t      height,
             const void* pixel_data_pos_x,
             const void* pixel_data_neg_x,
             const void* pixel_data_pos_y,

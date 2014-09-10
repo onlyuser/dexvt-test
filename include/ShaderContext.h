@@ -91,6 +91,7 @@ private:
     bool m_use_normal_mapping;
     bool m_use_env_mapping;
     bool m_use_depth_overlay;
+    bool m_use_ssao;
     bool m_use_bloom_kernel;
     bool m_use_texture2;
     bool m_skybox;

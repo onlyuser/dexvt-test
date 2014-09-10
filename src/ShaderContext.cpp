@@ -35,6 +35,7 @@ ShaderContext::ShaderContext(
       m_use_normal_mapping(material->use_normal_mapping()),
       m_use_env_mapping(material->use_env_mapping()),
       m_use_depth_overlay(material->use_depth_overlay()),
+      m_use_ssao(material->use_ssao()),
       m_use_bloom_kernel(material->use_bloom_kernel()),
       m_use_texture2(material->use_texture2()),
       m_skybox(material->skybox()),
@@ -80,6 +81,9 @@ ShaderContext::ShaderContext(
         m_var_uniform_camera_near                     = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_near"));
         m_var_uniform_camera_far                      = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_far"));
         m_var_uniform_view_proj_xform                 = std::unique_ptr<VarUniform>(program->get_var_uniform("view_proj_xform"));
+    }
+    if(m_use_ssao) {
+        m_var_uniform_frontface_depth_overlay_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("frontface_depth_overlay_texture"));
     }
     if(m_skybox) {
         m_var_uniform_env_map_texture      = std::unique_ptr<VarUniform>(program->get_var_uniform("env_map_texture"));

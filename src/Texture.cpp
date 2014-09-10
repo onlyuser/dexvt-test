@@ -15,7 +15,8 @@ Texture::Texture(
         size_t               width,
         size_t               height,
         const unsigned char* pixel_data,
-        type_t               type)
+        type_t               type,
+        bool                 smooth)
     : NamedObject(name),
       m_width(width),
       m_height(height),
@@ -23,7 +24,7 @@ Texture::Texture(
       m_type(type)
 {
     if(pixel_data) {
-        m_id = gen_texture_internal(width, height, pixel_data, type);
+        m_id = gen_texture_internal(width, height, pixel_data, type, smooth);
     } else {
         if(type == Texture::DEPTH) {
             float* _pixel_data = new float[width*height*sizeof(float)];
@@ -32,7 +33,7 @@ Texture::Texture(
                 _pixel_data[i*width+i]       = 1;
                 _pixel_data[i*width+width-i] = 1;
             }
-            m_id = gen_texture_internal(width, height, _pixel_data, type);
+            m_id = gen_texture_internal(width, height, _pixel_data, type, smooth);
             delete[] _pixel_data;
         } else {
             unsigned char* _pixel_data = new unsigned char[width*height*sizeof(unsigned char)*3];
@@ -45,7 +46,7 @@ Texture::Texture(
                 _pixel_data[(i*width+width-i)*3+1] = 0;
                 _pixel_data[(i*width+width-i)*3+2] = 0;
             }
-            m_id = gen_texture_internal(width, height, _pixel_data, type);
+            m_id = gen_texture_internal(width, height, _pixel_data, type, smooth);
             delete[] _pixel_data;
         }
     }
@@ -53,7 +54,8 @@ Texture::Texture(
 
 Texture::Texture(
         std::string name,
-        std::string png_filename)
+        std::string png_filename,
+        bool        smooth)
     : NamedObject(name),
       m_width(0),
       m_height(0),
@@ -67,7 +69,7 @@ Texture::Texture(
         return;
     }
     if(pixel_data) {
-        m_id = gen_texture_internal(width, height, pixel_data);
+        m_id = gen_texture_internal(width, height, pixel_data, Texture::RGB, smooth);
         delete[] pixel_data;
         m_width  = width;
         m_height = height;
@@ -162,13 +164,20 @@ void Texture::bind() const
     }
 }
 
-GLuint Texture::gen_texture_internal(size_t width, size_t height, const void* pixel_data, type_t type)
+GLuint Texture::gen_texture_internal(
+        size_t      width,
+        size_t      height,
+        const void* pixel_data,
+        type_t      type,
+        bool        smooth)
 {
     GLuint id = 0;
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR /*GL_NEAREST*/);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, smooth ? GL_LINEAR : GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     if(type == Texture::DEPTH) {
         glTexImage2D(
                 GL_TEXTURE_2D,      // target
@@ -196,8 +205,8 @@ GLuint Texture::gen_texture_internal(size_t width, size_t height, const void* pi
 }
 
 GLuint Texture::gen_texture_skybox_internal(
-        size_t width,
-        size_t height,
+        size_t      width,
+        size_t      height,
         const void* pixel_data_pos_x,
         const void* pixel_data_neg_x,
         const void* pixel_data_pos_y,

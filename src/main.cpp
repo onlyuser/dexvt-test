@@ -2,10 +2,13 @@
  * From the OpenGL Programming wikibook: http://en.wikibooks.org/wiki/OpenGL_Programming
  * This file is in the public domain.
  * Contributors: Sylvain Beucler
+ * Enhanced by: Jerry Chen
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
+
 /* Use glew.h instead of gl.h to get all the GL prototypes declared */
 #include <GL/glew.h>
 /* Using the GLUT library for the base windowing setup */
@@ -43,6 +46,7 @@
 #define MED_RES_TEX_DIM 256
 #define LO_RES_TEX_DIM  128
 #define BLUR_ITERS      5
+#define RAND_TEX_DIM    8
 
 const char* DEFAULT_CAPTION = "My Textured Cube";
 
@@ -86,7 +90,7 @@ int init_resources()
 
     scene->add_mesh(mesh   = vt::PrimitiveFactory::create_box(        "box"));
     scene->add_mesh(mesh2  = vt::PrimitiveFactory::create_box(        "box2"));
-    scene->add_mesh(mesh3  = vt::PrimitiveFactory::create_grid(       "grid",       16, 16,  10, 10));
+    scene->add_mesh(mesh3  = vt::PrimitiveFactory::create_grid(       "grid",       16, 16,  10, 10, 20, 20));
     scene->add_mesh(mesh4  = vt::PrimitiveFactory::create_sphere(     "sphere",     16, 16,  0.5));
     scene->add_mesh(mesh5  = vt::PrimitiveFactory::create_torus(      "torus",      16, 16,  0.5, 0.25));
     scene->add_mesh(mesh6  = vt::PrimitiveFactory::create_cylinder(   "cylinder",   16, 0.5, 1));
@@ -143,6 +147,7 @@ int init_resources()
             true,   // use_normal_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
+            false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
             false,  // skybox
@@ -160,6 +165,7 @@ int init_resources()
             false,  // use_normal_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
+            false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
             true,   // skybox
@@ -177,6 +183,7 @@ int init_resources()
             false, // use_normal_mapping
             false, // use_env_mapping
             false, // use_depth_overlay
+            false, // use_ssao
             false, // use_bloom_kernel
             false, // use_texture2
             false, // skybox
@@ -194,6 +201,7 @@ int init_resources()
             false, // use_normal_mapping
             false, // use_env_mapping
             false, // use_depth_overlay
+            false, // use_ssao
             true,  // use_bloom_kernel
             false, // use_texture2
             false, // skybox
@@ -211,6 +219,7 @@ int init_resources()
             false, // use_normal_mapping
             false, // use_env_mapping
             false, // use_depth_overlay
+            false, // use_ssao
             false, // use_bloom_kernel
             true,  // use_texture2
             false, // skybox
@@ -228,6 +237,7 @@ int init_resources()
             false,  // use_normal_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
+            false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
             false,  // skybox
@@ -245,6 +255,7 @@ int init_resources()
             true,   // use_normal_mapping
             true,   // use_env_mapping
             false,  // use_depth_overlay
+            false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
             false,  // skybox
@@ -262,6 +273,7 @@ int init_resources()
             true,   // use_normal_mapping
             true,   // use_env_mapping
             true,   // use_depth_overlay
+            false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
             false,  // skybox
@@ -279,6 +291,7 @@ int init_resources()
             false,  // use_normal_mapping
             true,   // use_env_mapping
             false,  // use_depth_overlay
+            false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
             false,  // skybox
@@ -296,6 +309,7 @@ int init_resources()
             true,   // use_normal_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
+            false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
             false,  // skybox
@@ -313,6 +327,7 @@ int init_resources()
             false,  // use_normal_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
+            false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
             false,  // skybox
@@ -377,7 +392,7 @@ int init_resources()
     texture_mapped_material->add_texture(       frontface_depth_overlay_texture);
     env_mapped_ex_material->add_texture(        frontface_depth_overlay_texture);
     overlay_write_through_material->add_texture(frontface_depth_overlay_texture);
-    overlay_bloom_filter_material->add_texture(         frontface_depth_overlay_texture);
+    overlay_bloom_filter_material->add_texture( frontface_depth_overlay_texture);
 
     vt::Texture* backface_depth_overlay_texture = new vt::Texture(
             "backface_depth_overlay",
@@ -388,7 +403,7 @@ int init_resources()
     texture_mapped_material->add_texture(       backface_depth_overlay_texture);
     env_mapped_ex_material->add_texture(        backface_depth_overlay_texture);
     overlay_write_through_material->add_texture(backface_depth_overlay_texture);
-    overlay_bloom_filter_material->add_texture(         backface_depth_overlay_texture);
+    overlay_bloom_filter_material->add_texture( backface_depth_overlay_texture);
 
     vt::Texture* backface_normal_overlay_texture = new vt::Texture(
             "backface_normal_overlay",
@@ -399,7 +414,7 @@ int init_resources()
     texture_mapped_material->add_texture(       backface_normal_overlay_texture);
     env_mapped_ex_material->add_texture(        backface_normal_overlay_texture);
     overlay_write_through_material->add_texture(backface_normal_overlay_texture);
-    overlay_bloom_filter_material->add_texture(         backface_normal_overlay_texture);
+    overlay_bloom_filter_material->add_texture( backface_normal_overlay_texture);
 
     vt::Texture* hi_res_color_overlay_texture = new vt::Texture(
             "hi_res_color_overlay",
@@ -409,8 +424,8 @@ int init_resources()
             vt::Texture::RGB);
     texture_mapped_material->add_texture(       hi_res_color_overlay_texture);
     overlay_write_through_material->add_texture(hi_res_color_overlay_texture);
-    overlay_bloom_filter_material->add_texture(         hi_res_color_overlay_texture);
-    overlay_max_material->add_texture(        hi_res_color_overlay_texture);
+    overlay_bloom_filter_material->add_texture( hi_res_color_overlay_texture);
+    overlay_max_material->add_texture(          hi_res_color_overlay_texture);
 
     vt::Texture* med_res_color_overlay_texture = new vt::Texture(
             "med_res_color_overlay",
@@ -420,7 +435,7 @@ int init_resources()
             vt::Texture::RGB);
     texture_mapped_material->add_texture(       med_res_color_overlay_texture);
     overlay_write_through_material->add_texture(med_res_color_overlay_texture);
-    overlay_bloom_filter_material->add_texture(         med_res_color_overlay_texture);
+    overlay_bloom_filter_material->add_texture( med_res_color_overlay_texture);
 
     vt::Texture* lo_res_color_overlay_texture = new vt::Texture(
             "lo_res_color_overlay",
@@ -430,8 +445,30 @@ int init_resources()
             vt::Texture::RGB);
     texture_mapped_material->add_texture(       lo_res_color_overlay_texture);
     overlay_write_through_material->add_texture(lo_res_color_overlay_texture);
-    overlay_bloom_filter_material->add_texture(         lo_res_color_overlay_texture);
-    overlay_max_material->add_texture(        lo_res_color_overlay_texture);
+    overlay_bloom_filter_material->add_texture( lo_res_color_overlay_texture);
+    overlay_max_material->add_texture(          lo_res_color_overlay_texture);
+
+    srand(time(NULL));
+    int width  = RAND_TEX_DIM;
+    int height = RAND_TEX_DIM;
+    unsigned char* pixel_data = new unsigned char[width*height*sizeof(unsigned char)*3];
+    for(int i = 0; i < height; i++) {
+        for(int j = 0; j < width; j++) {
+            int pixel_offset = (i*width + j)*3;
+            pixel_data[pixel_offset + 0] = rand() % 256;
+            pixel_data[pixel_offset + 1] = rand() % 256;
+            pixel_data[pixel_offset + 2] = rand() % 256;
+        }
+    }
+    vt::Texture* random_texture = new vt::Texture(
+            "random_texture",
+            width,
+            height,
+            pixel_data,
+            vt::Texture::RGB,
+            false);
+    delete[] pixel_data;
+    texture_mapped_material->add_texture(random_texture);
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera("camera", origin+glm::vec3(0, 0, orbit_radius), origin);
@@ -469,7 +506,8 @@ int init_resources()
     //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
     //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_depth_overlay"));
     //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
-    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+    //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("random_texture"));
 
     // sphere
     mesh4->set_material(env_mapped_ex_material);
