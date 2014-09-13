@@ -52,7 +52,7 @@ const char* DEFAULT_CAPTION = "My Textured Cube";
 
 int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
-vt::Mesh* mesh_skybox, *mesh_overlay, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10, *mesh11, *mesh12, *mesh13, *mesh14, *mesh15;
+vt::Mesh* mesh_skybox, *mesh_overlay, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10, *hidden_mesh, *hidden_mesh2, *hidden_mesh3, *hidden_mesh4;
 vt::Light* light, *light2, *light3;
 std::unique_ptr<vt::FrameBuffer> frontface_depth_overlay_fb, backface_depth_overlay_fb, backface_normal_overlay_fb, hi_res_color_overlay_fb, med_res_color_overlay_fb, lo_res_color_overlay_fb;
 
@@ -72,7 +72,7 @@ int texture_index = 0;
 int demo_mode = 0;
 float prev_zoom = 0, zoom = 1, ortho_dolly_speed = 0.1;
 
-float angle = 0;
+float phase = 0;
 
 vt::Material* overlay_write_through_material;
 vt::Material* overlay_bloom_filter_material;
@@ -88,53 +88,50 @@ int init_resources()
     mesh_overlay = vt::PrimitiveFactory::create_viewport_quad("grid3");
     scene->set_overlay(mesh_overlay);
 
-    scene->add_mesh(mesh   = vt::PrimitiveFactory::create_box(        "box"));
-    scene->add_mesh(mesh2  = vt::PrimitiveFactory::create_box(        "box2"));
-    scene->add_mesh(mesh3  = vt::PrimitiveFactory::create_grid(       "grid",       1,  1,   10, 10, 0.05, 0.05));
-    scene->add_mesh(mesh4  = vt::PrimitiveFactory::create_sphere(     "sphere",     16, 16,  0.5));
-    scene->add_mesh(mesh5  = vt::PrimitiveFactory::create_torus(      "torus",      16, 16,  0.5, 0.25));
-    scene->add_mesh(mesh6  = vt::PrimitiveFactory::create_cylinder(   "cylinder",   16, 0.5, 1));
-    scene->add_mesh(mesh7  = vt::PrimitiveFactory::create_cone(       "cone",       16, 0.5, 1));
-    scene->add_mesh(mesh8  = vt::PrimitiveFactory::create_hemisphere( "hemisphere", 16, 16,  0.5));
-    scene->add_mesh(mesh9  = vt::PrimitiveFactory::create_tetrahedron("tetrahedron"));
-    scene->add_mesh(mesh10 = vt::PrimitiveFactory::create_diamond_brilliant_cut("diamond"));
-    scene->add_mesh(mesh11 = vt::PrimitiveFactory::create_box(        "box3"));
-    scene->add_mesh(mesh12 = vt::PrimitiveFactory::create_diamond_brilliant_cut("diamond2"));
-    scene->add_mesh(mesh13 = vt::PrimitiveFactory::create_sphere(     "sphere2",    16, 16,  0.5));
-    scene->add_mesh(mesh14 = vt::PrimitiveFactory::create_box(        "box4"));
-    scene->add_mesh(mesh15 = vt::PrimitiveFactory::create_grid(       "grid2",      32, 32,  1, 1));
+    scene->add_mesh(mesh         = vt::PrimitiveFactory::create_box(                  "box"));
+    scene->add_mesh(mesh2        = vt::PrimitiveFactory::create_grid(                 "grid",       1,  1,   10, 10, 0.05, 0.05));
+    scene->add_mesh(mesh3        = vt::PrimitiveFactory::create_sphere(               "sphere",     16, 16,  0.5));
+    scene->add_mesh(mesh4        = vt::PrimitiveFactory::create_torus(                "torus",      16, 16,  0.5, 0.25));
+    scene->add_mesh(mesh5        = vt::PrimitiveFactory::create_cylinder(             "cylinder",   16, 0.5, 1));
+    scene->add_mesh(mesh6        = vt::PrimitiveFactory::create_cone(                 "cone",       16, 0.5, 1));
+    scene->add_mesh(mesh7        = vt::PrimitiveFactory::create_hemisphere(           "hemisphere", 16, 16,  0.5));
+    scene->add_mesh(mesh8        = vt::PrimitiveFactory::create_tetrahedron(          "tetrahedron"));
+    scene->add_mesh(mesh9        = vt::PrimitiveFactory::create_diamond_brilliant_cut("diamond"));
+    scene->add_mesh(mesh10       = vt::PrimitiveFactory::create_box(                  "box2"));
+    scene->add_mesh(hidden_mesh  = vt::PrimitiveFactory::create_diamond_brilliant_cut("diamond2"));
+    scene->add_mesh(hidden_mesh2 = vt::PrimitiveFactory::create_sphere(               "sphere2", 16, 16, 0.5));
+    scene->add_mesh(hidden_mesh3 = vt::PrimitiveFactory::create_box(                  "box3"));
+    scene->add_mesh(hidden_mesh4 = vt::PrimitiveFactory::create_grid(                 "grid2",   32, 32, 1, 1));
 
-    mesh->set_origin(glm::vec3(-0.5, -0.5, -0.5));  // box
-    mesh2->set_scale(glm::vec3(0.5, 2, 3));         // box2
-    mesh3->set_origin(glm::vec3(-5, 5, -2.5));      // grid
-    mesh4->set_origin(glm::vec3(2, 0, 0));          // sphere
-    mesh5->set_origin(glm::vec3(-2, 0, 0));         // torus
-    mesh6->set_origin(glm::vec3(0, -2.5, 0));       // cylinder
-    mesh7->set_origin(glm::vec3(0, 1.5, 0));        // cone
-    mesh8->set_origin(glm::vec3(-2, 1.75, 0));      // hemisphere
-    mesh9->set_origin(glm::vec3(1.5, 1.5, -0.5));   // tetrahedron
-    mesh10->set_origin(glm::vec3(-2, -2.5, 0));     // diamond
-    mesh11->set_origin(glm::vec3(1.5, -2.5, -0.5)); // box3
-    mesh12->set_origin(glm::vec3(0, -1, 0));        // diamond2
-    mesh13->set_origin(glm::vec3(0, 0, 0));         // sphere2
-    mesh14->set_origin(glm::vec3(-1, -1, -1));      // box4
-    mesh15->set_origin(glm::vec3(-2, 0, -2));       // grid2
+    mesh->set_origin(        glm::vec3(-0.5, -0.5, -0.5)); // box
+    mesh2->set_origin(       glm::vec3(-5, 5, -2.5));      // grid
+    mesh3->set_origin(       glm::vec3(2, 0, 0));          // sphere
+    mesh4->set_origin(       glm::vec3(-2, 0, 0));         // torus
+    mesh5->set_origin(       glm::vec3(0, -2.5, 0));       // cylinder
+    mesh6->set_origin(       glm::vec3(0, 1.5, 0));        // cone
+    mesh7->set_origin(       glm::vec3(-2, 1.75, 0));      // hemisphere
+    mesh8->set_origin(       glm::vec3(1.5, 1.5, -0.5));   // tetrahedron
+    mesh9->set_origin(       glm::vec3(-2, -2.5, 0));      // diamond
+    mesh10->set_origin(      glm::vec3(1.5, -2.5, -0.5));  // box2
+    hidden_mesh->set_origin( glm::vec3(0, -1, 0));         // diamond2
+    hidden_mesh2->set_origin(glm::vec3(0, 0, 0));          // sphere2
+    hidden_mesh3->set_origin(glm::vec3(-1, -1, -1));       // box3
+    hidden_mesh4->set_origin(glm::vec3(-2, 0, -2));        // grid2
 
-    mesh3->set_orient(glm::vec3(0, -90, 0));
+    mesh2->set_orient(glm::vec3(0, -90, 0));
 
-    mesh2->set_visible(false);
-    //mesh3->set_visible(false);
+    //mesh2->set_visible(false);
+    //mesh5->set_visible(false);
     //mesh6->set_visible(false);
-    //mesh7->set_visible(false);
-    mesh12->set_visible(false);
-    mesh13->set_visible(false);
-    mesh14->set_visible(false);
-    mesh15->set_visible(false);
+    hidden_mesh->set_visible(false);
+    hidden_mesh2->set_visible(false);
+    hidden_mesh3->set_visible(false);
+    hidden_mesh4->set_visible(false);
 
-    mesh12->set_scale(glm::vec3(2, 2, 2)); // diamond2
-    mesh13->set_scale(glm::vec3(2, 2, 2)); // sphere2
-    mesh14->set_scale(glm::vec3(2, 2, 2)); // box4
-    mesh15->set_scale(glm::vec3(4, 4, 4)); // grid2
+    hidden_mesh->set_scale(glm::vec3(2, 2, 2));  // diamond2
+    hidden_mesh2->set_scale(glm::vec3(2, 2, 2)); // sphere2
+    hidden_mesh3->set_scale(glm::vec3(2, 2, 2)); // box3
+    hidden_mesh4->set_scale(glm::vec3(4, 4, 4)); // grid2
 
     vt::Material* normal_mapped_material = new vt::Material(
             "normal_mapped",
@@ -527,97 +524,92 @@ int init_resources()
     mesh->set_texture_index(           mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh->set_normal_map_texture_index(mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
-    // box2
-    mesh2->set_material(normal_mapped_material);
-    mesh2->set_texture_index(           mesh2->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh2->set_normal_map_texture_index(mesh2->get_material()->get_texture_index_by_name("chesterfield_normal"));
-
     // grid
-    mesh3->set_material(texture_mapped_material);
-    //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
-    //mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
-    mesh3->set_texture_index(mesh3->get_material()->get_texture_index_by_name("random_texture"));
+    mesh2->set_material(texture_mapped_material);
+    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+    mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("random_texture"));
 
     // sphere
-    mesh4->set_material(env_mapped_ex_material);
-    mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh4->set_texture_index(                        mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh4->set_normal_map_texture_index(             mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh4->set_frontface_depth_overlay_texture_index(mesh4->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    mesh4->set_backface_depth_overlay_texture_index( mesh4->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    mesh4->set_backface_normal_overlay_texture_index(mesh4->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    mesh3->set_material(env_mapped_ex_material);
+    mesh3->set_reflect_to_refract_ratio(0.33); // 33% reflective
+    mesh3->set_texture_index(                        mesh3->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh3->set_normal_map_texture_index(             mesh3->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh3->set_frontface_depth_overlay_texture_index(mesh3->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    mesh3->set_backface_depth_overlay_texture_index( mesh3->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    mesh3->set_backface_normal_overlay_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // torus
-    mesh5->set_material(env_mapped_material);
-    mesh5->set_reflect_to_refract_ratio(1); // 100% reflective
-    mesh5->set_texture_index(           mesh5->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh5->set_normal_map_texture_index(mesh5->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh4->set_material(env_mapped_material);
+    mesh4->set_reflect_to_refract_ratio(1); // 100% reflective
+    mesh4->set_texture_index(           mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh4->set_normal_map_texture_index(mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
     // cylinder
+    mesh5->set_material(texture_mapped_material);
+    mesh5->set_texture_index(mesh5->get_material()->get_texture_index_by_name("dex3d"));
+
+    // cone
     mesh6->set_material(texture_mapped_material);
     mesh6->set_texture_index(mesh6->get_material()->get_texture_index_by_name("dex3d"));
 
-    // cone
-    mesh7->set_material(texture_mapped_material);
-    mesh7->set_texture_index(mesh7->get_material()->get_texture_index_by_name("dex3d"));
-
     // hemisphere
-    mesh8->set_material(env_mapped_material_fast);
+    mesh7->set_material(env_mapped_material_fast);
 
     // tetrahedron
-    mesh9->set_material(env_mapped_ex_material);
-    mesh9->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh9->set_texture_index(                        mesh9->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh9->set_normal_map_texture_index(             mesh9->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh9->set_frontface_depth_overlay_texture_index(mesh9->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    mesh9->set_backface_depth_overlay_texture_index( mesh9->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    mesh9->set_backface_normal_overlay_texture_index(mesh9->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    mesh8->set_material(env_mapped_ex_material);
+    mesh8->set_reflect_to_refract_ratio(0.33); // 33% reflective
+    mesh8->set_texture_index(                        mesh8->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh8->set_normal_map_texture_index(             mesh8->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh8->set_frontface_depth_overlay_texture_index(mesh8->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    mesh8->set_backface_depth_overlay_texture_index( mesh8->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    mesh8->set_backface_normal_overlay_texture_index(mesh8->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // diamond
-    mesh10->set_material(env_mapped_material_fast);
-    mesh10->set_reflect_to_refract_ratio(0.33); // 33% reflective
+    mesh9->set_material(env_mapped_material_fast);
+    mesh9->set_reflect_to_refract_ratio(0.33); // 33% reflective
 
-    // box3
-    mesh11->set_material(env_mapped_ex_material);
-    mesh11->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh11->set_texture_index(                        mesh11->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh11->set_normal_map_texture_index(             mesh11->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh11->set_frontface_depth_overlay_texture_index(mesh11->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    mesh11->set_backface_depth_overlay_texture_index( mesh11->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    mesh11->set_backface_normal_overlay_texture_index(mesh11->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    // box2
+    mesh10->set_material(env_mapped_ex_material);
+    mesh10->set_reflect_to_refract_ratio(0.33); // 33% reflective
+    mesh10->set_texture_index(                        mesh10->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh10->set_normal_map_texture_index(             mesh10->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh10->set_frontface_depth_overlay_texture_index(mesh10->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    mesh10->set_backface_depth_overlay_texture_index( mesh10->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    mesh10->set_backface_normal_overlay_texture_index(mesh10->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // diamond2
-    mesh12->set_material(env_mapped_ex_material);
-    mesh12->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh12->set_texture_index(                        mesh12->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh12->set_normal_map_texture_index(             mesh12->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh12->set_frontface_depth_overlay_texture_index(mesh12->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    mesh12->set_backface_depth_overlay_texture_index( mesh12->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    mesh12->set_backface_normal_overlay_texture_index(mesh12->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    hidden_mesh->set_material(env_mapped_ex_material);
+    hidden_mesh->set_reflect_to_refract_ratio(0.33); // 33% reflective
+    hidden_mesh->set_texture_index(                        hidden_mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
+    hidden_mesh->set_normal_map_texture_index(             hidden_mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    hidden_mesh->set_frontface_depth_overlay_texture_index(hidden_mesh->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    hidden_mesh->set_backface_depth_overlay_texture_index( hidden_mesh->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    hidden_mesh->set_backface_normal_overlay_texture_index(hidden_mesh->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // sphere2
-    mesh13->set_material(env_mapped_ex_material);
-    mesh13->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh13->set_texture_index(                        mesh13->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh13->set_normal_map_texture_index(             mesh13->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh13->set_frontface_depth_overlay_texture_index(mesh13->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    mesh13->set_backface_depth_overlay_texture_index( mesh13->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    mesh13->set_backface_normal_overlay_texture_index(mesh13->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    hidden_mesh2->set_material(env_mapped_ex_material);
+    hidden_mesh2->set_reflect_to_refract_ratio(0.33); // 33% reflective
+    hidden_mesh2->set_texture_index(                        hidden_mesh2->get_material()->get_texture_index_by_name("chesterfield_color"));
+    hidden_mesh2->set_normal_map_texture_index(             hidden_mesh2->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    hidden_mesh2->set_frontface_depth_overlay_texture_index(hidden_mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    hidden_mesh2->set_backface_depth_overlay_texture_index( hidden_mesh2->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    hidden_mesh2->set_backface_normal_overlay_texture_index(hidden_mesh2->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
-    // box4
-    mesh14->set_material(env_mapped_ex_material);
-    mesh14->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh14->set_texture_index(                        mesh14->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh14->set_normal_map_texture_index(             mesh14->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh14->set_frontface_depth_overlay_texture_index(mesh14->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    mesh14->set_backface_depth_overlay_texture_index( mesh14->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    mesh14->set_backface_normal_overlay_texture_index(mesh14->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    // box3
+    hidden_mesh3->set_material(env_mapped_ex_material);
+    hidden_mesh3->set_reflect_to_refract_ratio(0.33); // 33% reflective
+    hidden_mesh3->set_texture_index(                        hidden_mesh3->get_material()->get_texture_index_by_name("chesterfield_color"));
+    hidden_mesh3->set_normal_map_texture_index(             hidden_mesh3->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    hidden_mesh3->set_frontface_depth_overlay_texture_index(hidden_mesh3->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    hidden_mesh3->set_backface_depth_overlay_texture_index( hidden_mesh3->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    hidden_mesh3->set_backface_normal_overlay_texture_index(hidden_mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // grid2
-    mesh15->set_material(env_mapped_material_fast);
-    mesh15->set_reflect_to_refract_ratio(0.33); // 33% reflective
+    hidden_mesh4->set_material(env_mapped_material_fast);
+    hidden_mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
 
     return 1;
 }
@@ -649,16 +641,15 @@ void onTick()
     }
     frames++;
 
-    angle = static_cast<float>(glutGet(GLUT_ELAPSED_TIME))/1000*15; // base 15 degrees per second
+    phase = static_cast<float>(glutGet(GLUT_ELAPSED_TIME))/1000*15; // base 15 degrees per second
 }
 
 void onDisplay()
 {
     onTick();
 
-    mesh2->set_orient(glm::vec3(angle*3, angle*2, angle*4));
-    mesh_apply_ripple(mesh15, glm::vec3(0.5, 0, 0.5), 0.1, 0.5, -angle*0.1);
-    mesh15->update_buffers();
+    mesh_apply_ripple(hidden_mesh4, glm::vec3(0.5, 0, 0.5), 0.1, 0.5, -phase*0.1);
+    hidden_mesh4->update_buffers();
 
     vt::Scene *scene = vt::Scene::instance();
 
@@ -785,21 +776,20 @@ void onDisplay()
 
 void set_mesh_visibility(bool visible)
 {
-    mesh->set_visible(visible);    // box
-    //mesh2->set_visible(visible); // box2
-    //mesh3->set_visible(visible); // grid
-    mesh4->set_visible(visible);   // sphere
-    mesh5->set_visible(visible);   // torus
-    mesh6->set_visible(visible);   // cylinder
-    mesh7->set_visible(visible);   // cone
-    mesh8->set_visible(visible);   // hemisphe
-    mesh9->set_visible(visible);   // tetrahed
-    mesh10->set_visible(visible);  // diamond
-    mesh11->set_visible(visible);  // box3
-    mesh12->set_visible(visible);  // diamond2
-    mesh13->set_visible(visible);  // sphere2
-    mesh14->set_visible(visible);  // box4
-    mesh15->set_visible(visible);  // grid2
+    mesh->set_visible(visible);         // box
+    //mesh2->set_visible(visible);      // grid
+    mesh3->set_visible(visible);        // sphere
+    mesh4->set_visible(visible);        // torus
+    mesh5->set_visible(visible);        // cylinder
+    mesh6->set_visible(visible);        // cone
+    mesh7->set_visible(visible);        // hemisphe
+    mesh8->set_visible(visible);        // tetrahed
+    mesh9->set_visible(visible);        // diamond
+    mesh10->set_visible(visible);       // box2
+    hidden_mesh->set_visible(visible);  // diamond2
+    hidden_mesh2->set_visible(visible); // sphere2
+    hidden_mesh3->set_visible(visible); // box3
+    hidden_mesh4->set_visible(visible); // grid2
 }
 
 void onKeyboard(unsigned char key, int x, int y)
@@ -816,26 +806,26 @@ void onKeyboard(unsigned char key, int x, int y)
         case 'd': // demo
             if(demo_mode == 0) {
                 set_mesh_visibility(false);
-                mesh12->set_visible(true); // diamond2
+                hidden_mesh->set_visible(true); // diamond2
                 demo_mode = 1;
             } else if(demo_mode == 1) {
                 set_mesh_visibility(false);
-                mesh13->set_visible(true); // sphere2
+                hidden_mesh2->set_visible(true); // sphere2
                 demo_mode = 2;
             } else if(demo_mode == 2) {
                 set_mesh_visibility(false);
-                mesh14->set_visible(true); // box4
+                hidden_mesh3->set_visible(true); // box3
                 demo_mode = 3;
             } else if(demo_mode == 3) {
                 set_mesh_visibility(false);
-                mesh15->set_visible(true); // grid2
+                hidden_mesh4->set_visible(true); // grid2
                 demo_mode = 4;
             } else if(demo_mode == 4) {
                 set_mesh_visibility(true);
-                mesh12->set_visible(false); // diamond2
-                mesh13->set_visible(false); // sphere2
-                mesh14->set_visible(false); // box4
-                mesh15->set_visible(false); // grid2
+                hidden_mesh->set_visible(false);  // diamond2
+                hidden_mesh2->set_visible(false); // sphere2
+                hidden_mesh3->set_visible(false); // box3
+                hidden_mesh4->set_visible(false); // grid2
                 demo_mode = 0;
             }
             break;
@@ -884,12 +874,11 @@ void onKeyboard(unsigned char key, int x, int y)
                 texture_index = 0; // GL_TEXTURE0
             }
             mesh->set_texture_index( texture_index);
-            mesh2->set_texture_index(texture_index);
+            //mesh2->set_texture_index(texture_index);
             //mesh3->set_texture_index(texture_index);
             //mesh4->set_texture_index(texture_index);
             //mesh5->set_texture_index(texture_index);
             //mesh6->set_texture_index(texture_index);
-            //mesh7->set_texture_index(texture_index);
             break;
         case 'w': // wireframe
             wireframe_mode = !wireframe_mode;
