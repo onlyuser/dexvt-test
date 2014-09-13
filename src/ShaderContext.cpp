@@ -28,6 +28,7 @@ ShaderContext::ShaderContext(
       m_vbo_tex_coords(vbo_tex_coords),
       m_ibo_tri_indices(ibo_tri_indices),
       m_textures(material->get_textures()),
+      m_use_ambient_color(material->use_ambient_color()),
       m_use_normal_only(material->use_normal_only()),
       m_use_camera_vec(material->use_camera_vec()),
       m_use_phong_shading(material->use_phong_shading()),
@@ -41,8 +42,11 @@ ShaderContext::ShaderContext(
       m_skybox(material->skybox()),
       m_overlay(material->overlay())
 {
-    bool use_phong_normal_env = m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping;
     Program *program = material->get_program();
+    if(m_use_ambient_color) {
+        m_var_uniform_ambient_color = std::unique_ptr<VarUniform>(program->get_var_uniform("ambient_color"));
+    }
+    bool use_phong_normal_env = m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping;
     if(m_use_normal_only || m_use_camera_vec || use_phong_normal_env) {
         m_var_attribute_vertex_normal = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_normal"));
         m_var_uniform_normal_xform    = std::unique_ptr<VarUniform>(program->get_var_uniform("normal_xform"));
@@ -177,6 +181,11 @@ void ShaderContext::render()
     if(m_use_texture_mapping || m_use_normal_mapping) {
         m_var_attribute_texcoord->disable_vertex_attrib_array();
     }
+}
+
+void ShaderContext::set_ambient_color(GLfloat* ambient_color)
+{
+    m_var_uniform_ambient_color->uniform_3fv(1, ambient_color);
 }
 
 void ShaderContext::set_mvp_xform(glm::mat4 mvp_xform)

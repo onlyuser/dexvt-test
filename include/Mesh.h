@@ -73,6 +73,7 @@ public:
 
     ShaderContext* get_shader_context();
     ShaderContext* get_normal_shader_context(Material* normal_material);
+    ShaderContext* get_wireframe_shader_context(Material* wireframe_material);
 
     int get_texture_index() const
     {
@@ -162,11 +163,10 @@ private:
     std::unique_ptr<Buffer>        m_vbo_tex_coords;
     std::unique_ptr<Buffer>        m_ibo_tri_indices;
     bool                           m_buffers_already_init;
-    Material*                      m_material; // TODO: Mesh has one Material
-    std::unique_ptr<ShaderContext> m_shader_context; // TODO: Mesh has one ShaderContext
-    bool                           m_shader_context_already_init;
-    std::unique_ptr<ShaderContext> m_normal_shader_context;
-    bool                           m_normal_shader_context_already_init;
+    Material*                      m_material;                 // TODO: Mesh has one Material
+    std::unique_ptr<ShaderContext> m_shader_context;           // TODO: Mesh has one ShaderContext
+    std::unique_ptr<ShaderContext> m_normal_shader_context;    // TODO: Mesh has one normal ShaderContext
+    std::unique_ptr<ShaderContext> m_wireframe_shader_context; // TODO: Mesh has one wireframe ShaderContext
     int                            m_texture_index;
     int                            m_texture2_index;
     int                            m_normal_map_texture_index;

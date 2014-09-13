@@ -23,8 +23,6 @@ Mesh::Mesh(
       m_visible(true),
       m_buffers_already_init(false),
       m_material(NULL),
-      m_shader_context_already_init(false),
-      m_normal_shader_context_already_init(false),
       m_texture_index(-1),
       m_texture2_index(-1),
       m_normal_map_texture_index(-1),
@@ -222,14 +220,13 @@ void Mesh::set_material(Material* material)
         }
     }
     m_shader_context.reset();
-    m_shader_context_already_init = false;
     m_material = material;
     m_texture_index = material ? material->get_texture_index_by_name(texture_name) : -1;
 }
 
 ShaderContext* Mesh::get_shader_context()
 {
-    if(m_shader_context_already_init || !m_material) { // FIX-ME! -- potential bug if Material not set
+    if(m_shader_context.get() || !m_material) { // FIX-ME! -- potential bug if Material not set
         return m_shader_context.get();
     }
     m_shader_context = std::unique_ptr<ShaderContext>(new ShaderContext(
@@ -239,13 +236,12 @@ ShaderContext* Mesh::get_shader_context()
             get_vbo_vert_tangent(),
             get_vbo_tex_coords(),
             get_ibo_tri_indices()));
-    m_shader_context_already_init = true;
     return m_shader_context.get();
 }
 
 ShaderContext* Mesh::get_normal_shader_context(Material* normal_material)
 {
-    if(m_normal_shader_context_already_init || !normal_material) { // FIX-ME! -- potential bug if Material not set
+    if(m_normal_shader_context.get() || !normal_material) { // FIX-ME! -- potential bug if Material not set
         return m_normal_shader_context.get();
     }
     m_normal_shader_context = std::unique_ptr<ShaderContext>(new ShaderContext(
@@ -255,8 +251,22 @@ ShaderContext* Mesh::get_normal_shader_context(Material* normal_material)
             get_vbo_vert_tangent(),
             get_vbo_tex_coords(),
             get_ibo_tri_indices()));
-    m_normal_shader_context_already_init = true;
     return m_normal_shader_context.get();
+}
+
+ShaderContext* Mesh::get_wireframe_shader_context(Material* wireframe_material)
+{
+    if(m_wireframe_shader_context.get() || !wireframe_material) { // FIX-ME! -- potential bug if Material not set
+        return m_wireframe_shader_context.get();
+    }
+    m_wireframe_shader_context = std::unique_ptr<ShaderContext>(new ShaderContext(
+            wireframe_material,
+            get_vbo_vert_coords(),
+            get_vbo_vert_normal(),
+            get_vbo_vert_tangent(),
+            get_vbo_tex_coords(),
+            get_ibo_tri_indices()));
+    return m_wireframe_shader_context.get();
 }
 
 void Mesh::update_xform()

@@ -20,8 +20,12 @@ Scene::Scene()
     : m_camera(NULL),
       m_skybox(NULL),
       m_overlay(NULL),
-      m_normal_material(NULL)
+      m_normal_material(NULL),
+      m_wireframe_material(NULL)
 {
+    m_ambient_color[0] = 0;
+    m_ambient_color[1] = 0;
+    m_ambient_color[2] = 0;
     m_camera_pos[0] = 0;
     m_camera_pos[1] = 0;
     m_camera_pos[2] = 0;
@@ -106,9 +110,11 @@ void Scene::use_program()
     }
 }
 
-void Scene::render(bool render_overlay, bool render_skybox, bool use_normal_material)
+void Scene::render(
+        bool                render_overlay,
+        bool                render_skybox,
+        use_material_type_t use_material_type)
 {
-    glm::vec3 camera_pos = m_camera->get_origin();
     m_viewport_dim[0] = m_camera->get_width();
     m_viewport_dim[1] = m_camera->get_height();
     if(render_overlay && m_overlay) {
@@ -134,6 +140,7 @@ void Scene::render(bool render_overlay, bool render_skybox, bool use_normal_mate
         shader_context->set_inv_projection_xform(glm::inverse(m_camera->get_projection_xform()));
         shader_context->render();
     }
+    glm::vec3 camera_pos = m_camera->get_origin();
     m_camera_pos[0] = camera_pos.x;
     m_camera_pos[1] = camera_pos.y;
     m_camera_pos[2] = camera_pos.z;
@@ -155,12 +162,23 @@ void Scene::render(bool render_overlay, bool render_skybox, bool use_normal_mate
         if(!mesh->get_visible()) {
             continue;
         }
-        ShaderContext* shader_context =
-                use_normal_material ? mesh->get_normal_shader_context(m_normal_material) : mesh->get_shader_context();
+        ShaderContext* shader_context = NULL;
+        switch(use_material_type) {
+            case use_material_type_t::USE_MESH_MATERIAL:
+                shader_context = mesh->get_shader_context();
+                break;
+            case use_material_type_t::USE_NORMAL_MATERIAL:
+                shader_context = mesh->get_normal_shader_context(m_normal_material);
+                break;
+            case use_material_type_t::USE_WIREFRAME_MATERIAL:
+                shader_context = mesh->get_wireframe_shader_context(m_wireframe_material);
+                break;
+        }
         if(!shader_context) {
             continue;
         }
         Material* material = shader_context->get_material();
+        bool use_ambient_color   = material->use_ambient_color();
         bool use_normal_only     = material->use_normal_only();
         bool use_camera_vec      = material->use_camera_vec();
         bool use_phong_shading   = material->use_phong_shading();
@@ -169,6 +187,13 @@ void Scene::render(bool render_overlay, bool render_skybox, bool use_normal_mate
         bool use_env_mapping     = material->use_env_mapping();
         bool use_depth_overlay   = material->use_depth_overlay();
         material->get_program()->use();
+        if(use_ambient_color) {
+            glm::vec3 _ambient_color = material->get_ambient_color();
+            m_ambient_color[0] = _ambient_color[0];
+            m_ambient_color[1] = _ambient_color[1];
+            m_ambient_color[2] = _ambient_color[2];
+            shader_context->set_ambient_color(m_ambient_color);
+        }
         shader_context->set_mvp_xform(m_camera->get_projection_xform()*m_camera->get_xform()*mesh->get_xform());
         bool use_phong_normal_env = use_phong_shading || use_normal_mapping || use_env_mapping;
         if(use_normal_only || use_camera_vec || use_phong_normal_env) {

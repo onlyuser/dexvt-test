@@ -3,6 +3,7 @@
 
 #include <NamedObject.h>
 #include <Program.h>
+#include <glm/glm.hpp>
 #include <vector>
 #include <map>
 #include <string>
@@ -21,6 +22,7 @@ public:
             std::string name                 = "",
             std::string vertex_shader_file   = "",
             std::string fragment_shader_file = "",
+            bool        use_ambient_color    = false,
             bool        use_normal_only      = false,
             bool        use_camera_vec       = false,
             bool        use_phong_shading    = false,
@@ -38,11 +40,20 @@ public:
         return m_program.get();
     }
 
+    glm::vec3 get_ambient_color() const
+    {
+        return m_ambient_color;
+    }
     void add_texture(Texture* texture);
     void clear_textures();
     const textures_t &get_textures() const
     {
         return m_textures;
+    }
+
+    bool use_ambient_color() const
+    {
+        return m_use_ambient_color;
     }
     bool use_normal_only() const
     {
@@ -99,7 +110,9 @@ public:
 
 private:
     std::unique_ptr<Program> m_program;
+    glm::vec3                m_ambient_color;
     textures_t               m_textures; // TODO: Material has multiple Textures
+    bool                     m_use_ambient_color;
     bool                     m_use_normal_only;
     bool                     m_use_camera_vec;
     bool                     m_use_phong_shading;

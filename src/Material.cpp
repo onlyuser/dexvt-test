@@ -3,6 +3,7 @@
 #include <Program.h>
 #include <Shader.h>
 #include <Texture.h>
+#include <glm/glm.hpp>
 #include <vector>
 #include <map>
 #include <string>
@@ -16,6 +17,7 @@ Material::Material(
         std::string name,
         std::string vertex_shader_file,
         std::string fragment_shader_file,
+        bool        use_ambient_color,
         bool        use_normal_only,
         bool        use_camera_vec,
         bool        use_phong_shading,
@@ -29,6 +31,8 @@ Material::Material(
         bool        skybox,
         bool        overlay)
     : NamedObject(name),
+      m_ambient_color(1),
+      m_use_ambient_color(use_ambient_color),
       m_use_normal_only(use_normal_only),
       m_use_camera_vec(use_camera_vec),
       m_use_phong_shading(use_phong_shading),

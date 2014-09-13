@@ -31,6 +31,7 @@ public:
         return m_material;
     }
     void render();
+    void set_ambient_color(GLfloat* ambient_color);
     void set_mvp_xform(glm::mat4 mvp_xform);
     void set_model_xform(glm::mat4 model_xform);
     void set_view_proj_xform(glm::mat4 view_proj_xform);
@@ -60,6 +61,7 @@ private:
     Buffer *m_vbo_vert_coords, *m_vbo_vert_normal, *m_vbo_vert_tangent, *m_vbo_tex_coords, *m_ibo_tri_indices;
     std::unique_ptr<VarAttribute> m_var_attribute_vertex_position, m_var_attribute_vertex_normal, m_var_attribute_vertex_tangent, m_var_attribute_texcoord;
     std::unique_ptr<VarUniform>
+            m_var_uniform_ambient_color,
             m_var_uniform_mvp_xform,
             m_var_uniform_model_xform,
             m_var_uniform_normal_xform,
@@ -84,6 +86,7 @@ private:
             m_var_uniform_view_proj_xform,
             m_var_uniform_reflect_to_refract_ratio;
     const textures_t &m_textures;
+    bool m_use_ambient_color;
     bool m_use_normal_only;
     bool m_use_camera_vec;
     bool m_use_phong_shading;

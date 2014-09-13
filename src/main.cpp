@@ -60,7 +60,7 @@ bool left_mouse_down = false, right_mouse_down = false;
 glm::vec2 prev_mouse_coord, mouse_drag;
 glm::vec3 prev_orient, orient, orbit_speed = glm::vec3(0, -0.5, -0.5);
 float prev_orbit_radius = 0, orbit_radius = 8, dolly_speed = 0.1, light_distance = 4;
-bool wire_frame_mode = false;
+bool wireframe_mode = false;
 bool show_fps = false;
 bool show_vert_normals = false;
 bool show_lights = false;
@@ -140,6 +140,7 @@ int init_resources()
             "normal_mapped",
             "src/normal_mapped.v.glsl",
             "src/normal_mapped.f.glsl",
+            false,  // use_ambient_color
             false,  // use_normal_only
             false,  // use_camera_vec
             true,   // use_phong_shading
@@ -158,6 +159,7 @@ int init_resources()
             "skybox",
             "src/skybox.v.glsl",
             "src/skybox.f.glsl",
+            false,  // use_ambient_color
             false,  // use_normal_only
             false,  // use_camera_vec
             false,  // use_phong_shading
@@ -176,6 +178,7 @@ int init_resources()
             "overlay_write_through",
             "src/overlay_write_through.v.glsl",
             "src/overlay_write_through.f.glsl",
+            false, // use_ambient_color
             false, // use_normal_only
             false, // use_camera_vec
             false, // use_phong_shading
@@ -194,6 +197,7 @@ int init_resources()
             "overlay_bloom_filter",
             "src/overlay_bloom_filter.v.glsl",
             "src/overlay_bloom_filter.f.glsl",
+            false, // use_ambient_color
             false, // use_normal_only
             false, // use_camera_vec
             false, // use_phong_shading
@@ -212,6 +216,7 @@ int init_resources()
             "overlay_max",
             "src/overlay_max.v.glsl",
             "src/overlay_max.f.glsl",
+            false, // use_ambient_color
             false, // use_normal_only
             false, // use_camera_vec
             false, // use_phong_shading
@@ -230,6 +235,7 @@ int init_resources()
             "texture_mapped",
             "src/texture_mapped.v.glsl",
             "src/texture_mapped.f.glsl",
+            false,  // use_ambient_color
             false,  // use_normal_only
             false,  // use_camera_vec
             false,  // use_phong_shading
@@ -248,6 +254,7 @@ int init_resources()
             "env_mapped",
             "src/env_mapped.v.glsl",
             "src/env_mapped.f.glsl",
+            false,  // use_ambient_color
             false,  // use_normal_only
             false,  // use_camera_vec
             false,  // use_phong_shading
@@ -266,6 +273,7 @@ int init_resources()
             "env_mapped_ex",
             "src/env_mapped_ex.v.glsl",
             "src/env_mapped_ex.f.glsl",
+            false,  // use_ambient_color
             false,  // use_normal_only
             false,  // use_camera_vec
             true,   // use_phong_shading
@@ -284,6 +292,7 @@ int init_resources()
             "env_mapped_fast",
             "src/env_mapped_fast.v.glsl",
             "src/env_mapped_fast.f.glsl",
+            false,  // use_ambient_color
             false,  // use_normal_only
             false,  // use_camera_vec
             false,  // use_phong_shading
@@ -302,6 +311,7 @@ int init_resources()
             "normal",
             "src/normal.v.glsl",
             "src/normal.f.glsl",
+            false,  // use_ambient_color
             true,   // use_normal_only
             false,  // use_camera_vec
             false,  // use_phong_shading
@@ -320,6 +330,7 @@ int init_resources()
             "normal_fast",
             "src/normal_fast.v.glsl",
             "src/normal_fast.f.glsl",
+            false,  // use_ambient_color
             true,   // use_normal_only
             false,  // use_camera_vec
             false,  // use_phong_shading
@@ -334,6 +345,26 @@ int init_resources()
             false); // overlay
     scene->add_material(normal_material_fast);
     scene->set_normal_material(normal_material_fast);
+
+    vt::Material* ambient_material = new vt::Material(
+            "ambient",
+            "src/ambient.v.glsl",
+            "src/ambient.f.glsl",
+            true,   // use_ambient_color
+            false,  // use_normal_only
+            false,  // use_camera_vec
+            false,  // use_phong_shading
+            false,  // use_texture_mapping
+            false,  // use_normal_mapping
+            false,  // use_env_mapping
+            false,  // use_depth_overlay
+            false,  // use_ssao
+            false,  // use_bloom_kernel
+            false,  // use_texture2
+            false,  // skybox
+            false); // overlay
+    scene->add_material(ambient_material);
+    scene->set_wireframe_material(ambient_material);
 
     vt::Texture* texture = new vt::Texture(
             "dex3d",
@@ -649,7 +680,7 @@ void onDisplay()
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     glCullFace(GL_FRONT);
-    scene->render(false, false, true);
+    scene->render(false, false, vt::Scene::use_material_type_t::USE_NORMAL_MATERIAL);
     glCullFace(GL_BACK);
     backface_normal_overlay_fb->unbind();
 
@@ -713,7 +744,11 @@ void onDisplay()
 
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    scene->render(post_process_blur || (overlay_mode != 0));
+    if(wireframe_mode) {
+        scene->render(false, false, vt::Scene::use_material_type_t::USE_WIREFRAME_MATERIAL);
+    } else {
+        scene->render(post_process_blur || (overlay_mode != 0));
+    }
 
 //    stencil_fb->bind();
 //    glEnable(GL_STENCIL_TEST);
@@ -857,8 +892,8 @@ void onKeyboard(unsigned char key, int x, int y)
             //mesh7->set_texture_index(texture_index);
             break;
         case 'w': // wireframe
-            wire_frame_mode = !wire_frame_mode;
-            if(wire_frame_mode) {
+            wireframe_mode = !wireframe_mode;
+            if(wireframe_mode) {
                 glPolygonMode(GL_FRONT, GL_LINE);
             } else {
                 glPolygonMode(GL_FRONT, GL_FILL);
