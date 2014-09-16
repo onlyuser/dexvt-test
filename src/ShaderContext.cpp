@@ -269,10 +269,8 @@ void ShaderContext::set_inv_normal_xform(glm::mat4 inv_normal_xform)
 
 void ShaderContext::set_frontface_depth_overlay_texture_index(GLint texture_id)
 {
-    assert(texture_id >= 0);
-    if(texture_id < static_cast<int>(m_textures.size())) {
-        m_var_uniform_frontface_depth_overlay_texture->uniform_1i(texture_id);
-    }
+    assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
+    m_var_uniform_frontface_depth_overlay_texture->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_backface_depth_overlay_texture_index(GLint texture_id)
