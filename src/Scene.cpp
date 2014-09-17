@@ -195,27 +195,24 @@ void Scene::render(
             shader_context->set_ambient_color(m_ambient_color);
         }
         shader_context->set_mvp_xform(m_camera->get_projection_xform()*m_camera->get_xform()*mesh->get_xform());
-        bool use_phong_normal_env = use_phong_shading || use_normal_mapping || use_env_mapping;
-        if(use_normal_only || use_camera_vec || use_phong_normal_env) {
+        if(use_normal_only || use_camera_vec || use_phong_shading || use_normal_mapping || use_env_mapping) {
             shader_context->set_normal_xform(mesh->get_normal_xform());
-            if(use_camera_vec || use_phong_normal_env) {
-                if(use_camera_vec || (!use_normal_only && use_normal_mapping) || use_env_mapping) {
-                    shader_context->set_model_xform(mesh->get_xform());
-                    shader_context->set_camera_pos(m_camera_pos);
-                }
-                if(use_phong_shading) {
-                    shader_context->set_light_pos(NUM_LIGHTS, m_light_pos);
-                    shader_context->set_light_color(NUM_LIGHTS, m_light_color);
-                    shader_context->set_light_enabled(NUM_LIGHTS, m_light_enabled);
-                    shader_context->set_light_count(m_lights.size());
-                }
-                if(use_normal_mapping) {
-                    shader_context->set_normal_map_texture_index(mesh->get_normal_map_texture_index());
-                }
-                if(use_env_mapping) {
-                    shader_context->set_env_map_texture_index(0); // skymap texture index
-                    shader_context->set_reflect_to_refract_ratio(mesh->get_reflect_to_refract_ratio());
-                }
+            if(use_camera_vec || (!use_normal_only && use_normal_mapping) || use_env_mapping) {
+                shader_context->set_model_xform(mesh->get_xform());
+                shader_context->set_camera_pos(m_camera_pos);
+            }
+            if(use_phong_shading) {
+                shader_context->set_light_pos(NUM_LIGHTS, m_light_pos);
+                shader_context->set_light_color(NUM_LIGHTS, m_light_color);
+                shader_context->set_light_enabled(NUM_LIGHTS, m_light_enabled);
+                shader_context->set_light_count(m_lights.size());
+            }
+            if(use_normal_mapping) {
+                shader_context->set_normal_map_texture_index(mesh->get_normal_map_texture_index());
+            }
+            if(use_env_mapping) {
+                shader_context->set_env_map_texture_index(0); // skymap texture index
+                shader_context->set_reflect_to_refract_ratio(mesh->get_reflect_to_refract_ratio());
             }
         }
         if(use_texture_mapping) {

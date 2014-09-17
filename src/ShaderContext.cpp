@@ -46,29 +46,26 @@ ShaderContext::ShaderContext(
     if(m_use_ambient_color) {
         m_var_uniform_ambient_color = std::unique_ptr<VarUniform>(program->get_var_uniform("ambient_color"));
     }
-    bool use_phong_normal_env = m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping;
-    if(m_use_normal_only || m_use_camera_vec || use_phong_normal_env) {
+    if(m_use_normal_only || m_use_camera_vec || m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping) {
         m_var_attribute_vertex_normal = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_normal"));
         m_var_uniform_normal_xform    = std::unique_ptr<VarUniform>(program->get_var_uniform("normal_xform"));
-        if(m_use_camera_vec || use_phong_normal_env) {
-            if(m_use_camera_vec || (!m_use_normal_only && m_use_normal_mapping) || m_use_env_mapping) {
-                m_var_uniform_model_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("model_xform"));
-                m_var_uniform_camera_pos  = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_position"));
-            }
-            if(m_use_phong_shading) {
-                m_var_uniform_light_pos     = std::unique_ptr<VarUniform>(program->get_var_uniform("light_position"));
-                m_var_uniform_light_color   = std::unique_ptr<VarUniform>(program->get_var_uniform("light_color"));
-                m_var_uniform_light_enabled = std::unique_ptr<VarUniform>(program->get_var_uniform("light_enabled"));
-                m_var_uniform_light_count   = std::unique_ptr<VarUniform>(program->get_var_uniform("light_count"));
-            }
-            if(m_use_normal_mapping) {
-                m_var_attribute_vertex_tangent   = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_tangent"));
-                m_var_uniform_normal_map_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("normal_map_texture"));
-            }
-            if(m_use_env_mapping) {
-                m_var_uniform_env_map_texture          = std::unique_ptr<VarUniform>(program->get_var_uniform("env_map_texture"));
-                m_var_uniform_reflect_to_refract_ratio = std::unique_ptr<VarUniform>(program->get_var_uniform("reflect_to_refract_ratio"));
-            }
+        if(m_use_camera_vec || (!m_use_normal_only && m_use_normal_mapping) || m_use_env_mapping) {
+            m_var_uniform_model_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("model_xform"));
+            m_var_uniform_camera_pos  = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_position"));
+        }
+        if(m_use_phong_shading) {
+            m_var_uniform_light_pos     = std::unique_ptr<VarUniform>(program->get_var_uniform("light_position"));
+            m_var_uniform_light_color   = std::unique_ptr<VarUniform>(program->get_var_uniform("light_color"));
+            m_var_uniform_light_enabled = std::unique_ptr<VarUniform>(program->get_var_uniform("light_enabled"));
+            m_var_uniform_light_count   = std::unique_ptr<VarUniform>(program->get_var_uniform("light_count"));
+        }
+        if(m_use_normal_mapping) {
+            m_var_attribute_vertex_tangent   = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_tangent"));
+            m_var_uniform_normal_map_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("normal_map_texture"));
+        }
+        if(m_use_env_mapping) {
+            m_var_uniform_env_map_texture          = std::unique_ptr<VarUniform>(program->get_var_uniform("env_map_texture"));
+            m_var_uniform_reflect_to_refract_ratio = std::unique_ptr<VarUniform>(program->get_var_uniform("reflect_to_refract_ratio"));
         }
     }
     if(m_use_texture_mapping || m_use_normal_mapping) {
