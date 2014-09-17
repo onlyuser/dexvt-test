@@ -24,7 +24,6 @@ public:
             std::string fragment_shader_file = "",
             bool        use_ambient_color    = false,
             bool        use_normal_only      = false,
-            bool        use_camera_vec       = false,
             bool        use_phong_shading    = false,
             bool        use_texture_mapping  = false,
             bool        use_normal_mapping   = false,
@@ -58,10 +57,6 @@ public:
     bool use_normal_only() const
     {
         return m_use_normal_only;
-    }
-    bool use_camera_vec() const
-    {
-        return m_use_camera_vec;
     }
     bool use_phong_shading() const
     {
@@ -114,7 +109,6 @@ private:
     textures_t               m_textures; // TODO: Material has multiple Textures
     bool                     m_use_ambient_color;
     bool                     m_use_normal_only;
-    bool                     m_use_camera_vec;
     bool                     m_use_phong_shading;
     bool                     m_use_texture_mapping;
     bool                     m_use_normal_mapping;

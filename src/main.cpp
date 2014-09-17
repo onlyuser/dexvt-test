@@ -139,7 +139,6 @@ int init_resources()
             "src/normal_mapped.f.glsl",
             false,  // use_ambient_color
             false,  // use_normal_only
-            false,  // use_camera_vec
             true,   // use_phong_shading
             true,   // use_texture_mapping
             true,   // use_normal_mapping
@@ -158,7 +157,6 @@ int init_resources()
             "src/skybox.f.glsl",
             false,  // use_ambient_color
             false,  // use_normal_only
-            false,  // use_camera_vec
             false,  // use_phong_shading
             false,  // use_texture_mapping
             false,  // use_normal_mapping
@@ -177,7 +175,6 @@ int init_resources()
             "src/overlay_write_through.f.glsl",
             false, // use_ambient_color
             false, // use_normal_only
-            false, // use_camera_vec
             false, // use_phong_shading
             false, // use_texture_mapping
             false, // use_normal_mapping
@@ -196,7 +193,6 @@ int init_resources()
             "src/overlay_bloom_filter.f.glsl",
             false, // use_ambient_color
             false, // use_normal_only
-            false, // use_camera_vec
             false, // use_phong_shading
             false, // use_texture_mapping
             false, // use_normal_mapping
@@ -215,7 +211,6 @@ int init_resources()
             "src/overlay_max.f.glsl",
             false, // use_ambient_color
             false, // use_normal_only
-            false, // use_camera_vec
             false, // use_phong_shading
             false, // use_texture_mapping
             false, // use_normal_mapping
@@ -234,7 +229,6 @@ int init_resources()
             "src/texture_mapped.f.glsl",
             false,  // use_ambient_color
             false,  // use_normal_only
-            false,  // use_camera_vec
             false,  // use_phong_shading
             true,   // use_texture_mapping
             false,  // use_normal_mapping
@@ -253,7 +247,6 @@ int init_resources()
             "src/env_mapped.f.glsl",
             false,  // use_ambient_color
             false,  // use_normal_only
-            false,  // use_camera_vec
             false,  // use_phong_shading
             false,  // use_texture_mapping
             true,   // use_normal_mapping
@@ -272,7 +265,6 @@ int init_resources()
             "src/env_mapped_ex.f.glsl",
             false,  // use_ambient_color
             false,  // use_normal_only
-            false,  // use_camera_vec
             true,   // use_phong_shading
             false,  // use_texture_mapping
             true,   // use_normal_mapping
@@ -291,7 +283,6 @@ int init_resources()
             "src/env_mapped_fast.f.glsl",
             false,  // use_ambient_color
             false,  // use_normal_only
-            false,  // use_camera_vec
             false,  // use_phong_shading
             false,  // use_texture_mapping
             false,  // use_normal_mapping
@@ -310,7 +301,6 @@ int init_resources()
             "src/normal.f.glsl",
             false,  // use_ambient_color
             true,   // use_normal_only
-            false,  // use_camera_vec
             false,  // use_phong_shading
             false,  // use_texture_mapping
             true,   // use_normal_mapping
@@ -329,7 +319,6 @@ int init_resources()
             "src/normal_fast.f.glsl",
             false,  // use_ambient_color
             true,   // use_normal_only
-            false,  // use_camera_vec
             false,  // use_phong_shading
             false,  // use_texture_mapping
             false,  // use_normal_mapping
@@ -349,7 +338,6 @@ int init_resources()
             "src/ambient.f.glsl",
             true,   // use_ambient_color
             false,  // use_normal_only
-            false,  // use_camera_vec
             false,  // use_phong_shading
             false,  // use_texture_mapping
             false,  // use_normal_mapping

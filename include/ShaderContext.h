@@ -92,7 +92,6 @@ private:
     const textures_t &m_textures;
     bool m_use_ambient_color;
     bool m_use_normal_only;
-    bool m_use_camera_vec;
     bool m_use_phong_shading;
     bool m_use_texture_mapping;
     bool m_use_normal_mapping;
