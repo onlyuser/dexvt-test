@@ -16,7 +16,7 @@ varying vec3 lerp_camera_vector;
 
 uniform samplerCube env_map_texture;
 
-uniform vec3 camera_position;
+uniform vec3 camera_pos;
 
 void sample_env_map(
         in    vec3        ray_direction,
@@ -79,7 +79,7 @@ void main(void) {
     vec3 camera_direction = normalize(lerp_camera_vector);
 
     // another way to get camera direction
-    //vec3 camera_direction = normalize(camera_position - lerp_vertex_position_world);
+    //vec3 camera_direction = normalize(camera_pos - lerp_vertex_position_world);
 
     vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1 - lerp_texcoord.y);
 

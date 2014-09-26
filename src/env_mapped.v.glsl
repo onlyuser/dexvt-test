@@ -7,7 +7,7 @@ uniform   mat4 model_xform;
 uniform   mat4 normal_xform;
 varying   vec2 lerp_texcoord;
 
-uniform vec3 camera_position;
+uniform vec3 camera_pos;
 
 varying mat3 lerp_tbn_xform;
 varying vec3 lerp_vertex_position_world;
@@ -20,7 +20,7 @@ void main(void) {
     lerp_tbn_xform = mat3(tangent, bitangent, normal);
 
     lerp_vertex_position_world = vec3(model_xform*vec4(vertex_position, 1));
-    lerp_camera_vector = camera_position - lerp_vertex_position_world;
+    lerp_camera_vector = camera_pos - lerp_vertex_position_world;
 
     gl_Position = mvp_xform*vec4(vertex_position, 1);
     lerp_texcoord = texcoord;

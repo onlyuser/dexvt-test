@@ -29,7 +29,7 @@ uniform vec2      viewport_dim;
 uniform float     camera_near;
 uniform float     camera_far;
 
-uniform vec3 camera_position;
+uniform vec3 camera_pos;
 uniform mat4 view_proj_xform;
 
 const int NUM_LIGHTS = 8;
@@ -43,7 +43,7 @@ const int SPECULAR_SHARPNESS = 64;
 uniform vec3 light_color[NUM_LIGHTS];
 uniform int light_enabled[NUM_LIGHTS];
 varying vec3 lerp_light_vector[NUM_LIGHTS];
-uniform vec3 light_position[NUM_LIGHTS];
+uniform vec3 light_pos[NUM_LIGHTS];
 
 // http://stackoverflow.com/questions/6652253/getting-the-true-z-value-from-the-depth-buffer?answertab=votes#tab-top
 void map_depth_to_actual_depth(
@@ -137,7 +137,7 @@ void newtons_method_update(
         in    sampler2D _backface_depth_overlay_texture,
         in    sampler2D _backface_normal_overlay_texture,
         in    mat4      _view_proj_xform,
-        in    vec3      _camera_position,
+        in    vec3      _camera_pos,
         in    vec3      orig,         // point on ray
         in    vec3      dir,          // ray direction
         inout vec3      plane_orig,   // point on plane
@@ -170,7 +170,7 @@ void newtons_method_update(
     float new_backface_depth_actual = 0;
     map_depth_to_actual_depth(camera_near, camera_far, new_backface_depth, new_backface_depth_actual);
 
-    vec3 new_backface_frag_position_world = _camera_position + normalize(ray_plane_isect - _camera_position)*new_backface_depth_actual;
+    vec3 new_backface_frag_position_world = _camera_pos + normalize(ray_plane_isect - _camera_pos)*new_backface_depth_actual;
     vec4 new_backface_normal_color        = texture2D(_backface_normal_overlay_texture, ray_plane_isect_texcoord);
     vec3 new_backface_normal              = -normalize(new_backface_normal_color.xyz*2 - vec3(1)); // map from [0,1] to [-1,1]
 
@@ -192,7 +192,7 @@ void calculate_light_contrib(
             continue;
         }
 
-        vec3 light_vector = light_position[i] - plane_orig;
+        vec3 light_vector = light_pos[i] - plane_orig;
         float dist = min(dot(light_vector, light_vector), MAX_DIST_SQUARED)/MAX_DIST_SQUARED;
         float distance_factor = 1.0 - dist;
 
@@ -215,7 +215,7 @@ void main(void) {
     vec3 camera_direction = normalize(lerp_camera_vector);
 
     // another way to get camera direction
-    //vec3 camera_direction = normalize(camera_position - lerp_vertex_position_world);
+    //vec3 camera_direction = normalize(camera_pos - lerp_vertex_position_world);
 
     vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1 - lerp_texcoord.y);
 
@@ -274,7 +274,7 @@ void main(void) {
 
     float frag_thickness = backface_depth_actual - frontface_depth_actual;
 
-    vec3 backface_frag_position_world = camera_position - camera_direction*backface_depth_actual;
+    vec3 backface_frag_position_world = camera_pos - camera_direction*backface_depth_actual;
     //vec3 ray_plane_isect = lerp_vertex_position_world + frontface_refracted_camera_dir*???;
 
     // apply newton's method to find backface intersection with refracted ray from camera
@@ -290,7 +290,7 @@ void main(void) {
                 backface_depth_overlay_texture,
                 backface_normal_overlay_texture,
                 view_proj_xform,
-                camera_position,
+                camera_pos,
                 orig,
                 dir,
                 plane_orig,

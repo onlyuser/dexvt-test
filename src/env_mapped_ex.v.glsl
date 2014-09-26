@@ -7,7 +7,7 @@ uniform   mat4 model_xform;
 uniform   mat4 normal_xform;
 varying   vec2 lerp_texcoord;
 
-uniform vec3 camera_position;
+uniform vec3 camera_pos;
 
 varying mat3 lerp_tbn_xform;
 varying vec3 lerp_vertex_position_world;
@@ -17,7 +17,7 @@ const int NUM_LIGHTS = 8;
 uniform int light_count;
 
 uniform int light_enabled[NUM_LIGHTS];
-uniform vec3 light_position[NUM_LIGHTS];
+uniform vec3 light_pos[NUM_LIGHTS];
 varying vec3 lerp_light_vector[NUM_LIGHTS];
 
 void main(void) {
@@ -27,13 +27,13 @@ void main(void) {
     lerp_tbn_xform = mat3(tangent, bitangent, normal);
 
     lerp_vertex_position_world = vec3(model_xform*vec4(vertex_position, 1));
-    lerp_camera_vector = camera_position - lerp_vertex_position_world;
+    lerp_camera_vector = camera_pos - lerp_vertex_position_world;
 
     for(int i = 0; i < NUM_LIGHTS && i < light_count; i++) {
         if(light_enabled[i] == 0) {
             continue;
         }
-        lerp_light_vector[i] = light_position[i] - lerp_vertex_position_world;
+        lerp_light_vector[i] = light_pos[i] - lerp_vertex_position_world;
     }
 
     gl_Position = mvp_xform*vec4(vertex_position, 1);

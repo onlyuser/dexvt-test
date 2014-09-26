@@ -156,8 +156,8 @@ int init_resources()
     normal_mapped_program->add_var("vertex_position",    vt::Program::VAR_TYPE_ATTRIBUTE);
     normal_mapped_program->add_var("normal_xform",       vt::Program::VAR_TYPE_UNIFORM);
     normal_mapped_program->add_var("model_xform",        vt::Program::VAR_TYPE_UNIFORM);
-    normal_mapped_program->add_var("camera_position",    vt::Program::VAR_TYPE_UNIFORM);
-    normal_mapped_program->add_var("light_position",     vt::Program::VAR_TYPE_UNIFORM);
+    normal_mapped_program->add_var("camera_pos",    vt::Program::VAR_TYPE_UNIFORM);
+    normal_mapped_program->add_var("light_pos",     vt::Program::VAR_TYPE_UNIFORM);
     normal_mapped_program->add_var("light_color",        vt::Program::VAR_TYPE_UNIFORM);
     normal_mapped_program->add_var("light_enabled",      vt::Program::VAR_TYPE_UNIFORM);
     normal_mapped_program->add_var("light_count",        vt::Program::VAR_TYPE_UNIFORM);
@@ -297,7 +297,7 @@ int init_resources()
     env_mapped_program->add_var("vertex_position",          vt::Program::VAR_TYPE_ATTRIBUTE);
     env_mapped_program->add_var("normal_xform",             vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_program->add_var("model_xform",              vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_program->add_var("camera_position",          vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_program->add_var("camera_pos",          vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_program->add_var("normal_map_texture",       vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_program->add_var("env_map_texture",          vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_program->add_var("reflect_to_refract_ratio", vt::Program::VAR_TYPE_UNIFORM);
@@ -327,8 +327,8 @@ int init_resources()
     env_mapped_ex_program->add_var("vertex_position",                 vt::Program::VAR_TYPE_ATTRIBUTE);
     env_mapped_ex_program->add_var("normal_xform",                    vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_ex_program->add_var("model_xform",                     vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("camera_position",                 vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("light_position",                  vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("camera_pos",                 vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("light_pos",                  vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_ex_program->add_var("light_color",                     vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_ex_program->add_var("light_enabled",                   vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_ex_program->add_var("light_count",                     vt::Program::VAR_TYPE_UNIFORM);
@@ -366,7 +366,7 @@ int init_resources()
     env_mapped_fast_program->add_var("vertex_position",          vt::Program::VAR_TYPE_ATTRIBUTE);
     env_mapped_fast_program->add_var("normal_xform",             vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_fast_program->add_var("model_xform",              vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_fast_program->add_var("camera_position",          vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_fast_program->add_var("camera_pos",          vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_fast_program->add_var("env_map_texture",          vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_fast_program->add_var("reflect_to_refract_ratio", vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_fast_program->add_var("mvp_xform",                vt::Program::VAR_TYPE_UNIFORM);

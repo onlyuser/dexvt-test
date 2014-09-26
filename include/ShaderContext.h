@@ -20,10 +20,10 @@ public:
     typedef std::vector<Texture*> textures_t;
 
     enum var_attribute_type_t {
-        var_attribute_type_vertex_normal,
-        var_attribute_type_vertex_tangent,
         var_attribute_type_texcoord,
+        var_attribute_type_vertex_normal,
         var_attribute_type_vertex_position,
+        var_attribute_type_vertex_tangent,
         var_attribute_type_count
     };
 

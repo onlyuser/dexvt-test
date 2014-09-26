@@ -17,10 +17,10 @@
 namespace vt {
 
 ShaderContext::var_attribute_type_to_name_table_t ShaderContext::m_var_attribute_type_to_name_table[] = {
-        {ShaderContext::var_attribute_type_vertex_normal,   "vertex_normal"},
-        {ShaderContext::var_attribute_type_vertex_tangent,  "vertex_tangent"},
         {ShaderContext::var_attribute_type_texcoord,        "texcoord"},
+        {ShaderContext::var_attribute_type_vertex_normal,   "vertex_normal"},
         {ShaderContext::var_attribute_type_vertex_position, "vertex_position"},
+        {ShaderContext::var_attribute_type_vertex_tangent,  "vertex_tangent"},
         {ShaderContext::var_attribute_type_count,           ""},
         };
 
@@ -32,8 +32,8 @@ ShaderContext::var_uniform_type_to_name_table_t ShaderContext::m_var_uniform_typ
         {ShaderContext::var_uniform_type_color_texture,                   "color_texture"},
         {ShaderContext::var_uniform_type_color_texture2,                  "color_texture2"},
         {ShaderContext::var_uniform_type_normal_map_texture,              "normal_map_texture"},
-        {ShaderContext::var_uniform_type_camera_pos,                      "camera_position"},
-        {ShaderContext::var_uniform_type_light_pos,                       "light_position"},
+        {ShaderContext::var_uniform_type_camera_pos,                      "camera_pos"},
+        {ShaderContext::var_uniform_type_light_pos,                       "light_pos"},
         {ShaderContext::var_uniform_type_light_color,                     "light_color"},
         {ShaderContext::var_uniform_type_light_enabled,                   "light_enabled"},
         {ShaderContext::var_uniform_type_light_count,                     "light_count"},
