@@ -871,6 +871,12 @@ void onKeyboard(unsigned char key, int x, int y)
 {
     switch(key) {
         case 'b': // blur
+            if(overlay_mode != 0) {
+                overlay_mode = 0; // switch back to default overlay
+                post_process_blur = true;
+                mesh_overlay->set_material(overlay_bloom_filter_material);
+                break;
+            }
             post_process_blur = !post_process_blur;
             if(post_process_blur) {
                 mesh_overlay->set_material(overlay_bloom_filter_material);
@@ -917,6 +923,10 @@ void onKeyboard(unsigned char key, int x, int y)
             show_vert_normals = !show_vert_normals;
             break;
         case 'o': // overlay
+            if(post_process_blur) {
+                post_process_blur = false;
+                mesh_overlay->set_material(overlay_write_through_material);
+            }
             if(overlay_mode == 0) {
                 mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("backface_normal_overlay"));
                 overlay_mode = 1;
