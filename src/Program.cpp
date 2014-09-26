@@ -36,7 +36,7 @@ void Program::use() const
     glUseProgram(m_id);
 }
 
-VarAttribute* Program::get_var_attribute(const GLchar *name) const
+VarAttribute* Program::get_var_attribute(const GLchar* name) const
 {
     VarAttribute* var_attrribute = new VarAttribute(this, name);
     if(var_attrribute && var_attrribute->id() == static_cast<GLuint>(-1))
@@ -48,7 +48,7 @@ VarAttribute* Program::get_var_attribute(const GLchar *name) const
     return var_attrribute;
 }
 
-VarUniform* Program::get_var_uniform(const GLchar *name) const
+VarUniform* Program::get_var_uniform(const GLchar* name) const
 {
     VarUniform* var_uniform = new VarUniform(this, name);
     if(var_uniform && var_uniform->id() == static_cast<GLuint>(-1))
@@ -62,7 +62,7 @@ VarUniform* Program::get_var_uniform(const GLchar *name) const
 
 void Program::get_program_iv(
         GLenum pname,
-        GLint *params) const
+        GLint* params) const
 {
     glGetProgramiv(m_id, pname, params);
 }

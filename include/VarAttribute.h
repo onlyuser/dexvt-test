@@ -12,7 +12,7 @@ class Program;
 class VarAttribute : public IdentObject
 {
 public:
-    VarAttribute(const Program* program, const GLchar *name);
+    VarAttribute(const Program* program, const GLchar* name);
     virtual ~VarAttribute();
     void enable_vertex_attrib_array() const;
     void disable_vertex_attrib_array() const;
@@ -22,7 +22,7 @@ public:
             GLenum type,
             GLboolean normalized,
             GLsizei stride,
-            const GLvoid *pointer) const;
+            const GLvoid* pointer) const;
 };
 
 }

@@ -5,7 +5,7 @@
 
 namespace vt {
 
-VarAttribute::VarAttribute(const Program* program, const GLchar *name)
+VarAttribute::VarAttribute(const Program* program, const GLchar* name)
 {
     m_id = glGetAttribLocation(program->id(), name);
 }
@@ -30,7 +30,7 @@ void VarAttribute::vertex_attrib_pointer(
         GLenum type,
         GLboolean normalized,
         GLsizei stride,
-        const GLvoid *pointer) const
+        const GLvoid* pointer) const
 {
     buffer->bind();
     glVertexAttribPointer(

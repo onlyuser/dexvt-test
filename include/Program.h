@@ -25,11 +25,11 @@ public:
     void attach_shader(const Shader* shader) const;
     bool link() const;
     void use() const;
-    VarAttribute* get_var_attribute(const GLchar *name) const;
-    VarUniform* get_var_uniform(const GLchar *name) const;
+    VarAttribute* get_var_attribute(const GLchar* name) const;
+    VarUniform* get_var_uniform(const GLchar* name) const;
     void get_program_iv(
             GLenum pname,
-            GLint *params) const;
+            GLint* params) const;
     bool add_var(std::string name, var_type_t var_type);
     bool has_var(std::string name, var_type_t* var_type = NULL);
     void clear_vars();

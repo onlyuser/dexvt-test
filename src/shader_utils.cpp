@@ -118,7 +118,7 @@ GLuint create_shader(const char* filename, GLenum type)
   return res;
 }
 
-GLuint create_program(const char *vertexfile, const char *fragmentfile) {
+GLuint create_program(const char* vertexfile, const char* fragmentfile) {
     GLuint program = glCreateProgram();
     GLuint shader;
 
@@ -150,7 +150,7 @@ GLuint create_program(const char *vertexfile, const char *fragmentfile) {
 }
 
 #ifdef GL_GEOMETRY_SHADER
-GLuint create_gs_program(const char *vertexfile, const char *geometryfile, const char *fragmentfile, GLint input, GLint output, GLint vertices) {
+GLuint create_gs_program(const char* vertexfile, const char* geometryfile, const char* fragmentfile, GLint input, GLint output, GLint vertices) {
     GLuint program = glCreateProgram();
     GLuint shader;
 
@@ -192,20 +192,20 @@ GLuint create_gs_program(const char *vertexfile, const char *geometryfile, const
     return program;
 }
 #else
-GLuint create_gs_program(const char *vertexfile, const char *geometryfile, const char *fragmentfile, GLint input, GLint output, GLint vertices) {
+GLuint create_gs_program(const char* vertexfile, const char* geometryfile, const char* fragmentfile, GLint input, GLint output, GLint vertices) {
     fprintf(stderr, "Missing support for geometry shaders.\n");
     return 0;
 }
 #endif
 
-GLint get_attrib(GLuint program, const char *name) {
+GLint get_attrib(GLuint program, const char* name) {
     GLint attribute = glGetAttribLocation(program, name);
     if(attribute == -1)
         fprintf(stderr, "Could not bind attribute %s\n", name);
     return attribute;
 }
 
-GLint get_uniform(GLuint program, const char *name) {
+GLint get_uniform(GLuint program, const char* name) {
     GLint uniform = glGetUniformLocation(program, name);
     if(uniform == -1)
         fprintf(stderr, "Could not bind uniform %s\n", name);

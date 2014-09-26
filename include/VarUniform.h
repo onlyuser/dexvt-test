@@ -11,7 +11,7 @@ class Program;
 class VarUniform : public IdentObject
 {
 public:
-    VarUniform(const Program* program, const GLchar *name);
+    VarUniform(const Program* program, const GLchar* name);
     virtual ~VarUniform();
     void uniform_1f(GLfloat v0) const;
     void uniform_2f(
@@ -54,76 +54,76 @@ public:
             GLuint v3) const;
     void uniform_1fv(
             GLsizei count,
-            const GLfloat *value) const;
+            const GLfloat* value) const;
     void uniform_2fv(
             GLsizei count,
-            const GLfloat *value) const;
+            const GLfloat* value) const;
     void uniform_3fv(
             GLsizei count,
-            const GLfloat *value) const;
+            const GLfloat* value) const;
     void uniform_4fv(
             GLsizei count,
-            const GLfloat *value) const;
+            const GLfloat* value) const;
     void uniform_1iv(
             GLsizei count,
-            const GLint *value) const;
+            const GLint* value) const;
     void uniform_2iv(
             GLsizei count,
-            const GLint *value) const;
+            const GLint* value) const;
     void uniform_3iv(
             GLsizei count,
-            const GLint *value) const;
+            const GLint* value) const;
     void uniform_4iv(
             GLsizei count,
-            const GLint *value) const;
+            const GLint* value) const;
     void uniform_1uiv(
             GLsizei count,
-            const GLuint *value) const;
+            const GLuint* value) const;
     void uniform_2uiv(
             GLsizei count,
-            const GLuint *value) const;
+            const GLuint* value) const;
     void uniform_3uiv(
             GLsizei count,
-            const GLuint *value) const;
+            const GLuint* value) const;
     void uniform_4uiv(
             GLsizei count,
-            const GLuint *value) const;
+            const GLuint* value) const;
     void uniform_matrix_2fv(
             GLsizei count,
             GLboolean transpose,
-            const GLfloat *value) const;
+            const GLfloat* value) const;
     void uniform_matrix_3fv(
             GLsizei count,
             GLboolean transpose,
-            const GLfloat *value) const;
+            const GLfloat* value) const;
     void uniform_matrix_4fv(
             GLsizei count,
             GLboolean transpose,
-            const GLfloat *value) const;
+            const GLfloat* value) const;
     void uniform_matrix_2x3fv(
             GLsizei count,
             GLboolean transpose,
-            const GLfloat *value) const;
+            const GLfloat* value) const;
     void uniform_matrix_3x2fv(
             GLsizei count,
             GLboolean transpose,
-            const GLfloat *value) const;
+            const GLfloat* value) const;
     void uniform_matrix_2x4fv(
             GLsizei count,
             GLboolean transpose,
-            const GLfloat *value) const;
+            const GLfloat* value) const;
     void uniform_matrix_4x2fv(
             GLsizei count,
             GLboolean transpose,
-            const GLfloat *value) const;
+            const GLfloat* value) const;
     void uniform_matrix_3x4fv(
             GLsizei count,
             GLboolean transpose,
-            const GLfloat *value) const;
+            const GLfloat* value) const;
     void uniform_matrix_4x3fv(
             GLsizei count,
             GLboolean transpose,
-            const GLfloat *value) const;
+            const GLfloat* value) const;
 };
 
 }

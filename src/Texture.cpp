@@ -62,7 +62,7 @@ Texture::Texture(
       m_skybox(false),
       m_type(Texture::RGB)
 {
-    unsigned char *pixel_data = NULL;
+    unsigned char* pixel_data = NULL;
     size_t width  = 0;
     size_t height = 0;
     if(!read_png(png_filename, (void**)&pixel_data, &width, &height)) {
@@ -92,12 +92,12 @@ Texture::Texture(
 {
     size_t width  = 0;
     size_t height = 0;
-    unsigned char *pixel_data_pos_x = NULL;
-    unsigned char *pixel_data_neg_x = NULL;
-    unsigned char *pixel_data_pos_y = NULL;
-    unsigned char *pixel_data_neg_y = NULL;
-    unsigned char *pixel_data_pos_z = NULL;
-    unsigned char *pixel_data_neg_z = NULL;
+    unsigned char* pixel_data_pos_x = NULL;
+    unsigned char* pixel_data_neg_x = NULL;
+    unsigned char* pixel_data_pos_y = NULL;
+    unsigned char* pixel_data_neg_y = NULL;
+    unsigned char* pixel_data_pos_z = NULL;
+    unsigned char* pixel_data_neg_z = NULL;
     if(!read_png(png_filename_pos_x, (void**)&pixel_data_pos_x, &width, &height)) {
         std::cout << "failed to load cube map positive x" << std::endl;
         return;
@@ -285,7 +285,7 @@ GLuint Texture::gen_texture_skybox_internal(
     return id;
 }
 
-bool Texture::read_png(std::string png_filename, void **pixel_data, size_t *width, size_t *height)
+bool Texture::read_png(std::string png_filename, void** pixel_data, size_t* width, size_t* height)
 {
     if(!pixel_data || !width || !height) {
         return false;
@@ -295,7 +295,7 @@ bool Texture::read_png(std::string png_filename, void **pixel_data, size_t *widt
     png_byte header[8];
 
     // open file as binary
-    FILE *fp = fopen(png_filename.c_str(), "rb");
+    FILE* fp = fopen(png_filename.c_str(), "rb");
     if(!fp) {
         return false;
     }
@@ -363,7 +363,7 @@ bool Texture::read_png(std::string png_filename, void **pixel_data, size_t *widt
     int rowbytes = png_get_rowbytes(png_ptr, info_ptr);
 
     // allocate the image_data as a big block, to be given to opengl
-    png_byte *image_data = new png_byte[rowbytes * theight];
+    png_byte* image_data = new png_byte[rowbytes * theight];
     if(!image_data) {
         // clean up memory and close stuff
         png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
@@ -372,7 +372,7 @@ bool Texture::read_png(std::string png_filename, void **pixel_data, size_t *widt
     }
 
     // row_pointers is for pointing to image_data for reading the png with libpng
-    png_bytep *row_pointers = new png_bytep[theight];
+    png_bytep* row_pointers = new png_bytep[theight];
     if(!row_pointers) {
         //clean up memory and close stuff
         png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);

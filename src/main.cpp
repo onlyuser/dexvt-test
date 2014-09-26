@@ -52,8 +52,8 @@ const char* DEFAULT_CAPTION = "My Textured Cube";
 
 int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
-vt::Mesh* mesh_skybox, *mesh_overlay, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10, *hidden_mesh, *hidden_mesh2, *hidden_mesh3, *hidden_mesh4;
-vt::Light* light, *light2, *light3;
+vt::Mesh *mesh_skybox, *mesh_overlay, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10, *hidden_mesh, *hidden_mesh2, *hidden_mesh3, *hidden_mesh4;
+vt::Light *light, *light2, *light3;
 std::unique_ptr<vt::FrameBuffer> frontface_depth_overlay_fb, backface_depth_overlay_fb, backface_normal_overlay_fb, hi_res_color_overlay_fb, med_res_color_overlay_fb, lo_res_color_overlay_fb;
 
 bool left_mouse_down = false, right_mouse_down = false;
@@ -80,7 +80,7 @@ vt::Material* overlay_max_material;
 
 int init_resources()
 {
-    vt::Scene *scene = vt::Scene::instance();
+    vt::Scene* scene = vt::Scene::instance();
 
     mesh_skybox = vt::PrimitiveFactory::create_viewport_quad("grid");
     scene->set_skybox(mesh_skybox);
@@ -726,7 +726,7 @@ void onDisplay()
     mesh_apply_ripple(hidden_mesh4, glm::vec3(0.5, 0, 0.5), 0.1, 0.5, -phase*0.1);
     hidden_mesh4->update_buffers();
 
-    vt::Scene *scene = vt::Scene::instance();
+    vt::Scene* scene = vt::Scene::instance();
 
     frontface_depth_overlay_fb->bind();
     glClearColor(0, 0, 0, 1);

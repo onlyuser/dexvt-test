@@ -102,8 +102,8 @@ public:
 private:
     Material *m_material;
     Buffer *m_vbo_vert_coords, *m_vbo_vert_normal, *m_vbo_vert_tangent, *m_vbo_tex_coords, *m_ibo_tri_indices;
-    VarAttribute *m_var_attributes[var_attribute_type_count];
-    VarUniform   *m_var_uniforms[var_uniform_type_count];
+    VarAttribute* m_var_attributes[var_attribute_type_count];
+    VarUniform* m_var_uniforms[var_uniform_type_count];
     const textures_t &m_textures;
     bool m_use_ambient_color;
     bool m_use_normal_only;

@@ -70,7 +70,7 @@ private:
             const void* pixel_data_neg_y,
             const void* pixel_data_pos_z,
             const void* pixel_data_neg_z);
-    static bool read_png(std::string png_filename, void **pixel_data, size_t *width, size_t *height);
+    static bool read_png(std::string png_filename, void** pixel_data, size_t* width, size_t* height);
 };
 
 }
