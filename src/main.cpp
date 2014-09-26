@@ -150,14 +150,14 @@ int init_resources()
             false,  // skybox
             false); // overlay
     vt::Program* normal_mapped_program = normal_mapped_material->get_program();
-    normal_mapped_program->add_var("vertex_normal",      vt::Program::VAR_TYPE_ATTRIBUTE);
-    normal_mapped_program->add_var("vertex_tangent",     vt::Program::VAR_TYPE_ATTRIBUTE);
     normal_mapped_program->add_var("texcoord",           vt::Program::VAR_TYPE_ATTRIBUTE);
+    normal_mapped_program->add_var("vertex_normal",      vt::Program::VAR_TYPE_ATTRIBUTE);
     normal_mapped_program->add_var("vertex_position",    vt::Program::VAR_TYPE_ATTRIBUTE);
+    normal_mapped_program->add_var("vertex_tangent",     vt::Program::VAR_TYPE_ATTRIBUTE);
     normal_mapped_program->add_var("normal_xform",       vt::Program::VAR_TYPE_UNIFORM);
     normal_mapped_program->add_var("model_xform",        vt::Program::VAR_TYPE_UNIFORM);
-    normal_mapped_program->add_var("camera_pos",    vt::Program::VAR_TYPE_UNIFORM);
-    normal_mapped_program->add_var("light_pos",     vt::Program::VAR_TYPE_UNIFORM);
+    normal_mapped_program->add_var("camera_pos",         vt::Program::VAR_TYPE_UNIFORM);
+    normal_mapped_program->add_var("light_pos",          vt::Program::VAR_TYPE_UNIFORM);
     normal_mapped_program->add_var("light_color",        vt::Program::VAR_TYPE_UNIFORM);
     normal_mapped_program->add_var("light_enabled",      vt::Program::VAR_TYPE_UNIFORM);
     normal_mapped_program->add_var("light_count",        vt::Program::VAR_TYPE_UNIFORM);
@@ -291,23 +291,23 @@ int init_resources()
             false,  // skybox
             false); // overlay
     vt::Program* env_mapped_program = env_mapped_material->get_program();
-    env_mapped_program->add_var("vertex_normal",            vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_program->add_var("vertex_tangent",           vt::Program::VAR_TYPE_ATTRIBUTE);
     env_mapped_program->add_var("texcoord",                 vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_program->add_var("vertex_normal",            vt::Program::VAR_TYPE_ATTRIBUTE);
     env_mapped_program->add_var("vertex_position",          vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_program->add_var("vertex_tangent",           vt::Program::VAR_TYPE_ATTRIBUTE);
     env_mapped_program->add_var("normal_xform",             vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_program->add_var("model_xform",              vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_program->add_var("camera_pos",          vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_program->add_var("camera_pos",               vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_program->add_var("normal_map_texture",       vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_program->add_var("env_map_texture",          vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_program->add_var("reflect_to_refract_ratio", vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_program->add_var("mvp_xform",                vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(env_mapped_material);
 
-    vt::Material* env_mapped_ex_material = new vt::Material(
-            "env_mapped_ex",
-            "src/env_mapped_ex.v.glsl",
-            "src/env_mapped_ex.f.glsl",
+    vt::Material* env_mapped_dbl_refract_material = new vt::Material(
+            "env_mapped_dbl_refract",
+            "src/env_mapped_dbl_refract.v.glsl",
+            "src/env_mapped_dbl_refract.f.glsl",
             false,  // use_ambient_color
             false,  // use_normal_only
             true,   // use_phong_shading
@@ -320,30 +320,30 @@ int init_resources()
             false,  // use_texture2
             false,  // skybox
             false); // overlay
-    vt::Program* env_mapped_ex_program = env_mapped_ex_material->get_program();
-    env_mapped_ex_program->add_var("vertex_normal",                   vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_ex_program->add_var("vertex_tangent",                  vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_ex_program->add_var("texcoord",                        vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_ex_program->add_var("vertex_position",                 vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_ex_program->add_var("normal_xform",                    vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("model_xform",                     vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("camera_pos",                 vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("light_pos",                  vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("light_color",                     vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("light_enabled",                   vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("light_count",                     vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("normal_map_texture",              vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("env_map_texture",                 vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("reflect_to_refract_ratio",        vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("frontface_depth_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("backface_depth_overlay_texture",  vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("backface_normal_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("viewport_dim",                    vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("camera_near",                     vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("camera_far",                      vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("view_proj_xform",                 vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_ex_program->add_var("mvp_xform",                       vt::Program::VAR_TYPE_UNIFORM);
-    scene->add_material(env_mapped_ex_material);
+    vt::Program* env_mapped_dbl_refract_program = env_mapped_dbl_refract_material->get_program();
+    env_mapped_dbl_refract_program->add_var("texcoord",                        vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_dbl_refract_program->add_var("vertex_normal",                   vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_dbl_refract_program->add_var("vertex_position",                 vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_dbl_refract_program->add_var("vertex_tangent",                  vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_dbl_refract_program->add_var("normal_xform",                    vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("model_xform",                     vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("camera_pos",                      vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("light_pos",                       vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("light_color",                     vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("light_enabled",                   vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("light_count",                     vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("normal_map_texture",              vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("env_map_texture",                 vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("reflect_to_refract_ratio",        vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("frontface_depth_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("backface_depth_overlay_texture",  vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("backface_normal_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("viewport_dim",                    vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("camera_near",                     vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("camera_far",                      vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("view_proj_xform",                 vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("mvp_xform",                       vt::Program::VAR_TYPE_UNIFORM);
+    scene->add_material(env_mapped_dbl_refract_material);
 
     vt::Material* env_mapped_fast_material = new vt::Material(
             "env_mapped_fast",
@@ -366,7 +366,7 @@ int init_resources()
     env_mapped_fast_program->add_var("vertex_position",          vt::Program::VAR_TYPE_ATTRIBUTE);
     env_mapped_fast_program->add_var("normal_xform",             vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_fast_program->add_var("model_xform",              vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_fast_program->add_var("camera_pos",          vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_fast_program->add_var("camera_pos",               vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_fast_program->add_var("env_map_texture",          vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_fast_program->add_var("reflect_to_refract_ratio", vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_fast_program->add_var("mvp_xform",                vt::Program::VAR_TYPE_UNIFORM);
@@ -458,19 +458,19 @@ int init_resources()
     vt::Texture* texture3 = new vt::Texture(
             "chesterfield_color",
             "data/chesterfield_color.png");
-    scene->add_texture(                 texture3);
-    normal_mapped_material->add_texture(texture3);
-    env_mapped_material->add_texture(   texture3);
-    env_mapped_ex_material->add_texture(texture3);
+    scene->add_texture(                          texture3);
+    normal_mapped_material->add_texture(         texture3);
+    env_mapped_material->add_texture(            texture3);
+    env_mapped_dbl_refract_material->add_texture(texture3);
 
     vt::Texture* texture4 = new vt::Texture(
             "chesterfield_normal",
             "data/chesterfield_normal.png");
-    scene->add_texture(                 texture4);
-    normal_mapped_material->add_texture(texture4);
-    env_mapped_material->add_texture(   texture4);
-    env_mapped_ex_material->add_texture(texture4);
-    //normal_material->add_texture(       texture4);
+    scene->add_texture(                          texture4);
+    normal_mapped_material->add_texture(         texture4);
+    env_mapped_material->add_texture(            texture4);
+    env_mapped_dbl_refract_material->add_texture(texture4);
+    //normal_material->add_texture(texture4);
 
     vt::Texture* texture5 = new vt::Texture(
             "skybox_texture",
@@ -480,11 +480,11 @@ int init_resources()
             "data/SaintPetersSquare2/negy.png",
             "data/SaintPetersSquare2/posz.png",
             "data/SaintPetersSquare2/negz.png");
-    scene->add_texture(                   texture5);
-    skybox_material->add_texture(         texture5);
-    env_mapped_material->add_texture(     texture5);
-    env_mapped_ex_material->add_texture(  texture5);
-    env_mapped_fast_material->add_texture(texture5);
+    scene->add_texture(                          texture5);
+    skybox_material->add_texture(                texture5);
+    env_mapped_material->add_texture(            texture5);
+    env_mapped_dbl_refract_material->add_texture(texture5);
+    env_mapped_fast_material->add_texture(       texture5);
 
     vt::Texture* frontface_depth_overlay_texture = new vt::Texture(
             "frontface_depth_overlay",
@@ -492,10 +492,10 @@ int init_resources()
             HI_RES_TEX_DIM,
             NULL,
             vt::Texture::DEPTH);
-    texture_mapped_material->add_texture(       frontface_depth_overlay_texture);
-    env_mapped_ex_material->add_texture(        frontface_depth_overlay_texture);
-    overlay_write_through_material->add_texture(frontface_depth_overlay_texture);
-    overlay_bloom_filter_material->add_texture( frontface_depth_overlay_texture);
+    texture_mapped_material->add_texture(        frontface_depth_overlay_texture);
+    env_mapped_dbl_refract_material->add_texture(frontface_depth_overlay_texture);
+    overlay_write_through_material->add_texture( frontface_depth_overlay_texture);
+    overlay_bloom_filter_material->add_texture(  frontface_depth_overlay_texture);
 
     vt::Texture* backface_depth_overlay_texture = new vt::Texture(
             "backface_depth_overlay",
@@ -503,10 +503,10 @@ int init_resources()
             HI_RES_TEX_DIM,
             NULL,
             vt::Texture::DEPTH);
-    texture_mapped_material->add_texture(       backface_depth_overlay_texture);
-    env_mapped_ex_material->add_texture(        backface_depth_overlay_texture);
-    overlay_write_through_material->add_texture(backface_depth_overlay_texture);
-    overlay_bloom_filter_material->add_texture( backface_depth_overlay_texture);
+    texture_mapped_material->add_texture(        backface_depth_overlay_texture);
+    env_mapped_dbl_refract_material->add_texture(backface_depth_overlay_texture);
+    overlay_write_through_material->add_texture( backface_depth_overlay_texture);
+    overlay_bloom_filter_material->add_texture(  backface_depth_overlay_texture);
 
     vt::Texture* backface_normal_overlay_texture = new vt::Texture(
             "backface_normal_overlay",
@@ -514,10 +514,10 @@ int init_resources()
             HI_RES_TEX_DIM,
             NULL,
             vt::Texture::RGB);
-    texture_mapped_material->add_texture(       backface_normal_overlay_texture);
-    env_mapped_ex_material->add_texture(        backface_normal_overlay_texture);
-    overlay_write_through_material->add_texture(backface_normal_overlay_texture);
-    overlay_bloom_filter_material->add_texture( backface_normal_overlay_texture);
+    texture_mapped_material->add_texture(        backface_normal_overlay_texture);
+    env_mapped_dbl_refract_material->add_texture(backface_normal_overlay_texture);
+    overlay_write_through_material->add_texture( backface_normal_overlay_texture);
+    overlay_bloom_filter_material->add_texture(  backface_normal_overlay_texture);
 
     vt::Texture* hi_res_color_overlay_texture = new vt::Texture(
             "hi_res_color_overlay",
@@ -608,7 +608,7 @@ int init_resources()
     mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("random_texture"));
 
     // sphere
-    mesh3->set_material(env_mapped_ex_material);
+    mesh3->set_material(env_mapped_dbl_refract_material);
     mesh3->set_reflect_to_refract_ratio(0.33); // 33% reflective
     mesh3->set_texture_index(                        mesh3->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh3->set_normal_map_texture_index(             mesh3->get_material()->get_texture_index_by_name("chesterfield_normal"));
@@ -634,7 +634,7 @@ int init_resources()
     mesh7->set_material(env_mapped_fast_material);
 
     // tetrahedron
-    mesh8->set_material(env_mapped_ex_material);
+    mesh8->set_material(env_mapped_dbl_refract_material);
     mesh8->set_reflect_to_refract_ratio(0.33); // 33% reflective
     mesh8->set_texture_index(                        mesh8->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh8->set_normal_map_texture_index(             mesh8->get_material()->get_texture_index_by_name("chesterfield_normal"));
@@ -647,7 +647,7 @@ int init_resources()
     mesh9->set_reflect_to_refract_ratio(0.33); // 33% reflective
 
     // box2
-    mesh10->set_material(env_mapped_ex_material);
+    mesh10->set_material(env_mapped_dbl_refract_material);
     mesh10->set_reflect_to_refract_ratio(0.33); // 33% reflective
     mesh10->set_texture_index(                        mesh10->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh10->set_normal_map_texture_index(             mesh10->get_material()->get_texture_index_by_name("chesterfield_normal"));
@@ -656,7 +656,7 @@ int init_resources()
     mesh10->set_backface_normal_overlay_texture_index(mesh10->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // diamond2
-    hidden_mesh->set_material(env_mapped_ex_material);
+    hidden_mesh->set_material(env_mapped_dbl_refract_material);
     hidden_mesh->set_reflect_to_refract_ratio(0.33); // 33% reflective
     hidden_mesh->set_texture_index(                        hidden_mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
     hidden_mesh->set_normal_map_texture_index(             hidden_mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
@@ -665,7 +665,7 @@ int init_resources()
     hidden_mesh->set_backface_normal_overlay_texture_index(hidden_mesh->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // sphere2
-    hidden_mesh2->set_material(env_mapped_ex_material);
+    hidden_mesh2->set_material(env_mapped_dbl_refract_material);
     hidden_mesh2->set_reflect_to_refract_ratio(0.33); // 33% reflective
     hidden_mesh2->set_texture_index(                        hidden_mesh2->get_material()->get_texture_index_by_name("chesterfield_color"));
     hidden_mesh2->set_normal_map_texture_index(             hidden_mesh2->get_material()->get_texture_index_by_name("chesterfield_normal"));
@@ -674,7 +674,7 @@ int init_resources()
     hidden_mesh2->set_backface_normal_overlay_texture_index(hidden_mesh2->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // box3
-    hidden_mesh3->set_material(env_mapped_ex_material);
+    hidden_mesh3->set_material(env_mapped_dbl_refract_material);
     hidden_mesh3->set_reflect_to_refract_ratio(0.33); // 33% reflective
     hidden_mesh3->set_texture_index(                        hidden_mesh3->get_material()->get_texture_index_by_name("chesterfield_color"));
     hidden_mesh3->set_normal_map_texture_index(             hidden_mesh3->get_material()->get_texture_index_by_name("chesterfield_normal"));
