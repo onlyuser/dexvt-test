@@ -19,6 +19,48 @@ class ShaderContext
 public:
     typedef std::vector<Texture*> textures_t;
 
+    enum var_attribute_type_t {
+        var_attribute_type_vertex_normal,
+        var_attribute_type_vertex_tangent,
+        var_attribute_type_texcoord,
+        var_attribute_type_vertex_position,
+        var_attribute_type_count
+    };
+
+    typedef std::pair<var_attribute_type_t, const char*> var_attribute_type_to_name_table_t;
+    static var_attribute_type_to_name_table_t m_var_attribute_type_to_name_table[];
+
+    enum var_uniform_type_t {
+        var_uniform_type_ambient_color,
+        var_uniform_type_mvp_xform,
+        var_uniform_type_model_xform,
+        var_uniform_type_normal_xform,
+        var_uniform_type_color_texture,
+        var_uniform_type_color_texture2,
+        var_uniform_type_normal_map_texture,
+        var_uniform_type_camera_pos,
+        var_uniform_type_light_pos,
+        var_uniform_type_light_color,
+        var_uniform_type_light_enabled,
+        var_uniform_type_light_count,
+        var_uniform_type_env_map_texture,
+        var_uniform_type_inv_projection_xform,
+        var_uniform_type_inv_normal_xform,
+        var_uniform_type_frontface_depth_overlay_texture,
+        var_uniform_type_backface_depth_overlay_texture,
+        var_uniform_type_backface_normal_overlay_texture,
+        var_uniform_type_viewport_dim,
+        var_uniform_type_bloom_kernel,
+        var_uniform_type_camera_near,
+        var_uniform_type_camera_far,
+        var_uniform_type_view_proj_xform,
+        var_uniform_type_reflect_to_refract_ratio,
+        var_uniform_type_count
+    };
+
+    typedef std::pair<var_uniform_type_t, const char*> var_uniform_type_to_name_table_t;
+    static var_uniform_type_to_name_table_t m_var_uniform_type_to_name_table[];
+
     ShaderContext(
             Material* material,
             Buffer*   vbo_vert_coords,
@@ -26,6 +68,7 @@ public:
             Buffer*   vbo_vert_tangent,
             Buffer*   vbo_tex_coords,
             Buffer*   ibo_tri_indices);
+    ~ShaderContext();
     Material* get_material() const
     {
         return m_material;
@@ -57,38 +100,10 @@ public:
     void set_reflect_to_refract_ratio(GLfloat reflect_to_refract_ratio);
 
 private:
-    Material* m_material;
+    Material *m_material;
     Buffer *m_vbo_vert_coords, *m_vbo_vert_normal, *m_vbo_vert_tangent, *m_vbo_tex_coords, *m_ibo_tri_indices;
-    std::unique_ptr<VarAttribute>
-            m_var_attribute_vertex_position,
-            m_var_attribute_vertex_normal,
-            m_var_attribute_vertex_tangent,
-            m_var_attribute_texcoord;
-    std::unique_ptr<VarUniform>
-            m_var_uniform_ambient_color,
-            m_var_uniform_mvp_xform,
-            m_var_uniform_model_xform,
-            m_var_uniform_normal_xform,
-            m_var_uniform_color_texture,
-            m_var_uniform_color_texture2,
-            m_var_uniform_normal_map_texture,
-            m_var_uniform_camera_pos,
-            m_var_uniform_light_pos,
-            m_var_uniform_light_color,
-            m_var_uniform_light_enabled,
-            m_var_uniform_light_count,
-            m_var_uniform_env_map_texture,
-            m_var_uniform_inv_projection_xform,
-            m_var_uniform_inv_normal_xform,
-            m_var_uniform_frontface_depth_overlay_texture,
-            m_var_uniform_backface_depth_overlay_texture,
-            m_var_uniform_backface_normal_overlay_texture,
-            m_var_uniform_viewport_dim,
-            m_var_uniform_bloom_kernel,
-            m_var_uniform_camera_near,
-            m_var_uniform_camera_far,
-            m_var_uniform_view_proj_xform,
-            m_var_uniform_reflect_to_refract_ratio;
+    VarAttribute *m_var_attributes[var_attribute_type_count];
+    VarUniform   *m_var_uniforms[var_uniform_type_count];
     const textures_t &m_textures;
     bool m_use_ambient_color;
     bool m_use_normal_only;

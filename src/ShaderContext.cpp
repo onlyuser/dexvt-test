@@ -10,9 +10,47 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <memory> // std::unique_ptr
 
+#include <iostream>
+
 #define NUM_LIGHTS 8
 
 namespace vt {
+
+ShaderContext::var_attribute_type_to_name_table_t ShaderContext::m_var_attribute_type_to_name_table[] = {
+        {ShaderContext::var_attribute_type_vertex_normal,   "vertex_normal"},
+        {ShaderContext::var_attribute_type_vertex_tangent,  "vertex_tangent"},
+        {ShaderContext::var_attribute_type_texcoord,        "texcoord"},
+        {ShaderContext::var_attribute_type_vertex_position, "vertex_position"},
+        {ShaderContext::var_attribute_type_count,           ""},
+        };
+
+ShaderContext::var_uniform_type_to_name_table_t ShaderContext::m_var_uniform_type_to_name_table[] = {
+        {ShaderContext::var_uniform_type_ambient_color,                   "ambient_color"},
+        {ShaderContext::var_uniform_type_mvp_xform,                       "mvp_xform"},
+        {ShaderContext::var_uniform_type_model_xform,                     "model_xform"},
+        {ShaderContext::var_uniform_type_normal_xform,                    "normal_xform"},
+        {ShaderContext::var_uniform_type_color_texture,                   "color_texture"},
+        {ShaderContext::var_uniform_type_color_texture2,                  "color_texture2"},
+        {ShaderContext::var_uniform_type_normal_map_texture,              "normal_map_texture"},
+        {ShaderContext::var_uniform_type_camera_pos,                      "camera_position"},
+        {ShaderContext::var_uniform_type_light_pos,                       "light_position"},
+        {ShaderContext::var_uniform_type_light_color,                     "light_color"},
+        {ShaderContext::var_uniform_type_light_enabled,                   "light_enabled"},
+        {ShaderContext::var_uniform_type_light_count,                     "light_count"},
+        {ShaderContext::var_uniform_type_env_map_texture,                 "env_map_texture"},
+        {ShaderContext::var_uniform_type_inv_projection_xform,            "inv_projection_xform"},
+        {ShaderContext::var_uniform_type_inv_normal_xform,                "inv_normal_xform"},
+        {ShaderContext::var_uniform_type_frontface_depth_overlay_texture, "frontface_depth_overlay_texture"},
+        {ShaderContext::var_uniform_type_backface_depth_overlay_texture,  "backface_depth_overlay_texture"},
+        {ShaderContext::var_uniform_type_backface_normal_overlay_texture, "backface_normal_overlay_texture"},
+        {ShaderContext::var_uniform_type_viewport_dim,                    "viewport_dim"},
+        {ShaderContext::var_uniform_type_bloom_kernel,                    "bloom_kernel"},
+        {ShaderContext::var_uniform_type_camera_near,                     "camera_near"},
+        {ShaderContext::var_uniform_type_camera_far,                      "camera_far"},
+        {ShaderContext::var_uniform_type_view_proj_xform,                 "view_proj_xform"},
+        {ShaderContext::var_uniform_type_reflect_to_refract_ratio,        "reflect_to_refract_ratio"},
+        {ShaderContext::var_uniform_type_count,                           ""}
+    };
 
 ShaderContext::ShaderContext(
         Material* material,
@@ -41,66 +79,30 @@ ShaderContext::ShaderContext(
       m_skybox(material->skybox()),
       m_overlay(material->overlay())
 {
-    Program *program = material->get_program();
-    if(m_use_ambient_color) {
-        m_var_uniform_ambient_color = std::unique_ptr<VarUniform>(program->get_var_uniform("ambient_color"));
+    Program* program = material->get_program();
+    for(int i = 0; i < var_attribute_type_count; i++) {
+        if(!program->has_var(m_var_attribute_type_to_name_table[i].second)) {
+            m_var_attributes[i] = NULL;
+            continue;
+        }
+        m_var_attributes[i] = program->get_var_attribute(m_var_attribute_type_to_name_table[i].second);
     }
-    if(m_use_normal_only || m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping) {
-        m_var_attribute_vertex_normal = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_normal"));
-        m_var_uniform_normal_xform    = std::unique_ptr<VarUniform>(program->get_var_uniform("normal_xform"));
-        if((!m_use_normal_only && m_use_normal_mapping) || m_use_env_mapping) {
-            m_var_uniform_model_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("model_xform"));
-            m_var_uniform_camera_pos  = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_position"));
+    for(int j = 0; j < var_uniform_type_count; j++) {
+        if(!program->has_var(m_var_uniform_type_to_name_table[j].second)) {
+            m_var_uniforms[j] = NULL;
+            continue;
         }
-        if(m_use_phong_shading) {
-            m_var_uniform_light_pos     = std::unique_ptr<VarUniform>(program->get_var_uniform("light_position"));
-            m_var_uniform_light_color   = std::unique_ptr<VarUniform>(program->get_var_uniform("light_color"));
-            m_var_uniform_light_enabled = std::unique_ptr<VarUniform>(program->get_var_uniform("light_enabled"));
-            m_var_uniform_light_count   = std::unique_ptr<VarUniform>(program->get_var_uniform("light_count"));
-        }
-        if(m_use_normal_mapping) {
-            m_var_attribute_vertex_tangent   = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_tangent"));
-            m_var_uniform_normal_map_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("normal_map_texture"));
-        }
-        if(m_use_env_mapping) {
-            m_var_uniform_env_map_texture          = std::unique_ptr<VarUniform>(program->get_var_uniform("env_map_texture"));
-            m_var_uniform_reflect_to_refract_ratio = std::unique_ptr<VarUniform>(program->get_var_uniform("reflect_to_refract_ratio"));
-        }
+        m_var_uniforms[j] = program->get_var_uniform(m_var_uniform_type_to_name_table[j].second);
     }
-    if(m_use_texture_mapping || m_use_normal_mapping) {
-        m_var_attribute_texcoord = std::unique_ptr<VarAttribute>(program->get_var_attribute("texcoord"));
-        if(m_use_texture_mapping) {
-            m_var_uniform_color_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("color_texture"));
+}
+
+ShaderContext::~ShaderContext()
+{
+    for(int i = 0; i < var_uniform_type_count; i++) {
+        if(!m_var_uniforms[i]) {
+            continue;
         }
-    }
-    if(m_use_depth_overlay) {
-        m_var_uniform_frontface_depth_overlay_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("frontface_depth_overlay_texture"));
-        m_var_uniform_backface_depth_overlay_texture  = std::unique_ptr<VarUniform>(program->get_var_uniform("backface_depth_overlay_texture"));
-        m_var_uniform_backface_normal_overlay_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("backface_normal_overlay_texture"));
-        m_var_uniform_viewport_dim                    = std::unique_ptr<VarUniform>(program->get_var_uniform("viewport_dim"));
-        m_var_uniform_camera_near                     = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_near"));
-        m_var_uniform_camera_far                      = std::unique_ptr<VarUniform>(program->get_var_uniform("camera_far"));
-        m_var_uniform_view_proj_xform                 = std::unique_ptr<VarUniform>(program->get_var_uniform("view_proj_xform"));
-    }
-    if(m_use_ssao) {
-        m_var_uniform_frontface_depth_overlay_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("frontface_depth_overlay_texture"));
-    }
-    if(m_skybox) {
-        m_var_uniform_env_map_texture      = std::unique_ptr<VarUniform>(program->get_var_uniform("env_map_texture"));
-        m_var_uniform_inv_projection_xform = std::unique_ptr<VarUniform>(program->get_var_uniform("inv_projection_xform"));
-        m_var_uniform_inv_normal_xform     = std::unique_ptr<VarUniform>(program->get_var_uniform("inv_normal_xform"));
-    } else if(m_overlay) {
-        m_var_uniform_color_texture = std::unique_ptr<VarUniform>(program->get_var_uniform("color_texture"));
-        if(m_use_bloom_kernel) {
-            m_var_uniform_viewport_dim = std::unique_ptr<VarUniform>(program->get_var_uniform("viewport_dim"));
-            m_var_uniform_bloom_kernel = std::unique_ptr<VarUniform>(program->get_var_uniform("bloom_kernel"));
-        }
-        if(m_use_texture2) {
-            m_var_uniform_color_texture2 = std::unique_ptr<VarUniform>(program->get_var_uniform("color_texture2"));
-        }
-    } else {
-        m_var_attribute_vertex_position = std::unique_ptr<VarAttribute>(program->get_var_attribute("vertex_position"));
-        m_var_uniform_mvp_xform         = std::unique_ptr<VarUniform>(program->get_var_uniform("mvp_xform"));
+        delete m_var_uniforms[i];
     }
 }
 
@@ -125,8 +127,8 @@ void ShaderContext::render()
         glEnable(GL_DEPTH_TEST);
         return;
     }
-    m_var_attribute_vertex_position->enable_vertex_attrib_array();
-    m_var_attribute_vertex_position->vertex_attrib_pointer(
+    m_var_attributes[var_attribute_type_vertex_position]->enable_vertex_attrib_array();
+    m_var_attributes[var_attribute_type_vertex_position]->vertex_attrib_pointer(
             m_vbo_vert_coords,
             3,        // number of elements per vertex, here (x,y,z)
             GL_FLOAT, // the type of each element
@@ -134,8 +136,8 @@ void ShaderContext::render()
             0,        // no extra data between each position
             0);       // offset of first element
     if(m_use_normal_only || m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping) {
-        m_var_attribute_vertex_normal->enable_vertex_attrib_array();
-        m_var_attribute_vertex_normal->vertex_attrib_pointer(
+        m_var_attributes[var_attribute_type_vertex_normal]->enable_vertex_attrib_array();
+        m_var_attributes[var_attribute_type_vertex_normal]->vertex_attrib_pointer(
                 m_vbo_vert_normal,
                 3,        // number of elements per vertex, here (x,y,z)
                 GL_FLOAT, // the type of each element
@@ -143,8 +145,8 @@ void ShaderContext::render()
                 0,        // no extra data between each position
                 0);       // offset of first element
         if(m_use_normal_mapping) {
-            m_var_attribute_vertex_tangent->enable_vertex_attrib_array();
-            m_var_attribute_vertex_tangent->vertex_attrib_pointer(
+            m_var_attributes[var_attribute_type_vertex_tangent]->enable_vertex_attrib_array();
+            m_var_attributes[var_attribute_type_vertex_tangent]->vertex_attrib_pointer(
                     m_vbo_vert_tangent,
                     3,        // number of elements per vertex, here (x,y,z)
                     GL_FLOAT, // the type of each element
@@ -154,8 +156,8 @@ void ShaderContext::render()
         }
     }
     if(m_use_texture_mapping || m_use_normal_mapping) {
-        m_var_attribute_texcoord->enable_vertex_attrib_array();
-        m_var_attribute_texcoord->vertex_attrib_pointer(
+        m_var_attributes[var_attribute_type_texcoord]->enable_vertex_attrib_array();
+        m_var_attributes[var_attribute_type_texcoord]->vertex_attrib_pointer(
                 m_vbo_tex_coords,
                 2,        // number of elements per vertex, here (x,y)
                 GL_FLOAT, // the type of each element
@@ -167,143 +169,143 @@ void ShaderContext::render()
         m_ibo_tri_indices->bind();
         glDrawElements(GL_TRIANGLES, m_ibo_tri_indices->size()/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
     }
-    m_var_attribute_vertex_position->disable_vertex_attrib_array();
+    m_var_attributes[var_attribute_type_vertex_position]->disable_vertex_attrib_array();
     if(m_use_normal_only || m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping) {
-        m_var_attribute_vertex_normal->disable_vertex_attrib_array();
+        m_var_attributes[var_attribute_type_vertex_normal]->disable_vertex_attrib_array();
         if(m_use_normal_mapping) {
-            m_var_attribute_vertex_tangent->disable_vertex_attrib_array();
+            m_var_attributes[var_attribute_type_vertex_tangent]->disable_vertex_attrib_array();
         }
     }
     if(m_use_texture_mapping || m_use_normal_mapping) {
-        m_var_attribute_texcoord->disable_vertex_attrib_array();
+        m_var_attributes[var_attribute_type_texcoord]->disable_vertex_attrib_array();
     }
 }
 
 void ShaderContext::set_ambient_color(GLfloat* ambient_color)
 {
-    m_var_uniform_ambient_color->uniform_3fv(1, ambient_color);
+    m_var_uniforms[var_uniform_type_ambient_color]->uniform_3fv(1, ambient_color);
 }
 
 void ShaderContext::set_mvp_xform(glm::mat4 mvp_xform)
 {
-    m_var_uniform_mvp_xform->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(mvp_xform));
+    m_var_uniforms[var_uniform_type_mvp_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(mvp_xform));
 }
 
 void ShaderContext::set_model_xform(glm::mat4 model_xform)
 {
-    m_var_uniform_model_xform->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(model_xform));
+    m_var_uniforms[var_uniform_type_model_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(model_xform));
 }
 
 void ShaderContext::set_view_proj_xform(glm::mat4 view_proj_xform)
 {
-    m_var_uniform_view_proj_xform->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(view_proj_xform));
+    m_var_uniforms[var_uniform_type_view_proj_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(view_proj_xform));
 }
 
 void ShaderContext::set_normal_xform(glm::mat4 normal_xform)
 {
-    m_var_uniform_normal_xform->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(normal_xform));
+    m_var_uniforms[var_uniform_type_normal_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(normal_xform));
 }
 
 void ShaderContext::set_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
-    m_var_uniform_color_texture->uniform_1i(texture_id);
+    m_var_uniforms[var_uniform_type_color_texture]->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_texture2_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
-    m_var_uniform_color_texture2->uniform_1i(texture_id);
+    m_var_uniforms[var_uniform_type_color_texture2]->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_normal_map_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
-    m_var_uniform_normal_map_texture->uniform_1i(texture_id);
+    m_var_uniforms[var_uniform_type_normal_map_texture]->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_camera_pos(GLfloat* camera_pos_arr)
 {
-    m_var_uniform_camera_pos->uniform_3fv(1, camera_pos_arr);
+    m_var_uniforms[var_uniform_type_camera_pos]->uniform_3fv(1, camera_pos_arr);
 }
 
 void ShaderContext::set_light_pos(size_t num_lights, GLfloat* light_pos_arr)
 {
-    m_var_uniform_light_pos->uniform_3fv(num_lights, light_pos_arr);
+    m_var_uniforms[var_uniform_type_light_pos]->uniform_3fv(num_lights, light_pos_arr);
 }
 
 void ShaderContext::set_light_color(size_t num_lights, GLfloat* light_color_arr)
 {
-    m_var_uniform_light_color->uniform_3fv(num_lights, light_color_arr);
+    m_var_uniforms[var_uniform_type_light_color]->uniform_3fv(num_lights, light_color_arr);
 }
 
 void ShaderContext::set_light_enabled(size_t num_lights, GLint* light_enabled_arr)
 {
-    m_var_uniform_light_enabled->uniform_1iv(num_lights, light_enabled_arr);
+    m_var_uniforms[var_uniform_type_light_enabled]->uniform_1iv(num_lights, light_enabled_arr);
 }
 
 void ShaderContext::set_light_count(GLint light_count)
 {
-    m_var_uniform_light_count->uniform_1i(light_count);
+    m_var_uniforms[var_uniform_type_light_count]->uniform_1i(light_count);
 }
 
 void ShaderContext::set_env_map_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
-    m_var_uniform_env_map_texture->uniform_1i(texture_id);
+    m_var_uniforms[var_uniform_type_env_map_texture]->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_inv_projection_xform(glm::mat4 inv_projection_xform)
 {
-    m_var_uniform_inv_projection_xform->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(inv_projection_xform));
+    m_var_uniforms[var_uniform_type_inv_projection_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(inv_projection_xform));
 }
 
 void ShaderContext::set_inv_normal_xform(glm::mat4 inv_normal_xform)
 {
-    m_var_uniform_inv_normal_xform->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(inv_normal_xform));
+    m_var_uniforms[var_uniform_type_inv_normal_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(inv_normal_xform));
 }
 
 void ShaderContext::set_frontface_depth_overlay_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
-    m_var_uniform_frontface_depth_overlay_texture->uniform_1i(texture_id);
+    m_var_uniforms[var_uniform_type_frontface_depth_overlay_texture]->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_backface_depth_overlay_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
-    m_var_uniform_backface_depth_overlay_texture->uniform_1i(texture_id);
+    m_var_uniforms[var_uniform_type_backface_depth_overlay_texture]->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_backface_normal_overlay_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
-    m_var_uniform_backface_normal_overlay_texture->uniform_1i(texture_id);
+    m_var_uniforms[var_uniform_type_backface_normal_overlay_texture]->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_viewport_dim(GLfloat* viewport_dim_arr)
 {
-    m_var_uniform_viewport_dim->uniform_2fv(1, viewport_dim_arr);
+    m_var_uniforms[var_uniform_type_viewport_dim]->uniform_2fv(1, viewport_dim_arr);
 }
 
 void ShaderContext::set_bloom_kernel(GLfloat* bloom_kernel_arr)
 {
-    m_var_uniform_bloom_kernel->uniform_1fv(25, bloom_kernel_arr);
+    m_var_uniforms[var_uniform_type_bloom_kernel]->uniform_1fv(25, bloom_kernel_arr);
 }
 
 void ShaderContext::set_camera_near(GLfloat camera_near)
 {
-    m_var_uniform_camera_near->uniform_1f(camera_near);
+    m_var_uniforms[var_uniform_type_camera_near]->uniform_1f(camera_near);
 }
 
 void ShaderContext::set_camera_far(GLfloat camera_far)
 {
-    m_var_uniform_camera_far->uniform_1f(camera_far);
+    m_var_uniforms[var_uniform_type_camera_far]->uniform_1f(camera_far);
 }
 
 void ShaderContext::set_reflect_to_refract_ratio(GLfloat reflect_to_refract_ratio)
 {
-    m_var_uniform_reflect_to_refract_ratio->uniform_1f(reflect_to_refract_ratio);
+    m_var_uniforms[var_uniform_type_reflect_to_refract_ratio]->uniform_1f(reflect_to_refract_ratio);
 }
 
 }

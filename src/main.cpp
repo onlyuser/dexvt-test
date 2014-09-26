@@ -149,6 +149,21 @@ int init_resources()
             false,  // use_texture2
             false,  // skybox
             false); // overlay
+    vt::Program* normal_mapped_program = normal_mapped_material->get_program();
+    normal_mapped_program->add_var("vertex_normal",      vt::Program::VAR_TYPE_ATTRIBUTE);
+    normal_mapped_program->add_var("vertex_tangent",     vt::Program::VAR_TYPE_ATTRIBUTE);
+    normal_mapped_program->add_var("texcoord",           vt::Program::VAR_TYPE_ATTRIBUTE);
+    normal_mapped_program->add_var("vertex_position",    vt::Program::VAR_TYPE_ATTRIBUTE);
+    normal_mapped_program->add_var("normal_xform",       vt::Program::VAR_TYPE_UNIFORM);
+    normal_mapped_program->add_var("model_xform",        vt::Program::VAR_TYPE_UNIFORM);
+    normal_mapped_program->add_var("camera_position",    vt::Program::VAR_TYPE_UNIFORM);
+    normal_mapped_program->add_var("light_position",     vt::Program::VAR_TYPE_UNIFORM);
+    normal_mapped_program->add_var("light_color",        vt::Program::VAR_TYPE_UNIFORM);
+    normal_mapped_program->add_var("light_enabled",      vt::Program::VAR_TYPE_UNIFORM);
+    normal_mapped_program->add_var("light_count",        vt::Program::VAR_TYPE_UNIFORM);
+    normal_mapped_program->add_var("normal_map_texture", vt::Program::VAR_TYPE_UNIFORM);
+    normal_mapped_program->add_var("color_texture",      vt::Program::VAR_TYPE_UNIFORM);
+    normal_mapped_program->add_var("mvp_xform",          vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(normal_mapped_material);
 
     vt::Material* skybox_material = new vt::Material(
@@ -167,6 +182,10 @@ int init_resources()
             false,  // use_texture2
             true,   // skybox
             false); // overlay
+    vt::Program* skybox_material_program = skybox_material->get_program();
+    skybox_material_program->add_var("env_map_texture",      vt::Program::VAR_TYPE_UNIFORM);
+    skybox_material_program->add_var("inv_projection_xform", vt::Program::VAR_TYPE_UNIFORM);
+    skybox_material_program->add_var("inv_normal_xform",     vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(skybox_material);
 
     overlay_write_through_material = new vt::Material(
@@ -185,6 +204,8 @@ int init_resources()
             false, // use_texture2
             false, // skybox
             true); // overlay
+    vt::Program* overlay_write_through_program = overlay_write_through_material->get_program();
+    overlay_write_through_program->add_var("color_texture", vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(overlay_write_through_material);
 
     overlay_bloom_filter_material = new vt::Material(
@@ -203,6 +224,10 @@ int init_resources()
             false, // use_texture2
             false, // skybox
             true); // overlay
+    vt::Program* overlay_bloom_filter_program = overlay_bloom_filter_material->get_program();
+    overlay_bloom_filter_program->add_var("color_texture", vt::Program::VAR_TYPE_UNIFORM);
+    overlay_bloom_filter_program->add_var("viewport_dim",  vt::Program::VAR_TYPE_UNIFORM);
+    overlay_bloom_filter_program->add_var("bloom_kernel",  vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(overlay_bloom_filter_material);
 
     overlay_max_material = new vt::Material(
@@ -221,6 +246,9 @@ int init_resources()
             true,  // use_texture2
             false, // skybox
             true); // overlay
+    vt::Program* overlay_max_program = overlay_max_material->get_program();
+    overlay_max_program->add_var("color_texture",  vt::Program::VAR_TYPE_UNIFORM);
+    overlay_max_program->add_var("color_texture2", vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(overlay_max_material);
 
     vt::Material* texture_mapped_material = new vt::Material(
@@ -239,6 +267,11 @@ int init_resources()
             false,  // use_texture2
             false,  // skybox
             false); // overlay
+    vt::Program* texture_mapped_program = texture_mapped_material->get_program();
+    texture_mapped_program->add_var("texcoord",        vt::Program::VAR_TYPE_ATTRIBUTE);
+    texture_mapped_program->add_var("vertex_position", vt::Program::VAR_TYPE_ATTRIBUTE);
+    texture_mapped_program->add_var("color_texture",   vt::Program::VAR_TYPE_UNIFORM);
+    texture_mapped_program->add_var("mvp_xform",       vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(texture_mapped_material);
 
     vt::Material* env_mapped_material = new vt::Material(
@@ -257,6 +290,18 @@ int init_resources()
             false,  // use_texture2
             false,  // skybox
             false); // overlay
+    vt::Program* env_mapped_program = env_mapped_material->get_program();
+    env_mapped_program->add_var("vertex_normal",            vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_program->add_var("vertex_tangent",           vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_program->add_var("texcoord",                 vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_program->add_var("vertex_position",          vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_program->add_var("normal_xform",             vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_program->add_var("model_xform",              vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_program->add_var("camera_position",          vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_program->add_var("normal_map_texture",       vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_program->add_var("env_map_texture",          vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_program->add_var("reflect_to_refract_ratio", vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_program->add_var("mvp_xform",                vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(env_mapped_material);
 
     vt::Material* env_mapped_ex_material = new vt::Material(
@@ -275,9 +320,32 @@ int init_resources()
             false,  // use_texture2
             false,  // skybox
             false); // overlay
+    vt::Program* env_mapped_ex_program = env_mapped_ex_material->get_program();
+    env_mapped_ex_program->add_var("vertex_normal",                   vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_ex_program->add_var("vertex_tangent",                  vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_ex_program->add_var("texcoord",                        vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_ex_program->add_var("vertex_position",                 vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_ex_program->add_var("normal_xform",                    vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("model_xform",                     vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("camera_position",                 vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("light_position",                  vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("light_color",                     vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("light_enabled",                   vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("light_count",                     vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("normal_map_texture",              vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("env_map_texture",                 vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("reflect_to_refract_ratio",        vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("frontface_depth_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("backface_depth_overlay_texture",  vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("backface_normal_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("viewport_dim",                    vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("camera_near",                     vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("camera_far",                      vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("view_proj_xform",                 vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_ex_program->add_var("mvp_xform",                       vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(env_mapped_ex_material);
 
-    vt::Material* env_mapped_material_fast = new vt::Material(
+    vt::Material* env_mapped_fast_material = new vt::Material(
             "env_mapped_fast",
             "src/env_mapped_fast.v.glsl",
             "src/env_mapped_fast.f.glsl",
@@ -293,27 +361,37 @@ int init_resources()
             false,  // use_texture2
             false,  // skybox
             false); // overlay
-    scene->add_material(env_mapped_material_fast);
+    vt::Program* env_mapped_fast_program = env_mapped_fast_material->get_program();
+    env_mapped_fast_program->add_var("vertex_normal",            vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_fast_program->add_var("vertex_position",          vt::Program::VAR_TYPE_ATTRIBUTE);
+    env_mapped_fast_program->add_var("normal_xform",             vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_fast_program->add_var("model_xform",              vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_fast_program->add_var("camera_position",          vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_fast_program->add_var("env_map_texture",          vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_fast_program->add_var("reflect_to_refract_ratio", vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_fast_program->add_var("mvp_xform",                vt::Program::VAR_TYPE_UNIFORM);
+    scene->add_material(env_mapped_fast_material);
 
-    vt::Material* normal_material = new vt::Material(
-            "normal",
-            "src/normal.v.glsl",
-            "src/normal.f.glsl",
-            false,  // use_ambient_color
-            true,   // use_normal_only
-            false,  // use_phong_shading
-            false,  // use_texture_mapping
-            true,   // use_normal_mapping
-            false,  // use_env_mapping
-            false,  // use_depth_overlay
-            false,  // use_ssao
-            false,  // use_bloom_kernel
-            false,  // use_texture2
-            false,  // skybox
-            false); // overlay
-    scene->add_material(normal_material);
+    //vt::Material* normal_material = new vt::Material(
+    //        "normal",
+    //        "src/normal.v.glsl",
+    //        "src/normal.f.glsl",
+    //        false,  // use_ambient_color
+    //        true,   // use_normal_only
+    //        false,  // use_phong_shading
+    //        false,  // use_texture_mapping
+    //        true,   // use_normal_mapping
+    //        false,  // use_env_mapping
+    //        false,  // use_depth_overlay
+    //        false,  // use_ssao
+    //        false,  // use_bloom_kernel
+    //        false,  // use_texture2
+    //        false,  // skybox
+    //        false); // overlay
+    //vt::Program* normal_program = normal_material->get_program();
+    //scene->add_material(normal_material);
 
-    vt::Material* normal_material_fast = new vt::Material(
+    vt::Material* normal_fast_material = new vt::Material(
             "normal_fast",
             "src/normal_fast.v.glsl",
             "src/normal_fast.f.glsl",
@@ -329,8 +407,13 @@ int init_resources()
             false,  // use_texture2
             false,  // skybox
             false); // overlay
-    scene->add_material(normal_material_fast);
-    scene->set_normal_material(normal_material_fast);
+    scene->add_material(normal_fast_material);
+    vt::Program* normal_fast_program = normal_fast_material->get_program();
+    normal_fast_program->add_var("vertex_normal",   vt::Program::VAR_TYPE_ATTRIBUTE);
+    normal_fast_program->add_var("vertex_position", vt::Program::VAR_TYPE_ATTRIBUTE);
+    normal_fast_program->add_var("normal_xform",    vt::Program::VAR_TYPE_UNIFORM);
+    normal_fast_program->add_var("mvp_xform",       vt::Program::VAR_TYPE_UNIFORM);
+    scene->set_normal_material(normal_fast_material);
 
     vt::Material* ambient_material = new vt::Material(
             "ambient",
@@ -349,6 +432,10 @@ int init_resources()
             false,  // skybox
             false); // overlay
     scene->add_material(ambient_material);
+    vt::Program* ambient_program = ambient_material->get_program();
+    ambient_program->add_var("vertex_position", vt::Program::VAR_TYPE_ATTRIBUTE);
+    ambient_program->add_var("ambient_color",   vt::Program::VAR_TYPE_UNIFORM);
+    ambient_program->add_var("mvp_xform",       vt::Program::VAR_TYPE_UNIFORM);
     scene->set_wireframe_material(ambient_material);
 
     vt::Texture* texture = new vt::Texture(
@@ -383,7 +470,7 @@ int init_resources()
     normal_mapped_material->add_texture(texture4);
     env_mapped_material->add_texture(   texture4);
     env_mapped_ex_material->add_texture(texture4);
-    normal_material->add_texture(       texture4);
+    //normal_material->add_texture(       texture4);
 
     vt::Texture* texture5 = new vt::Texture(
             "skybox_texture",
@@ -397,7 +484,7 @@ int init_resources()
     skybox_material->add_texture(         texture5);
     env_mapped_material->add_texture(     texture5);
     env_mapped_ex_material->add_texture(  texture5);
-    env_mapped_material_fast->add_texture(texture5);
+    env_mapped_fast_material->add_texture(texture5);
 
     vt::Texture* frontface_depth_overlay_texture = new vt::Texture(
             "frontface_depth_overlay",
@@ -544,7 +631,7 @@ int init_resources()
     mesh6->set_texture_index(mesh6->get_material()->get_texture_index_by_name("dex3d"));
 
     // hemisphere
-    mesh7->set_material(env_mapped_material_fast);
+    mesh7->set_material(env_mapped_fast_material);
 
     // tetrahedron
     mesh8->set_material(env_mapped_ex_material);
@@ -556,7 +643,7 @@ int init_resources()
     mesh8->set_backface_normal_overlay_texture_index(mesh8->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // diamond
-    mesh9->set_material(env_mapped_material_fast);
+    mesh9->set_material(env_mapped_fast_material);
     mesh9->set_reflect_to_refract_ratio(0.33); // 33% reflective
 
     // box2
@@ -596,7 +683,7 @@ int init_resources()
     hidden_mesh3->set_backface_normal_overlay_texture_index(hidden_mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // grid2
-    hidden_mesh4->set_material(env_mapped_material_fast);
+    hidden_mesh4->set_material(env_mapped_fast_material);
     hidden_mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
 
     return 1;

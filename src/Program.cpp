@@ -4,6 +4,8 @@
 #include <VarUniform.h>
 #include <GL/glew.h>
 
+#include <iostream>
+
 namespace vt {
 
 Program::Program()
@@ -63,6 +65,33 @@ void Program::get_program_iv(
         GLint *params) const
 {
     glGetProgramiv(m_id, pname, params);
+}
+
+bool Program::add_var(std::string name, var_type_t var_type)
+{
+    var_names_t::iterator p = m_var_names.find(name);
+    if(p != m_var_names.end()) {
+        return false;
+    }
+    m_var_names[name] = var_type;
+    return true;
+}
+
+bool Program::has_var(std::string name, var_type_t* var_type)
+{
+    var_names_t::iterator p = m_var_names.find(name);
+    if(p == m_var_names.end()) {
+        return false;
+    }
+    if(var_type) {
+        *var_type = (*p).second;
+    }
+    return true;
+}
+
+void Program::clear_vars()
+{
+    m_var_names.clear();
 }
 
 }
