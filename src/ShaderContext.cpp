@@ -70,7 +70,7 @@ ShaderContext::ShaderContext(
       m_use_normal_only(material->use_normal_only()),
       m_use_phong_shading(material->use_phong_shading()),
       m_use_texture_mapping(material->use_texture_mapping()),
-      m_use_normal_mapping(material->use_normal_mapping()),
+      m_use_bump_mapping(material->use_bump_mapping()),
       m_use_env_mapping(material->use_env_mapping()),
       m_use_depth_overlay(material->use_depth_overlay()),
       m_use_ssao(material->use_ssao()),
@@ -135,7 +135,7 @@ void ShaderContext::render()
             GL_FALSE, // take our values as-is
             0,        // no extra data between each position
             0);       // offset of first element
-    if(m_use_normal_only || m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping) {
+    if(m_use_normal_only || m_use_phong_shading || m_use_bump_mapping || m_use_env_mapping) {
         m_var_attributes[var_attribute_type_vertex_normal]->enable_vertex_attrib_array();
         m_var_attributes[var_attribute_type_vertex_normal]->vertex_attrib_pointer(
                 m_vbo_vert_normal,
@@ -144,7 +144,7 @@ void ShaderContext::render()
                 GL_FALSE, // take our values as-is
                 0,        // no extra data between each position
                 0);       // offset of first element
-        if(m_use_normal_mapping) {
+        if(m_use_bump_mapping) {
             m_var_attributes[var_attribute_type_vertex_tangent]->enable_vertex_attrib_array();
             m_var_attributes[var_attribute_type_vertex_tangent]->vertex_attrib_pointer(
                     m_vbo_vert_tangent,
@@ -155,7 +155,7 @@ void ShaderContext::render()
                     0);       // offset of first element
         }
     }
-    if(m_use_texture_mapping || m_use_normal_mapping) {
+    if(m_use_texture_mapping || m_use_bump_mapping) {
         m_var_attributes[var_attribute_type_texcoord]->enable_vertex_attrib_array();
         m_var_attributes[var_attribute_type_texcoord]->vertex_attrib_pointer(
                 m_vbo_tex_coords,
@@ -170,13 +170,13 @@ void ShaderContext::render()
         glDrawElements(GL_TRIANGLES, m_ibo_tri_indices->size()/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
     }
     m_var_attributes[var_attribute_type_vertex_position]->disable_vertex_attrib_array();
-    if(m_use_normal_only || m_use_phong_shading || m_use_normal_mapping || m_use_env_mapping) {
+    if(m_use_normal_only || m_use_phong_shading || m_use_bump_mapping || m_use_env_mapping) {
         m_var_attributes[var_attribute_type_vertex_normal]->disable_vertex_attrib_array();
-        if(m_use_normal_mapping) {
+        if(m_use_bump_mapping) {
             m_var_attributes[var_attribute_type_vertex_tangent]->disable_vertex_attrib_array();
         }
     }
-    if(m_use_texture_mapping || m_use_normal_mapping) {
+    if(m_use_texture_mapping || m_use_bump_mapping) {
         m_var_attributes[var_attribute_type_texcoord]->disable_vertex_attrib_array();
     }
 }

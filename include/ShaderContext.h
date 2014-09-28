@@ -109,7 +109,7 @@ private:
     bool m_use_normal_only;
     bool m_use_phong_shading;
     bool m_use_texture_mapping;
-    bool m_use_normal_mapping;
+    bool m_use_bump_mapping;
     bool m_use_env_mapping;
     bool m_use_depth_overlay;
     bool m_use_ssao;

@@ -133,15 +133,15 @@ int init_resources()
     hidden_mesh3->set_scale(glm::vec3(2, 2, 2)); // box3
     hidden_mesh4->set_scale(glm::vec3(4, 4, 4)); // grid2
 
-    vt::Material* normal_mapped_material = new vt::Material(
-            "normal_mapped",
-            "src/normal_mapped.v.glsl",
-            "src/normal_mapped.f.glsl",
+    vt::Material* bump_mapped_material = new vt::Material(
+            "bump_mapped",
+            "src/shaders/bump_mapped.v.glsl",
+            "src/shaders/bump_mapped.f.glsl",
             false,  // use_ambient_color
             false,  // use_normal_only
             true,   // use_phong_shading
             true,   // use_texture_mapping
-            true,   // use_normal_mapping
+            true,   // use_bump_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_ssao
@@ -149,32 +149,32 @@ int init_resources()
             false,  // use_texture2
             false,  // skybox
             false); // overlay
-    vt::Program* normal_mapped_program = normal_mapped_material->get_program();
-    normal_mapped_program->add_var("texcoord",           vt::Program::VAR_TYPE_ATTRIBUTE);
-    normal_mapped_program->add_var("vertex_normal",      vt::Program::VAR_TYPE_ATTRIBUTE);
-    normal_mapped_program->add_var("vertex_position",    vt::Program::VAR_TYPE_ATTRIBUTE);
-    normal_mapped_program->add_var("vertex_tangent",     vt::Program::VAR_TYPE_ATTRIBUTE);
-    normal_mapped_program->add_var("normal_xform",       vt::Program::VAR_TYPE_UNIFORM);
-    normal_mapped_program->add_var("model_xform",        vt::Program::VAR_TYPE_UNIFORM);
-    normal_mapped_program->add_var("camera_pos",         vt::Program::VAR_TYPE_UNIFORM);
-    normal_mapped_program->add_var("light_pos",          vt::Program::VAR_TYPE_UNIFORM);
-    normal_mapped_program->add_var("light_color",        vt::Program::VAR_TYPE_UNIFORM);
-    normal_mapped_program->add_var("light_enabled",      vt::Program::VAR_TYPE_UNIFORM);
-    normal_mapped_program->add_var("light_count",        vt::Program::VAR_TYPE_UNIFORM);
-    normal_mapped_program->add_var("normal_map_texture", vt::Program::VAR_TYPE_UNIFORM);
-    normal_mapped_program->add_var("color_texture",      vt::Program::VAR_TYPE_UNIFORM);
-    normal_mapped_program->add_var("mvp_xform",          vt::Program::VAR_TYPE_UNIFORM);
-    scene->add_material(normal_mapped_material);
+    vt::Program* bump_mapped_program = bump_mapped_material->get_program();
+    bump_mapped_program->add_var("texcoord",           vt::Program::VAR_TYPE_ATTRIBUTE);
+    bump_mapped_program->add_var("vertex_normal",      vt::Program::VAR_TYPE_ATTRIBUTE);
+    bump_mapped_program->add_var("vertex_position",    vt::Program::VAR_TYPE_ATTRIBUTE);
+    bump_mapped_program->add_var("vertex_tangent",     vt::Program::VAR_TYPE_ATTRIBUTE);
+    bump_mapped_program->add_var("normal_xform",       vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("model_xform",        vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("camera_pos",         vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("light_pos",          vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("light_color",        vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("light_enabled",      vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("light_count",        vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("normal_map_texture", vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("color_texture",      vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("mvp_xform",          vt::Program::VAR_TYPE_UNIFORM);
+    scene->add_material(bump_mapped_material);
 
     vt::Material* skybox_material = new vt::Material(
             "skybox",
-            "src/skybox.v.glsl",
-            "src/skybox.f.glsl",
+            "src/shaders/skybox.v.glsl",
+            "src/shaders/skybox.f.glsl",
             false,  // use_ambient_color
             false,  // use_normal_only
             false,  // use_phong_shading
             false,  // use_texture_mapping
-            false,  // use_normal_mapping
+            false,  // use_bump_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_ssao
@@ -190,13 +190,13 @@ int init_resources()
 
     overlay_write_through_material = new vt::Material(
             "overlay_write_through",
-            "src/overlay_write_through.v.glsl",
-            "src/overlay_write_through.f.glsl",
+            "src/shaders/overlay_write_through.v.glsl",
+            "src/shaders/overlay_write_through.f.glsl",
             false, // use_ambient_color
             false, // use_normal_only
             false, // use_phong_shading
             false, // use_texture_mapping
-            false, // use_normal_mapping
+            false, // use_bump_mapping
             false, // use_env_mapping
             false, // use_depth_overlay
             false, // use_ssao
@@ -210,13 +210,13 @@ int init_resources()
 
     overlay_bloom_filter_material = new vt::Material(
             "overlay_bloom_filter",
-            "src/overlay_bloom_filter.v.glsl",
-            "src/overlay_bloom_filter.f.glsl",
+            "src/shaders/overlay_bloom_filter.v.glsl",
+            "src/shaders/overlay_bloom_filter.f.glsl",
             false, // use_ambient_color
             false, // use_normal_only
             false, // use_phong_shading
             false, // use_texture_mapping
-            false, // use_normal_mapping
+            false, // use_bump_mapping
             false, // use_env_mapping
             false, // use_depth_overlay
             false, // use_ssao
@@ -232,13 +232,13 @@ int init_resources()
 
     overlay_max_material = new vt::Material(
             "overlay_max",
-            "src/overlay_max.v.glsl",
-            "src/overlay_max.f.glsl",
+            "src/shaders/overlay_max.v.glsl",
+            "src/shaders/overlay_max.f.glsl",
             false, // use_ambient_color
             false, // use_normal_only
             false, // use_phong_shading
             false, // use_texture_mapping
-            false, // use_normal_mapping
+            false, // use_bump_mapping
             false, // use_env_mapping
             false, // use_depth_overlay
             false, // use_ssao
@@ -253,13 +253,13 @@ int init_resources()
 
     vt::Material* texture_mapped_material = new vt::Material(
             "texture_mapped",
-            "src/texture_mapped.v.glsl",
-            "src/texture_mapped.f.glsl",
+            "src/shaders/texture_mapped.v.glsl",
+            "src/shaders/texture_mapped.f.glsl",
             false,  // use_ambient_color
             false,  // use_normal_only
             false,  // use_phong_shading
             true,   // use_texture_mapping
-            false,  // use_normal_mapping
+            false,  // use_bump_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_ssao
@@ -276,13 +276,13 @@ int init_resources()
 
     vt::Material* env_mapped_material = new vt::Material(
             "env_mapped",
-            "src/env_mapped.v.glsl",
-            "src/env_mapped.f.glsl",
+            "src/shaders/env_mapped.v.glsl",
+            "src/shaders/env_mapped.f.glsl",
             false,  // use_ambient_color
             false,  // use_normal_only
             false,  // use_phong_shading
             false,  // use_texture_mapping
-            true,   // use_normal_mapping
+            true,   // use_bump_mapping
             true,   // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_ssao
@@ -306,13 +306,13 @@ int init_resources()
 
     vt::Material* env_mapped_dbl_refract_material = new vt::Material(
             "env_mapped_dbl_refract",
-            "src/env_mapped_dbl_refract.v.glsl",
-            "src/env_mapped_dbl_refract.f.glsl",
+            "src/shaders/env_mapped_dbl_refract.v.glsl",
+            "src/shaders/env_mapped_dbl_refract.f.glsl",
             false,  // use_ambient_color
             false,  // use_normal_only
             true,   // use_phong_shading
             false,  // use_texture_mapping
-            true,   // use_normal_mapping
+            true,   // use_bump_mapping
             true,   // use_env_mapping
             true,   // use_depth_overlay
             false,  // use_ssao
@@ -347,13 +347,13 @@ int init_resources()
 
     vt::Material* env_mapped_fast_material = new vt::Material(
             "env_mapped_fast",
-            "src/env_mapped_fast.v.glsl",
-            "src/env_mapped_fast.f.glsl",
+            "src/shaders/env_mapped_fast.v.glsl",
+            "src/shaders/env_mapped_fast.f.glsl",
             false,  // use_ambient_color
             false,  // use_normal_only
             false,  // use_phong_shading
             false,  // use_texture_mapping
-            false,  // use_normal_mapping
+            false,  // use_bump_mapping
             true,   // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_ssao
@@ -374,13 +374,13 @@ int init_resources()
 
     //vt::Material* normal_material = new vt::Material(
     //        "normal",
-    //        "src/normal.v.glsl",
-    //        "src/normal.f.glsl",
+    //        "src/shaders/normal.v.glsl",
+    //        "src/shaders/normal.f.glsl",
     //        false,  // use_ambient_color
     //        true,   // use_normal_only
     //        false,  // use_phong_shading
     //        false,  // use_texture_mapping
-    //        true,   // use_normal_mapping
+    //        true,   // use_bump_mapping
     //        false,  // use_env_mapping
     //        false,  // use_depth_overlay
     //        false,  // use_ssao
@@ -393,13 +393,13 @@ int init_resources()
 
     vt::Material* normal_fast_material = new vt::Material(
             "normal_fast",
-            "src/normal_fast.v.glsl",
-            "src/normal_fast.f.glsl",
+            "src/shaders/normal_fast.v.glsl",
+            "src/shaders/normal_fast.f.glsl",
             false,  // use_ambient_color
             true,   // use_normal_only
             false,  // use_phong_shading
             false,  // use_texture_mapping
-            false,  // use_normal_mapping
+            false,  // use_bump_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_ssao
@@ -417,13 +417,13 @@ int init_resources()
 
     vt::Material* ambient_material = new vt::Material(
             "ambient",
-            "src/ambient.v.glsl",
-            "src/ambient.f.glsl",
+            "src/shaders/ambient.v.glsl",
+            "src/shaders/ambient.f.glsl",
             true,   // use_ambient_color
             false,  // use_normal_only
             false,  // use_phong_shading
             false,  // use_texture_mapping
-            false,  // use_normal_mapping
+            false,  // use_bump_mapping
             false,  // use_env_mapping
             false,  // use_depth_overlay
             false,  // use_ssao
@@ -444,7 +444,7 @@ int init_resources()
             res_texture.height,
             res_texture.pixel_data);
     scene->add_texture(                  texture);
-    normal_mapped_material->add_texture( texture);
+    bump_mapped_material->add_texture( texture);
     texture_mapped_material->add_texture(texture);
 
     vt::Texture* texture2 = new vt::Texture(
@@ -453,13 +453,13 @@ int init_resources()
             res_texture2.height,
             res_texture2.pixel_data);
     scene->add_texture(                 texture2);
-    normal_mapped_material->add_texture(texture2);
+    bump_mapped_material->add_texture(texture2);
 
     vt::Texture* texture3 = new vt::Texture(
             "chesterfield_color",
             "data/chesterfield_color.png");
     scene->add_texture(                          texture3);
-    normal_mapped_material->add_texture(         texture3);
+    bump_mapped_material->add_texture(         texture3);
     env_mapped_material->add_texture(            texture3);
     env_mapped_dbl_refract_material->add_texture(texture3);
 
@@ -467,7 +467,7 @@ int init_resources()
             "chesterfield_normal",
             "data/chesterfield_normal.png");
     scene->add_texture(                          texture4);
-    normal_mapped_material->add_texture(         texture4);
+    bump_mapped_material->add_texture(         texture4);
     env_mapped_material->add_texture(            texture4);
     env_mapped_dbl_refract_material->add_texture(texture4);
     //normal_material->add_texture(texture4);
@@ -595,7 +595,7 @@ int init_resources()
     mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
 
     // box
-    mesh->set_material(normal_mapped_material);
+    mesh->set_material(bump_mapped_material);
     mesh->set_texture_index(           mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh->set_normal_map_texture_index(mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
 

@@ -26,7 +26,7 @@ public:
             bool        use_normal_only      = false,
             bool        use_phong_shading    = false,
             bool        use_texture_mapping  = false,
-            bool        use_normal_mapping   = false,
+            bool        use_bump_mapping   = false,
             bool        use_env_mapping      = false,
             bool        use_depth_overlay    = false,
             bool        use_ssao             = false,
@@ -66,9 +66,9 @@ public:
     {
         return m_use_texture_mapping;
     }
-    bool use_normal_mapping() const
+    bool use_bump_mapping() const
     {
-        return m_use_normal_mapping;
+        return m_use_bump_mapping;
     }
     bool use_env_mapping() const
     {
@@ -111,7 +111,7 @@ private:
     bool                     m_use_normal_only;
     bool                     m_use_phong_shading;
     bool                     m_use_texture_mapping;
-    bool                     m_use_normal_mapping;
+    bool                     m_use_bump_mapping;
     bool                     m_use_env_mapping;
     bool                     m_use_depth_overlay;
     bool                     m_use_ssao;

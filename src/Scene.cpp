@@ -182,7 +182,7 @@ void Scene::render(
         bool use_normal_only     = material->use_normal_only();
         bool use_phong_shading   = material->use_phong_shading();
         bool use_texture_mapping = material->use_texture_mapping();
-        bool use_normal_mapping  = material->use_normal_mapping();
+        bool use_bump_mapping  = material->use_bump_mapping();
         bool use_env_mapping     = material->use_env_mapping();
         bool use_depth_overlay   = material->use_depth_overlay();
         material->get_program()->use();
@@ -194,9 +194,9 @@ void Scene::render(
             shader_context->set_ambient_color(m_ambient_color);
         }
         shader_context->set_mvp_xform(m_camera->get_projection_xform()*m_camera->get_xform()*mesh->get_xform());
-        if(use_normal_only || use_phong_shading || use_normal_mapping || use_env_mapping) {
+        if(use_normal_only || use_phong_shading || use_bump_mapping || use_env_mapping) {
             shader_context->set_normal_xform(mesh->get_normal_xform());
-            if((!use_normal_only && use_normal_mapping) || use_env_mapping) {
+            if((!use_normal_only && use_bump_mapping) || use_env_mapping) {
                 shader_context->set_model_xform(mesh->get_xform());
                 shader_context->set_camera_pos(m_camera_pos);
             }
@@ -206,7 +206,7 @@ void Scene::render(
                 shader_context->set_light_enabled(NUM_LIGHTS, m_light_enabled);
                 shader_context->set_light_count(m_lights.size());
             }
-            if(use_normal_mapping) {
+            if(use_bump_mapping) {
                 shader_context->set_normal_map_texture_index(mesh->get_normal_map_texture_index());
             }
             if(use_env_mapping) {
