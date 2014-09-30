@@ -444,7 +444,7 @@ int init_resources()
             res_texture.height,
             res_texture.pixel_data);
     scene->add_texture(                  texture);
-    bump_mapped_material->add_texture( texture);
+    bump_mapped_material->add_texture(   texture);
     texture_mapped_material->add_texture(texture);
 
     vt::Texture* texture2 = new vt::Texture(
@@ -452,14 +452,14 @@ int init_resources()
             res_texture2.width,
             res_texture2.height,
             res_texture2.pixel_data);
-    scene->add_texture(                 texture2);
+    scene->add_texture(               texture2);
     bump_mapped_material->add_texture(texture2);
 
     vt::Texture* texture3 = new vt::Texture(
             "chesterfield_color",
             "data/chesterfield_color.png");
     scene->add_texture(                          texture3);
-    bump_mapped_material->add_texture(         texture3);
+    bump_mapped_material->add_texture(           texture3);
     env_mapped_material->add_texture(            texture3);
     env_mapped_dbl_refract_material->add_texture(texture3);
 
@@ -467,7 +467,7 @@ int init_resources()
             "chesterfield_normal",
             "data/chesterfield_normal.png");
     scene->add_texture(                          texture4);
-    bump_mapped_material->add_texture(         texture4);
+    bump_mapped_material->add_texture(           texture4);
     env_mapped_material->add_texture(            texture4);
     env_mapped_dbl_refract_material->add_texture(texture4);
     //normal_material->add_texture(texture4);
