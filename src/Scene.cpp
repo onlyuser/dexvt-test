@@ -182,7 +182,7 @@ void Scene::render(
         bool use_normal_only     = material->use_normal_only();
         bool use_phong_shading   = material->use_phong_shading();
         bool use_texture_mapping = material->use_texture_mapping();
-        bool use_bump_mapping  = material->use_bump_mapping();
+        bool use_bump_mapping    = material->use_bump_mapping();
         bool use_env_mapping     = material->use_env_mapping();
         bool use_depth_overlay   = material->use_depth_overlay();
         material->get_program()->use();
@@ -201,8 +201,8 @@ void Scene::render(
                 shader_context->set_camera_pos(m_camera_pos);
             }
             if(use_phong_shading) {
-                shader_context->set_light_pos(NUM_LIGHTS, m_light_pos);
-                shader_context->set_light_color(NUM_LIGHTS, m_light_color);
+                shader_context->set_light_pos(    NUM_LIGHTS, m_light_pos);
+                shader_context->set_light_color(  NUM_LIGHTS, m_light_color);
                 shader_context->set_light_enabled(NUM_LIGHTS, m_light_enabled);
                 shader_context->set_light_count(m_lights.size());
             }
@@ -237,7 +237,7 @@ void Scene::render_vert_normals() const
 
     glUseProgram(0);
     glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf((const GLfloat*) &m_camera->get_projection_xform());
+    glLoadMatrixf(reinterpret_cast<const GLfloat*>(&m_camera->get_projection_xform()));
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     for(meshes_t::const_iterator q = m_meshes.begin(); q != m_meshes.end(); q++) {
@@ -245,7 +245,7 @@ void Scene::render_vert_normals() const
             continue;
         }
         glm::mat4 model_xform = m_camera->get_xform()*(*q)->get_xform();
-        glLoadMatrixf((const GLfloat*) &model_xform[0]);
+        glLoadMatrixf(reinterpret_cast<const GLfloat*>(&model_xform[0]));
         glColor3f(0, 0, 1);
         glBegin(GL_LINES);
         for (int i=0; i<static_cast<int>((*q)->get_num_vertex()); i++){
@@ -287,7 +287,7 @@ void Scene::render_lights() const
 
     glUseProgram(0);
     glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf((const GLfloat*) &m_camera->get_projection_xform());
+    glLoadMatrixf(reinterpret_cast<const GLfloat*>(&m_camera->get_projection_xform()));
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glColor3f(1, 1, 0);
