@@ -21,7 +21,8 @@ public:
             size_t               height     = DEFAULT_TEXTURE_DIM,
             const unsigned char* pixel_data = NULL,
             type_t               type       = Texture::RGB,
-            bool                 smooth     = true);
+            bool                 smooth     = true,
+            bool                 random     = false);
     Texture(
             std::string name,
             std::string png_filename,

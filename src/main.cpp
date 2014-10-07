@@ -588,28 +588,16 @@ int init_resources()
     overlay_bloom_filter_material->add_texture( lo_res_color_overlay_texture);
     overlay_max_material->add_texture(          lo_res_color_overlay_texture);
 
-    srand(time(NULL));
-    int width  = RAND_TEX_DIM;
-    int height = RAND_TEX_DIM;
-    unsigned char* pixel_data = new unsigned char[width*height*sizeof(unsigned char)*3];
-    for(int i = 0; i < height; i++) {
-        for(int j = 0; j < width; j++) {
-            int pixel_offset = (i*width + j)*3;
-            pixel_data[pixel_offset + 0] = rand() % 256;
-            pixel_data[pixel_offset + 1] = rand() % 256;
-            pixel_data[pixel_offset + 2] = rand() % 256;
-        }
-    }
     vt::Texture* random_texture = new vt::Texture(
             "random_texture",
-            width,
-            height,
-            pixel_data,
+            RAND_TEX_DIM,
+            RAND_TEX_DIM,
+            NULL,
             vt::Texture::RGB,
-            false);
-    delete[] pixel_data;
+            false,
+            true);
     texture_mapped_material->add_texture(random_texture);
-    ssao_material->add_texture(random_texture);
+    ssao_material->add_texture(          random_texture);
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera("camera", origin+glm::vec3(0, 0, orbit_radius), origin);

@@ -16,7 +16,8 @@ Texture::Texture(
         size_t               height,
         const unsigned char* pixel_data,
         type_t               type,
-        bool                 smooth)
+        bool                 smooth,
+        bool                 random)
     : NamedObject(name),
       m_width(width),
       m_height(height),
@@ -36,18 +37,34 @@ Texture::Texture(
             m_id = gen_texture_internal(width, height, _pixel_data, type, smooth);
             delete[] _pixel_data;
         } else {
-            unsigned char* _pixel_data = new unsigned char[width*height*sizeof(unsigned char)*3];
-            memset(_pixel_data, 0, width*height*sizeof(unsigned char)*3);
-            for(int i = 0; i < static_cast<int>(std::min(width, height)); i++) {
-                _pixel_data[(i*width+i)*3+0]       = 255;
-                _pixel_data[(i*width+i)*3+1]       = 0;
-                _pixel_data[(i*width+i)*3+2]       = 0;
-                _pixel_data[(i*width+width-i)*3+0] = 255;
-                _pixel_data[(i*width+width-i)*3+1] = 0;
-                _pixel_data[(i*width+width-i)*3+2] = 0;
+            if(random) {
+                srand(time(NULL));
+                unsigned char* _pixel_data = new unsigned char[width*height*sizeof(unsigned char)*3];
+                memset(_pixel_data, 0, width*height*sizeof(unsigned char)*3);
+                for(int i = 0; i < height; i++) {
+                    for(int j = 0; j < width; j++) {
+                        int pixel_offset = (i*width + j)*3;
+                        _pixel_data[pixel_offset + 0] = rand() % 256;
+                        _pixel_data[pixel_offset + 1] = rand() % 256;
+                        _pixel_data[pixel_offset + 2] = rand() % 256;
+                    }
+                }
+                m_id = gen_texture_internal(width, height, _pixel_data, type, smooth);
+                delete[] _pixel_data;
+            } else {
+                unsigned char* _pixel_data = new unsigned char[width*height*sizeof(unsigned char)*3];
+                memset(_pixel_data, 0, width*height*sizeof(unsigned char)*3);
+                for(int i = 0; i < static_cast<int>(std::min(width, height)); i++) {
+                    _pixel_data[(i*width+i)*3+0]       = 255;
+                    _pixel_data[(i*width+i)*3+1]       = 0;
+                    _pixel_data[(i*width+i)*3+2]       = 0;
+                    _pixel_data[(i*width+width-i)*3+0] = 255;
+                    _pixel_data[(i*width+width-i)*3+1] = 0;
+                    _pixel_data[(i*width+width-i)*3+2] = 0;
+                }
+                m_id = gen_texture_internal(width, height, _pixel_data, type, smooth);
+                delete[] _pixel_data;
             }
-            m_id = gen_texture_internal(width, height, _pixel_data, type, smooth);
-            delete[] _pixel_data;
         }
     }
 }
