@@ -5,14 +5,17 @@
 #include <Mesh.h>
 #include <Material.h>
 #include <Texture.h>
+#include <glm/gtx/compatibility.hpp>
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <vector>
 #include <map>
 #include <algorithm>
 #include <iterator>
+#include <stdlib.h>
 
-#define NUM_LIGHTS 8
+#define NUM_LIGHTS              8
+#define NUM_SSAO_SAMPLE_KERNELS 10
 
 namespace vt {
 
@@ -55,6 +58,14 @@ Scene::Scene()
         m_light_color[q*3+2] = 0;
         m_light_enabled[q]   = 0;
     }
+    m_ssao_sample_kernel_pos = new GLfloat[NUM_SSAO_SAMPLE_KERNELS*3];
+    for(int r = 0; r<NUM_SSAO_SAMPLE_KERNELS; r++) {
+        float scale = static_cast<float>(r)/NUM_SSAO_SAMPLE_KERNELS;
+        scale = glm::lerp(0.1f, 1.0f, scale*scale);
+        m_ssao_sample_kernel_pos[r*3+0] = (static_cast<float>(rand())/RAND_MAX*2 - 1)*scale;
+        m_ssao_sample_kernel_pos[r*3+1] = (static_cast<float>(rand())/RAND_MAX*2 - 1)*scale;
+        m_ssao_sample_kernel_pos[r*3+2] = static_cast<float>(rand())/RAND_MAX*scale;
+    }
 }
 
 Scene::~Scene()
@@ -86,6 +97,9 @@ Scene::~Scene()
     }
     if(m_light_enabled) {
         delete []m_light_enabled;
+    }
+    if(m_ssao_sample_kernel_pos) {
+        delete []m_ssao_sample_kernel_pos;
     }
 }
 
@@ -185,6 +199,7 @@ void Scene::render(
         bool use_bump_mapping    = material->use_bump_mapping();
         bool use_env_mapping     = material->use_env_mapping();
         bool use_depth_overlay   = material->use_depth_overlay();
+        bool use_ssao            = material->use_ssao();
         material->get_program()->use();
         if(use_ambient_color) {
             glm::vec3 _ambient_color = material->get_ambient_color();
@@ -225,6 +240,15 @@ void Scene::render(
             shader_context->set_camera_near(m_camera->get_near_plane());
             shader_context->set_camera_far(m_camera->get_far_plane());
             shader_context->set_view_proj_xform(m_camera->get_projection_xform()*m_camera->get_xform());
+            shader_context->set_inv_mvp_xform(glm::inverse(m_camera->get_xform())*glm::inverse(m_camera->get_projection_xform()));
+        }
+        if(use_ssao) {
+            shader_context->set_frontface_depth_overlay_texture_index(mesh->get_frontface_depth_overlay_texture_index());
+            shader_context->set_viewport_dim(m_viewport_dim);
+            shader_context->set_camera_near(m_camera->get_near_plane());
+            shader_context->set_camera_far(m_camera->get_far_plane());
+            shader_context->set_ssao_sample_kernel_pos(NUM_SSAO_SAMPLE_KERNELS, m_ssao_sample_kernel_pos);
+            shader_context->set_inv_mvp_xform(glm::inverse(m_camera->get_xform())*glm::inverse(m_camera->get_projection_xform()));
         }
         shader_context->render();
     }

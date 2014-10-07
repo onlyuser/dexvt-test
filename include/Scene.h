@@ -119,6 +119,7 @@ private:
     GLfloat* m_light_pos;
     GLfloat* m_light_color;
     GLint*   m_light_enabled;
+    GLfloat* m_ssao_sample_kernel_pos;
 
     Scene();
     ~Scene();

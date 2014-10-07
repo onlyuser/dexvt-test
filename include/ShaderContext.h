@@ -44,6 +44,7 @@ public:
         var_uniform_type_light_enabled,
         var_uniform_type_light_count,
         var_uniform_type_env_map_texture,
+        var_uniform_type_inv_mvp_xform,
         var_uniform_type_inv_projection_xform,
         var_uniform_type_inv_normal_xform,
         var_uniform_type_frontface_depth_overlay_texture,
@@ -55,6 +56,7 @@ public:
         var_uniform_type_camera_far,
         var_uniform_type_view_proj_xform,
         var_uniform_type_reflect_to_refract_ratio,
+        var_uniform_type_ssao_sample_kernel_pos,
         var_uniform_type_count
     };
 
@@ -98,6 +100,8 @@ public:
     void set_camera_near(GLfloat camera_near);
     void set_camera_far(GLfloat camera_far);
     void set_reflect_to_refract_ratio(GLfloat reflect_to_refract_ratio);
+    void set_ssao_sample_kernel_pos(size_t num_kernels, GLfloat* kernel_pos_arr);
+    void set_inv_mvp_xform(glm::mat4 inv_mvp_xform);
 
 private:
     Material *m_material;

@@ -38,6 +38,7 @@ ShaderContext::var_uniform_type_to_name_table_t ShaderContext::m_var_uniform_typ
         {ShaderContext::var_uniform_type_light_enabled,                   "light_enabled"},
         {ShaderContext::var_uniform_type_light_count,                     "light_count"},
         {ShaderContext::var_uniform_type_env_map_texture,                 "env_map_texture"},
+        {ShaderContext::var_uniform_type_inv_mvp_xform,                   "inv_mvp_xform"},
         {ShaderContext::var_uniform_type_inv_projection_xform,            "inv_projection_xform"},
         {ShaderContext::var_uniform_type_inv_normal_xform,                "inv_normal_xform"},
         {ShaderContext::var_uniform_type_frontface_depth_overlay_texture, "frontface_depth_overlay_texture"},
@@ -49,6 +50,7 @@ ShaderContext::var_uniform_type_to_name_table_t ShaderContext::m_var_uniform_typ
         {ShaderContext::var_uniform_type_camera_far,                      "camera_far"},
         {ShaderContext::var_uniform_type_view_proj_xform,                 "view_proj_xform"},
         {ShaderContext::var_uniform_type_reflect_to_refract_ratio,        "reflect_to_refract_ratio"},
+        {ShaderContext::var_uniform_type_ssao_sample_kernel_pos,          "ssao_sample_kernel_pos"},
         {ShaderContext::var_uniform_type_count,                           ""}
     };
 
@@ -306,6 +308,16 @@ void ShaderContext::set_camera_far(GLfloat camera_far)
 void ShaderContext::set_reflect_to_refract_ratio(GLfloat reflect_to_refract_ratio)
 {
     m_var_uniforms[var_uniform_type_reflect_to_refract_ratio]->uniform_1f(reflect_to_refract_ratio);
+}
+
+void ShaderContext::set_ssao_sample_kernel_pos(size_t num_kernels, GLfloat* kernel_pos_arr)
+{
+    m_var_uniforms[var_uniform_type_ssao_sample_kernel_pos]->uniform_3fv(num_kernels, kernel_pos_arr);
+}
+
+void ShaderContext::set_inv_mvp_xform(glm::mat4 inv_mvp_xform)
+{
+    m_var_uniforms[var_uniform_type_inv_mvp_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(inv_mvp_xform));
 }
 
 }

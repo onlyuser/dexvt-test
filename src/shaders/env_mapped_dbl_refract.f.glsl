@@ -45,6 +45,8 @@ uniform int light_enabled[NUM_LIGHTS];
 varying vec3 lerp_light_vector[NUM_LIGHTS];
 uniform vec3 light_pos[NUM_LIGHTS];
 
+uniform mat4 inv_mvp_xform;
+
 // http://stackoverflow.com/questions/6652253/getting-the-true-z-value-from-the-depth-buffer?answertab=votes#tab-top
 void map_depth_to_actual_depth(
         in    float z_near, // camera near-clipping plane distance from camera
@@ -161,7 +163,7 @@ void newtons_method_update(
     vec3 ray_plane_isect = orig + normalize(dir)*orig_intersection_distance;
 
     vec4 ray_plane_isect_texcoord_raw = _view_proj_xform*vec4(ray_plane_isect, 1);
-    ray_plane_isect_texcoord_raw /= ray_plane_isect_texcoord_raw.w; // perspective divide
+    ray_plane_isect_texcoord_raw.xyz /= ray_plane_isect_texcoord_raw.w; // perspective divide
 
     vec2 ray_plane_isect_texcoord = (vec2(ray_plane_isect_texcoord_raw) + vec2(1))*0.5; // map from [-1,1] to [0,1]
 
@@ -274,7 +276,14 @@ void main(void) {
 
     float frag_thickness = backface_depth_actual - frontface_depth_actual;
 
-    vec3 backface_frag_position_world = camera_pos - camera_direction*backface_depth_actual;
+    // replace incorrect way of getting fragment world position
+    // z-depth is measured in rays parallel to camera, not rays emanating from camera
+    //vec3 backface_frag_position_world = camera_pos - camera_direction*backface_depth_actual;
+    vec4 projected_coord = vec4(overlay_texcoord.x*2-1, overlay_texcoord.y*2-1, backface_depth*2-1, 1);
+    vec4 unprojected_coord = inv_mvp_xform*projected_coord;
+    unprojected_coord.xyz /= unprojected_coord.w;
+    vec3 backface_frag_position_world = unprojected_coord.xyz;
+
     //vec3 ray_plane_isect = lerp_vertex_position_world + frontface_refracted_camera_dir*???;
 
     // apply newton's method to find backface intersection with refracted ray from camera

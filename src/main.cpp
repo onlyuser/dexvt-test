@@ -104,7 +104,7 @@ int init_resources()
     scene->add_mesh(hidden_mesh4 = vt::PrimitiveFactory::create_grid(                 "grid2",   32, 32, 1, 1));
 
     mesh->set_origin(        glm::vec3(-0.5, -0.5, -0.5)); // box
-    mesh2->set_origin(       glm::vec3(-5, 5, -2.5));      // grid
+    mesh2->set_origin(       glm::vec3(-5, 5, -1));        // grid
     mesh3->set_origin(       glm::vec3(2, 0, 0));          // sphere
     mesh4->set_origin(       glm::vec3(-2, 0, 0));         // torus
     mesh5->set_origin(       glm::vec3(0, -2.5, 0));       // cylinder
@@ -120,7 +120,7 @@ int init_resources()
 
     mesh2->set_orient(glm::vec3(0, -90, 0));
 
-    //mesh2->set_visible(false);
+    mesh2->set_visible(false);
     //mesh5->set_visible(false);
     //mesh6->set_visible(false);
     hidden_mesh->set_visible(false);
@@ -165,6 +165,41 @@ int init_resources()
     bump_mapped_program->add_var("color_texture",      vt::Program::VAR_TYPE_UNIFORM);
     bump_mapped_program->add_var("mvp_xform",          vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(bump_mapped_material);
+
+    vt::Material* ssao_material = new vt::Material(
+            "ssao",
+            "src/shaders/ssao.v.glsl",
+            "src/shaders/ssao.f.glsl",
+            false,  // use_ambient_color
+            false,  // use_normal_only
+            false,  // use_phong_shading
+            false,  // use_texture_mapping
+            true,   // use_bump_mapping
+            false,  // use_env_mapping
+            false,  // use_depth_overlay
+            true,   // use_ssao
+            false,  // use_bloom_kernel
+            false,  // use_texture2
+            false,  // skybox
+            false); // overlay
+    vt::Program* ssao_program = ssao_material->get_program();
+    ssao_program->add_var("texcoord",           vt::Program::VAR_TYPE_ATTRIBUTE);
+    ssao_program->add_var("vertex_normal",      vt::Program::VAR_TYPE_ATTRIBUTE);
+    ssao_program->add_var("vertex_position",    vt::Program::VAR_TYPE_ATTRIBUTE);
+    ssao_program->add_var("vertex_tangent",     vt::Program::VAR_TYPE_ATTRIBUTE);
+    ssao_program->add_var("normal_xform",       vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("model_xform",        vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("camera_pos",         vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("normal_map_texture", vt::Program::VAR_TYPE_UNIFORM);
+    //ssao_program->add_var("color_texture",      vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("mvp_xform",          vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("frontface_depth_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("viewport_dim",                    vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("camera_near",                     vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("camera_far",                      vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("ssao_sample_kernel_pos",          vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("inv_mvp_xform",                   vt::Program::VAR_TYPE_UNIFORM);
+    scene->add_material(ssao_material);
 
     vt::Material* skybox_material = new vt::Material(
             "skybox",
@@ -343,6 +378,7 @@ int init_resources()
     env_mapped_dbl_refract_program->add_var("camera_far",                      vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_dbl_refract_program->add_var("view_proj_xform",                 vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_dbl_refract_program->add_var("mvp_xform",                       vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("inv_mvp_xform",                   vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(env_mapped_dbl_refract_material);
 
     vt::Material* env_mapped_fast_material = new vt::Material(
@@ -496,6 +532,7 @@ int init_resources()
     env_mapped_dbl_refract_material->add_texture(frontface_depth_overlay_texture);
     overlay_write_through_material->add_texture( frontface_depth_overlay_texture);
     overlay_bloom_filter_material->add_texture(  frontface_depth_overlay_texture);
+    ssao_material->add_texture(                  frontface_depth_overlay_texture);
 
     vt::Texture* backface_depth_overlay_texture = new vt::Texture(
             "backface_depth_overlay",
@@ -572,6 +609,7 @@ int init_resources()
             false);
     delete[] pixel_data;
     texture_mapped_material->add_texture(random_texture);
+    ssao_material->add_texture(random_texture);
 
     glm::vec3 origin = glm::vec3();
     camera = new vt::Camera("camera", origin+glm::vec3(0, 0, orbit_radius), origin);
@@ -600,12 +638,15 @@ int init_resources()
     mesh->set_normal_map_texture_index(mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
     // grid
-    mesh2->set_material(texture_mapped_material);
+    //mesh2->set_material(texture_mapped_material);
+    mesh2->set_material(ssao_material);
     //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
     //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("backface_depth_overlay"));
     //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("backface_normal_overlay"));
     //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
     mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("random_texture"));
+    mesh2->set_normal_map_texture_index(mesh2->get_material()->get_texture_index_by_name("random_texture"));
+    mesh2->set_frontface_depth_overlay_texture_index(mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
 
     // sphere
     mesh3->set_material(env_mapped_dbl_refract_material);
