@@ -213,6 +213,14 @@ void calculate_light_contrib(
     light_contrib = vec4(clamp(sample.rgb*(diffuse_sum + AMBIENT)*0 + specular_sum, 0.0, 1.0), sample.a);
 }
 
+void unproject_fragment(in vec2 frag_pos, in float frag_depth, in mat4 _inv_mvp_xform, out vec3 frag_world_pos)
+{
+    vec4 projected_coord = vec4(frag_pos.x*2-1, frag_pos.y*2-1, frag_depth*2-1, 1);
+    vec4 unprojected_coord = _inv_mvp_xform*projected_coord;
+    unprojected_coord.xyz /= unprojected_coord.w;
+    frag_world_pos = unprojected_coord.xyz;
+}
+
 void main(void) {
     vec3 camera_direction = normalize(lerp_camera_vector);
 
@@ -279,10 +287,8 @@ void main(void) {
     // replace incorrect way of getting fragment world position
     // z-depth is measured in rays parallel to camera, not rays emanating from camera
     //vec3 backface_frag_position_world = camera_pos - camera_direction*backface_depth_actual;
-    vec4 projected_coord = vec4(overlay_texcoord.x*2-1, overlay_texcoord.y*2-1, backface_depth*2-1, 1);
-    vec4 unprojected_coord = inv_mvp_xform*projected_coord;
-    unprojected_coord.xyz /= unprojected_coord.w;
-    vec3 backface_frag_position_world = unprojected_coord.xyz;
+    vec3 backface_frag_position_world;
+    unproject_fragment(overlay_texcoord, backface_depth, inv_mvp_xform, backface_frag_position_world);
 
     //vec3 ray_plane_isect = lerp_vertex_position_world + frontface_refracted_camera_dir*???;
 

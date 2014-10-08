@@ -32,6 +32,14 @@ void map_range(in float s1, in float e1, in float s2, in float e2, in float x, o
     out_x = s2 + (x - s1)*(e2 - s2)/(e1 - s1);
 }
 
+void unproject_fragment(in vec2 frag_pos, in float frag_depth, in mat4 _inv_mvp_xform, out vec3 frag_world_pos)
+{
+    vec4 projected_coord = vec4(frag_pos.x*2-1, frag_pos.y*2-1, frag_depth*2-1, 1);
+    vec4 unprojected_coord = _inv_mvp_xform*projected_coord;
+    unprojected_coord.xyz /= unprojected_coord.w;
+    frag_world_pos = unprojected_coord.xyz;
+}
+
 void main(void) {
     vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1 - lerp_texcoord.y);
 
@@ -57,10 +65,8 @@ void main(void) {
     // replace incorrect way of getting fragment world position
     // z-depth is measured in rays parallel to camera, not rays emanating from camera
     //vec3 frontface_frag_position_world = camera_pos - camera_direction*frontface_depth_actual;
-    vec4 projected_coord = vec4(overlay_texcoord.x*2-1, overlay_texcoord.y*2-1, frontface_depth*2-1, 1);
-    vec4 unprojected_coord = inv_mvp_xform*projected_coord;
-    unprojected_coord.xyz /= unprojected_coord.w;
-    vec3 frontface_frag_position_world = unprojected_coord.xyz;
+    vec3 frontface_frag_position_world;
+    unproject_fragment(overlay_texcoord, frontface_depth, inv_mvp_xform, frontface_frag_position_world);
 
     if(frontface_frag_position_world.z < -0.9 && frontface_frag_position_world.z > -1.1) {
         float x = 0;
