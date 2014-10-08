@@ -192,15 +192,15 @@ void Scene::render(
             continue;
         }
         Material* material = shader_context->get_material();
-        bool use_ambient_color      = material->use_ambient_color();
-        bool gen_normal_map         = material->gen_normal_map();
-        bool use_phong_shading      = material->use_phong_shading();
-        bool use_texture_mapping    = material->use_texture_mapping();
-        bool use_bump_mapping       = material->use_bump_mapping();
-        bool use_env_mapping        = material->use_env_mapping();
-        bool use_env_mapping_dbl_refract      = material->use_env_mapping_dbl_refract();
-        bool use_ssao               = material->use_ssao();
-        bool use_fragment_world_pos = material->use_fragment_world_pos();
+        bool use_ambient_color           = material->use_ambient_color();
+        bool gen_normal_map              = material->gen_normal_map();
+        bool use_phong_shading           = material->use_phong_shading();
+        bool use_texture_mapping         = material->use_texture_mapping();
+        bool use_bump_mapping            = material->use_bump_mapping();
+        bool use_env_mapping             = material->use_env_mapping();
+        bool use_env_mapping_dbl_refract = material->use_env_mapping_dbl_refract();
+        bool use_ssao                    = material->use_ssao();
+        bool use_fragment_world_pos      = material->use_fragment_world_pos();
         material->get_program()->use();
         if(use_ambient_color) {
             glm::vec3 _ambient_color = material->get_ambient_color();
