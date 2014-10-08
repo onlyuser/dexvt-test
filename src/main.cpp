@@ -68,7 +68,7 @@ bool show_diamond = false;
 bool post_process_blur = false;
 int overlay_mode = 0;
 
-int texture_index = 0;
+int texture_id = 0;
 int demo_mode = 0;
 float prev_zoom = 0, zoom = 1, ortho_dolly_speed = 0.1;
 
@@ -138,32 +138,33 @@ int init_resources()
             "src/shaders/bump_mapped.v.glsl",
             "src/shaders/bump_mapped.f.glsl",
             false,  // use_ambient_color
-            false,  // use_normal_only
+            false,  // gen_normal_map
             true,   // use_phong_shading
             true,   // use_texture_mapping
             true,   // use_bump_mapping
             false,  // use_env_mapping
-            false,  // use_depth_overlay
+            false,  // use_env_mapping_dbl_refract
             false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
+            false,  // use_fragment_world_pos
             false,  // skybox
             false); // overlay
     vt::Program* bump_mapped_program = bump_mapped_material->get_program();
-    bump_mapped_program->add_var("texcoord",           vt::Program::VAR_TYPE_ATTRIBUTE);
-    bump_mapped_program->add_var("vertex_normal",      vt::Program::VAR_TYPE_ATTRIBUTE);
-    bump_mapped_program->add_var("vertex_position",    vt::Program::VAR_TYPE_ATTRIBUTE);
-    bump_mapped_program->add_var("vertex_tangent",     vt::Program::VAR_TYPE_ATTRIBUTE);
-    bump_mapped_program->add_var("normal_xform",       vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("model_xform",        vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("camera_pos",         vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("light_pos",          vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("light_color",        vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("light_enabled",      vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("light_count",        vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("normal_map_texture", vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("color_texture",      vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("mvp_xform",          vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("texcoord",        vt::Program::VAR_TYPE_ATTRIBUTE);
+    bump_mapped_program->add_var("vertex_normal",   vt::Program::VAR_TYPE_ATTRIBUTE);
+    bump_mapped_program->add_var("vertex_position", vt::Program::VAR_TYPE_ATTRIBUTE);
+    bump_mapped_program->add_var("vertex_tangent",  vt::Program::VAR_TYPE_ATTRIBUTE);
+    bump_mapped_program->add_var("normal_xform",    vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("model_xform",     vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("camera_pos",      vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("light_pos",       vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("light_color",     vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("light_enabled",   vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("light_count",     vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("bump_texture",    vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("color_texture",   vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("mvp_xform",       vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(bump_mapped_material);
 
     vt::Material* ssao_material = new vt::Material(
@@ -171,28 +172,28 @@ int init_resources()
             "src/shaders/ssao.v.glsl",
             "src/shaders/ssao.f.glsl",
             false,  // use_ambient_color
-            false,  // use_normal_only
+            false,  // gen_normal_map
             false,  // use_phong_shading
             false,  // use_texture_mapping
             true,   // use_bump_mapping
             false,  // use_env_mapping
-            false,  // use_depth_overlay
+            false,  // use_env_mapping_dbl_refract
             true,   // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
+            true,   // use_fragment_world_pos
             false,  // skybox
             false); // overlay
     vt::Program* ssao_program = ssao_material->get_program();
-    ssao_program->add_var("texcoord",           vt::Program::VAR_TYPE_ATTRIBUTE);
-    ssao_program->add_var("vertex_normal",      vt::Program::VAR_TYPE_ATTRIBUTE);
-    ssao_program->add_var("vertex_position",    vt::Program::VAR_TYPE_ATTRIBUTE);
-    ssao_program->add_var("vertex_tangent",     vt::Program::VAR_TYPE_ATTRIBUTE);
-    ssao_program->add_var("normal_xform",       vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("model_xform",        vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("camera_pos",         vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("normal_map_texture", vt::Program::VAR_TYPE_UNIFORM);
-    //ssao_program->add_var("color_texture",      vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("mvp_xform",          vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("texcoord",                        vt::Program::VAR_TYPE_ATTRIBUTE);
+    ssao_program->add_var("vertex_normal",                   vt::Program::VAR_TYPE_ATTRIBUTE);
+    ssao_program->add_var("vertex_position",                 vt::Program::VAR_TYPE_ATTRIBUTE);
+    ssao_program->add_var("vertex_tangent",                  vt::Program::VAR_TYPE_ATTRIBUTE);
+    ssao_program->add_var("normal_xform",                    vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("model_xform",                     vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("camera_pos",                      vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("bump_texture",                    vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("mvp_xform",                       vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("frontface_depth_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("viewport_dim",                    vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("camera_near",                     vt::Program::VAR_TYPE_UNIFORM);
@@ -206,15 +207,16 @@ int init_resources()
             "src/shaders/skybox.v.glsl",
             "src/shaders/skybox.f.glsl",
             false,  // use_ambient_color
-            false,  // use_normal_only
+            false,  // gen_normal_map
             false,  // use_phong_shading
             false,  // use_texture_mapping
             false,  // use_bump_mapping
             false,  // use_env_mapping
-            false,  // use_depth_overlay
+            false,  // use_env_mapping_dbl_refract
             false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
+            false,  // use_fragment_world_pos
             true,   // skybox
             false); // overlay
     vt::Program* skybox_material_program = skybox_material->get_program();
@@ -228,15 +230,16 @@ int init_resources()
             "src/shaders/overlay_write_through.v.glsl",
             "src/shaders/overlay_write_through.f.glsl",
             false, // use_ambient_color
-            false, // use_normal_only
+            false, // gen_normal_map
             false, // use_phong_shading
             false, // use_texture_mapping
             false, // use_bump_mapping
             false, // use_env_mapping
-            false, // use_depth_overlay
+            false, // use_env_mapping_dbl_refract
             false, // use_ssao
             false, // use_bloom_kernel
             false, // use_texture2
+            false, // use_fragment_world_pos
             false, // skybox
             true); // overlay
     vt::Program* overlay_write_through_program = overlay_write_through_material->get_program();
@@ -248,15 +251,16 @@ int init_resources()
             "src/shaders/overlay_bloom_filter.v.glsl",
             "src/shaders/overlay_bloom_filter.f.glsl",
             false, // use_ambient_color
-            false, // use_normal_only
+            false, // gen_normal_map
             false, // use_phong_shading
             false, // use_texture_mapping
             false, // use_bump_mapping
             false, // use_env_mapping
-            false, // use_depth_overlay
+            false, // use_env_mapping_dbl_refract
             false, // use_ssao
             true,  // use_bloom_kernel
             false, // use_texture2
+            false, // use_fragment_world_pos
             false, // skybox
             true); // overlay
     vt::Program* overlay_bloom_filter_program = overlay_bloom_filter_material->get_program();
@@ -270,15 +274,16 @@ int init_resources()
             "src/shaders/overlay_max.v.glsl",
             "src/shaders/overlay_max.f.glsl",
             false, // use_ambient_color
-            false, // use_normal_only
+            false, // gen_normal_map
             false, // use_phong_shading
             false, // use_texture_mapping
             false, // use_bump_mapping
             false, // use_env_mapping
-            false, // use_depth_overlay
+            false, // use_env_mapping_dbl_refract
             false, // use_ssao
             false, // use_bloom_kernel
             true,  // use_texture2
+            false, // use_fragment_world_pos
             false, // skybox
             true); // overlay
     vt::Program* overlay_max_program = overlay_max_material->get_program();
@@ -291,15 +296,16 @@ int init_resources()
             "src/shaders/texture_mapped.v.glsl",
             "src/shaders/texture_mapped.f.glsl",
             false,  // use_ambient_color
-            false,  // use_normal_only
+            false,  // gen_normal_map
             false,  // use_phong_shading
             true,   // use_texture_mapping
             false,  // use_bump_mapping
             false,  // use_env_mapping
-            false,  // use_depth_overlay
+            false,  // use_env_mapping_dbl_refract
             false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
+            false,  // use_fragment_world_pos
             false,  // skybox
             false); // overlay
     vt::Program* texture_mapped_program = texture_mapped_material->get_program();
@@ -314,15 +320,16 @@ int init_resources()
             "src/shaders/env_mapped.v.glsl",
             "src/shaders/env_mapped.f.glsl",
             false,  // use_ambient_color
-            false,  // use_normal_only
+            false,  // gen_normal_map
             false,  // use_phong_shading
             false,  // use_texture_mapping
             true,   // use_bump_mapping
             true,   // use_env_mapping
-            false,  // use_depth_overlay
+            false,  // use_env_mapping_dbl_refract
             false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
+            false,  // use_fragment_world_pos
             false,  // skybox
             false); // overlay
     vt::Program* env_mapped_program = env_mapped_material->get_program();
@@ -333,7 +340,7 @@ int init_resources()
     env_mapped_program->add_var("normal_xform",             vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_program->add_var("model_xform",              vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_program->add_var("camera_pos",               vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_program->add_var("normal_map_texture",       vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_program->add_var("bump_texture",             vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_program->add_var("env_map_texture",          vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_program->add_var("reflect_to_refract_ratio", vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_program->add_var("mvp_xform",                vt::Program::VAR_TYPE_UNIFORM);
@@ -344,15 +351,16 @@ int init_resources()
             "src/shaders/env_mapped_dbl_refract.v.glsl",
             "src/shaders/env_mapped_dbl_refract.f.glsl",
             false,  // use_ambient_color
-            false,  // use_normal_only
+            false,  // gen_normal_map
             true,   // use_phong_shading
             false,  // use_texture_mapping
             true,   // use_bump_mapping
             true,   // use_env_mapping
-            true,   // use_depth_overlay
+            true,   // use_env_mapping_dbl_refract
             false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
+            true,   // use_fragment_world_pos
             false,  // skybox
             false); // overlay
     vt::Program* env_mapped_dbl_refract_program = env_mapped_dbl_refract_material->get_program();
@@ -367,7 +375,7 @@ int init_resources()
     env_mapped_dbl_refract_program->add_var("light_color",                     vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_dbl_refract_program->add_var("light_enabled",                   vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_dbl_refract_program->add_var("light_count",                     vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("normal_map_texture",              vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("bump_texture",                    vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_dbl_refract_program->add_var("env_map_texture",                 vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_dbl_refract_program->add_var("reflect_to_refract_ratio",        vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_dbl_refract_program->add_var("frontface_depth_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
@@ -386,15 +394,16 @@ int init_resources()
             "src/shaders/env_mapped_fast.v.glsl",
             "src/shaders/env_mapped_fast.f.glsl",
             false,  // use_ambient_color
-            false,  // use_normal_only
+            false,  // gen_normal_map
             false,  // use_phong_shading
             false,  // use_texture_mapping
             false,  // use_bump_mapping
             true,   // use_env_mapping
-            false,  // use_depth_overlay
+            false,  // use_env_mapping_dbl_refract
             false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
+            false,  // use_fragment_world_pos
             false,  // skybox
             false); // overlay
     vt::Program* env_mapped_fast_program = env_mapped_fast_material->get_program();
@@ -413,15 +422,16 @@ int init_resources()
     //        "src/shaders/normal.v.glsl",
     //        "src/shaders/normal.f.glsl",
     //        false,  // use_ambient_color
-    //        true,   // use_normal_only
+    //        true,   // gen_normal_map
     //        false,  // use_phong_shading
     //        false,  // use_texture_mapping
     //        true,   // use_bump_mapping
     //        false,  // use_env_mapping
-    //        false,  // use_depth_overlay
+    //        false,  // use_env_mapping_dbl_refract
     //        false,  // use_ssao
     //        false,  // use_bloom_kernel
     //        false,  // use_texture2
+    //        false,  // use_fragment_world_pos
     //        false,  // skybox
     //        false); // overlay
     //vt::Program* normal_program = normal_material->get_program();
@@ -432,15 +442,16 @@ int init_resources()
             "src/shaders/normal_fast.v.glsl",
             "src/shaders/normal_fast.f.glsl",
             false,  // use_ambient_color
-            true,   // use_normal_only
+            true,   // gen_normal_map
             false,  // use_phong_shading
             false,  // use_texture_mapping
             false,  // use_bump_mapping
             false,  // use_env_mapping
-            false,  // use_depth_overlay
+            false,  // use_env_mapping_dbl_refract
             false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
+            false,  // use_fragment_world_pos
             false,  // skybox
             false); // overlay
     scene->add_material(normal_fast_material);
@@ -456,15 +467,16 @@ int init_resources()
             "src/shaders/ambient.v.glsl",
             "src/shaders/ambient.f.glsl",
             true,   // use_ambient_color
-            false,  // use_normal_only
+            false,  // gen_normal_map
             false,  // use_phong_shading
             false,  // use_texture_mapping
             false,  // use_bump_mapping
             false,  // use_env_mapping
-            false,  // use_depth_overlay
+            false,  // use_env_mapping_dbl_refract
             false,  // use_ssao
             false,  // use_bloom_kernel
             false,  // use_texture2
+            false,  // use_fragment_world_pos
             false,  // skybox
             false); // overlay
     scene->add_material(ambient_material);
@@ -615,49 +627,49 @@ int init_resources()
     scene->add_light(light3 = new vt::Light("light3", origin+glm::vec3(0, 0, light_distance), glm::vec3(0, 0, 1)));
 
     mesh_skybox->set_material(skybox_material);
-    mesh_skybox->set_texture_index(mesh_skybox->get_material()->get_texture_index_by_name("skybox_texture"));
+    mesh_skybox->set_texture_id(mesh_skybox->get_material()->get_texture_id_by_name("skybox_texture"));
 
     mesh_overlay->set_material(overlay_write_through_material);
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("hi_res_color_overlay"));
 
     // box
     mesh->set_material(bump_mapped_material);
-    mesh->set_texture_index(           mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh->set_normal_map_texture_index(mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh->set_texture_id(     mesh->get_material()->get_texture_id_by_name("chesterfield_color"));
+    mesh->set_bump_texture_id(mesh->get_material()->get_texture_id_by_name("chesterfield_normal"));
 
     // grid
     //mesh2->set_material(texture_mapped_material);
     mesh2->set_material(ssao_material);
-    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("backface_normal_overlay"));
-    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
-    mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("random_texture"));
-    mesh2->set_normal_map_texture_index(mesh2->get_material()->get_texture_index_by_name("random_texture"));
-    mesh2->set_frontface_depth_overlay_texture_index(mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    //mesh2->set_texture_id(mesh2->get_material()->get_texture_id_by_name("frontface_depth_overlay"));
+    //mesh2->set_texture_id(mesh2->get_material()->get_texture_id_by_name("backface_depth_overlay"));
+    //mesh2->set_texture_id(mesh2->get_material()->get_texture_id_by_name("backface_normal_overlay"));
+    //mesh2->set_texture_id(mesh2->get_material()->get_texture_id_by_name("hi_res_color_overlay"));
+    mesh2->set_texture_id(                        mesh2->get_material()->get_texture_id_by_name("random_texture"));
+    mesh2->set_bump_texture_id(                   mesh2->get_material()->get_texture_id_by_name("random_texture"));
+    mesh2->set_frontface_depth_overlay_texture_id(mesh2->get_material()->get_texture_id_by_name("frontface_depth_overlay"));
 
     // sphere
     mesh3->set_material(env_mapped_dbl_refract_material);
     mesh3->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh3->set_texture_index(                        mesh3->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh3->set_normal_map_texture_index(             mesh3->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh3->set_frontface_depth_overlay_texture_index(mesh3->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    mesh3->set_backface_depth_overlay_texture_index( mesh3->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    mesh3->set_backface_normal_overlay_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    mesh3->set_texture_id(                        mesh3->get_material()->get_texture_id_by_name("chesterfield_color"));
+    mesh3->set_bump_texture_id(                   mesh3->get_material()->get_texture_id_by_name("chesterfield_normal"));
+    mesh3->set_frontface_depth_overlay_texture_id(mesh3->get_material()->get_texture_id_by_name("frontface_depth_overlay"));
+    mesh3->set_backface_depth_overlay_texture_id( mesh3->get_material()->get_texture_id_by_name("backface_depth_overlay"));
+    mesh3->set_backface_normal_overlay_texture_id(mesh3->get_material()->get_texture_id_by_name("backface_normal_overlay"));
 
     // torus
     mesh4->set_material(env_mapped_material);
     mesh4->set_reflect_to_refract_ratio(1); // 100% reflective
-    mesh4->set_texture_index(           mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh4->set_normal_map_texture_index(mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh4->set_texture_id(     mesh4->get_material()->get_texture_id_by_name("chesterfield_color"));
+    mesh4->set_bump_texture_id(mesh4->get_material()->get_texture_id_by_name("chesterfield_normal"));
 
     // cylinder
     mesh5->set_material(texture_mapped_material);
-    mesh5->set_texture_index(mesh5->get_material()->get_texture_index_by_name("dex3d"));
+    mesh5->set_texture_id(mesh5->get_material()->get_texture_id_by_name("dex3d"));
 
     // cone
     mesh6->set_material(texture_mapped_material);
-    mesh6->set_texture_index(mesh6->get_material()->get_texture_index_by_name("dex3d"));
+    mesh6->set_texture_id(mesh6->get_material()->get_texture_id_by_name("dex3d"));
 
     // hemisphere
     mesh7->set_material(env_mapped_fast_material);
@@ -665,11 +677,11 @@ int init_resources()
     // tetrahedron
     mesh8->set_material(env_mapped_dbl_refract_material);
     mesh8->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh8->set_texture_index(                        mesh8->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh8->set_normal_map_texture_index(             mesh8->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh8->set_frontface_depth_overlay_texture_index(mesh8->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    mesh8->set_backface_depth_overlay_texture_index( mesh8->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    mesh8->set_backface_normal_overlay_texture_index(mesh8->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    mesh8->set_texture_id(                        mesh8->get_material()->get_texture_id_by_name("chesterfield_color"));
+    mesh8->set_bump_texture_id(                   mesh8->get_material()->get_texture_id_by_name("chesterfield_normal"));
+    mesh8->set_frontface_depth_overlay_texture_id(mesh8->get_material()->get_texture_id_by_name("frontface_depth_overlay"));
+    mesh8->set_backface_depth_overlay_texture_id( mesh8->get_material()->get_texture_id_by_name("backface_depth_overlay"));
+    mesh8->set_backface_normal_overlay_texture_id(mesh8->get_material()->get_texture_id_by_name("backface_normal_overlay"));
 
     // diamond
     mesh9->set_material(env_mapped_fast_material);
@@ -678,38 +690,38 @@ int init_resources()
     // box2
     mesh10->set_material(env_mapped_dbl_refract_material);
     mesh10->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh10->set_texture_index(                        mesh10->get_material()->get_texture_index_by_name("chesterfield_color"));
-    mesh10->set_normal_map_texture_index(             mesh10->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh10->set_frontface_depth_overlay_texture_index(mesh10->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    mesh10->set_backface_depth_overlay_texture_index( mesh10->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    mesh10->set_backface_normal_overlay_texture_index(mesh10->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    mesh10->set_texture_id(                        mesh10->get_material()->get_texture_id_by_name("chesterfield_color"));
+    mesh10->set_bump_texture_id(                   mesh10->get_material()->get_texture_id_by_name("chesterfield_normal"));
+    mesh10->set_frontface_depth_overlay_texture_id(mesh10->get_material()->get_texture_id_by_name("frontface_depth_overlay"));
+    mesh10->set_backface_depth_overlay_texture_id( mesh10->get_material()->get_texture_id_by_name("backface_depth_overlay"));
+    mesh10->set_backface_normal_overlay_texture_id(mesh10->get_material()->get_texture_id_by_name("backface_normal_overlay"));
 
     // diamond2
     hidden_mesh->set_material(env_mapped_dbl_refract_material);
     hidden_mesh->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    hidden_mesh->set_texture_index(                        hidden_mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
-    hidden_mesh->set_normal_map_texture_index(             hidden_mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    hidden_mesh->set_frontface_depth_overlay_texture_index(hidden_mesh->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    hidden_mesh->set_backface_depth_overlay_texture_index( hidden_mesh->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    hidden_mesh->set_backface_normal_overlay_texture_index(hidden_mesh->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    hidden_mesh->set_texture_id(                        hidden_mesh->get_material()->get_texture_id_by_name("chesterfield_color"));
+    hidden_mesh->set_bump_texture_id(                   hidden_mesh->get_material()->get_texture_id_by_name("chesterfield_normal"));
+    hidden_mesh->set_frontface_depth_overlay_texture_id(hidden_mesh->get_material()->get_texture_id_by_name("frontface_depth_overlay"));
+    hidden_mesh->set_backface_depth_overlay_texture_id( hidden_mesh->get_material()->get_texture_id_by_name("backface_depth_overlay"));
+    hidden_mesh->set_backface_normal_overlay_texture_id(hidden_mesh->get_material()->get_texture_id_by_name("backface_normal_overlay"));
 
     // sphere2
     hidden_mesh2->set_material(env_mapped_dbl_refract_material);
     hidden_mesh2->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    hidden_mesh2->set_texture_index(                        hidden_mesh2->get_material()->get_texture_index_by_name("chesterfield_color"));
-    hidden_mesh2->set_normal_map_texture_index(             hidden_mesh2->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    hidden_mesh2->set_frontface_depth_overlay_texture_index(hidden_mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    hidden_mesh2->set_backface_depth_overlay_texture_index( hidden_mesh2->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    hidden_mesh2->set_backface_normal_overlay_texture_index(hidden_mesh2->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    hidden_mesh2->set_texture_id(                        hidden_mesh2->get_material()->get_texture_id_by_name("chesterfield_color"));
+    hidden_mesh2->set_bump_texture_id(                   hidden_mesh2->get_material()->get_texture_id_by_name("chesterfield_normal"));
+    hidden_mesh2->set_frontface_depth_overlay_texture_id(hidden_mesh2->get_material()->get_texture_id_by_name("frontface_depth_overlay"));
+    hidden_mesh2->set_backface_depth_overlay_texture_id( hidden_mesh2->get_material()->get_texture_id_by_name("backface_depth_overlay"));
+    hidden_mesh2->set_backface_normal_overlay_texture_id(hidden_mesh2->get_material()->get_texture_id_by_name("backface_normal_overlay"));
 
     // box3
     hidden_mesh3->set_material(env_mapped_dbl_refract_material);
     hidden_mesh3->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    hidden_mesh3->set_texture_index(                        hidden_mesh3->get_material()->get_texture_index_by_name("chesterfield_color"));
-    hidden_mesh3->set_normal_map_texture_index(             hidden_mesh3->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    hidden_mesh3->set_frontface_depth_overlay_texture_index(hidden_mesh3->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    hidden_mesh3->set_backface_depth_overlay_texture_index( hidden_mesh3->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    hidden_mesh3->set_backface_normal_overlay_texture_index(hidden_mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    hidden_mesh3->set_texture_id(                        hidden_mesh3->get_material()->get_texture_id_by_name("chesterfield_color"));
+    hidden_mesh3->set_bump_texture_id(                   hidden_mesh3->get_material()->get_texture_id_by_name("chesterfield_normal"));
+    hidden_mesh3->set_frontface_depth_overlay_texture_id(hidden_mesh3->get_material()->get_texture_id_by_name("frontface_depth_overlay"));
+    hidden_mesh3->set_backface_depth_overlay_texture_id( hidden_mesh3->get_material()->get_texture_id_by_name("backface_depth_overlay"));
+    hidden_mesh3->set_backface_normal_overlay_texture_id(hidden_mesh3->get_material()->get_texture_id_by_name("backface_normal_overlay"));
 
     // grid2
     hidden_mesh4->set_material(env_mapped_fast_material);
@@ -791,7 +803,7 @@ void onDisplay()
         hi_res_color_overlay_fb->unbind();
 
         // linear downsample texture from hi-res to med-res
-        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+        mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("hi_res_color_overlay"));
         med_res_color_overlay_fb->bind();
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -799,7 +811,7 @@ void onDisplay()
         med_res_color_overlay_fb->unbind();
 
         // linear downsample texture from med-res to lo-res
-        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("med_res_color_overlay"));
+        mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("med_res_color_overlay"));
         lo_res_color_overlay_fb->bind();
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -810,7 +822,7 @@ void onDisplay()
         mesh_overlay->set_material(overlay_bloom_filter_material);
 
         // blur texture in low-res
-        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
+        mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("lo_res_color_overlay"));
         for(int i = 0; i < BLUR_ITERS; i++) {
             lo_res_color_overlay_fb->bind();
             // don't clear since we're using same texture for input/output
@@ -822,8 +834,8 @@ void onDisplay()
 
         // switch to max mode to merge bloom filter applied texture with hi-res texture
         mesh_overlay->set_material(overlay_max_material);
-        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
-        mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
+        mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("hi_res_color_overlay"));
+        mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_id_by_name("lo_res_color_overlay"));
 
         hi_res_color_overlay_fb->bind();
         // don't clear since we're using same texture for input/output
@@ -834,7 +846,7 @@ void onDisplay()
 
         // switch to write-through mode to display final output texture
         mesh_overlay->set_material(overlay_write_through_material);
-        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+        mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("hi_res_color_overlay"));
     }
 
     glClearColor(0, 0, 0, 1);
@@ -957,16 +969,16 @@ void onKeyboard(unsigned char key, int x, int y)
                 mesh_overlay->set_material(overlay_write_through_material);
             }
             if(overlay_mode == 0) {
-                mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+                mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("backface_normal_overlay"));
                 overlay_mode = 1;
             } else if(overlay_mode == 1) {
-                mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+                mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("frontface_depth_overlay"));
                 overlay_mode = 2;
             } else if(overlay_mode == 2) {
-                mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+                mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("backface_depth_overlay"));
                 overlay_mode = 3;
             } else if(overlay_mode == 3) {
-                mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+                mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("hi_res_color_overlay"));
                 overlay_mode = 0;
             }
             break;
@@ -978,21 +990,21 @@ void onKeyboard(unsigned char key, int x, int y)
             }
             break;
         case 't': // texture
-            if(texture_index == 0) {
-                texture_index = 1; // GL_TEXTURE1
-            } else if(texture_index == 1) {
-                texture_index = 2; // GL_TEXTURE2
-            } else if(texture_index == 2) {
-                texture_index = 3; // GL_TEXTURE3
-            } else if(texture_index == 3) {
-                texture_index = 0; // GL_TEXTURE0
+            if(texture_id == 0) {
+                texture_id = 1; // GL_TEXTURE1
+            } else if(texture_id == 1) {
+                texture_id = 2; // GL_TEXTURE2
+            } else if(texture_id == 2) {
+                texture_id = 3; // GL_TEXTURE3
+            } else if(texture_id == 3) {
+                texture_id = 0; // GL_TEXTURE0
             }
-            mesh->set_texture_index( texture_index);
-            //mesh2->set_texture_index(texture_index);
-            //mesh3->set_texture_index(texture_index);
-            //mesh4->set_texture_index(texture_index);
-            //mesh5->set_texture_index(texture_index);
-            //mesh6->set_texture_index(texture_index);
+            mesh->set_texture_id( texture_id);
+            //mesh2->set_texture_id(texture_id);
+            //mesh3->set_texture_id(texture_id);
+            //mesh4->set_texture_id(texture_id);
+            //mesh5->set_texture_id(texture_id);
+            //mesh6->set_texture_id(texture_id);
             break;
         case 'w': // wireframe
             wireframe_mode = !wireframe_mode;

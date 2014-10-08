@@ -75,67 +75,67 @@ public:
     ShaderContext* get_normal_shader_context(Material* normal_material);
     ShaderContext* get_wireframe_shader_context(Material* wireframe_material);
 
-    int get_texture_index() const
+    int get_texture_id() const
     {
-        return m_texture_index;
+        return m_texture_id;
     }
-    void set_texture_index(int texture_index)
+    void set_texture_id(int texture_id)
     {
-        m_texture_index = texture_index;
+        m_texture_id = texture_id;
     }
 
     int get_texture2_index() const
     {
         return m_texture2_index;
     }
-    void set_texture2_index(int texture_index)
+    void set_texture2_index(int texture_id)
     {
-        m_texture2_index = texture_index;
+        m_texture2_index = texture_id;
     }
 
-    int get_normal_map_texture_index() const
+    int get_bump_texture_id() const
     {
-        return m_normal_map_texture_index;
+        return m_bump_texture_id;
     }
-    void set_normal_map_texture_index(int normal_map_texture_index)
+    void set_bump_texture_id(int bump_texture_id)
     {
-        m_normal_map_texture_index = normal_map_texture_index;
-    }
-
-    int get_env_map_texture_index() const
-    {
-        return m_env_map_texture_index;
-    }
-    void set_env_map_texture_index(int env_map_texture_index)
-    {
-        m_env_map_texture_index = env_map_texture_index;
+        m_bump_texture_id = bump_texture_id;
     }
 
-    int get_frontface_depth_overlay_texture_index() const
+    int get_env_map_texture_id() const
     {
-        return m_frontface_depth_overlay_texture_index;
+        return m_env_map_texture_id;
     }
-    void set_frontface_depth_overlay_texture_index(int frontface_depth_overlay_texture_index)
+    void set_env_map_texture_id(int env_map_texture_id)
     {
-        m_frontface_depth_overlay_texture_index = frontface_depth_overlay_texture_index;
-    }
-
-    int get_backface_depth_overlay_texture_index() const
-    {
-        return m_backface_depth_overlay_texture_index;
-    }
-    void set_backface_depth_overlay_texture_index(int backface_depth_overlay_texture_index)
-    {
-        m_backface_depth_overlay_texture_index = backface_depth_overlay_texture_index;
+        m_env_map_texture_id = env_map_texture_id;
     }
 
-    int get_backface_normal_overlay_texture_index() const
+    int get_frontface_depth_overlay_texture_id() const
     {
-        return m_backface_normal_overlay_texture_index;
+        return m_frontface_depth_overlay_texture_id;
     }
-    void set_backface_normal_overlay_texture_index(int backface_normal_overlay_texture_index)
+    void set_frontface_depth_overlay_texture_id(int frontface_depth_overlay_texture_id)
     {
-        m_backface_normal_overlay_texture_index = backface_normal_overlay_texture_index;
+        m_frontface_depth_overlay_texture_id = frontface_depth_overlay_texture_id;
+    }
+
+    int get_backface_depth_overlay_texture_id() const
+    {
+        return m_backface_depth_overlay_texture_id;
+    }
+    void set_backface_depth_overlay_texture_id(int backface_depth_overlay_texture_id)
+    {
+        m_backface_depth_overlay_texture_id = backface_depth_overlay_texture_id;
+    }
+
+    int get_backface_normal_overlay_texture_id() const
+    {
+        return m_backface_normal_overlay_texture_id;
+    }
+    void set_backface_normal_overlay_texture_id(int backface_normal_overlay_texture_id)
+    {
+        m_backface_normal_overlay_texture_id = backface_normal_overlay_texture_id;
     }
 
     float get_reflect_to_refract_ratio() const
@@ -167,13 +167,13 @@ private:
     std::unique_ptr<ShaderContext> m_shader_context;           // TODO: Mesh has one ShaderContext
     std::unique_ptr<ShaderContext> m_normal_shader_context;    // TODO: Mesh has one normal ShaderContext
     std::unique_ptr<ShaderContext> m_wireframe_shader_context; // TODO: Mesh has one wireframe ShaderContext
-    int                            m_texture_index;
+    int                            m_texture_id;
     int                            m_texture2_index;
-    int                            m_normal_map_texture_index;
-    int                            m_env_map_texture_index;
-    int                            m_frontface_depth_overlay_texture_index;
-    int                            m_backface_depth_overlay_texture_index;
-    int                            m_backface_normal_overlay_texture_index;
+    int                            m_bump_texture_id;
+    int                            m_env_map_texture_id;
+    int                            m_frontface_depth_overlay_texture_id;
+    int                            m_backface_depth_overlay_texture_id;
+    int                            m_backface_normal_overlay_texture_id;
     float                          m_reflect_to_refract_ratio;
 
     void update_xform();

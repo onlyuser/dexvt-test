@@ -1,6 +1,6 @@
 varying vec2      lerp_texcoord;
 uniform sampler2D color_texture;
-uniform sampler2D normal_map_texture;
+uniform sampler2D bump_texture;
 
 const int NUM_LIGHTS = 8;
 uniform int light_count;
@@ -25,7 +25,7 @@ void main(void) {
 
     vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1 - lerp_texcoord.y);
 
-    vec3 normal_surface = normalize(vec3(texture2D(normal_map_texture, flipped_texcoord)));
+    vec3 normal_surface = normalize(vec3(texture2D(bump_texture, flipped_texcoord)));
     vec3 normal = normalize(lerp_tbn_transform*normal_surface);
 
     for(int i = 0; i < NUM_LIGHTS && i < light_count; i++) {

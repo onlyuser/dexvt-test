@@ -19,21 +19,22 @@ public:
     typedef std::vector<Texture*> textures_t;
 
     Material(
-            std::string name                 = "",
-            std::string vertex_shader_file   = "",
-            std::string fragment_shader_file = "",
-            bool        use_ambient_color    = false,
-            bool        use_normal_only      = false,
-            bool        use_phong_shading    = false,
-            bool        use_texture_mapping  = false,
-            bool        use_bump_mapping   = false,
-            bool        use_env_mapping      = false,
-            bool        use_depth_overlay    = false,
-            bool        use_ssao             = false,
-            bool        use_bloom_kernel     = false,
-            bool        use_texture2         = false,
-            bool        skybox               = false,
-            bool        overlay              = false);
+            std::string name                   = "",
+            std::string vertex_shader_file     = "",
+            std::string fragment_shader_file   = "",
+            bool        use_ambient_color      = false,
+            bool        gen_normal_map         = false,
+            bool        use_phong_shading      = false,
+            bool        use_texture_mapping    = false,
+            bool        use_bump_mapping       = false,
+            bool        use_env_mapping        = false,
+            bool        use_env_mapping_dbl_refract      = false,
+            bool        use_ssao               = false,
+            bool        use_bloom_kernel       = false,
+            bool        use_texture2           = false,
+            bool        use_fragment_world_pos = false,
+            bool        skybox                 = false,
+            bool        overlay                = false);
     Program* get_program() const
     {
         return m_program.get();
@@ -54,9 +55,9 @@ public:
     {
         return m_use_ambient_color;
     }
-    bool use_normal_only() const
+    bool gen_normal_map() const
     {
-        return m_use_normal_only;
+        return m_gen_normal_map;
     }
     bool use_phong_shading() const
     {
@@ -74,9 +75,9 @@ public:
     {
         return m_use_env_mapping;
     }
-    bool use_depth_overlay() const
+    bool use_env_mapping_dbl_refract() const
     {
-        return m_use_depth_overlay;
+        return m_use_env_mapping_dbl_refract;
     }
     bool use_ssao() const
     {
@@ -90,6 +91,10 @@ public:
     {
         return m_use_texture2;
     }
+    bool use_fragment_world_pos() const
+    {
+        return m_use_fragment_world_pos;
+    }
     bool skybox() const
     {
         return m_skybox;
@@ -101,22 +106,23 @@ public:
 
     Texture* get_texture_by_index(int index) const;
     Texture* get_texture_by_name(std::string name) const;
-    int get_texture_index_by_name(std::string name) const;
+    int get_texture_id_by_name(std::string name) const;
 
 private:
     std::unique_ptr<Program> m_program;
     glm::vec3                m_ambient_color;
     textures_t               m_textures; // TODO: Material has multiple Textures
     bool                     m_use_ambient_color;
-    bool                     m_use_normal_only;
+    bool                     m_gen_normal_map;
     bool                     m_use_phong_shading;
     bool                     m_use_texture_mapping;
     bool                     m_use_bump_mapping;
     bool                     m_use_env_mapping;
-    bool                     m_use_depth_overlay;
+    bool                     m_use_env_mapping_dbl_refract;
     bool                     m_use_ssao;
     bool                     m_use_bloom_kernel;
     bool                     m_use_texture2;
+    bool                     m_use_fragment_world_pos;
     bool                     m_skybox;
     bool                     m_overlay;
 

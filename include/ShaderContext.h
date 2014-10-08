@@ -37,7 +37,7 @@ public:
         var_uniform_type_normal_xform,
         var_uniform_type_color_texture,
         var_uniform_type_color_texture2,
-        var_uniform_type_normal_map_texture,
+        var_uniform_type_bump_texture,
         var_uniform_type_camera_pos,
         var_uniform_type_light_pos,
         var_uniform_type_light_color,
@@ -81,20 +81,20 @@ public:
     void set_model_xform(glm::mat4 model_xform);
     void set_view_proj_xform(glm::mat4 view_proj_xform);
     void set_normal_xform(glm::mat4 normal_xform);
-    void set_texture_index(GLint texture_id);
+    void set_texture_id(GLint texture_id);
     void set_texture2_index(GLint texture_id);
-    void set_normal_map_texture_index(GLint texture_id);
+    void set_bump_texture_id(GLint texture_id);
     void set_camera_pos(GLfloat* camera_pos_arr);
     void set_light_pos(size_t num_lights, GLfloat* light_pos_arr);
     void set_light_color(size_t num_lights, GLfloat* light_color_arr);
     void set_light_enabled(size_t num_lights, GLint* light_enabled_arr);
     void set_light_count(GLint light_count);
-    void set_env_map_texture_index(GLint texture_id);
+    void set_env_map_texture_id(GLint texture_id);
     void set_inv_projection_xform(glm::mat4 inv_projection_xform);
     void set_inv_normal_xform(glm::mat4 inv_normal_xform);
-    void set_frontface_depth_overlay_texture_index(GLint texture_id);
-    void set_backface_depth_overlay_texture_index(GLint texture_id);
-    void set_backface_normal_overlay_texture_index(GLint texture_id);
+    void set_frontface_depth_overlay_texture_id(GLint texture_id);
+    void set_backface_depth_overlay_texture_id(GLint texture_id);
+    void set_backface_normal_overlay_texture_id(GLint texture_id);
     void set_viewport_dim(GLfloat* viewport_dim_arr);
     void set_bloom_kernel(GLfloat* bloom_kernel_arr);
     void set_camera_near(GLfloat camera_near);
@@ -110,15 +110,16 @@ private:
     VarUniform* m_var_uniforms[var_uniform_type_count];
     const textures_t &m_textures;
     bool m_use_ambient_color;
-    bool m_use_normal_only;
+    bool m_gen_normal_map;
     bool m_use_phong_shading;
     bool m_use_texture_mapping;
     bool m_use_bump_mapping;
     bool m_use_env_mapping;
-    bool m_use_depth_overlay;
+    bool m_use_env_mapping_dbl_refract;
     bool m_use_ssao;
     bool m_use_bloom_kernel;
     bool m_use_texture2;
+    bool m_use_fragment_world_pos;
     bool m_skybox;
     bool m_overlay;
 };

@@ -23,11 +23,11 @@ Mesh::Mesh(
       m_visible(true),
       m_buffers_already_init(false),
       m_material(NULL),
-      m_texture_index(-1),
+      m_texture_id(-1),
       m_texture2_index(-1),
-      m_normal_map_texture_index(-1),
-      m_env_map_texture_index(-1),
-      m_frontface_depth_overlay_texture_index(-1),
+      m_bump_texture_id(-1),
+      m_env_map_texture_id(-1),
+      m_frontface_depth_overlay_texture_id(-1),
       m_reflect_to_refract_ratio(1) // 100% reflective
 {
     m_vert_coords  = new GLfloat[num_vertex*3];
@@ -214,14 +214,14 @@ void Mesh::set_material(Material* material)
     }
     std::string texture_name;
     if(m_material) {
-        vt::Texture* texture = m_material->get_texture_by_index(m_texture_index);
+        vt::Texture* texture = m_material->get_texture_by_index(m_texture_id);
         if(texture) {
             texture_name = texture->name();
         }
     }
     m_shader_context.reset();
     m_material = material;
-    m_texture_index = material ? material->get_texture_index_by_name(texture_name) : -1;
+    m_texture_id = material ? material->get_texture_id_by_name(texture_name) : -1;
 }
 
 ShaderContext* Mesh::get_shader_context()

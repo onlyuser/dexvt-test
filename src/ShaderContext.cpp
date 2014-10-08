@@ -31,7 +31,7 @@ ShaderContext::var_uniform_type_to_name_table_t ShaderContext::m_var_uniform_typ
         {ShaderContext::var_uniform_type_normal_xform,                    "normal_xform"},
         {ShaderContext::var_uniform_type_color_texture,                   "color_texture"},
         {ShaderContext::var_uniform_type_color_texture2,                  "color_texture2"},
-        {ShaderContext::var_uniform_type_normal_map_texture,              "normal_map_texture"},
+        {ShaderContext::var_uniform_type_bump_texture,                    "bump_texture"},
         {ShaderContext::var_uniform_type_camera_pos,                      "camera_pos"},
         {ShaderContext::var_uniform_type_light_pos,                       "light_pos"},
         {ShaderContext::var_uniform_type_light_color,                     "light_color"},
@@ -69,15 +69,16 @@ ShaderContext::ShaderContext(
       m_ibo_tri_indices(ibo_tri_indices),
       m_textures(material->get_textures()),
       m_use_ambient_color(material->use_ambient_color()),
-      m_use_normal_only(material->use_normal_only()),
+      m_gen_normal_map(material->gen_normal_map()),
       m_use_phong_shading(material->use_phong_shading()),
       m_use_texture_mapping(material->use_texture_mapping()),
       m_use_bump_mapping(material->use_bump_mapping()),
       m_use_env_mapping(material->use_env_mapping()),
-      m_use_depth_overlay(material->use_depth_overlay()),
+      m_use_env_mapping_dbl_refract(material->use_env_mapping_dbl_refract()),
       m_use_ssao(material->use_ssao()),
       m_use_bloom_kernel(material->use_bloom_kernel()),
       m_use_texture2(material->use_texture2()),
+      m_use_fragment_world_pos(material->use_fragment_world_pos()),
       m_skybox(material->skybox()),
       m_overlay(material->overlay())
 {
@@ -137,7 +138,7 @@ void ShaderContext::render()
             GL_FALSE, // take our values as-is
             0,        // no extra data between each position
             0);       // offset of first element
-    if(m_use_normal_only || m_use_phong_shading || m_use_bump_mapping || m_use_env_mapping) {
+    if(m_gen_normal_map || m_use_phong_shading || m_use_bump_mapping || m_use_env_mapping) {
         m_var_attributes[var_attribute_type_vertex_normal]->enable_vertex_attrib_array();
         m_var_attributes[var_attribute_type_vertex_normal]->vertex_attrib_pointer(
                 m_vbo_vert_normal,
@@ -172,7 +173,7 @@ void ShaderContext::render()
         glDrawElements(GL_TRIANGLES, m_ibo_tri_indices->size()/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
     }
     m_var_attributes[var_attribute_type_vertex_position]->disable_vertex_attrib_array();
-    if(m_use_normal_only || m_use_phong_shading || m_use_bump_mapping || m_use_env_mapping) {
+    if(m_gen_normal_map || m_use_phong_shading || m_use_bump_mapping || m_use_env_mapping) {
         m_var_attributes[var_attribute_type_vertex_normal]->disable_vertex_attrib_array();
         if(m_use_bump_mapping) {
             m_var_attributes[var_attribute_type_vertex_tangent]->disable_vertex_attrib_array();
@@ -208,7 +209,7 @@ void ShaderContext::set_normal_xform(glm::mat4 normal_xform)
     m_var_uniforms[var_uniform_type_normal_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(normal_xform));
 }
 
-void ShaderContext::set_texture_index(GLint texture_id)
+void ShaderContext::set_texture_id(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
     m_var_uniforms[var_uniform_type_color_texture]->uniform_1i(texture_id);
@@ -220,10 +221,10 @@ void ShaderContext::set_texture2_index(GLint texture_id)
     m_var_uniforms[var_uniform_type_color_texture2]->uniform_1i(texture_id);
 }
 
-void ShaderContext::set_normal_map_texture_index(GLint texture_id)
+void ShaderContext::set_bump_texture_id(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
-    m_var_uniforms[var_uniform_type_normal_map_texture]->uniform_1i(texture_id);
+    m_var_uniforms[var_uniform_type_bump_texture]->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_camera_pos(GLfloat* camera_pos_arr)
@@ -251,7 +252,7 @@ void ShaderContext::set_light_count(GLint light_count)
     m_var_uniforms[var_uniform_type_light_count]->uniform_1i(light_count);
 }
 
-void ShaderContext::set_env_map_texture_index(GLint texture_id)
+void ShaderContext::set_env_map_texture_id(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
     m_var_uniforms[var_uniform_type_env_map_texture]->uniform_1i(texture_id);
@@ -267,19 +268,19 @@ void ShaderContext::set_inv_normal_xform(glm::mat4 inv_normal_xform)
     m_var_uniforms[var_uniform_type_inv_normal_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(inv_normal_xform));
 }
 
-void ShaderContext::set_frontface_depth_overlay_texture_index(GLint texture_id)
+void ShaderContext::set_frontface_depth_overlay_texture_id(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
     m_var_uniforms[var_uniform_type_frontface_depth_overlay_texture]->uniform_1i(texture_id);
 }
 
-void ShaderContext::set_backface_depth_overlay_texture_index(GLint texture_id)
+void ShaderContext::set_backface_depth_overlay_texture_id(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
     m_var_uniforms[var_uniform_type_backface_depth_overlay_texture]->uniform_1i(texture_id);
 }
 
-void ShaderContext::set_backface_normal_overlay_texture_index(GLint texture_id)
+void ShaderContext::set_backface_normal_overlay_texture_id(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
     m_var_uniforms[var_uniform_type_backface_normal_overlay_texture]->uniform_1i(texture_id);

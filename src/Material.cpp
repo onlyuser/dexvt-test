@@ -18,29 +18,31 @@ Material::Material(
         std::string vertex_shader_file,
         std::string fragment_shader_file,
         bool        use_ambient_color,
-        bool        use_normal_only,
+        bool        gen_normal_map,
         bool        use_phong_shading,
         bool        use_texture_mapping,
         bool        use_bump_mapping,
         bool        use_env_mapping,
-        bool        use_depth_overlay,
+        bool        use_env_mapping_dbl_refract,
         bool        use_ssao,
         bool        use_bloom_kernel,
         bool        use_texture2,
+        bool        use_fragment_world_pos,
         bool        skybox,
         bool        overlay)
     : NamedObject(name),
       m_ambient_color(1),
       m_use_ambient_color(use_ambient_color),
-      m_use_normal_only(use_normal_only),
+      m_gen_normal_map(gen_normal_map),
       m_use_phong_shading(use_phong_shading),
       m_use_texture_mapping(use_texture_mapping),
       m_use_bump_mapping(use_bump_mapping),
       m_use_env_mapping(use_env_mapping),
-      m_use_depth_overlay(use_depth_overlay),
+      m_use_env_mapping_dbl_refract(use_env_mapping_dbl_refract),
       m_use_ssao(use_ssao),
       m_use_bloom_kernel(use_bloom_kernel),
       m_use_texture2(use_texture2),
+      m_use_fragment_world_pos(use_fragment_world_pos),
       m_skybox(skybox),
       m_overlay(overlay)
 {
@@ -87,7 +89,7 @@ Texture* Material::get_texture_by_name(std::string name) const
     return (*p).second;
 }
 
-int Material::get_texture_index_by_name(std::string name) const
+int Material::get_texture_id_by_name(std::string name) const
 {
     Texture* texture = get_texture_by_name(name);
     textures_t::const_iterator p = std::find(m_textures.begin(), m_textures.end(), texture);
