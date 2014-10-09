@@ -17,7 +17,7 @@ Mesh* PrimitiveFactory::create_grid(
         float       tex_width_scale,
         float       tex_length_scale)
 {
-    int   num_vertex = (rows+1)*(cols+1);
+    int   num_vertex = (rows + 1)*(cols + 1);
     int   num_tri    = rows*cols*2;
     Mesh* mesh       = new Mesh(name, num_vertex, num_tri);
 
@@ -28,7 +28,7 @@ Mesh* PrimitiveFactory::create_grid(
     int vert_index = 0;
     for(int row = 0; row <= rows; row++) {
         for(int col = 0; col <= cols; col++) {
-            mesh->set_vert_coord(vert_index, glm::vec3(
+            mesh->set_vert_coord( vert_index, glm::vec3(
                     width*(static_cast<float>(col)/cols),
                     0,
                     length*(1 - static_cast<float>(row)/rows)));
@@ -56,8 +56,8 @@ Mesh* PrimitiveFactory::create_grid(
     // ==========================
 
     int tri_index = 0;
-    for(int row = 0; row<rows; row++) {
-        for(int col = 0; col<cols; col++) {
+    for(int row = 0; row < rows; row++) {
+        for(int col = 0; col < cols; col++) {
             int lower_left  = row*(cols + 1) + col;
             int lower_right = lower_left + 1;
             int upper_left  = (row + 1)*(cols + 1) + col;
@@ -78,8 +78,8 @@ Mesh* PrimitiveFactory::create_sphere(
         int         stacks,
         float       radius)
 {
-    int cols   = slices;
-    int rows   = stacks;
+    int   cols = slices;
+    int   rows = stacks;
     Mesh* mesh = create_grid(name, cols, rows);
 
     // ==============================
@@ -94,8 +94,8 @@ Mesh* PrimitiveFactory::create_sphere(
                     -(static_cast<float>(row)/rows*180-90), // pitch
                     static_cast<float>(col)/cols*360));     // yaw
             glm::vec3 offset = normal*radius;
-            mesh->set_vert_coord(vert_index, offset);
-            mesh->set_vert_normal(vert_index, glm::normalize(offset));
+            mesh->set_vert_coord(  vert_index, offset);
+            mesh->set_vert_normal( vert_index, glm::normalize(offset));
             mesh->set_vert_tangent(vert_index, orient_to_offset(glm::vec3(
                     0,
                     0,                                      // pitch
@@ -114,7 +114,7 @@ Mesh* PrimitiveFactory::create_hemisphere(
         float       radius)
 {
     int   cols = slices;
-    int   rows = stacks*0.5+2;
+    int   rows = stacks*0.5 + 2;
     Mesh* mesh = create_grid(name, cols, rows);
 
     // ==============================
@@ -125,18 +125,18 @@ Mesh* PrimitiveFactory::create_hemisphere(
     for(int row = 0; row <= rows; row++) {
         for(int col = 0; col <= cols; col++) {
             switch(row) {
-                case 0:
-                    mesh->set_vert_coord(vert_index, glm::vec3(0, 0, 0));
+                case 0: // bottom
+                    mesh->set_vert_coord( vert_index, glm::vec3(0,  0, 0));
                     mesh->set_vert_normal(vert_index, glm::vec3(0, -1, 0));
                     break;
                 default:
                     {
                         glm::vec3 offset = orient_to_offset(glm::vec3(
                                 0,
-                                -(static_cast<float>(row-1)/(rows-1)*90), // pitch
-                                static_cast<float>(col)/cols*360))        // yaw
+                                (row == 1) ? 0 : -(static_cast<float>(row - 2)/(rows - 2)*90), // pitch
+                                static_cast<float>(col)/cols*360))                             // yaw
                                 *radius;
-                        mesh->set_vert_coord(vert_index, offset);
+                        mesh->set_vert_coord( vert_index, offset);
                         mesh->set_vert_normal(vert_index, (row == 1) ?
                                 glm::vec3(0, -1, 0) : glm::normalize(offset));
                     }
@@ -171,38 +171,38 @@ Mesh* PrimitiveFactory::create_cylinder(
     for(int row = 0; row <= rows; row++) {
         for(int col = 0; col <= cols; col++) {
             switch(row) {
-                case 0:
-                    mesh->set_vert_coord(vert_index, glm::vec3(0, 0, 0));
+                case 0: // bottom
+                    mesh->set_vert_coord( vert_index, glm::vec3(0,  0, 0));
                     mesh->set_vert_normal(vert_index, glm::vec3(0, -1, 0));
                     break;
-                case 1:
-                case 2:
+                case 1: // bottom rim
+                case 2: // bottom side rim
                     {
                         glm::vec3 offset = orient_to_offset(glm::vec3(
                                 0,
                                 0,                                 // pitch
                                 static_cast<float>(col)/cols*360)) // yaw
                                 *radius;
-                        mesh->set_vert_coord(vert_index, glm::vec3(offset.x, 0, offset.z));
+                        mesh->set_vert_coord( vert_index, glm::vec3(offset.x, 0, offset.z));
                         mesh->set_vert_normal(vert_index, (row == 1) ?
                                 glm::vec3(0, -1, 0) : glm::normalize(offset));
                     }
                     break;
-                case 3:
-                case 4:
+                case 3: // top side rim
+                case 4: // top rim
                     {
                         glm::vec3 offset = orient_to_offset(glm::vec3(
                                 0,
                                 0,                                 // pitch
                                 static_cast<float>(col)/cols*360)) // yaw
                                 *radius;
-                        mesh->set_vert_coord(vert_index, glm::vec3(offset.x, height, offset.z));
+                        mesh->set_vert_coord( vert_index, glm::vec3(offset.x, height, offset.z));
                         mesh->set_vert_normal(vert_index, (row == 4) ?
                                 glm::vec3(0, 1, 0) : glm::normalize(offset));
                     }
                     break;
-                case 5:
-                    mesh->set_vert_coord(vert_index, glm::vec3(0, height, 0));
+                case 5: // top
+                    mesh->set_vert_coord( vert_index, glm::vec3(0, height, 0));
                     mesh->set_vert_normal(vert_index, glm::vec3(0, 1, 0));
                     break;
             }
@@ -236,31 +236,31 @@ Mesh* PrimitiveFactory::create_cone(
     for(int row = 0; row <= rows; row++) {
         for(int col = 0; col <= cols; col++) {
             switch(row) {
-                case 0:
-                    mesh->set_vert_coord(vert_index, glm::vec3(0, 0, 0));
+                case 0: // bottom
+                    mesh->set_vert_coord( vert_index, glm::vec3(0,  0, 0));
                     mesh->set_vert_normal(vert_index, glm::vec3(0, -1, 0));
                     break;
-                case 1:
-                case 2:
+                case 1: // bottom rim
+                case 2: // side rim
                     {
                         glm::vec3 offset = orient_to_offset(glm::vec3(
                                 0,
                                 0,                                 // pitch
                                 static_cast<float>(col)/cols*360)) // yaw
                                 *radius;
-                        mesh->set_vert_coord(vert_index, offset);
+                        mesh->set_vert_coord( vert_index, offset);
                         mesh->set_vert_normal(vert_index, (row == 1) ?
                                 glm::vec3(0, -1, 0) : glm::normalize(offset+glm::vec3(0, rim_y_offset, 0)));
                     }
                     break;
-                case 3:
+                case 3: // tip
                     {
                         glm::vec3 offset = orient_to_offset(glm::vec3(
                                 0,
                                 0,                                 // pitch
                                 static_cast<float>(col)/cols*360)) // yaw
                                 *radius;
-                        mesh->set_vert_coord(vert_index, glm::vec3(0, height, 0));
+                        mesh->set_vert_coord( vert_index, glm::vec3(0, height, 0));
                         mesh->set_vert_normal(vert_index, glm::normalize(offset+glm::vec3(0, rim_y_offset, 0)));
                     }
                     break;
@@ -302,8 +302,8 @@ Mesh* PrimitiveFactory::create_torus(
                     0,
                     -(static_cast<float>(row)/rows*360-180), // pitch
                     static_cast<float>(col)/cols*360));      // yaw
-            mesh->set_vert_coord(vert_index, normal_major*radius_major+normal_minor*radius_minor);
-            mesh->set_vert_normal(vert_index, normal_minor);
+            mesh->set_vert_coord(  vert_index, normal_major*radius_major+normal_minor*radius_minor);
+            mesh->set_vert_normal( vert_index, normal_minor);
             mesh->set_vert_tangent(vert_index, orient_to_offset(glm::vec3(
                     0,
                     0,                                      // pitch
@@ -403,9 +403,9 @@ Mesh* PrimitiveFactory::create_box(
     mesh->set_tex_coord(3, glm::vec2(0, 1));
 
     for(int i=1; i<6; i++) {
-        mesh->set_tex_coord(i*4+0, mesh->get_tex_coord(0));
-        mesh->set_tex_coord(i*4+1, mesh->get_tex_coord(1));
-        mesh->set_tex_coord(i*4+2, mesh->get_tex_coord(2));
+        mesh->set_tex_coord(i*4 + 0, mesh->get_tex_coord(0));
+        mesh->set_tex_coord(i*4 + 1, mesh->get_tex_coord(1));
+        mesh->set_tex_coord(i*4 + 2, mesh->get_tex_coord(2));
         mesh->set_tex_coord(i*4+3, mesh->get_tex_coord(3));
     }
 
@@ -469,9 +469,9 @@ Mesh* PrimitiveFactory::create_tetrahedron(
     mesh->set_vert_coord(11, glm::vec3(1, 1, 1));
 
     for(int i=0; i<static_cast<int>(mesh->get_num_tri()); i++) {
-        glm::vec3 p0 = mesh->get_vert_coord(i*3+0);
-        glm::vec3 p1 = mesh->get_vert_coord(i*3+1);
-        glm::vec3 p2 = mesh->get_vert_coord(i*3+2);
+        glm::vec3 p0 = mesh->get_vert_coord(i*3 + 0);
+        glm::vec3 p1 = mesh->get_vert_coord(i*3 + 1);
+        glm::vec3 p2 = mesh->get_vert_coord(i*3 + 2);
         glm::vec3 e1 = glm::normalize(p1-p0);
         glm::vec3 e2 = glm::normalize(p2-p0);
         glm::vec3 n = glm::normalize(glm::cross(e1, e2));
@@ -513,7 +513,7 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
 
     int   num_vertex = 336;
     int   num_tri    = 112;
-    Mesh* mesh = new Mesh(name, num_vertex, num_tri);
+    Mesh* mesh       = new Mesh(name, num_vertex, num_tri);
 
     float crown_height   = height*crown_height_to_total_height_ratio;
     float pavilion_depth = height-crown_height;
@@ -543,17 +543,17 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
                 0,                            // pitch
                 static_cast<float>(i)/8*360)) // yaw
                 *table_radius
-                +glm::vec3(0, height, 0);
+                + glm::vec3(0, height, 0);
         glm::vec3 p3 = orient_to_offset(glm::vec3(
                 0,
-                0,                              // pitch
-                static_cast<float>(i+1)/8*360)) // yaw
+                0,                                // pitch
+                static_cast<float>(i + 1)/8*360)) // yaw
                 *table_radius
-                +glm::vec3(0, height, 0);
-        mesh->set_vert_coord(vert_index+0, p1);
-        mesh->set_vert_coord(vert_index+1, p2);
-        mesh->set_vert_coord(vert_index+2, p3);
-        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+                + glm::vec3(0, height, 0);
+        mesh->set_vert_coord( vert_index + 0, p1);
+        mesh->set_vert_coord( vert_index + 1, p2);
+        mesh->set_vert_coord( vert_index + 2, p3);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index + 0, vert_index + 1, vert_index + 2));
         vert_index += 3;
     }
 
@@ -564,23 +564,23 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
                 0,                            // pitch
                 static_cast<float>(i)/8*360)) // yaw
                 *table_radius
-                +glm::vec3(0, height, 0);
+                + glm::vec3(0, height, 0);
         glm::vec3 p2 = orient_to_offset(glm::vec3(
                 0,
-                0,                                // pitch
-                static_cast<float>(i+0.5)/8*360)) // yaw
+                0,                                  // pitch
+                static_cast<float>(i + 0.5)/8*360)) // yaw
                 *upper_girdle_inner_rim_radius
-                +glm::vec3(0, upper_girdle_inner_rim_y, 0);
+                + glm::vec3(0, upper_girdle_inner_rim_y, 0);
         glm::vec3 p3 = orient_to_offset(glm::vec3(
                 0,
-                0,                              // pitch
-                static_cast<float>(i+1)/8*360)) // yaw
+                0,                                // pitch
+                static_cast<float>(i + 1)/8*360)) // yaw
                 *table_radius
-                +glm::vec3(0, height, 0);
-        mesh->set_vert_coord(vert_index+0, p1);
-        mesh->set_vert_coord(vert_index+1, p2);
-        mesh->set_vert_coord(vert_index+2, p3);
-        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+                + glm::vec3(0, height, 0);
+        mesh->set_vert_coord( vert_index + 0, p1);
+        mesh->set_vert_coord( vert_index + 1, p2);
+        mesh->set_vert_coord( vert_index + 2, p3);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index + 0, vert_index + 1, vert_index + 2));
         vert_index += 3;
     }
 
@@ -592,48 +592,48 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
                 0,                            // pitch
                 static_cast<float>(i)/8*360)) // yaw
                 *table_radius
-                +glm::vec3(0, height, 0);
+                + glm::vec3(0, height, 0);
         glm::vec3 p2 = orient_to_offset(glm::vec3(
                 0,
                 0,                            // pitch
                 static_cast<float>(i)/8*360)) // yaw
                 *radius
-                +glm::vec3(0, girdle_thick_part_top_y, 0);
+                + glm::vec3(0, girdle_thick_part_top_y, 0);
         glm::vec3 p3 = orient_to_offset(glm::vec3(
                 0,
-                0,                                // pitch
-                static_cast<float>(i+0.5)/8*360)) // yaw
+                0,                                  // pitch
+                static_cast<float>(i + 0.5)/8*360)) // yaw
                 *upper_girdle_inner_rim_radius
-                +glm::vec3(0, upper_girdle_inner_rim_y, 0);
-        mesh->set_vert_coord(vert_index+0, p1);
-        mesh->set_vert_coord(vert_index+1, p2);
-        mesh->set_vert_coord(vert_index+2, p3);
-        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+                + glm::vec3(0, upper_girdle_inner_rim_y, 0);
+        mesh->set_vert_coord( vert_index + 0, p1);
+        mesh->set_vert_coord( vert_index + 1, p2);
+        mesh->set_vert_coord( vert_index + 2, p3);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index + 0, vert_index + 1, vert_index + 2));
         vert_index += 3;
 
         // half kite 2
         glm::vec3 p4 = orient_to_offset(glm::vec3(
                 0,
-                0,                              // pitch
-                static_cast<float>(i+1)/8*360)) // yaw
+                0,                                // pitch
+                static_cast<float>(i + 1)/8*360)) // yaw
                 *table_radius
-                +glm::vec3(0, height, 0);
+                + glm::vec3(0, height, 0);
         glm::vec3 p5 = orient_to_offset(glm::vec3(
                 0,
-                0,                                // pitch
-                static_cast<float>(i+0.5)/8*360)) // yaw
+                0,                                  // pitch
+                static_cast<float>(i + 0.5)/8*360)) // yaw
                 *upper_girdle_inner_rim_radius
-                +glm::vec3(0, upper_girdle_inner_rim_y, 0);
+                + glm::vec3(0, upper_girdle_inner_rim_y, 0);
         glm::vec3 p6 = orient_to_offset(glm::vec3(
                 0,
-                0,                              // pitch
-                static_cast<float>(i+1)/8*360)) // yaw
+                0,                                // pitch
+                static_cast<float>(i + 1)/8*360)) // yaw
                 *radius
-                +glm::vec3(0, girdle_thick_part_top_y, 0);
-        mesh->set_vert_coord(vert_index+0, p4);
-        mesh->set_vert_coord(vert_index+1, p5);
-        mesh->set_vert_coord(vert_index+2, p6);
-        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+                + glm::vec3(0, girdle_thick_part_top_y, 0);
+        mesh->set_vert_coord( vert_index + 0, p4);
+        mesh->set_vert_coord( vert_index + 1, p5);
+        mesh->set_vert_coord( vert_index + 2, p6);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index + 0, vert_index + 1, vert_index + 2));
         vert_index += 3;
     }
 
@@ -642,84 +642,84 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
         // half upper-girdle 1
         glm::vec3 p1 = orient_to_offset(glm::vec3(
                 0,
-                0,                                // pitch
-                static_cast<float>(i+0.5)/8*360)) // yaw
+                0,                                  // pitch
+                static_cast<float>(i + 0.5)/8*360)) // yaw
                 *upper_girdle_inner_rim_radius
-                +glm::vec3(0, upper_girdle_inner_rim_y, 0);
+                + glm::vec3(0, upper_girdle_inner_rim_y, 0);
         glm::vec3 p2 = orient_to_offset(glm::vec3(
                 0,
                 0,                            // pitch
                 static_cast<float>(i)/8*360)) // yaw
                 *radius
-                +glm::vec3(0, girdle_thick_part_top_y, 0);
+                + glm::vec3(0, girdle_thick_part_top_y, 0);
         glm::vec3 p3 = orient_to_offset(glm::vec3(
                 0,
-                0,                                // pitch
-                static_cast<float>(i+0.5)/8*360)) // yaw
+                0,                                  // pitch
+                static_cast<float>(i + 0.5)/8*360)) // yaw
                 *radius
-                +glm::vec3(0, girdle_thin_part_top_y, 0);
-        mesh->set_vert_coord(vert_index+0, p1);
-        mesh->set_vert_coord(vert_index+1, p2);
-        mesh->set_vert_coord(vert_index+2, p3);
-        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+                + glm::vec3(0, girdle_thin_part_top_y, 0);
+        mesh->set_vert_coord( vert_index + 0, p1);
+        mesh->set_vert_coord( vert_index + 1, p2);
+        mesh->set_vert_coord( vert_index + 2, p3);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index + 0, vert_index + 1, vert_index + 2));
         vert_index += 3;
 
         // half upper-girdle 2
         glm::vec3 p4 = orient_to_offset(glm::vec3(
                 0,
-                0,                                // pitch
-                static_cast<float>(i+0.5)/8*360)) // yaw
+                0,                                  // pitch
+                static_cast<float>(i + 0.5)/8*360)) // yaw
                 *upper_girdle_inner_rim_radius
-                +glm::vec3(0, upper_girdle_inner_rim_y, 0);
+                + glm::vec3(0, upper_girdle_inner_rim_y, 0);
         glm::vec3 p5 = orient_to_offset(glm::vec3(
                 0,
-                0,                                // pitch
-                static_cast<float>(i+0.5)/8*360)) // yaw
+                0,                                  // pitch
+                static_cast<float>(i + 0.5)/8*360)) // yaw
                 *radius
-                +glm::vec3(0, girdle_thin_part_top_y, 0);
+                + glm::vec3(0, girdle_thin_part_top_y, 0);
         glm::vec3 p6 = orient_to_offset(glm::vec3(
                 0,
-                0,                              // pitch
-                static_cast<float>(i+1)/8*360)) // yaw
+                0,                                // pitch
+                static_cast<float>(i + 1)/8*360)) // yaw
                 *radius
-                +glm::vec3(0, girdle_thick_part_top_y, 0);
-        mesh->set_vert_coord(vert_index+0, p4);
-        mesh->set_vert_coord(vert_index+1, p5);
-        mesh->set_vert_coord(vert_index+2, p6);
-        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+                + glm::vec3(0, girdle_thick_part_top_y, 0);
+        mesh->set_vert_coord( vert_index + 0, p4);
+        mesh->set_vert_coord( vert_index + 1, p5);
+        mesh->set_vert_coord( vert_index + 2, p6);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index + 0, vert_index + 1, vert_index + 2));
         vert_index += 3;
     }
 
     // girdle: 16*2 triangles
     for(int i=0; i<16; i++) {
-        float left_top_y     = (i%2)     ? girdle_thin_part_top_y    : girdle_thick_part_top_y;
-        float left_bottom_y  = (i%2)     ? girdle_thin_part_bottom_y : girdle_thick_part_bottom_y;
-        float right_top_y    = ((i+1)%2) ? girdle_thin_part_top_y    : girdle_thick_part_top_y;
-        float right_bottom_y = ((i+1)%2) ? girdle_thin_part_bottom_y : girdle_thick_part_bottom_y;
+        float left_top_y     = (i%2)       ? girdle_thin_part_top_y    : girdle_thick_part_top_y;
+        float left_bottom_y  = (i%2)       ? girdle_thin_part_bottom_y : girdle_thick_part_bottom_y;
+        float right_top_y    = ((i + 1)%2) ? girdle_thin_part_top_y    : girdle_thick_part_top_y;
+        float right_bottom_y = ((i + 1)%2) ? girdle_thin_part_bottom_y : girdle_thick_part_bottom_y;
 
         // top half
         glm::vec3 p1 = orient_to_offset(glm::vec3(
                 0,
-                0,                               // pitch
-                static_cast<float>(i+1)/16*360)) // yaw
+                0,                                 // pitch
+                static_cast<float>(i + 1)/16*360)) // yaw
                 *radius
-                +glm::vec3(0, right_top_y, 0);
+                + glm::vec3(0, right_top_y, 0);
         glm::vec3 p2 = orient_to_offset(glm::vec3(
                 0,
                 0,                             // pitch
                 static_cast<float>(i)/16*360)) // yaw
                 *radius
-                +glm::vec3(0, left_top_y, 0);
+                + glm::vec3(0, left_top_y, 0);
         glm::vec3 p3 = orient_to_offset(glm::vec3(
                 0,
                 0,                             // pitch
                 static_cast<float>(i)/16*360)) // yaw
                 *radius
-                +glm::vec3(0, left_bottom_y, 0);
-        mesh->set_vert_coord(vert_index+0, p1);
-        mesh->set_vert_coord(vert_index+1, p2);
-        mesh->set_vert_coord(vert_index+2, p3);
-        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+                + glm::vec3(0, left_bottom_y, 0);
+        mesh->set_vert_coord( vert_index + 0, p1);
+        mesh->set_vert_coord( vert_index + 1, p2);
+        mesh->set_vert_coord( vert_index + 2, p3);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index + 0, vert_index + 1, vert_index + 2));
         vert_index += 3;
 
         // bottom half
@@ -728,23 +728,23 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
                 0,                             // pitch
                 static_cast<float>(i)/16*360)) // yaw
                 *radius
-                +glm::vec3(0, left_bottom_y, 0);
+                + glm::vec3(0, left_bottom_y, 0);
         glm::vec3 p5 = orient_to_offset(glm::vec3(
                 0,
-                0,                               // pitch
-                static_cast<float>(i+1)/16*360)) // yaw
+                0,                                 // pitch
+                static_cast<float>(i + 1)/16*360)) // yaw
                 *radius
-                +glm::vec3(0, right_bottom_y, 0);
+                + glm::vec3(0, right_bottom_y, 0);
         glm::vec3 p6 = orient_to_offset(glm::vec3(
                 0,
-                0,                               // pitch
-                static_cast<float>(i+1)/16*360)) // yaw
+                0,                                 // pitch
+                static_cast<float>(i + 1)/16*360)) // yaw
                 *radius
-                +glm::vec3(0, right_top_y, 0);
-        mesh->set_vert_coord(vert_index+0, p4);
-        mesh->set_vert_coord(vert_index+1, p5);
-        mesh->set_vert_coord(vert_index+2, p6);
-        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+                + glm::vec3(0, right_top_y, 0);
+        mesh->set_vert_coord( vert_index + 0, p4);
+        mesh->set_vert_coord( vert_index + 1, p5);
+        mesh->set_vert_coord( vert_index + 2, p6);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index + 0, vert_index + 1, vert_index + 2));
         vert_index += 3;
     }
 
@@ -753,51 +753,51 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
         // half lower-girdle 1
         glm::vec3 p1 = orient_to_offset(glm::vec3(
                 0,
-                0,                                // pitch
-                static_cast<float>(i+0.5)/8*360)) // yaw
+                0,                                  // pitch
+                static_cast<float>(i + 0.5)/8*360)) // yaw
                 *lower_girdle_inner_rim_radius
-                +glm::vec3(0, lower_girdle_inner_rim_y, 0);
+                + glm::vec3(0, lower_girdle_inner_rim_y, 0);
         glm::vec3 p2 = orient_to_offset(glm::vec3(
                 0,
-                0,                                // pitch
-                static_cast<float>(i+0.5)/8*360)) // yaw
+                0,                                  // pitch
+                static_cast<float>(i + 0.5)/8*360)) // yaw
                 *radius
-                +glm::vec3(0, girdle_thin_part_bottom_y, 0);
+                + glm::vec3(0, girdle_thin_part_bottom_y, 0);
         glm::vec3 p3 = orient_to_offset(glm::vec3(
                 0,
                 0,                            // pitch
                 static_cast<float>(i)/8*360)) // yaw
                 *radius
-                +glm::vec3(0, girdle_thick_part_bottom_y, 0);
-        mesh->set_vert_coord(vert_index+0, p1);
-        mesh->set_vert_coord(vert_index+1, p2);
-        mesh->set_vert_coord(vert_index+2, p3);
-        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+                + glm::vec3(0, girdle_thick_part_bottom_y, 0);
+        mesh->set_vert_coord( vert_index + 0, p1);
+        mesh->set_vert_coord( vert_index + 1, p2);
+        mesh->set_vert_coord( vert_index + 2, p3);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index + 0, vert_index + 1, vert_index + 2));
         vert_index += 3;
 
         // half lower-girdle 2
         glm::vec3 p4 = orient_to_offset(glm::vec3(
                 0,
-                0,                                // pitch
-                static_cast<float>(i+0.5)/8*360)) // yaw
+                0,                                  // pitch
+                static_cast<float>(i + 0.5)/8*360)) // yaw
                 *lower_girdle_inner_rim_radius
-                +glm::vec3(0, lower_girdle_inner_rim_y, 0);
+                + glm::vec3(0, lower_girdle_inner_rim_y, 0);
         glm::vec3 p5 = orient_to_offset(glm::vec3(
                 0,
-                0,                              // pitch
-                static_cast<float>(i+1)/8*360)) // yaw
+                0,                                // pitch
+                static_cast<float>(i + 1)/8*360)) // yaw
                 *radius
-                +glm::vec3(0, girdle_thick_part_bottom_y, 0);
+                + glm::vec3(0, girdle_thick_part_bottom_y, 0);
         glm::vec3 p6 = orient_to_offset(glm::vec3(
                 0,
-                0,                                // pitch
-                static_cast<float>(i+0.5)/8*360)) // yaw
+                0,                                  // pitch
+                static_cast<float>(i + 0.5)/8*360)) // yaw
                 *radius
-                +glm::vec3(0, girdle_thin_part_bottom_y, 0);
-        mesh->set_vert_coord(vert_index+0, p4);
-        mesh->set_vert_coord(vert_index+1, p5);
-        mesh->set_vert_coord(vert_index+2, p6);
-        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+                + glm::vec3(0, girdle_thin_part_bottom_y, 0);
+        mesh->set_vert_coord( vert_index + 0, p4);
+        mesh->set_vert_coord( vert_index + 1, p5);
+        mesh->set_vert_coord( vert_index + 2, p6);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index + 0, vert_index + 1, vert_index + 2));
         vert_index += 3;
     }
 
@@ -807,40 +807,40 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
         glm::vec3 p1 = glm::vec3(0, 0, 0);
         glm::vec3 p2 = orient_to_offset(glm::vec3(
                 0,
-                0,                                // pitch
-                static_cast<float>(i+0.5)/8*360)) // yaw
+                0,                                  // pitch
+                static_cast<float>(i + 0.5)/8*360)) // yaw
                 *lower_girdle_inner_rim_radius
-                +glm::vec3(0, lower_girdle_inner_rim_y, 0);
+                + glm::vec3(0, lower_girdle_inner_rim_y, 0);
         glm::vec3 p3 = orient_to_offset(glm::vec3(
                 0,
                 0,                            // pitch
                 static_cast<float>(i)/8*360)) // yaw
                 *radius
-                +glm::vec3(0, girdle_thick_part_bottom_y, 0);
-        mesh->set_vert_coord(vert_index+0, p1);
-        mesh->set_vert_coord(vert_index+1, p2);
-        mesh->set_vert_coord(vert_index+2, p3);
-        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+                + glm::vec3(0, girdle_thick_part_bottom_y, 0);
+        mesh->set_vert_coord( vert_index + 0, p1);
+        mesh->set_vert_coord( vert_index + 1, p2);
+        mesh->set_vert_coord( vert_index + 2, p3);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index + 0, vert_index + 1, vert_index + 2));
         vert_index += 3;
 
         // half pavilion main 2
         glm::vec3 p4 = glm::vec3(0, 0, 0);
         glm::vec3 p5 = orient_to_offset(glm::vec3(
                 0,
-                0,                              // pitch
-                static_cast<float>(i+1)/8*360)) // yaw
+                0,                                // pitch
+                static_cast<float>(i + 1)/8*360)) // yaw
                 *radius
-                +glm::vec3(0, girdle_thick_part_bottom_y, 0);
+                + glm::vec3(0, girdle_thick_part_bottom_y, 0);
         glm::vec3 p6 = orient_to_offset(glm::vec3(
                 0,
-                0,                                // pitch
-                static_cast<float>(i+0.5)/8*360)) // yaw
+                0,                                  // pitch
+                static_cast<float>(i + 0.5)/8*360)) // yaw
                 *lower_girdle_inner_rim_radius
-                +glm::vec3(0, lower_girdle_inner_rim_y, 0);
-        mesh->set_vert_coord(vert_index+0, p4);
-        mesh->set_vert_coord(vert_index+1, p5);
-        mesh->set_vert_coord(vert_index+2, p6);
-        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index+0, vert_index+1, vert_index+2));
+                + glm::vec3(0, lower_girdle_inner_rim_y, 0);
+        mesh->set_vert_coord( vert_index + 0, p4);
+        mesh->set_vert_coord( vert_index + 1, p5);
+        mesh->set_vert_coord( vert_index + 2, p6);
+        mesh->set_tri_indices(tri_index++, glm::uvec3(vert_index + 0, vert_index + 1, vert_index + 2));
         vert_index += 3;
     }
 
