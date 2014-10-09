@@ -32,11 +32,15 @@ void map_range(in float s1, in float e1, in float s2, in float e2, in float x, o
     out_x = s2 + (x - s1)*(e2 - s2)/(e1 - s1);
 }
 
+// http://www.songho.ca/opengl/gl_projectionmatrix.html
 void unproject_fragment(in vec2 frag_pos, in float frag_depth, in mat4 _inv_mvp_xform, out vec3 frag_world_pos)
 {
     vec4 normalized_device_coord = vec4(frag_pos.x*2 - 1, frag_pos.y*2 -1 , frag_depth*2 - 1, 1);
     vec4 unprojected_coord = _inv_mvp_xform*normalized_device_coord;
+
+    // http://www.iquilezles.org/blog/?p=1911
     unprojected_coord.xyz /= unprojected_coord.w;
+
     frag_world_pos = unprojected_coord.xyz;
 }
 
