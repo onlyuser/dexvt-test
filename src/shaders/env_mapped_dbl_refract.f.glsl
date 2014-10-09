@@ -216,7 +216,7 @@ void calculate_light_contrib(
 // http://www.songho.ca/opengl/gl_projectionmatrix.html
 void unproject_fragment(in vec2 frag_pos, in float frag_depth, in mat4 _inv_mvp_xform, out vec3 frag_world_pos)
 {
-    vec4 normalized_device_coord = vec4(frag_pos.x*2 - 1, frag_pos.y*2 -1 , frag_depth*2 - 1, 1);
+    vec4 normalized_device_coord = vec4(frag_pos.x*2 - 1, frag_pos.y*2 - 1 , frag_depth*2 - 1, 1);
     vec4 unprojected_coord = _inv_mvp_xform*normalized_device_coord;
 
     // http://www.iquilezles.org/blog/?p=1911
