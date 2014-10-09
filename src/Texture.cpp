@@ -41,8 +41,8 @@ Texture::Texture(
                 srand(time(NULL));
                 unsigned char* _pixel_data = new unsigned char[width*height*sizeof(unsigned char)*3];
                 memset(_pixel_data, 0, width*height*sizeof(unsigned char)*3);
-                for(int i = 0; i < height; i++) {
-                    for(int j = 0; j < width; j++) {
+                for(int i = 0; i < static_cast<int>(height); i++) {
+                    for(int j = 0; j < static_cast<int>(width); j++) {
                         int pixel_offset = (i*width + j)*3;
                         _pixel_data[pixel_offset + 0] = rand() % 256;
                         _pixel_data[pixel_offset + 1] = rand() % 256;
