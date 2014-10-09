@@ -34,8 +34,8 @@ void map_range(in float s1, in float e1, in float s2, in float e2, in float x, o
 
 void unproject_fragment(in vec2 frag_pos, in float frag_depth, in mat4 _inv_mvp_xform, out vec3 frag_world_pos)
 {
-    vec4 projected_coord = vec4(frag_pos.x*2-1, frag_pos.y*2-1, frag_depth*2-1, 1);
-    vec4 unprojected_coord = _inv_mvp_xform*projected_coord;
+    vec4 normalized_device_coord = vec4(frag_pos.x*2 - 1, frag_pos.y*2 -1 , frag_depth*2 - 1, 1);
+    vec4 unprojected_coord = _inv_mvp_xform*normalized_device_coord;
     unprojected_coord.xyz /= unprojected_coord.w;
     frag_world_pos = unprojected_coord.xyz;
 }
