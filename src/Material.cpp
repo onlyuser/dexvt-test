@@ -46,13 +46,11 @@ Material::Material(
       m_skybox(skybox),
       m_overlay(overlay)
 {
-    std::unique_ptr<Shader> vs, fs;
-    vs = std::unique_ptr<Shader>(new Shader(vertex_shader_file, GL_VERTEX_SHADER));
-    fs = std::unique_ptr<Shader>(new Shader(fragment_shader_file, GL_FRAGMENT_SHADER));
-
-    m_program = std::unique_ptr<Program>(new Program);
-    m_program->attach_shader(vs.get());
-    m_program->attach_shader(fs.get());
+    m_program         = std::unique_ptr<Program>(new Program);
+    m_vertex_shader   = std::unique_ptr<Shader>(new Shader(vertex_shader_file,   GL_VERTEX_SHADER));
+    m_fragment_shader = std::unique_ptr<Shader>(new Shader(fragment_shader_file, GL_FRAGMENT_SHADER));
+    m_program->attach_shader(m_vertex_shader.get());
+    m_program->attach_shader(m_fragment_shader.get());
     if(!m_program->link()) {
         fprintf(stderr, "glLinkProgram:");
 //        print_log(m_program->id());

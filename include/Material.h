@@ -3,6 +3,7 @@
 
 #include <NamedObject.h>
 #include <Program.h>
+#include <Shader.h>
 #include <glm/glm.hpp>
 #include <vector>
 #include <map>
@@ -38,6 +39,14 @@ public:
     Program* get_program() const
     {
         return m_program.get();
+    }
+    Shader* get_vertex_shader() const
+    {
+        return m_vertex_shader.get();
+    }
+    Shader* get_fragment_shader() const
+    {
+        return m_fragment_shader.get();
     }
 
     glm::vec3 get_ambient_color() const
@@ -110,6 +119,8 @@ public:
 
 private:
     std::unique_ptr<Program> m_program;
+    std::unique_ptr<Shader>  m_vertex_shader;
+    std::unique_ptr<Shader>  m_fragment_shader;
     glm::vec3                m_ambient_color;
     textures_t               m_textures; // TODO: Material has multiple Textures
     bool                     m_use_ambient_color;

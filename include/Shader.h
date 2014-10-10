@@ -12,6 +12,18 @@ class Shader : public IdentObject
 public:
     Shader(std::string filename, GLenum type);
     virtual ~Shader();
+    std::string get_filename() const
+    {
+        return m_filename;
+    }
+    GLenum type() const
+    {
+        return m_type;
+    }
+
+private:
+    std::string m_filename;
+    GLenum m_type;
 };
 
 }

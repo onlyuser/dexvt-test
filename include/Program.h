@@ -22,7 +22,15 @@ public:
 
     Program();
     virtual ~Program();
-    void attach_shader(const Shader* shader) const;
+    void attach_shader(Shader* shader);
+    Shader* get_vertex_shader() const
+    {
+        return m_vertex_shader;
+    }
+    Shader* get_fragment_shader() const
+    {
+        return m_fragment_shader;
+    }
     bool link() const;
     void use() const;
     VarAttribute* get_var_attribute(const GLchar* name) const;
@@ -35,6 +43,8 @@ public:
     void clear_vars();
 
 private:
+    Shader* m_vertex_shader;
+    Shader* m_fragment_shader;
     typedef std::map<std::string, var_type_t> var_names_t;
     var_names_t m_var_names;
 };

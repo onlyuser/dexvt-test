@@ -3,12 +3,14 @@
 #include <VarAttribute.h>
 #include <VarUniform.h>
 #include <GL/glew.h>
-
+#include <stdlib.h>
 #include <iostream>
 
 namespace vt {
 
 Program::Program()
+    : m_vertex_shader(NULL),
+      m_fragment_shader(NULL)
 {
     m_id = glCreateProgram();
 }
@@ -18,9 +20,18 @@ Program::~Program()
     glDeleteProgram(m_id);
 }
 
-void Program::attach_shader(const Shader* shader) const
+void Program::attach_shader(Shader* shader)
 {
     glAttachShader(m_id, shader->id());
+    switch(shader->type())
+    {
+        case GL_VERTEX_SHADER:
+            m_vertex_shader = shader;
+            break;
+        case GL_FRAGMENT_SHADER:
+            m_fragment_shader = shader;
+            break;
+    }
 }
 
 bool Program::link() const
@@ -69,8 +80,36 @@ void Program::get_program_iv(
 
 bool Program::add_var(std::string name, var_type_t var_type)
 {
+    switch(var_type)
+    {
+        case VAR_TYPE_ATTRIBUTE:
+            {
+                std::string cmd1 = std::string("/bin/grep \"attribute .* ") + name + "[;\[]\" " + m_vertex_shader->get_filename()   + " > /dev/null";
+                std::string cmd2 = std::string("/bin/grep \"attribute .* ") + name + "[;\[]\" " + m_fragment_shader->get_filename() + " > /dev/null";
+                if(!system(cmd1.c_str()) || !system(cmd2.c_str())) {
+                    std::cout << "\tFound attribute var \"" << name << "\"" << std::endl;
+                } else {
+                    std::cout << "\tError: Cannot find attribute var \"" << name << "\"" << std::endl;
+                    return false;
+                }
+            }
+            break;
+        case VAR_TYPE_UNIFORM:
+            {
+                std::string cmd1 = std::string("/bin/grep \"uniform .* ") + name + "[;\[]\" " + m_vertex_shader->get_filename()   + " > /dev/null";
+                std::string cmd2 = std::string("/bin/grep \"uniform .* ") + name + "[;\[]\" " + m_fragment_shader->get_filename() + " > /dev/null";
+                if(!system(cmd1.c_str()) || !system(cmd2.c_str())) {
+                    std::cout << "\tFound uniform var \"" << name << "\"" << std::endl;
+                } else {
+                    std::cout << "\tError: Cannot find uniform var \"" << name << "\"" << std::endl;
+                    return false;
+                }
+            }
+            break;
+    }
     var_names_t::iterator p = m_var_names.find(name);
     if(p != m_var_names.end()) {
+        std::cout << "Program variable \"" << name << "\" already added." << std::endl;
         return false;
     }
     m_var_names[name] = var_type;
