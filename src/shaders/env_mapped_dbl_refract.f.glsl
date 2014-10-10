@@ -135,6 +135,31 @@ void refract_into_env_map_ex(
     refracted_camera_dir = refracted_camera_dirG;
 }
 
+void project_world_pos(
+        in    vec3  world_pos,
+        in    mat4  _view_proj_xform,
+        inout vec3 frag_pos)
+{
+    vec4 projected_coord = _view_proj_xform*vec4(world_pos, 1);
+    projected_coord.xyz /= projected_coord.w; // perspective divide
+    frag_pos = projected_coord.xyz;
+}
+
+// http://www.songho.ca/opengl/gl_projectionmatrix.html
+void unproject_fragment(
+        in    vec3  frag_pos,
+        in    mat4  _inv_mvp_xform,
+        inout vec3  world_pos)
+{
+    vec4 normalized_device_coord = vec4(frag_pos.x*2 - 1, frag_pos.y*2 - 1 , frag_pos.z*2 - 1, 1);
+    vec4 unprojected_coord = _inv_mvp_xform*normalized_device_coord;
+
+    // http://www.iquilezles.org/blog/?p=1911
+    unprojected_coord.xyz /= unprojected_coord.w; // perspective divide
+
+    world_pos = unprojected_coord.xyz;
+}
+
 void newtons_method_update(
         in    sampler2D _backface_depth_overlay_texture,
         in    sampler2D _backface_normal_overlay_texture,
@@ -162,10 +187,10 @@ void newtons_method_update(
 
     vec3 ray_plane_isect = orig + normalize(dir)*orig_intersection_distance;
 
-    vec4 ray_plane_isect_texcoord_raw = _view_proj_xform*vec4(ray_plane_isect, 1);
-    ray_plane_isect_texcoord_raw.xyz /= ray_plane_isect_texcoord_raw.w; // perspective divide
+    vec3 ray_plane_isect_texcoord_raw;
+    project_world_pos(ray_plane_isect, _view_proj_xform, ray_plane_isect_texcoord_raw);
 
-    vec2 ray_plane_isect_texcoord = (vec2(ray_plane_isect_texcoord_raw) + vec2(1))*0.5; // map from [-1,1] to [0,1]
+    vec2 ray_plane_isect_texcoord = (ray_plane_isect_texcoord_raw.xy + vec2(1))*0.5; // map from [-1,1] to [0,1]
 
     float new_backface_depth = texture2D(_backface_depth_overlay_texture, ray_plane_isect_texcoord).x;
 
@@ -211,18 +236,6 @@ void calculate_light_contrib(
 
     vec4 sample = vec4(1);
     light_contrib = vec4(clamp(sample.rgb*(diffuse_sum + AMBIENT)*0 + specular_sum, 0.0, 1.0), sample.a);
-}
-
-// http://www.songho.ca/opengl/gl_projectionmatrix.html
-void unproject_fragment(in vec2 frag_pos, in float frag_depth, in mat4 _inv_mvp_xform, out vec3 frag_world_pos)
-{
-    vec4 normalized_device_coord = vec4(frag_pos.x*2 - 1, frag_pos.y*2 - 1 , frag_depth*2 - 1, 1);
-    vec4 unprojected_coord = _inv_mvp_xform*normalized_device_coord;
-
-    // http://www.iquilezles.org/blog/?p=1911
-    unprojected_coord.xyz /= unprojected_coord.w;
-
-    frag_world_pos = unprojected_coord.xyz;
 }
 
 void main(void) {
@@ -292,7 +305,7 @@ void main(void) {
     // z-depth is measured in rays parallel to camera, not rays emanating from camera
     //vec3 backface_frag_position_world = camera_pos - camera_direction*backface_depth_actual;
     vec3 backface_frag_position_world;
-    unproject_fragment(overlay_texcoord, backface_depth, inv_mvp_xform, backface_frag_position_world);
+    unproject_fragment(vec3(overlay_texcoord, backface_depth), inv_mvp_xform, backface_frag_position_world);
 
     //vec3 ray_plane_isect = lerp_vertex_position_world + frontface_refracted_camera_dir*???;
 
