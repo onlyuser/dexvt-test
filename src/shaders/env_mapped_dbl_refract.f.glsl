@@ -135,16 +135,6 @@ void refract_into_env_map_ex(
     refracted_camera_dir = refracted_camera_dirG;
 }
 
-void project_world_pos(
-        in    vec3  world_pos,
-        in    mat4  _view_proj_xform,
-        inout vec3 frag_pos)
-{
-    vec4 projected_coord = _view_proj_xform*vec4(world_pos, 1);
-    projected_coord.xyz /= projected_coord.w; // perspective divide
-    frag_pos = projected_coord.xyz;
-}
-
 // http://www.songho.ca/opengl/gl_projectionmatrix.html
 void unproject_fragment(
         in    vec3  frag_pos,
@@ -187,8 +177,9 @@ void newtons_method_update(
 
     vec3 ray_plane_isect = orig + normalize(dir)*orig_intersection_distance;
 
-    vec3 ray_plane_isect_texcoord_raw;
-    project_world_pos(ray_plane_isect, _view_proj_xform, ray_plane_isect_texcoord_raw);
+    vec4 projected_coord = _view_proj_xform*vec4(ray_plane_isect, 1);
+    projected_coord.xyz /= projected_coord.w; // perspective divide
+    vec3 ray_plane_isect_texcoord_raw = projected_coord.xyz;
 
     vec2 ray_plane_isect_texcoord = (ray_plane_isect_texcoord_raw.xy + vec2(1))*0.5; // map from [-1,1] to [0,1]
 
