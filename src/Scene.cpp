@@ -35,36 +35,36 @@ Scene::Scene()
     m_viewport_dim[0] = 0;
     m_viewport_dim[1] = 0;
     const int bloom_kernel_row[] = {1, 4, 6, 4, 1};
-    for(int i = 0; i<5; i++) {
+    for(int i = 0; i < 5; i++) {
         m_bloom_kernel[i] = bloom_kernel_row[i];
     }
     float sum_weights = 0;
-    for(int j = 0; j<5; j++) {
+    for(int j = 0; j < 5; j++) {
         sum_weights += m_bloom_kernel[j];
     }
     float sum_weights_inv = 1/sum_weights;
-    for(int k = 0; k<5; k++) {
+    for(int k = 0; k < 5; k++) {
         m_bloom_kernel[k] *= sum_weights_inv;
     }
     m_light_pos     = new GLfloat[NUM_LIGHTS*3];
     m_light_color   = new GLfloat[NUM_LIGHTS*3];
     m_light_enabled = new GLint[NUM_LIGHTS];
-    for(int q = 0; q<NUM_LIGHTS; q++) {
-        m_light_pos[q*3+0]   = 0;
-        m_light_pos[q*3+1]   = 0;
-        m_light_pos[q*3+2]   = 0;
-        m_light_color[q*3+0] = 0;
-        m_light_color[q*3+1] = 0;
-        m_light_color[q*3+2] = 0;
+    for(int q = 0; q < NUM_LIGHTS; q++) {
+        m_light_pos[q*3 + 0]   = 0;
+        m_light_pos[q*3 + 1]   = 0;
+        m_light_pos[q*3 + 2]   = 0;
+        m_light_color[q*3 + 0] = 0;
+        m_light_color[q*3 + 1] = 0;
+        m_light_color[q*3 + 2] = 0;
         m_light_enabled[q]   = 0;
     }
     m_ssao_sample_kernel_pos = new GLfloat[NUM_SSAO_SAMPLE_KERNELS*3];
-    for(int r = 0; r<NUM_SSAO_SAMPLE_KERNELS; r++) {
+    for(int r = 0; r < NUM_SSAO_SAMPLE_KERNELS; r++) {
         float scale = static_cast<float>(r)/NUM_SSAO_SAMPLE_KERNELS;
         scale = glm::lerp(0.1f, 1.0f, scale*scale);
-        m_ssao_sample_kernel_pos[r*3+0] = (static_cast<float>(rand())/RAND_MAX*2 - 1)*scale;
-        m_ssao_sample_kernel_pos[r*3+1] = (static_cast<float>(rand())/RAND_MAX*2 - 1)*scale;
-        m_ssao_sample_kernel_pos[r*3+2] = static_cast<float>(rand())/RAND_MAX*scale;
+        m_ssao_sample_kernel_pos[r*3 + 0] = (static_cast<float>(rand())/RAND_MAX*2 - 1)*scale;
+        m_ssao_sample_kernel_pos[r*3 + 1] = (static_cast<float>(rand())/RAND_MAX*2 - 1)*scale;
+        m_ssao_sample_kernel_pos[r*3 + 2] = static_cast<float>(rand())/RAND_MAX*scale;
     }
 }
 
@@ -161,13 +161,13 @@ void Scene::render(
     int i = 0;
     for(lights_t::const_iterator p = m_lights.begin(); p != m_lights.end(); p++) {
         glm::vec3 light_pos = (*p)->get_origin();
-        m_light_pos[i*3+0] = light_pos.x;
-        m_light_pos[i*3+1] = light_pos.y;
-        m_light_pos[i*3+2] = light_pos.z;
+        m_light_pos[i*3 + 0] = light_pos.x;
+        m_light_pos[i*3 + 1] = light_pos.y;
+        m_light_pos[i*3 + 2] = light_pos.z;
         glm::vec3 light_color = (*p)->get_color();
-        m_light_color[i*3+0] = light_color.r;
-        m_light_color[i*3+1] = light_color.g;
-        m_light_color[i*3+2] = light_color.b;
+        m_light_color[i*3 + 0] = light_color.r;
+        m_light_color[i*3 + 1] = light_color.g;
+        m_light_color[i*3 + 2] = light_color.b;
         m_light_enabled[i] = (*p)->get_enabled();
         i++;
     }
@@ -271,7 +271,7 @@ void Scene::render_vert_normals() const
         glLoadMatrixf(reinterpret_cast<const GLfloat*>(&model_xform[0]));
         glColor3f(0, 0, 1);
         glBegin(GL_LINES);
-        for (int i=0; i<static_cast<int>((*q)->get_num_vertex()); i++){
+        for (int i = 0; i < static_cast<int>((*q)->get_num_vertex()); i++){
             glm::vec3 v = (*q)->get_vert_coord(i);
             v += (*q)->get_vert_normal(i)*axis_surface_distance;
             glVertex3fv(&v.x);
@@ -281,7 +281,7 @@ void Scene::render_vert_normals() const
         glEnd();
         glColor3f(1, 0, 0);
         glBegin(GL_LINES);
-        for (int i=0; i<static_cast<int>((*q)->get_num_vertex()); i++){
+        for (int i = 0; i < static_cast<int>((*q)->get_num_vertex()); i++){
             glm::vec3 v = (*q)->get_vert_coord(i);
             v += (*q)->get_vert_normal(i)*axis_surface_distance;
             glVertex3fv(&v.x);
@@ -291,7 +291,7 @@ void Scene::render_vert_normals() const
         glEnd();
         glColor3f(0, 1, 0);
         glBegin(GL_LINES);
-        for (int i=0; i<static_cast<int>((*q)->get_num_vertex()); i++){
+        for (int i = 0; i < static_cast<int>((*q)->get_num_vertex()); i++){
             glm::vec3 v = (*q)->get_vert_coord(i);
             v += (*q)->get_vert_normal(i)*axis_surface_distance;
             glVertex3fv(&v.x);
