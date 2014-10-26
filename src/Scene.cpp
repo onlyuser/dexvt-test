@@ -56,7 +56,7 @@ Scene::Scene()
         m_light_color[q*3 + 0] = 0;
         m_light_color[q*3 + 1] = 0;
         m_light_color[q*3 + 2] = 0;
-        m_light_enabled[q]   = 0;
+        m_light_enabled[q]     = 0;
     }
     m_ssao_sample_kernel_pos = new GLfloat[NUM_SSAO_SAMPLE_KERNELS*3];
     for(int r = 0; r < NUM_SSAO_SAMPLE_KERNELS; r++) {

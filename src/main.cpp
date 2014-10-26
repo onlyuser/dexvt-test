@@ -490,7 +490,9 @@ int init_resources()
             "dex3d",
             res_texture.width,
             res_texture.height,
-            res_texture.pixel_data);
+            res_texture.pixel_data,
+            vt::Texture::RGB,
+            false);
     scene->add_texture(                  texture);
     bump_mapped_material->add_texture(   texture);
     texture_mapped_material->add_texture(texture);
