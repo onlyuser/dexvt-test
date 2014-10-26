@@ -3,7 +3,7 @@ const float GLOW_CUTOFF_THRESHOLD = 0.75;
 
 varying vec2      lerp_texcoord;
 uniform sampler2D color_texture;
-varying vec2      lerp_unit_pixel_offset;
+varying vec2      lerp_sample_offset_unit_size;
 uniform float     bloom_kernel[BLOOM_KERNEL_SIZE];
 
 void sum_components(in vec4 color, out float sum) {
@@ -14,12 +14,12 @@ void main(void) {
     vec4 sum_color;
     for(int i = 0; i < BLOOM_KERNEL_SIZE; i++) {
         float sample_weight = bloom_kernel[i];
-        ivec2 hblur_kernel_offset = ivec2(-2 + i, 0);
-        ivec2 vblur_kernel_offset = ivec2(0, -2 + i);
-        vec2 hblur_sample_coord = vec2(lerp_texcoord.x + lerp_unit_pixel_offset.x*hblur_kernel_offset.x,
-                                       lerp_texcoord.y + lerp_unit_pixel_offset.y*hblur_kernel_offset.y);
-        vec2 vblur_sample_coord = vec2(lerp_texcoord.x + lerp_unit_pixel_offset.x*vblur_kernel_offset.x,
-                                       lerp_texcoord.y + lerp_unit_pixel_offset.y*vblur_kernel_offset.y);
+        ivec2 hblur_kernel_offset_index = ivec2(-2 + i, 0);
+        ivec2 vblur_kernel_offset_index = ivec2(0, -2 + i);
+        vec2 hblur_sample_coord = vec2(lerp_texcoord.x + lerp_sample_offset_unit_size.x*hblur_kernel_offset_index.x,
+                                       lerp_texcoord.y + lerp_sample_offset_unit_size.y*hblur_kernel_offset_index.y);
+        vec2 vblur_sample_coord = vec2(lerp_texcoord.x + lerp_sample_offset_unit_size.x*vblur_kernel_offset_index.x,
+                                       lerp_texcoord.y + lerp_sample_offset_unit_size.y*vblur_kernel_offset_index.y);
         vec4 hblur_sample_color = texture2D(color_texture, hblur_sample_coord);
         vec4 vblur_sample_color = texture2D(color_texture, vblur_sample_coord);
         float hblur_sum;
