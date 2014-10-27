@@ -1,12 +1,14 @@
 #include <VarUniform.h>
 #include <Program.h>
 #include <GL/glew.h>
+#include <assert.h>
 
 namespace vt {
 
 VarUniform::VarUniform(const Program* program, const GLchar* name)
 {
     m_id = glGetUniformLocation(program->id(), name);
+    assert(m_id != -1);
 }
 
 VarUniform::~VarUniform()

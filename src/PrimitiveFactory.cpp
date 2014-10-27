@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/constants.hpp>
 #include <string>
+#include <assert.h>
 
 namespace vt {
 

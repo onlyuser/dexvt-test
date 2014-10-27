@@ -248,6 +248,7 @@ void Scene::render(
         if(use_ssao) {
             shader_context->set_frontface_depth_overlay_texture_id(mesh->get_frontface_depth_overlay_texture_id());
             shader_context->set_ssao_sample_kernel_pos(NUM_SSAO_SAMPLE_KERNELS, m_ssao_sample_kernel_pos);
+            shader_context->set_random_texture_id(mesh->get_random_texture_id());
         }
         shader_context->render();
     }

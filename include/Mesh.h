@@ -111,6 +111,15 @@ public:
         m_env_map_texture_id = env_map_texture_id;
     }
 
+    int get_random_texture_id() const
+    {
+        return m_random_texture_id;
+    }
+    void set_random_texture_id(int random_texture_id)
+    {
+        m_random_texture_id = random_texture_id;
+    }
+
     int get_frontface_depth_overlay_texture_id() const
     {
         return m_frontface_depth_overlay_texture_id;
@@ -171,6 +180,7 @@ private:
     int                            m_texture2_index;
     int                            m_bump_texture_id;
     int                            m_env_map_texture_id;
+    int                            m_random_texture_id;
     int                            m_frontface_depth_overlay_texture_id;
     int                            m_backface_depth_overlay_texture_id;
     int                            m_backface_normal_overlay_texture_id;

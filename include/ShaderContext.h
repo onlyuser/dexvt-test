@@ -5,7 +5,6 @@
 #include <VarUniform.h>
 #include <glm/glm.hpp>
 #include <vector>
-#include <memory> // std::unique_ptr
 
 namespace vt {
 
@@ -38,12 +37,13 @@ public:
         var_uniform_type_color_texture,
         var_uniform_type_color_texture2,
         var_uniform_type_bump_texture,
+        var_uniform_type_env_map_texture,
+        var_uniform_type_random_texture,
         var_uniform_type_camera_pos,
         var_uniform_type_light_pos,
         var_uniform_type_light_color,
         var_uniform_type_light_enabled,
         var_uniform_type_light_count,
-        var_uniform_type_env_map_texture,
         var_uniform_type_inv_mvp_xform,
         var_uniform_type_inv_projection_xform,
         var_uniform_type_inv_normal_xform,
@@ -84,12 +84,13 @@ public:
     void set_texture_id(GLint texture_id);
     void set_texture2_index(GLint texture_id);
     void set_bump_texture_id(GLint texture_id);
+    void set_env_map_texture_id(GLint texture_id);
+    void set_random_texture_id(GLint texture_id);
     void set_camera_pos(GLfloat* camera_pos_arr);
     void set_light_pos(size_t num_lights, GLfloat* light_pos_arr);
     void set_light_color(size_t num_lights, GLfloat* light_color_arr);
     void set_light_enabled(size_t num_lights, GLint* light_enabled_arr);
     void set_light_count(GLint light_count);
-    void set_env_map_texture_id(GLint texture_id);
     void set_inv_projection_xform(glm::mat4 inv_projection_xform);
     void set_inv_normal_xform(glm::mat4 inv_normal_xform);
     void set_frontface_depth_overlay_texture_id(GLint texture_id);

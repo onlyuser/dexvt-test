@@ -193,6 +193,7 @@ int init_resources()
     ssao_program->add_var("model_xform",                     vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("camera_pos",                      vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("bump_texture",                    vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("random_texture",                  vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("mvp_xform",                       vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("frontface_depth_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("viewport_dim",                    vt::Program::VAR_TYPE_UNIFORM);
@@ -648,6 +649,7 @@ int init_resources()
     //mesh2->set_texture_id(mesh2->get_material()->get_texture_id_by_name("hi_res_color_overlay"));
     mesh2->set_texture_id(                        mesh2->get_material()->get_texture_id_by_name("random_texture"));
     mesh2->set_bump_texture_id(                   mesh2->get_material()->get_texture_id_by_name("random_texture"));
+    mesh2->set_random_texture_id(                 mesh2->get_material()->get_texture_id_by_name("random_texture"));
     mesh2->set_frontface_depth_overlay_texture_id(mesh2->get_material()->get_texture_id_by_name("frontface_depth_overlay"));
 
     // sphere

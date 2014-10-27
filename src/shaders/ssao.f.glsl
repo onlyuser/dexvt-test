@@ -1,5 +1,6 @@
 varying vec2      lerp_texcoord;
 uniform sampler2D bump_texture;
+uniform sampler2D random_texture;
 
 const int NUM_SSAO_SAMPLE_KERNELS = 10;
 
@@ -87,7 +88,10 @@ void main(void) {
         return;
     }
 
+    vec4 random_normal = texture2D(random_texture, flipped_texcoord);
+
     gl_FragColor =
+            random_normal*0.001 +
             vec4(ssao_sample_kernel_pos[0], 0)*0.001 +
             vec4(frontface_frag_position_world, 0)*0.001 +
             vec4((normal + vec3(1))*0.5, 0); // map from [-1,1] to [0,1]

@@ -8,9 +8,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <memory> // std::unique_ptr
-
-#include <iostream>
+#include <assert.h>
 
 #define NUM_LIGHTS 8
 
@@ -32,12 +30,13 @@ ShaderContext::var_uniform_type_to_name_table_t ShaderContext::m_var_uniform_typ
         {ShaderContext::var_uniform_type_color_texture,                   "color_texture"},
         {ShaderContext::var_uniform_type_color_texture2,                  "color_texture2"},
         {ShaderContext::var_uniform_type_bump_texture,                    "bump_texture"},
+        {ShaderContext::var_uniform_type_env_map_texture,                 "env_map_texture"},
+        {ShaderContext::var_uniform_type_random_texture,                  "random_texture"},
         {ShaderContext::var_uniform_type_camera_pos,                      "camera_pos"},
         {ShaderContext::var_uniform_type_light_pos,                       "light_pos"},
         {ShaderContext::var_uniform_type_light_color,                     "light_color"},
         {ShaderContext::var_uniform_type_light_enabled,                   "light_enabled"},
         {ShaderContext::var_uniform_type_light_count,                     "light_count"},
-        {ShaderContext::var_uniform_type_env_map_texture,                 "env_map_texture"},
         {ShaderContext::var_uniform_type_inv_mvp_xform,                   "inv_mvp_xform"},
         {ShaderContext::var_uniform_type_inv_projection_xform,            "inv_projection_xform"},
         {ShaderContext::var_uniform_type_inv_normal_xform,                "inv_normal_xform"},
@@ -227,6 +226,18 @@ void ShaderContext::set_bump_texture_id(GLint texture_id)
     m_var_uniforms[var_uniform_type_bump_texture]->uniform_1i(texture_id);
 }
 
+void ShaderContext::set_env_map_texture_id(GLint texture_id)
+{
+    assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
+    m_var_uniforms[var_uniform_type_env_map_texture]->uniform_1i(texture_id);
+}
+
+void ShaderContext::set_random_texture_id(GLint texture_id)
+{
+    assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
+    m_var_uniforms[var_uniform_type_random_texture]->uniform_1i(texture_id);
+}
+
 void ShaderContext::set_camera_pos(GLfloat* camera_pos_arr)
 {
     m_var_uniforms[var_uniform_type_camera_pos]->uniform_3fv(1, camera_pos_arr);
@@ -250,12 +261,6 @@ void ShaderContext::set_light_enabled(size_t num_lights, GLint* light_enabled_ar
 void ShaderContext::set_light_count(GLint light_count)
 {
     m_var_uniforms[var_uniform_type_light_count]->uniform_1i(light_count);
-}
-
-void ShaderContext::set_env_map_texture_id(GLint texture_id)
-{
-    assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
-    m_var_uniforms[var_uniform_type_env_map_texture]->uniform_1i(texture_id);
 }
 
 void ShaderContext::set_inv_projection_xform(glm::mat4 inv_projection_xform)

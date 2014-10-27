@@ -90,6 +90,7 @@ bool Program::add_var(std::string name, var_type_t var_type)
                     std::cout << "\tFound attribute var \"" << name << "\"" << std::endl;
                 } else {
                     std::cout << "\tError: Cannot find attribute var \"" << name << "\"" << std::endl;
+                    exit(1);
                     return false;
                 }
             }
@@ -102,6 +103,7 @@ bool Program::add_var(std::string name, var_type_t var_type)
                     std::cout << "\tFound uniform var \"" << name << "\"" << std::endl;
                 } else {
                     std::cout << "\tError: Cannot find uniform var \"" << name << "\"" << std::endl;
+                    exit(1);
                     return false;
                 }
             }
