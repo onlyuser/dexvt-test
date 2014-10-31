@@ -58,13 +58,25 @@ Scene::Scene()
         m_light_color[q*3 + 2] = 0;
         m_light_enabled[q]     = 0;
     }
+
+    // http://john-chapman-graphics.blogspot.tw/2013/01/ssao-tutorial.html
     m_ssao_sample_kernel_pos = new GLfloat[NUM_SSAO_SAMPLE_KERNELS*3];
     for(int r = 0; r < NUM_SSAO_SAMPLE_KERNELS; r++) {
+        glm::vec3 offset;
+        do {
+            m_ssao_sample_kernel_pos[r*3 + 0] = (static_cast<float>(rand())/RAND_MAX*2 - 1);
+            m_ssao_sample_kernel_pos[r*3 + 1] = (static_cast<float>(rand())/RAND_MAX*2 - 1);
+            m_ssao_sample_kernel_pos[r*3 + 2] = static_cast<float>(rand())/RAND_MAX;
+            offset = glm::vec3(
+                    m_ssao_sample_kernel_pos[r*3 + 0],
+                    m_ssao_sample_kernel_pos[r*3 + 1],
+                    m_ssao_sample_kernel_pos[r*3 + 2]);
+        } while(glm::dot(glm::vec3(0, 0, 1), offset) < 0.15);
         float scale = static_cast<float>(r)/NUM_SSAO_SAMPLE_KERNELS;
         scale = glm::lerp(0.1f, 1.0f, scale*scale);
-        m_ssao_sample_kernel_pos[r*3 + 0] = (static_cast<float>(rand())/RAND_MAX*2 - 1)*scale;
-        m_ssao_sample_kernel_pos[r*3 + 1] = (static_cast<float>(rand())/RAND_MAX*2 - 1)*scale;
-        m_ssao_sample_kernel_pos[r*3 + 2] = static_cast<float>(rand())/RAND_MAX*scale;
+        m_ssao_sample_kernel_pos[r*3 + 0] *= scale;
+        m_ssao_sample_kernel_pos[r*3 + 1] *= scale;
+        m_ssao_sample_kernel_pos[r*3 + 2] *= scale;
     }
 }
 
@@ -210,7 +222,7 @@ void Scene::render(
             shader_context->set_ambient_color(m_ambient_color);
         }
         shader_context->set_mvp_xform(m_camera->get_projection_xform()*m_camera->get_xform()*mesh->get_xform());
-        if(gen_normal_map || use_phong_shading || use_bump_mapping || use_env_mapping) {
+        if(gen_normal_map || use_phong_shading || use_bump_mapping || use_env_mapping || use_ssao) {
             shader_context->set_normal_xform(mesh->get_normal_xform());
             if((!gen_normal_map && use_bump_mapping) || use_env_mapping) {
                 shader_context->set_model_xform(mesh->get_xform());
@@ -249,6 +261,7 @@ void Scene::render(
             shader_context->set_frontface_depth_overlay_texture_id(mesh->get_frontface_depth_overlay_texture_id());
             shader_context->set_ssao_sample_kernel_pos(NUM_SSAO_SAMPLE_KERNELS, m_ssao_sample_kernel_pos);
             shader_context->set_random_texture_id(mesh->get_random_texture_id());
+            shader_context->set_view_proj_xform(m_camera->get_projection_xform()*m_camera->get_xform());
         }
         shader_context->render();
     }

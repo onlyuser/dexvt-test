@@ -137,7 +137,7 @@ void ShaderContext::render()
             GL_FALSE, // take our values as-is
             0,        // no extra data between each position
             0);       // offset of first element
-    if(m_gen_normal_map || m_use_phong_shading || m_use_bump_mapping || m_use_env_mapping) {
+    if(m_gen_normal_map || m_use_phong_shading || m_use_bump_mapping || m_use_env_mapping || m_use_ssao) {
         m_var_attributes[var_attribute_type_vertex_normal]->enable_vertex_attrib_array();
         m_var_attributes[var_attribute_type_vertex_normal]->vertex_attrib_pointer(
                 m_vbo_vert_normal,
@@ -157,7 +157,7 @@ void ShaderContext::render()
                     0);       // offset of first element
         }
     }
-    if(m_use_texture_mapping || m_use_bump_mapping) {
+    if(m_use_texture_mapping || m_use_bump_mapping || m_use_ssao) {
         m_var_attributes[var_attribute_type_texcoord]->enable_vertex_attrib_array();
         m_var_attributes[var_attribute_type_texcoord]->vertex_attrib_pointer(
                 m_vbo_tex_coords,
@@ -172,13 +172,13 @@ void ShaderContext::render()
         glDrawElements(GL_TRIANGLES, m_ibo_tri_indices->size()/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
     }
     m_var_attributes[var_attribute_type_vertex_position]->disable_vertex_attrib_array();
-    if(m_gen_normal_map || m_use_phong_shading || m_use_bump_mapping || m_use_env_mapping) {
+    if(m_gen_normal_map || m_use_phong_shading || m_use_bump_mapping || m_use_env_mapping || m_use_ssao) {
         m_var_attributes[var_attribute_type_vertex_normal]->disable_vertex_attrib_array();
         if(m_use_bump_mapping) {
             m_var_attributes[var_attribute_type_vertex_tangent]->disable_vertex_attrib_array();
         }
     }
-    if(m_use_texture_mapping || m_use_bump_mapping) {
+    if(m_use_texture_mapping || m_use_bump_mapping || m_use_ssao) {
         m_var_attributes[var_attribute_type_texcoord]->disable_vertex_attrib_array();
     }
 }

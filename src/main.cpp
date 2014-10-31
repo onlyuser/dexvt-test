@@ -175,7 +175,7 @@ int init_resources()
             false,  // gen_normal_map
             false,  // use_phong_shading
             false,  // use_texture_mapping
-            true,   // use_bump_mapping
+            false,  // use_bump_mapping
             false,  // use_env_mapping
             false,  // use_env_mapping_dbl_refract
             true,   // use_ssao
@@ -188,11 +188,7 @@ int init_resources()
     ssao_program->add_var("texcoord",                        vt::Program::VAR_TYPE_ATTRIBUTE);
     ssao_program->add_var("vertex_normal",                   vt::Program::VAR_TYPE_ATTRIBUTE);
     ssao_program->add_var("vertex_position",                 vt::Program::VAR_TYPE_ATTRIBUTE);
-    ssao_program->add_var("vertex_tangent",                  vt::Program::VAR_TYPE_ATTRIBUTE);
     ssao_program->add_var("normal_xform",                    vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("model_xform",                     vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("camera_pos",                      vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("bump_texture",                    vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("random_texture",                  vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("mvp_xform",                       vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("frontface_depth_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
@@ -201,6 +197,7 @@ int init_resources()
     ssao_program->add_var("camera_far",                      vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("ssao_sample_kernel_pos",          vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("inv_mvp_xform",                   vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("view_proj_xform",                 vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(ssao_material);
 
     vt::Material* skybox_material = new vt::Material(
