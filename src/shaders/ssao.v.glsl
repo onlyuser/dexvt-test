@@ -6,6 +6,8 @@ uniform   mat4 normal_xform;
 varying   vec2 lerp_texcoord;
 varying   vec3 lerp_normal;
 
+uniform mat4 model_xform;
+
 void main(void) {
     lerp_normal = normalize(vec3(normal_xform*vec4(vertex_normal, 0)));
 

@@ -18,7 +18,7 @@ uniform mat4 inv_mvp_xform;
 varying vec3 lerp_normal;
 
 // http://stackoverflow.com/questions/6652253/getting-the-true-z-value-from-the-depth-buffer?answertab=votes#tab-top
-void map_depth_to_actual_depth(
+void map_ndc_depth_to_world_depth(
         in    float z_near, // camera near-clipping plane distance from camera
         in    float z_far,  // camera far-clipping plane distance from camera
         in    float z_b,    // projected depth
@@ -63,26 +63,26 @@ void gen_basis_xform_from_random_vec(
 void main(void) {
     vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1 - lerp_texcoord.y);
 
-    float frontface_depth_actual = 0;
+    //float frontface_depth_world = 0;
     vec2 overlay_texcoord = vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y);
-    float frontface_depth = texture2D(frontface_depth_overlay_texture, overlay_texcoord).x;
-    map_depth_to_actual_depth(camera_near, camera_far, frontface_depth, frontface_depth_actual);
-
-    if(frontface_depth_actual >= (camera_far - 0.1)) {
-        gl_FragColor = vec4(1,1,0,0);
-        return;
-    } else if(frontface_depth_actual <= (camera_near + 0.1)) {
-        gl_FragColor = vec4(0,1,1,0);
-        return;
-    }
+    float frontface_ndc_depth = texture2D(frontface_depth_overlay_texture, overlay_texcoord).x;
+    //map_ndc_depth_to_world_depth(camera_near, camera_far, frontface_ndc_depth, frontface_depth_world);
+    //if(frontface_depth_world >= (camera_far - 0.1)) {
+    //    gl_FragColor = vec4(1,1,0,0);
+    //    return;
+    //} else if(frontface_depth_world <= (camera_near + 0.1)) {
+    //    gl_FragColor = vec4(0,1,1,0);
+    //    return;
+    //}
 
     // replace incorrect way of getting fragment world position
     // z-depth is measured in rays parallel to camera, not rays emanating from camera
-    //vec3 frontface_frag_position_world = camera_pos - camera_direction*frontface_depth_actual;
+    //vec3 frontface_frag_position_world = camera_pos - camera_direction*frontface_depth_world;
     vec3 frontface_frag_position_world;
-    unproject_fragment(vec3(overlay_texcoord, frontface_depth), inv_mvp_xform, frontface_frag_position_world);
-
-    //if(frontface_frag_position_world.z < -0.9 && frontface_frag_position_world.z > -1.1) {
+    unproject_fragment(vec3(overlay_texcoord, frontface_ndc_depth), inv_mvp_xform, frontface_frag_position_world);
+    //if(frontface_frag_position_world.z < -0.9 && frontface_frag_position_world.z > -1.1 &&
+    //        frontface_frag_position_world.x > 0 && frontface_frag_position_world.y > 0)
+    //{
     //    float x = 0;
     //    map_range(-1.1, -0.9, 0, 1, frontface_frag_position_world.z, x);
     //    gl_FragColor = vec4(x,0,0,0);
@@ -90,45 +90,60 @@ void main(void) {
     //}
 
     mat3 tbn_xform;
-    vec3 random_normal = normalize(texture2D(random_texture, flipped_texcoord).xyz);
-    gen_basis_xform_from_random_vec(lerp_normal, random_normal, tbn_xform);
+    vec3 random_unit_normal =
+            normalize(texture2D(random_texture, flipped_texcoord).xyz)*2 - vec3(1); // map from [0,1] to [-1,1];
+    gen_basis_xform_from_random_vec(lerp_normal, random_unit_normal, tbn_xform);
 
     float occlusion = 0.0;
     for(int i = 0; i < NUM_SSAO_SAMPLE_KERNELS; i++) {
-        vec3 sample_offset = normalize(tbn_xform*normalize(ssao_sample_kernel_pos[i]))*SSAO_SAMPLE_RADIUS;
-        vec3 sample = frontface_frag_position_world + sample_offset;
-        //if(sample.z > -0.5) {
+
+        vec3 sample_offset_world = normalize(tbn_xform*normalize(ssao_sample_kernel_pos[i]))*SSAO_SAMPLE_RADIUS;
+        vec3 sample_world = frontface_frag_position_world + lerp_normal*SSAO_SAMPLE_RADIUS + sample_offset_world*0.001;
+        //if(sample_world.z > -0.5) {
         //    gl_FragColor = vec4(1,0,0,0);
         //    return;
         //}
-        vec4 offset = view_proj_xform*vec4(sample, 1.0);
-        offset.xyz /= offset.w;
-        offset.xy = offset.xy*0.5 + 0.5; // map from [-1,1] to [0,1]
-        //if(offset.x > 0.5) {
+
+        vec4 sample_offset_projected = view_proj_xform*vec4(sample_world, 1.0);
+        sample_offset_projected.xyz /= sample_offset_projected.w;
+        sample_offset_projected.xy = sample_offset_projected.xy*0.5 + 0.5; // map from [-1,1] to [0,1]
+        //if(sample_offset_projected.x > 0.5 && sample_offset_projected.y > 0.5) {
         //    gl_FragColor = vec4(1,0,0,0);
         //    return;
         //}
-        float sample_depth = texture2D(frontface_depth_overlay_texture, offset.xy).x;
-        //if(sample_depth > 0.5) {
+
+        float sample_surface_ndc_depth = texture2D(frontface_depth_overlay_texture, sample_offset_projected.xy).x;
+        //if(sample_surface_ndc_depth > 0.5) {
         //    gl_FragColor = vec4(1,0,0,0);
         //    return;
         //}
-        float sample_depth_actual = 0;
-        map_depth_to_actual_depth(camera_near, camera_far, sample_depth, sample_depth_actual);
-        //if(sample_depth_actual < 8.5) {
+
+        float sample_surface_depth_world = 0;
+        map_ndc_depth_to_world_depth(camera_near, camera_far, sample_surface_ndc_depth, sample_surface_depth_world);
+        //if(sample_surface_depth_world < 8.5) { // <== accurate
         //    gl_FragColor = vec4(1,0,0,0);
         //    return;
         //}
-        float range_check = abs(frontface_depth_actual - sample_depth_actual) < SSAO_SAMPLE_RADIUS ? 1.0 : 0.0;
+
+        float sample_depth_world = 0;
+        map_ndc_depth_to_world_depth(camera_near, camera_far, sample_offset_projected.z, sample_depth_world);
+        //if(sample_depth_world < 8.5) { // <== inaccurate
+        //    gl_FragColor = vec4(0,1,0,0);
+        //    return;
+        //}
+
+        float range_check = abs(sample_surface_depth_world - sample_depth_world) < SSAO_SAMPLE_RADIUS ? 1.0 : 0.0;
         //if(range_check == 1) {
         //    gl_FragColor = vec4(0,1,0,0);
         //    return;
         //}
-        float hit = sample_depth_actual <= frontface_depth_actual ? 1.0 : 0.0;
+
+        float hit = sample_depth_world - sample_surface_depth_world > 0.01 ? 1.0 : -1.0;
         //if(range_check > 0 && hit > 0) {
         //    gl_FragColor = vec4(0,1,0,0);
         //    return;
         //}
+
         occlusion += hit*range_check;
     }
     occlusion /= NUM_SSAO_SAMPLE_KERNELS;
