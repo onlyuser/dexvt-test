@@ -33,6 +33,7 @@ ShaderContext::var_uniform_type_to_name_table_t ShaderContext::m_var_uniform_typ
         {ShaderContext::var_uniform_type_env_map_texture,                 "env_map_texture"},
         {ShaderContext::var_uniform_type_random_texture,                  "random_texture"},
         {ShaderContext::var_uniform_type_camera_pos,                      "camera_pos"},
+        {ShaderContext::var_uniform_type_camera_dir,                      "camera_dir"},
         {ShaderContext::var_uniform_type_light_pos,                       "light_pos"},
         {ShaderContext::var_uniform_type_light_color,                     "light_color"},
         {ShaderContext::var_uniform_type_light_enabled,                   "light_enabled"},
@@ -241,6 +242,11 @@ void ShaderContext::set_random_texture_id(GLint texture_id)
 void ShaderContext::set_camera_pos(GLfloat* camera_pos_arr)
 {
     m_var_uniforms[var_uniform_type_camera_pos]->uniform_3fv(1, camera_pos_arr);
+}
+
+void ShaderContext::set_camera_dir(GLfloat* camera_dir_arr)
+{
+    m_var_uniforms[var_uniform_type_camera_dir]->uniform_3fv(1, camera_dir_arr);
 }
 
 void ShaderContext::set_light_pos(size_t num_lights, GLfloat* light_pos_arr)

@@ -198,6 +198,8 @@ int init_resources()
     ssao_program->add_var("ssao_sample_kernel_pos",          vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("inv_mvp_xform",                   vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("view_proj_xform",                 vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("camera_pos",                      vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("camera_dir",                      vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(ssao_material);
 
     vt::Material* skybox_material = new vt::Material(

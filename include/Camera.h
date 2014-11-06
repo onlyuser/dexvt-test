@@ -40,6 +40,8 @@ public:
     }
     void set_target(glm::vec3 target);
 
+    const glm::vec3 get_dir() const;
+
     void move(glm::vec3 origin, glm::vec3 target = glm::vec3(0));
     void orbit(glm::vec3 &orient, float &radius);
 

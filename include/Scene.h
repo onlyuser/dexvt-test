@@ -114,6 +114,7 @@ private:
 
     GLfloat  m_ambient_color[3];
     GLfloat  m_camera_pos[3];
+    GLfloat  m_camera_dir[3];
     GLfloat  m_viewport_dim[2];
     GLfloat  m_bloom_kernel[5];
     GLfloat* m_light_pos;

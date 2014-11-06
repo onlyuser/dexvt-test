@@ -40,6 +40,7 @@ public:
         var_uniform_type_env_map_texture,
         var_uniform_type_random_texture,
         var_uniform_type_camera_pos,
+        var_uniform_type_camera_dir,
         var_uniform_type_light_pos,
         var_uniform_type_light_color,
         var_uniform_type_light_enabled,
@@ -87,6 +88,7 @@ public:
     void set_env_map_texture_id(GLint texture_id);
     void set_random_texture_id(GLint texture_id);
     void set_camera_pos(GLfloat* camera_pos_arr);
+    void set_camera_dir(GLfloat* camera_dir_arr);
     void set_light_pos(size_t num_lights, GLfloat* light_pos_arr);
     void set_light_color(size_t num_lights, GLfloat* light_color_arr);
     void set_light_enabled(size_t num_lights, GLint* light_enabled_arr);

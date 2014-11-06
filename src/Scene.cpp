@@ -32,6 +32,9 @@ Scene::Scene()
     m_camera_pos[0] = 0;
     m_camera_pos[1] = 0;
     m_camera_pos[2] = 0;
+    m_camera_dir[0] = 0;
+    m_camera_dir[1] = 0;
+    m_camera_dir[2] = 0;
     m_viewport_dim[0] = 0;
     m_viewport_dim[1] = 0;
     const int bloom_kernel_row[] = {1, 4, 6, 4, 1};
@@ -168,6 +171,10 @@ void Scene::render(
     m_camera_pos[0] = camera_pos.x;
     m_camera_pos[1] = camera_pos.y;
     m_camera_pos[2] = camera_pos.z;
+    glm::vec3 camera_dir = m_camera->get_dir();
+    m_camera_dir[0] = camera_dir.x;
+    m_camera_dir[1] = camera_dir.y;
+    m_camera_dir[2] = camera_dir.z;
     int i = 0;
     for(lights_t::const_iterator p = m_lights.begin(); p != m_lights.end(); p++) {
         glm::vec3 light_pos = (*p)->get_origin();
@@ -260,6 +267,8 @@ void Scene::render(
             shader_context->set_ssao_sample_kernel_pos(NUM_SSAO_SAMPLE_KERNELS, m_ssao_sample_kernel_pos);
             shader_context->set_random_texture_id(mesh->get_random_texture_id());
             shader_context->set_view_proj_xform(m_camera->get_projection_xform()*m_camera->get_xform());
+            shader_context->set_camera_pos(m_camera_pos);
+            shader_context->set_camera_dir(m_camera_dir);
         }
         shader_context->render();
     }

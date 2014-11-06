@@ -67,6 +67,11 @@ void Camera::set_target(glm::vec3 target)
     set_need_update_xform();
 }
 
+const glm::vec3 Camera::get_dir() const
+{
+    return glm::normalize(m_target - m_origin);
+}
+
 void Camera::move(glm::vec3 origin, glm::vec3 target)
 {
     m_origin = origin;
