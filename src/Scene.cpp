@@ -64,19 +64,17 @@ Scene::Scene()
     for(int r = 0; r < NUM_SSAO_SAMPLE_KERNELS; r++) {
         glm::vec3 offset;
         do {
-            m_ssao_sample_kernel_pos[r*3 + 0] = (static_cast<float>(rand())/RAND_MAX*2 - 1);
-            m_ssao_sample_kernel_pos[r*3 + 1] = (static_cast<float>(rand())/RAND_MAX*2 - 1);
-            m_ssao_sample_kernel_pos[r*3 + 2] = static_cast<float>(rand())/RAND_MAX;
             offset = glm::vec3(
-                    m_ssao_sample_kernel_pos[r*3 + 0],
-                    m_ssao_sample_kernel_pos[r*3 + 1],
-                    m_ssao_sample_kernel_pos[r*3 + 2]);
+                    m_ssao_sample_kernel_pos[r*3 + 0] = static_cast<float>(rand())/RAND_MAX*2 - 1,
+                    m_ssao_sample_kernel_pos[r*3 + 1] = static_cast<float>(rand())/RAND_MAX*2 - 1,
+                    m_ssao_sample_kernel_pos[r*3 + 2] = static_cast<float>(rand())/RAND_MAX);
         } while(glm::dot(glm::vec3(0, 0, 1), offset) < 0.15);
         float scale = static_cast<float>(r)/NUM_SSAO_SAMPLE_KERNELS;
         scale = glm::lerp(0.1f, 1.0f, scale*scale);
-        m_ssao_sample_kernel_pos[r*3 + 0] *= scale;
-        m_ssao_sample_kernel_pos[r*3 + 1] *= scale;
-        m_ssao_sample_kernel_pos[r*3 + 2] *= scale;
+        offset *= scale;
+        m_ssao_sample_kernel_pos[r*3 + 0] = offset.x;
+        m_ssao_sample_kernel_pos[r*3 + 1] = offset.y;
+        m_ssao_sample_kernel_pos[r*3 + 2] = offset.z;
     }
 }
 

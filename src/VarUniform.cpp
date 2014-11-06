@@ -8,7 +8,7 @@ namespace vt {
 VarUniform::VarUniform(const Program* program, const GLchar* name)
 {
     m_id = glGetUniformLocation(program->id(), name);
-    assert(m_id != -1);
+    assert(m_id != static_cast<GLuint>(-1));
 }
 
 VarUniform::~VarUniform()

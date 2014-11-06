@@ -55,8 +55,8 @@ void gen_basis_xform_from_random_vec(
         inout mat3 tbn_xform)
 {
     // Gram–Schmidt process to construct an orthogonal basis.
-    vec3 tangent = normalize(random_vec - normal*dot(random_vec, normal));
-    vec3 bitangent = cross(normal, tangent);
+    vec3 tangent = normalize(random_vec - normal*dot(random_vec, normal)); // ortho-basis x-direction
+    vec3 bitangent = cross(normal, tangent);                               // ortho-basis y-direction
     tbn_xform = mat3(tangent, bitangent, normal);
 }
 
@@ -98,9 +98,9 @@ void main(void) {
     for(int i = 0; i < NUM_SSAO_SAMPLE_KERNELS; i++) {
 
         vec3 sample_offset_world = normalize(tbn_xform*normalize(ssao_sample_kernel_pos[i]))*SSAO_SAMPLE_RADIUS;
-        vec3 sample_world = frontface_frag_position_world + lerp_normal*SSAO_SAMPLE_RADIUS + sample_offset_world*0.001;
-        //if(sample_world.z > -0.5) {
-        //    gl_FragColor = vec4(1,0,0,0);
+        vec3 sample_world = frontface_frag_position_world + sample_offset_world;
+        //if(sample_world.x > 0) {
+        //    gl_FragColor = vec4(0,1,0,0);
         //    return;
         //}
 
@@ -120,10 +120,10 @@ void main(void) {
 
         float sample_surface_depth_world = 0;
         map_ndc_depth_to_world_depth(camera_near, camera_far, sample_surface_ndc_depth, sample_surface_depth_world);
-        //if(sample_surface_depth_world < 8.5) { // <== accurate
-        //    gl_FragColor = vec4(1,0,0,0);
-        //    return;
-        //}
+        if(sample_surface_depth_world < 9) { // <== accurate
+            gl_FragColor = vec4(1,0,0,0);
+            return;
+        }
 
         float sample_depth_world = 0;
         map_ndc_depth_to_world_depth(camera_near, camera_far, sample_offset_projected.z, sample_depth_world);
@@ -132,13 +132,13 @@ void main(void) {
         //    return;
         //}
 
-        float range_check = abs(sample_surface_depth_world - sample_depth_world) < SSAO_SAMPLE_RADIUS ? 1.0 : 0.0;
+        float range_check = abs(frontface_frag_position_world.z - sample_surface_depth_world) < SSAO_SAMPLE_RADIUS ? 1.0 : 0.0;
         //if(range_check == 1) {
-        //    gl_FragColor = vec4(0,1,0,0);
+        //    gl_FragColor = vec4(0,0,1,0);
         //    return;
         //}
 
-        float hit = sample_depth_world - sample_surface_depth_world > 0.01 ? 1.0 : -1.0;
+        float hit = sample_depth_world - sample_surface_depth_world > 0.001 ? 1.0 : -1.0;
         //if(range_check > 0 && hit > 0) {
         //    gl_FragColor = vec4(0,1,0,0);
         //    return;

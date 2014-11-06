@@ -52,15 +52,18 @@ Texture::Texture(
                 m_id = gen_texture_internal(width, height, _pixel_data, type, smooth);
                 delete[] _pixel_data;
             } else {
+                // draw big red 'x'
                 unsigned char* _pixel_data = new unsigned char[width*height*sizeof(unsigned char)*3];
                 memset(_pixel_data, 0, width*height*sizeof(unsigned char)*3);
                 for(int i = 0; i < static_cast<int>(std::min(width, height)); i++) {
-                    _pixel_data[(i*width+i)*3+0]       = 255;
-                    _pixel_data[(i*width+i)*3+1]       = 0;
-                    _pixel_data[(i*width+i)*3+2]       = 0;
-                    _pixel_data[(i*width+width-i)*3+0] = 255;
-                    _pixel_data[(i*width+width-i)*3+1] = 0;
-                    _pixel_data[(i*width+width-i)*3+2] = 0;
+                    int pixel_offset_scanline_start = (i*width + i)*3;
+                    int pixel_offset_scanline_end   = (i*width + (width - i))*3;
+                    _pixel_data[pixel_offset_scanline_start + 0] = 255;
+                    _pixel_data[pixel_offset_scanline_start + 1] = 0;
+                    _pixel_data[pixel_offset_scanline_start + 2] = 0;
+                    _pixel_data[pixel_offset_scanline_end   + 0] = 255;
+                    _pixel_data[pixel_offset_scanline_end   + 1] = 0;
+                    _pixel_data[pixel_offset_scanline_end   + 2] = 0;
                 }
                 m_id = gen_texture_internal(width, height, _pixel_data, type, smooth);
                 delete[] _pixel_data;
