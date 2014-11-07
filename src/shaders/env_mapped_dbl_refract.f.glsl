@@ -45,7 +45,7 @@ uniform int light_enabled[NUM_LIGHTS];
 varying vec3 lerp_light_vector[NUM_LIGHTS];
 uniform vec3 light_pos[NUM_LIGHTS];
 
-uniform mat4 inv_mvp_xform;
+uniform mat4 inv_view_proj_xform;
 
 // http://stackoverflow.com/questions/6652253/getting-the-true-z-value-from-the-depth-buffer?answertab=votes#tab-top
 void map_depth_to_actual_depth(
@@ -138,11 +138,11 @@ void refract_into_env_map_ex(
 // http://www.songho.ca/opengl/gl_projectionmatrix.html
 void unproject_fragment(
         in    vec3  frag_pos,
-        in    mat4  _inv_mvp_xform,
+        in    mat4  _inv_view_proj_xform,
         inout vec3  world_pos)
 {
     vec4 normalized_device_coord = vec4(frag_pos.x*2 - 1, frag_pos.y*2 - 1 , frag_pos.z*2 - 1, 1);
-    vec4 unprojected_coord = _inv_mvp_xform*normalized_device_coord;
+    vec4 unprojected_coord = _inv_view_proj_xform*normalized_device_coord;
 
     // http://www.iquilezles.org/blog/?p=1911
     unprojected_coord.xyz /= unprojected_coord.w; // perspective divide
@@ -296,7 +296,7 @@ void main(void) {
     // z-depth is measured in rays parallel to camera, not rays emanating from camera
     //vec3 backface_frag_position_world = camera_pos - camera_direction*backface_depth_actual;
     vec3 backface_frag_position_world;
-    unproject_fragment(vec3(overlay_texcoord, backface_depth), inv_mvp_xform, backface_frag_position_world);
+    unproject_fragment(vec3(overlay_texcoord, backface_depth), inv_view_proj_xform, backface_frag_position_world);
 
     //vec3 ray_plane_isect = lerp_vertex_position_world + frontface_refracted_camera_dir*???;
 

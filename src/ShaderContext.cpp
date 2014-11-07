@@ -38,7 +38,7 @@ ShaderContext::var_uniform_type_to_name_table_t ShaderContext::m_var_uniform_typ
         {ShaderContext::var_uniform_type_light_color,                     "light_color"},
         {ShaderContext::var_uniform_type_light_enabled,                   "light_enabled"},
         {ShaderContext::var_uniform_type_light_count,                     "light_count"},
-        {ShaderContext::var_uniform_type_inv_mvp_xform,                   "inv_mvp_xform"},
+        {ShaderContext::var_uniform_type_inv_view_proj_xform,                   "inv_view_proj_xform"},
         {ShaderContext::var_uniform_type_inv_projection_xform,            "inv_projection_xform"},
         {ShaderContext::var_uniform_type_inv_normal_xform,                "inv_normal_xform"},
         {ShaderContext::var_uniform_type_frontface_depth_overlay_texture, "frontface_depth_overlay_texture"},
@@ -327,9 +327,9 @@ void ShaderContext::set_ssao_sample_kernel_pos(size_t num_kernels, GLfloat* kern
     m_var_uniforms[var_uniform_type_ssao_sample_kernel_pos]->uniform_3fv(num_kernels, kernel_pos_arr);
 }
 
-void ShaderContext::set_inv_mvp_xform(glm::mat4 inv_mvp_xform)
+void ShaderContext::set_inv_view_proj_xform(glm::mat4 inv_view_proj_xform)
 {
-    m_var_uniforms[var_uniform_type_inv_mvp_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(inv_mvp_xform));
+    m_var_uniforms[var_uniform_type_inv_view_proj_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(inv_view_proj_xform));
 }
 
 }

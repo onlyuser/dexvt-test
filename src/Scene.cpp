@@ -254,7 +254,7 @@ void Scene::render(
             shader_context->set_viewport_dim(m_viewport_dim);
             shader_context->set_camera_near( m_camera->get_near_plane());
             shader_context->set_camera_far(  m_camera->get_far_plane());
-            shader_context->set_inv_mvp_xform(glm::inverse(m_camera->get_xform())*glm::inverse(m_camera->get_projection_xform()));
+            shader_context->set_inv_view_proj_xform(glm::inverse(m_camera->get_xform())*glm::inverse(m_camera->get_projection_xform()));
         }
         if(use_env_mapping_dbl_refract) {
             shader_context->set_frontface_depth_overlay_texture_id(mesh->get_frontface_depth_overlay_texture_id());

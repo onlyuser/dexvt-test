@@ -14,7 +14,7 @@ uniform vec3      camera_pos;
 uniform vec3      camera_dir;
 
 uniform mat4 view_proj_xform;
-uniform mat4 inv_mvp_xform;
+uniform mat4 inv_view_proj_xform;
 
 varying vec3 lerp_normal;
 
@@ -37,11 +37,11 @@ void map_range(in float s1, in float e1, in float s2, in float e2, in float x, o
 // http://www.songho.ca/opengl/gl_projectionmatrix.html
 void unproject_fragment(
         in    vec3  frag_pos,
-        in    mat4  _inv_mvp_xform,
+        in    mat4  _inv_view_proj_xform,
         inout vec3  world_pos)
 {
     vec4 normalized_device_coord = vec4(frag_pos.x*2 - 1, frag_pos.y*2 - 1 , frag_pos.z*2 - 1, 1);
-    vec4 unprojected_coord = _inv_mvp_xform*normalized_device_coord;
+    vec4 unprojected_coord = _inv_view_proj_xform*normalized_device_coord;
 
     // http://www.iquilezles.org/blog/?p=1911
     unprojected_coord.xyz /= unprojected_coord.w; // perspective divide
@@ -80,7 +80,7 @@ void main(void) {
     // z-depth is measured in rays parallel to camera, not rays emanating from camera
     //vec3 frontface_frag_position_world = camera_pos - camera_direction*frontface_depth_world;
     vec3 frontface_frag_position_world;
-    unproject_fragment(vec3(overlay_texcoord, frontface_ndc_depth), inv_mvp_xform, frontface_frag_position_world);
+    unproject_fragment(vec3(overlay_texcoord, frontface_ndc_depth), inv_view_proj_xform, frontface_frag_position_world);
     //if(frontface_frag_position_world.z < -0.9 && frontface_frag_position_world.z > -1.1 &&
     //        frontface_frag_position_world.x > 0 && frontface_frag_position_world.y > 0)
     //{
