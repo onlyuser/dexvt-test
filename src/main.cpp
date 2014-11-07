@@ -103,7 +103,7 @@ int init_resources()
     scene->add_mesh(hidden_mesh3 = vt::PrimitiveFactory::create_box(                  "box3"));
     scene->add_mesh(hidden_mesh4 = vt::PrimitiveFactory::create_grid(                 "grid2",   32, 32, 1, 1));
 
-    mesh->set_origin(        glm::vec3(-0.5, -0.5, -0.5)); // box
+    mesh->set_origin(        glm::vec3(-0.5, -0.5,  1.5)); // box
     mesh2->set_origin(       glm::vec3(-5, 5, -1));        // grid
     mesh3->set_origin(       glm::vec3(2, 0, 0));          // sphere
     mesh4->set_origin(       glm::vec3(-2, 0, 0));         // torus
@@ -196,7 +196,7 @@ int init_resources()
     ssao_program->add_var("camera_near",                     vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("camera_far",                      vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("ssao_sample_kernel_pos",          vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("inv_mvp_xform",                   vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("inv_view_proj_xform",                   vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("view_proj_xform",                 vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("camera_pos",                      vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("camera_dir",                      vt::Program::VAR_TYPE_UNIFORM);
@@ -386,7 +386,7 @@ int init_resources()
     env_mapped_dbl_refract_program->add_var("camera_far",                      vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_dbl_refract_program->add_var("view_proj_xform",                 vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_dbl_refract_program->add_var("mvp_xform",                       vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("inv_mvp_xform",                   vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("inv_view_proj_xform",                   vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(env_mapped_dbl_refract_material);
 
     vt::Material* env_mapped_fast_material = new vt::Material(

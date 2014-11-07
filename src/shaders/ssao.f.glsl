@@ -3,6 +3,7 @@ uniform sampler2D random_texture;
 
 const int NUM_SSAO_SAMPLE_KERNELS = 10;
 const float SSAO_SAMPLE_RADIUS = 0.5;
+const float DISCONT_THRESH = SSAO_SAMPLE_RADIUS*4;
 
 uniform sampler2D frontface_depth_overlay_texture;
 uniform vec2      viewport_dim;
@@ -14,7 +15,7 @@ uniform vec3      camera_pos;
 uniform vec3      camera_dir;
 
 uniform mat4 view_proj_xform;
-uniform mat4 inv_mvp_xform;
+uniform mat4 inv_view_proj_xform;
 
 varying vec3 lerp_normal;
 
@@ -37,11 +38,11 @@ void map_range(in float s1, in float e1, in float s2, in float e2, in float x, o
 // http://www.songho.ca/opengl/gl_projectionmatrix.html
 void unproject_fragment(
         in    vec3  frag_pos,
-        in    mat4  _inv_mvp_xform,
+        in    mat4  _inv_view_proj_xform,
         inout vec3  world_pos)
 {
     vec4 normalized_device_coord = vec4(frag_pos.x*2 - 1, frag_pos.y*2 - 1 , frag_pos.z*2 - 1, 1);
-    vec4 unprojected_coord = _inv_mvp_xform*normalized_device_coord;
+    vec4 unprojected_coord = _inv_view_proj_xform*normalized_device_coord;
 
     // http://www.iquilezles.org/blog/?p=1911
     unprojected_coord.xyz /= unprojected_coord.w; // perspective divide
@@ -61,12 +62,13 @@ void gen_basis_xform_from_random_vec(
     tbn_xform = mat3(tangent, bitangent, normal);
 }
 
+// http://john-chapman-graphics.blogspot.tw/2013/01/ssao-tutorial.html
 void main(void) {
     vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1 - lerp_texcoord.y);
 
     //float frontface_depth_world = 0;
     vec2 overlay_texcoord = vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y);
-    float frontface_ndc_depth = texture2D(frontface_depth_overlay_texture, overlay_texcoord).x;
+    float frontface_ndc_depth = texture2D(frontface_depth_overlay_texture, overlay_texcoord).r;
     //map_ndc_depth_to_world_depth(camera_near, camera_far, frontface_ndc_depth, frontface_depth_world);
     //if(frontface_depth_world >= (camera_far - 0.1)) {
     //    gl_FragColor = vec4(1,1,0,0);
@@ -80,7 +82,7 @@ void main(void) {
     // z-depth is measured in rays parallel to camera, not rays emanating from camera
     //vec3 frontface_frag_position_world = camera_pos - camera_direction*frontface_depth_world;
     vec3 frontface_frag_position_world;
-    unproject_fragment(vec3(overlay_texcoord, frontface_ndc_depth), inv_mvp_xform, frontface_frag_position_world);
+    unproject_fragment(vec3(overlay_texcoord, frontface_ndc_depth), inv_view_proj_xform, frontface_frag_position_world);
     //if(frontface_frag_position_world.z < -0.9 && frontface_frag_position_world.z > -1.1 &&
     //        frontface_frag_position_world.x > 0 && frontface_frag_position_world.y > 0)
     //{
@@ -92,7 +94,7 @@ void main(void) {
 
     mat3 tbn_xform;
     vec3 random_unit_normal =
-            normalize(texture2D(random_texture, flipped_texcoord).xyz)*2 - vec3(1); // map from [0,1] to [-1,1];
+            normalize(texture2D(random_texture, flipped_texcoord).rgb)*2 - vec3(1); // map from [0,1] to [-1,1];
     //random_unit_normal.x = 1;
     //random_unit_normal.y = 0;
     //random_unit_normal.z *= 0.001;
@@ -104,7 +106,7 @@ void main(void) {
         vec3 sample_offset_world = normalize(tbn_xform*normalize(ssao_sample_kernel_pos[i]))*SSAO_SAMPLE_RADIUS;
         //sample_offset_world = sample_offset_world*0.001 + vec3(0,0,1)*SSAO_SAMPLE_RADIUS;
         vec3 sample_world = frontface_frag_position_world + sample_offset_world;
-        //if(sample_world.x > 0) {
+        //if(sample_world.x > 0 && sample_world.y > 0) {
         //    gl_FragColor = vec4(1,0,0,0);
         //    return;
         //}
@@ -117,36 +119,46 @@ void main(void) {
         //    return;
         //}
 
-        float sample_surface_ndc_depth = texture2D(frontface_depth_overlay_texture, sample_offset_projected.xy).x;
+        float sample_surface_ndc_depth = texture2D(frontface_depth_overlay_texture, sample_offset_projected.xy).r;
         //if(sample_surface_ndc_depth > 0.5) {
-        //    gl_FragColor = vec4(1,0,0,0);
+        //    gl_FragColor = vec4(0,1,0,0);
         //    return;
         //}
 
         float sample_surface_depth_world = 0;
         map_ndc_depth_to_world_depth(camera_near, camera_far, sample_surface_ndc_depth, sample_surface_depth_world);
         //if(sample_surface_depth_world < 9) { // <== accurate
-        //    gl_FragColor = vec4(1,0,0,0);
+        //    gl_FragColor = vec4(0,1,0,0);
         //    return;
         //}
 
         float frontface_frag_position_world_linear_depth =
                 abs(dot(frontface_frag_position_world - camera_pos, camera_dir));
-        float range_check = abs(frontface_frag_position_world_linear_depth - sample_surface_depth_world) < SSAO_SAMPLE_RADIUS ? 1.0 : 0.0;
-        //if(range_check == 1.0) {
-        //    gl_FragColor = vec4(0,1,0,0);
+        //if(frontface_frag_position_world_linear_depth < 9) {
+        //    gl_FragColor = vec4(0,0,1,0);
+        //    return;
+        //}
+        float range_check =
+                (abs(frontface_frag_position_world_linear_depth - sample_surface_depth_world) < DISCONT_THRESH) ? 1.0 : 0.0;
+        if(sample_offset_projected.x < 0 || sample_offset_projected.x > 1 ||
+           sample_offset_projected.y < 0 || sample_offset_projected.y > 1)
+        {
+            range_check = 0.0;
+        }
+        //if(range_check == 0.0) {
+        //    gl_FragColor = vec4(1,0,1,0);
         //    return;
         //}
 
         float sample_world_linear_depth =
                 abs(dot(sample_world - camera_pos, camera_dir));
-        float hit = sample_surface_depth_world <= sample_world_linear_depth ? 1.0 : 0.0;
+        float hit = (sample_surface_depth_world <= sample_world_linear_depth) ? 1.0 : 0.0;
         //if(hit == 1.0) {
-        //    gl_FragColor = vec4(0,1,0,0);
+        //    gl_FragColor = vec4(1,0,1,0);
         //    return;
         //}
 
-        occlusion += hit;//*range_check;
+        occlusion += hit*range_check;
     }
     //occlusion = 1.0 - occlusion/NUM_SSAO_SAMPLE_KERNELS;
     occlusion /= NUM_SSAO_SAMPLE_KERNELS;
