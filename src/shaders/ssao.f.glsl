@@ -1,7 +1,7 @@
 varying vec2      lerp_texcoord;
 uniform sampler2D random_texture;
 
-const int NUM_SSAO_SAMPLE_KERNELS = 10;
+const int NUM_SSAO_SAMPLE_KERNELS = 3;
 const float SSAO_SAMPLE_RADIUS = 0.5;
 const float DISCONT_THRESH = SSAO_SAMPLE_RADIUS*4;
 

@@ -15,7 +15,7 @@
 #include <stdlib.h>
 
 #define NUM_LIGHTS              8
-#define NUM_SSAO_SAMPLE_KERNELS 10
+#define NUM_SSAO_SAMPLE_KERNELS 3
 
 namespace vt {
 

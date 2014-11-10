@@ -857,7 +857,7 @@ void onDisplay()
     if(wireframe_mode) {
         scene->render(false, false, vt::Scene::use_material_type_t::USE_WIREFRAME_MATERIAL);
     } else {
-        scene->render(post_process_blur || (overlay_mode != 0));
+        scene->render(post_process_blur || overlay_mode);
     }
 
 //    stencil_fb->bind();
