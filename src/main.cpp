@@ -103,7 +103,7 @@ int init_resources()
     scene->add_mesh(hidden_mesh3 = vt::PrimitiveFactory::create_box(                  "box3"));
     scene->add_mesh(hidden_mesh4 = vt::PrimitiveFactory::create_grid(                 "grid2",   32, 32, 1, 1));
 
-    mesh->set_origin(        glm::vec3(-0.5, -0.5, -0.5)); // box
+    mesh->set_origin(        glm::vec3(-0.5, -0.5,  1.5)); // box
     mesh2->set_origin(       glm::vec3(-5, 5, -1));        // grid
     mesh3->set_origin(       glm::vec3(2, 0, 0));          // sphere
     mesh4->set_origin(       glm::vec3(-2, 0, 0));         // torus
@@ -646,8 +646,8 @@ int init_resources()
     //mesh2->set_texture_id(mesh2->get_material()->get_texture_id_by_name("backface_depth_overlay"));
     //mesh2->set_texture_id(mesh2->get_material()->get_texture_id_by_name("backface_normal_overlay"));
     //mesh2->set_texture_id(mesh2->get_material()->get_texture_id_by_name("hi_res_color_overlay"));
-    mesh2->set_texture_id(                        mesh2->get_material()->get_texture_id_by_name("random_texture"));
-    mesh2->set_bump_texture_id(                   mesh2->get_material()->get_texture_id_by_name("random_texture"));
+    //mesh2->set_texture_id(                        mesh2->get_material()->get_texture_id_by_name("random_texture"));
+    //mesh2->set_bump_texture_id(                   mesh2->get_material()->get_texture_id_by_name("random_texture"));
     mesh2->set_random_texture_id(                 mesh2->get_material()->get_texture_id_by_name("random_texture"));
     mesh2->set_frontface_depth_overlay_texture_id(mesh2->get_material()->get_texture_id_by_name("frontface_depth_overlay"));
 

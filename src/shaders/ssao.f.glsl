@@ -52,9 +52,9 @@ void unproject_fragment(
 
 // http://mtnphil.wordpress.com/2013/06/26/know-your-ssao-artifacts/
 void gen_basis_xform_from_random_vec(
+        inout mat3 tbn_xform,
         in    vec3 normal,
-        in    vec3 random_vec,
-        inout mat3 tbn_xform)
+        in    vec3 random_vec)
 {
     // Gram–Schmidt process to construct an orthogonal basis.
     vec3 tangent = normalize(random_vec - normal*dot(random_vec, normal)); // ortho-basis x-direction
@@ -95,16 +95,12 @@ void main(void) {
     mat3 tbn_xform;
     vec3 random_unit_normal =
             normalize(texture2D(random_texture, flipped_texcoord).rgb)*2 - vec3(1); // map from [0,1] to [-1,1];
-    //random_unit_normal.x = 1;
-    //random_unit_normal.y = 0;
-    //random_unit_normal.z *= 0.001;
-    gen_basis_xform_from_random_vec(lerp_normal, random_unit_normal, tbn_xform);
+    gen_basis_xform_from_random_vec(tbn_xform, lerp_normal, random_unit_normal);
 
     float occlusion = 0.0;
     for(int i = 0; i < NUM_SSAO_SAMPLE_KERNELS; i++) {
 
         vec3 sample_offset_world = normalize(tbn_xform*normalize(ssao_sample_kernel_pos[i]))*SSAO_SAMPLE_RADIUS;
-        //sample_offset_world = sample_offset_world*0.001 + vec3(0,0,1)*SSAO_SAMPLE_RADIUS;
         vec3 sample_world = frontface_frag_position_world + sample_offset_world;
         //if(sample_world.x > 0 && sample_world.y > 0) {
         //    gl_FragColor = vec4(1,0,0,0);
