@@ -646,8 +646,8 @@ int init_resources()
     //mesh2->set_texture_id(mesh2->get_material()->get_texture_id_by_name("backface_depth_overlay"));
     //mesh2->set_texture_id(mesh2->get_material()->get_texture_id_by_name("backface_normal_overlay"));
     //mesh2->set_texture_id(mesh2->get_material()->get_texture_id_by_name("hi_res_color_overlay"));
-    mesh2->set_texture_id(                        mesh2->get_material()->get_texture_id_by_name("random_texture"));
-    mesh2->set_bump_texture_id(                   mesh2->get_material()->get_texture_id_by_name("random_texture"));
+    //mesh2->set_texture_id(                        mesh2->get_material()->get_texture_id_by_name("random_texture"));
+    //mesh2->set_bump_texture_id(                   mesh2->get_material()->get_texture_id_by_name("random_texture"));
     mesh2->set_random_texture_id(                 mesh2->get_material()->get_texture_id_by_name("random_texture"));
     mesh2->set_frontface_depth_overlay_texture_id(mesh2->get_material()->get_texture_id_by_name("frontface_depth_overlay"));
 
