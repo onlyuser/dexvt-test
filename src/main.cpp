@@ -103,7 +103,7 @@ int init_resources()
     scene->add_mesh(hidden_mesh3 = vt::PrimitiveFactory::create_box(                  "box3"));
     scene->add_mesh(hidden_mesh4 = vt::PrimitiveFactory::create_grid(                 "grid2",   32, 32, 1, 1));
 
-    mesh->set_origin(        glm::vec3(-0.5, -0.5, -0.5)); // box
+    mesh->set_origin(        glm::vec3(-0.5, -0.5,  1.5)); // box
     mesh2->set_origin(       glm::vec3(-5, 5, -1));        // grid
     mesh3->set_origin(       glm::vec3(2, 0, 0));          // sphere
     mesh4->set_origin(       glm::vec3(-2, 0, 0));         // torus
