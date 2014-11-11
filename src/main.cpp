@@ -196,7 +196,7 @@ int init_resources()
     ssao_program->add_var("camera_near",                     vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("camera_far",                      vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("ssao_sample_kernel_pos",          vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("inv_view_proj_xform",                   vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var("inv_view_proj_xform",             vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("view_proj_xform",                 vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("camera_pos",                      vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("camera_dir",                      vt::Program::VAR_TYPE_UNIFORM);
@@ -386,7 +386,7 @@ int init_resources()
     env_mapped_dbl_refract_program->add_var("camera_far",                      vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_dbl_refract_program->add_var("view_proj_xform",                 vt::Program::VAR_TYPE_UNIFORM);
     env_mapped_dbl_refract_program->add_var("mvp_xform",                       vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("inv_view_proj_xform",                   vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var("inv_view_proj_xform",             vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(env_mapped_dbl_refract_material);
 
     vt::Material* env_mapped_fast_material = new vt::Material(
@@ -761,14 +761,14 @@ void onTick()
     frames++;
 
     phase = static_cast<float>(glutGet(GLUT_ELAPSED_TIME))/1000*15; // base 15 degrees per second
+
+    mesh_apply_ripple(hidden_mesh4, glm::vec3(0.5, 0, 0.5), 0.1, 0.5, -phase*0.1);
+    hidden_mesh4->update_buffers();
 }
 
 void onDisplay()
 {
     onTick();
-
-    mesh_apply_ripple(hidden_mesh4, glm::vec3(0.5, 0, 0.5), 0.1, 0.5, -phase*0.1);
-    hidden_mesh4->update_buffers();
 
     vt::Scene* scene = vt::Scene::instance();
 
@@ -778,21 +778,21 @@ void onDisplay()
     scene->render(false, false);
     frontface_depth_overlay_fb->unbind();
 
+    glCullFace(GL_FRONT);
+
     backface_depth_overlay_fb->bind();
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    glCullFace(GL_FRONT);
     scene->render(false, false);
-    glCullFace(GL_BACK);
     backface_depth_overlay_fb->unbind();
 
     backface_normal_overlay_fb->bind();
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    glCullFace(GL_FRONT);
     scene->render(false, false, vt::Scene::use_material_type_t::USE_NORMAL_MATERIAL);
-    glCullFace(GL_BACK);
     backface_normal_overlay_fb->unbind();
+
+    glCullFace(GL_BACK);
 
     if(post_process_blur) {
         // switch to write-through mode to perform downsampling
