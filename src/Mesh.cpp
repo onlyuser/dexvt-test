@@ -27,6 +27,7 @@ Mesh::Mesh(
       m_texture2_index(-1),
       m_bump_texture_id(-1),
       m_env_map_texture_id(-1),
+      m_random_texture_id(-1),
       m_frontface_depth_overlay_texture_id(-1),
       m_reflect_to_refract_ratio(1) // 100% reflective
 {
@@ -267,6 +268,21 @@ ShaderContext* Mesh::get_wireframe_shader_context(Material* wireframe_material)
             get_vbo_tex_coords(),
             get_ibo_tri_indices()));
     return m_wireframe_shader_context.get();
+}
+
+ShaderContext* Mesh::get_ssao_shader_context(Material* ssao_material)
+{
+    if(m_ssao_shader_context.get() || !ssao_material) { // FIX-ME! -- potential bug if Material not set
+        return m_ssao_shader_context.get();
+    }
+    m_ssao_shader_context = std::unique_ptr<ShaderContext>(new ShaderContext(
+            ssao_material,
+            get_vbo_vert_coords(),
+            get_vbo_vert_normal(),
+            get_vbo_vert_tangent(),
+            get_vbo_tex_coords(),
+            get_ibo_tri_indices()));
+    return m_ssao_shader_context.get();
 }
 
 void Mesh::update_xform()

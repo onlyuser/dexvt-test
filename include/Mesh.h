@@ -74,6 +74,7 @@ public:
     ShaderContext* get_shader_context();
     ShaderContext* get_normal_shader_context(Material* normal_material);
     ShaderContext* get_wireframe_shader_context(Material* wireframe_material);
+    ShaderContext* get_ssao_shader_context(Material* ssao_material);
 
     int get_texture_id() const
     {
@@ -176,6 +177,7 @@ private:
     std::unique_ptr<ShaderContext> m_shader_context;           // TODO: Mesh has one ShaderContext
     std::unique_ptr<ShaderContext> m_normal_shader_context;    // TODO: Mesh has one normal ShaderContext
     std::unique_ptr<ShaderContext> m_wireframe_shader_context; // TODO: Mesh has one wireframe ShaderContext
+    std::unique_ptr<ShaderContext> m_ssao_shader_context;      // TODO: Mesh has one ssao ShaderContext
     int                            m_texture_id;
     int                            m_texture2_index;
     int                            m_bump_texture_id;

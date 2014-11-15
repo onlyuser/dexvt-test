@@ -24,7 +24,8 @@ Scene::Scene()
       m_skybox(NULL),
       m_overlay(NULL),
       m_normal_material(NULL),
-      m_wireframe_material(NULL)
+      m_wireframe_material(NULL),
+      m_ssao_material(NULL)
 {
     m_ambient_color[0] = 0;
     m_ambient_color[1] = 0;
@@ -204,6 +205,9 @@ void Scene::render(
             case use_material_type_t::USE_WIREFRAME_MATERIAL:
                 shader_context = mesh->get_wireframe_shader_context(m_wireframe_material);
                 break;
+            case use_material_type_t::USE_SSAO_MATERIAL:
+                shader_context = mesh->get_ssao_shader_context(m_ssao_material);
+                break;
         }
         if(!shader_context) {
             continue;
@@ -263,9 +267,23 @@ void Scene::render(
             shader_context->set_view_proj_xform(m_camera->get_projection_xform()*m_camera->get_xform());
         }
         if(use_ssao) {
-            shader_context->set_frontface_depth_overlay_texture_id(mesh->get_frontface_depth_overlay_texture_id());
+            Material *material = NULL;
+            switch(use_material_type) {
+                case use_material_type_t::USE_MESH_MATERIAL:
+                    material = mesh->get_material();
+                    break;
+                case use_material_type_t::USE_SSAO_MATERIAL:
+                    material = shader_context->get_material();
+                    break;
+                default:
+                    break;
+            }
+            if(!material) {
+                return;
+            }
+            shader_context->set_frontface_depth_overlay_texture_id(material->get_texture_id_by_name("frontface_depth_overlay"));
+            shader_context->set_random_texture_id(                 material->get_texture_id_by_name("random_texture"));
             shader_context->set_ssao_sample_kernel_pos(NUM_SSAO_SAMPLE_KERNELS, m_ssao_sample_kernel_pos);
-            shader_context->set_random_texture_id(mesh->get_random_texture_id());
             shader_context->set_view_proj_xform(m_camera->get_projection_xform()*m_camera->get_xform());
             shader_context->set_camera_pos(m_camera_pos);
             shader_context->set_camera_dir(m_camera_dir);

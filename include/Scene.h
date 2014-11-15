@@ -17,7 +17,7 @@ class Texture;
 class Scene
 {
 public:
-    typedef enum { USE_MESH_MATERIAL, USE_NORMAL_MATERIAL, USE_WIREFRAME_MATERIAL } use_material_type_t;
+    typedef enum { USE_MESH_MATERIAL, USE_NORMAL_MATERIAL, USE_WIREFRAME_MATERIAL, USE_SSAO_MATERIAL } use_material_type_t;
 
     typedef std::vector<Light*>    lights_t;
     typedef std::vector<Mesh*>     meshes_t;
@@ -92,6 +92,15 @@ public:
         return m_wireframe_material;
     }
 
+    void set_ssao_material(Material* material)
+    {
+        m_ssao_material = material;
+    }
+    Material* get_ssao_material() const
+    {
+        return m_ssao_material;
+    }
+
     void reset();
     void use_program();
     void render(
@@ -111,6 +120,7 @@ private:
     textures_t  m_textures;
     Material*   m_normal_material;
     Material*   m_wireframe_material;
+    Material*   m_ssao_material;
 
     GLfloat  m_ambient_color[3];
     GLfloat  m_camera_pos[3];
