@@ -48,6 +48,23 @@
 #define BLUR_ITERS      5
 #define RAND_TEX_DIM    8
 
+enum demo_mode_t {
+    DEMO_MODE_DEFAULT,
+    DEMO_MODE_DIAMOND,
+    DEMO_MODE_SPHERE,
+    DEMO_MODE_BOX,
+    DEMO_MODE_GRID
+};
+
+enum overlay_mode_t {
+    OVERLAY_MODE_DEFAULT,
+    OVERLAY_MODE_FF_DEPTH,
+    OVERLAY_MODE_BF_DEPTH,
+    OVERLAY_MODE_FF_NORMAL,
+    OVERLAY_MODE_BF_NORMAL,
+    OVERLAY_MODE_SSAO
+};
+
 const char* DEFAULT_CAPTION = "My Textured Cube";
 
 int init_screen_width = 800, init_screen_height = 600;
@@ -66,11 +83,12 @@ bool show_vert_normals = false;
 bool show_lights = false;
 bool show_diamond = false;
 bool post_process_blur = false;
-int overlay_mode = 0;
 
 int texture_id = 0;
-int demo_mode = 0;
 float prev_zoom = 0, zoom = 1, ortho_dolly_speed = 0.1;
+
+int overlay_mode = OVERLAY_MODE_DEFAULT;
+int demo_mode = DEMO_MODE_DEFAULT;
 
 float phase = 0;
 
@@ -200,7 +218,7 @@ int init_resources()
     ssao_program->add_var("view_proj_xform",                 vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("camera_pos",                      vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("camera_dir",                      vt::Program::VAR_TYPE_UNIFORM);
-    scene->set_ssao_material(ssao_material); // FIX-ME! -- crashes when set
+    scene->set_ssao_material(ssao_material);
 
     vt::Material* skybox_material = new vt::Material(
             "skybox",
@@ -802,19 +820,21 @@ void onDisplay()
     scene->render(false, false);
     frontface_depth_overlay_fb->unbind();
 
-    // TODO: FIX-ME! -- wasteful if not needed!
-    frontface_normal_overlay_fb->bind();
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    scene->render(false, false, vt::Scene::use_material_type_t::USE_NORMAL_MATERIAL);
-    frontface_normal_overlay_fb->unbind();
+    if(overlay_mode == OVERLAY_MODE_FF_NORMAL) {
+        frontface_normal_overlay_fb->bind();
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        scene->render(false, false, vt::Scene::use_material_type_t::USE_NORMAL_MATERIAL);
+        frontface_normal_overlay_fb->unbind();
+    }
 
-    // TODO: FIX-ME! -- wasteful if not needed!
-    //ssao_overlay_fb->bind();
-    //glClearColor(0, 0, 0, 1);
-    //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    //scene->render(false, false, vt::Scene::use_material_type_t::USE_SSAO_MATERIAL);
-    //ssao_overlay_fb->unbind();
+    if(overlay_mode == OVERLAY_MODE_SSAO) {
+        ssao_overlay_fb->bind();
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        scene->render(false, false, vt::Scene::use_material_type_t::USE_SSAO_MATERIAL);
+        ssao_overlay_fb->unbind();
+    }
 
     glCullFace(GL_FRONT);
 
@@ -957,8 +977,8 @@ void onKeyboard(unsigned char key, int x, int y)
 {
     switch(key) {
         case 'b': // blur
-            if(overlay_mode != 0) {
-                overlay_mode = 0; // switch back to default overlay
+            if(overlay_mode != OVERLAY_MODE_DEFAULT) {
+                overlay_mode = OVERLAY_MODE_DEFAULT; // switch back to default overlay
                 post_process_blur = true;
                 mesh_overlay->set_material(overlay_bloom_filter_material);
                 break;
@@ -971,29 +991,33 @@ void onKeyboard(unsigned char key, int x, int y)
             }
             break;
         case 'd': // demo
-            if(demo_mode == 0) {
-                set_mesh_visibility(false);
-                hidden_mesh->set_visible(true); // diamond2
-                demo_mode = 1;
-            } else if(demo_mode == 1) {
-                set_mesh_visibility(false);
-                hidden_mesh2->set_visible(true); // sphere2
-                demo_mode = 2;
-            } else if(demo_mode == 2) {
-                set_mesh_visibility(false);
-                hidden_mesh3->set_visible(true); // box3
-                demo_mode = 3;
-            } else if(demo_mode == 3) {
-                set_mesh_visibility(false);
-                hidden_mesh4->set_visible(true); // grid2
-                demo_mode = 4;
-            } else if(demo_mode == 4) {
-                set_mesh_visibility(true);
-                hidden_mesh->set_visible(false);  // diamond2
-                hidden_mesh2->set_visible(false); // sphere2
-                hidden_mesh3->set_visible(false); // box3
-                hidden_mesh4->set_visible(false); // grid2
-                demo_mode = 0;
+            demo_mode = (demo_mode + 1) % 5;
+            switch(demo_mode) {
+                case DEMO_MODE_DEFAULT:
+                    set_mesh_visibility(true);
+                    hidden_mesh->set_visible(false);  // diamond2
+                    hidden_mesh2->set_visible(false); // sphere2
+                    hidden_mesh3->set_visible(false); // box3
+                    hidden_mesh4->set_visible(false); // grid2
+                    break;
+                case DEMO_MODE_DIAMOND:
+                    set_mesh_visibility(false);
+                    hidden_mesh->set_visible(true); // diamond2
+                    break;
+                case DEMO_MODE_SPHERE:
+                    set_mesh_visibility(false);
+                    hidden_mesh2->set_visible(true); // sphere2
+                    break;
+                case DEMO_MODE_BOX:
+                    set_mesh_visibility(false);
+                    hidden_mesh3->set_visible(true); // box3
+                    break;
+                case DEMO_MODE_GRID:
+                    set_mesh_visibility(false);
+                    hidden_mesh4->set_visible(true); // grid2
+                    break;
+                default:
+                    break;
             }
             break;
         case 'f': // frame rate
@@ -1009,28 +1033,32 @@ void onKeyboard(unsigned char key, int x, int y)
             show_vert_normals = !show_vert_normals;
             break;
         case 'o': // overlay
+            overlay_mode = (overlay_mode + 1) % 6;
             if(post_process_blur) {
                 post_process_blur = false;
                 mesh_overlay->set_material(overlay_write_through_material);
             }
-            if(overlay_mode == 0) {
-                mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("frontface_depth_overlay"));
-                overlay_mode = 1;
-            } else if(overlay_mode == 1) {
-                mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("backface_depth_overlay"));
-                overlay_mode = 2;
-            } else if(overlay_mode == 2) {
-                mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("frontface_normal_overlay"));
-                overlay_mode = 3;
-            } else if(overlay_mode == 3) {
-                mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("backface_normal_overlay"));
-            //    overlay_mode = 4;
-            //} else if(overlay_mode == 4) {
-            //    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("ssao_overlay"));
-                overlay_mode = 5;
-            } else if(overlay_mode == 5) {
-                mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("hi_res_color_overlay"));
-                overlay_mode = 0;
+            switch(overlay_mode) {
+                case OVERLAY_MODE_DEFAULT:
+                    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("hi_res_color_overlay"));
+                    break;
+                case OVERLAY_MODE_FF_DEPTH:
+                    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("frontface_depth_overlay"));
+                    break;
+                case OVERLAY_MODE_BF_DEPTH:
+                    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("backface_depth_overlay"));
+                    break;
+                case OVERLAY_MODE_FF_NORMAL:
+                    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("frontface_normal_overlay"));
+                    break;
+                case OVERLAY_MODE_BF_NORMAL:
+                    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("backface_normal_overlay"));
+                    break;
+                case OVERLAY_MODE_SSAO:
+                    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_id_by_name("ssao_overlay"));
+                    break;
+                default:
+                    break;
             }
             break;
         case 'p': // projection
