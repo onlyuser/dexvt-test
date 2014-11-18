@@ -72,9 +72,7 @@ void Material::clear_textures()
 
 Texture* Material::get_texture_by_index(int index) const
 {
-    if(index >= static_cast<int>(m_textures.size())) {
-        return NULL;
-    }
+    assert(index >= 0 && index < static_cast<int>(m_textures.size()));
     return m_textures[index];
 }
 

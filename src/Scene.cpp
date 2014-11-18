@@ -267,20 +267,6 @@ void Scene::render(
             shader_context->set_view_proj_xform(m_camera->get_projection_xform()*m_camera->get_xform());
         }
         if(use_ssao) {
-            Material *material = NULL;
-            switch(use_material_type) {
-                case use_material_type_t::USE_MESH_MATERIAL:
-                    material = mesh->get_material();
-                    break;
-                case use_material_type_t::USE_SSAO_MATERIAL:
-                    material = shader_context->get_material();
-                    break;
-                default:
-                    break;
-            }
-            if(!material) {
-                return;
-            }
             shader_context->set_frontface_depth_overlay_texture_id(material->get_texture_id_by_name("frontface_depth_overlay"));
             shader_context->set_random_texture_id(                 material->get_texture_id_by_name("random_texture"));
             shader_context->set_ssao_sample_kernel_pos(NUM_SSAO_SAMPLE_KERNELS, m_ssao_sample_kernel_pos);

@@ -53,7 +53,8 @@ enum demo_mode_t {
     DEMO_MODE_DIAMOND,
     DEMO_MODE_SPHERE,
     DEMO_MODE_BOX,
-    DEMO_MODE_GRID
+    DEMO_MODE_GRID,
+    DEMO_MODE_COUNT
 };
 
 enum overlay_mode_t {
@@ -62,7 +63,8 @@ enum overlay_mode_t {
     OVERLAY_MODE_BF_DEPTH,
     OVERLAY_MODE_FF_NORMAL,
     OVERLAY_MODE_BF_NORMAL,
-    OVERLAY_MODE_SSAO
+    OVERLAY_MODE_SSAO,
+    OVERLAY_MODE_COUNT
 };
 
 const char* DEFAULT_CAPTION = "My Textured Cube";
@@ -666,9 +668,9 @@ int init_resources()
     med_res_color_overlay_fb    = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(med_res_color_overlay_texture, camera));
     lo_res_color_overlay_fb     = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(lo_res_color_overlay_texture, camera));
 
-    scene->add_light(light  = new vt::Light("light1", origin+glm::vec3(light_distance, 0, 0), glm::vec3(1, 0, 0)));
-    scene->add_light(light2 = new vt::Light("light2", origin+glm::vec3(0, light_distance, 0), glm::vec3(0, 1, 0)));
-    scene->add_light(light3 = new vt::Light("light3", origin+glm::vec3(0, 0, light_distance), glm::vec3(0, 0, 1)));
+    scene->add_light(light  = new vt::Light("light1", origin + glm::vec3(light_distance, 0, 0), glm::vec3(1, 0, 0)));
+    scene->add_light(light2 = new vt::Light("light2", origin + glm::vec3(0, light_distance, 0), glm::vec3(0, 1, 0)));
+    scene->add_light(light3 = new vt::Light("light3", origin + glm::vec3(0, 0, light_distance), glm::vec3(0, 0, 1)));
 
     mesh_skybox->set_material(skybox_material);
     mesh_skybox->set_texture_id(mesh_skybox->get_material()->get_texture_id_by_name("skybox_texture"));
@@ -991,7 +993,7 @@ void onKeyboard(unsigned char key, int x, int y)
             }
             break;
         case 'd': // demo
-            demo_mode = (demo_mode + 1) % 5;
+            demo_mode = (demo_mode + 1) % DEMO_MODE_COUNT;
             switch(demo_mode) {
                 case DEMO_MODE_DEFAULT:
                     set_mesh_visibility(true);
@@ -1033,7 +1035,7 @@ void onKeyboard(unsigned char key, int x, int y)
             show_vert_normals = !show_vert_normals;
             break;
         case 'o': // overlay
-            overlay_mode = (overlay_mode + 1) % 6;
+            overlay_mode = (overlay_mode + 1) % OVERLAY_MODE_COUNT;
             if(post_process_blur) {
                 post_process_blur = false;
                 mesh_overlay->set_material(overlay_write_through_material);
