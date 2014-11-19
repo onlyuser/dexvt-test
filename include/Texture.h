@@ -37,15 +37,15 @@ public:
             std::string png_filename_neg_z);
     virtual ~Texture();
     void bind() const;
-    size_t width() const
+    size_t get_width() const
     {
         return m_width;
     }
-    size_t height() const
+    size_t get_height() const
     {
         return m_height;
     }
-    type_t type() const
+    type_t get_type() const
     {
         return m_type;
     }

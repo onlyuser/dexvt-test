@@ -16,18 +16,18 @@ FrameBuffer::FrameBuffer(Texture* texture, Camera* camera)
 
     glGenRenderbuffers(1, &m_depthrenderbuffer_id);
     glBindRenderbuffer(GL_RENDERBUFFER, m_depthrenderbuffer_id);
-    if(texture->type() == Texture::STENCIL) {
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_STENCIL, m_texture->width(), m_texture->height());
+    if(texture->get_type() == Texture::STENCIL) {
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_STENCIL, m_texture->get_width(), m_texture->get_height());
     } else {
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_texture->width(), m_texture->height());
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_texture->get_width(), m_texture->get_height());
     }
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-    if(texture->type() == Texture::DEPTH) {
+    if(texture->get_type() == Texture::DEPTH) {
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_texture->id(), 0);
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
-    } else if(texture->type() == Texture::STENCIL) {
+    } else if(texture->get_type() == Texture::STENCIL) {
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture->id(), 0);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthrenderbuffer_id);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_depthrenderbuffer_id);
@@ -51,7 +51,7 @@ FrameBuffer::~FrameBuffer()
 void FrameBuffer::bind() const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, m_id);
-    glViewport(0, 0, m_texture->width(), m_texture->height());
+    glViewport(0, 0, m_texture->get_width(), m_texture->get_height());
 }
 
 void FrameBuffer::unbind() const

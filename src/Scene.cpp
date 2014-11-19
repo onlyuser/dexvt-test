@@ -267,6 +267,12 @@ void Scene::render(
             shader_context->set_view_proj_xform(m_camera->get_projection_xform()*m_camera->get_xform());
         }
         if(use_ssao) {
+            //if(use_material_type == use_material_type_t::USE_SSAO_MATERIAL) {
+                Texture* texture = material->get_texture_by_name("frontface_depth_overlay");
+                m_viewport_dim[0] = texture->get_width();
+                m_viewport_dim[1] = texture->get_height();
+                shader_context->set_viewport_dim(m_viewport_dim);
+            //}
             shader_context->set_frontface_depth_overlay_texture_id(material->get_texture_id_by_name("frontface_depth_overlay"));
             shader_context->set_random_texture_id(                 material->get_texture_id_by_name("random_texture"));
             shader_context->set_ssao_sample_kernel_pos(NUM_SSAO_SAMPLE_KERNELS, m_ssao_sample_kernel_pos);

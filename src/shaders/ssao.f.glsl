@@ -101,7 +101,8 @@ void main(void) {
     for(int i = 0; i < NUM_SSAO_SAMPLE_KERNELS; i++) {
 
         vec3 sample_offset_world = normalize(tbn_xform*normalize(ssao_sample_kernel_pos[i]))*SSAO_SAMPLE_RADIUS;
-        vec3 sample_world = frontface_frag_position_world + sample_offset_world*0.001 + vec3(0,0,1);
+        //vec3 sample_world = frontface_frag_position_world + sample_offset_world*0.001 + vec3(0,0,1);
+        vec3 sample_world = frontface_frag_position_world + sample_offset_world;
         //if(sample_world.x > 0 && sample_world.y > 0) {
         //    gl_FragColor = vec4(1,0,0,0);
         //    return;
