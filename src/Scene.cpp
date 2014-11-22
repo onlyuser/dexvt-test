@@ -270,7 +270,7 @@ void Scene::render(
             vt::Texture* frontface_depth_overlay_texture = material->get_texture_by_name("frontface_depth_overlay");
             vt::Texture* random_texture                  = material->get_texture_by_name("random_texture");
             if(use_material_type != use_material_type_t::USE_SSAO_MATERIAL) {
-                float min_dim = m_camera->get_height();//std::min(m_camera->get_width(), m_camera->get_height());
+                float min_dim = m_camera->get_height();
                 m_viewport_dim[0] = min_dim;
                 m_viewport_dim[1] = min_dim;
                 shader_context->set_viewport_dim(m_viewport_dim);
