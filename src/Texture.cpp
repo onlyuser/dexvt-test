@@ -175,7 +175,7 @@ Texture::~Texture()
     glDeleteTextures(1, &m_id);
 }
 
-void Texture::bind() const
+void Texture::bind()
 {
     if(m_skybox) {
         glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);

@@ -20,22 +20,22 @@ public:
     typedef std::vector<Texture*> textures_t;
 
     Material(
-            std::string name                   = "",
-            std::string vertex_shader_file     = "",
-            std::string fragment_shader_file   = "",
-            bool        use_ambient_color      = false,
-            bool        gen_normal_map         = false,
-            bool        use_phong_shading      = false,
-            bool        use_texture_mapping    = false,
-            bool        use_bump_mapping       = false,
-            bool        use_env_mapping        = false,
-            bool        use_env_mapping_dbl_refract      = false,
-            bool        use_ssao               = false,
-            bool        use_bloom_kernel       = false,
-            bool        use_texture2           = false,
-            bool        use_fragment_world_pos = false,
-            bool        skybox                 = false,
-            bool        overlay                = false);
+            std::string name                        = "",
+            std::string vertex_shader_file          = "",
+            std::string fragment_shader_file        = "",
+            bool        use_ambient_color           = false,
+            bool        gen_normal_map              = false,
+            bool        use_phong_shading           = false,
+            bool        use_texture_mapping         = false,
+            bool        use_bump_mapping            = false,
+            bool        use_env_mapping             = false,
+            bool        use_env_mapping_dbl_refract = false,
+            bool        use_ssao                    = false,
+            bool        use_bloom_kernel            = false,
+            bool        use_texture2                = false,
+            bool        use_fragment_world_pos      = false,
+            bool        skybox                      = false,
+            bool        overlay                     = false);
     Program* get_program() const
     {
         return m_program.get();
@@ -113,9 +113,10 @@ public:
         return m_overlay;
     }
 
-    Texture* get_texture_by_index(int index) const;
+    Texture* get_texture_by_slot_index(int slot_index) const;
+    int get_texture_slot_index(vt::Texture* texture) const;
     Texture* get_texture_by_name(std::string name) const;
-    int get_texture_id_by_name(std::string name) const;
+    int get_texture_slot_index_by_name(std::string name) const;
 
 private:
     std::unique_ptr<Program> m_program;

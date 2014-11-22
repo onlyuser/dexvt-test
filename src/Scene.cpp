@@ -149,7 +149,7 @@ void Scene::render(
         ShaderContext* shader_context = m_overlay->get_shader_context();
         Material* material = shader_context->get_material();
         material->get_program()->use();
-        shader_context->set_texture_id(m_overlay->get_texture_id());
+        shader_context->set_texture_id(m_overlay->get_texture_slot_index());
         if(material->use_bloom_kernel()) {
             shader_context->set_viewport_dim(m_viewport_dim);
             shader_context->set_bloom_kernel(m_bloom_kernel);
@@ -252,7 +252,7 @@ void Scene::render(
             }
         }
         if(use_texture_mapping) {
-            shader_context->set_texture_id(mesh->get_texture_id());
+            shader_context->set_texture_id(mesh->get_texture_slot_index());
         }
         if(use_fragment_world_pos) {
             shader_context->set_viewport_dim(m_viewport_dim);
@@ -267,14 +267,25 @@ void Scene::render(
             shader_context->set_view_proj_xform(m_camera->get_projection_xform()*m_camera->get_xform());
         }
         if(use_ssao) {
-            if(use_material_type == use_material_type_t::USE_SSAO_MATERIAL) {
-                Texture* texture = material->get_texture_by_name("frontface_depth_overlay");
-                m_viewport_dim[0] = texture->get_width();
-                m_viewport_dim[1] = texture->get_height();
+            vt::Texture* frontface_depth_overlay_texture = material->get_texture_by_name("frontface_depth_overlay");
+            vt::Texture* random_texture                  = material->get_texture_by_name("random_texture");
+            if(use_material_type != use_material_type_t::USE_SSAO_MATERIAL) {
+                float min_dim = m_camera->get_height();//std::min(m_camera->get_width(), m_camera->get_height());
+                m_viewport_dim[0] = min_dim;
+                m_viewport_dim[1] = min_dim;
                 shader_context->set_viewport_dim(m_viewport_dim);
+                float viewport_x_offset = fabs(m_camera->get_width() - m_camera->get_height())*0.5;
+                if(m_camera->get_width() > m_camera->get_height()) {
+                    m_viewport_offset[0] = -viewport_x_offset;
+                    m_viewport_offset[1] = 0;
+                } else {
+                    m_viewport_offset[0] = viewport_x_offset;
+                    m_viewport_offset[1] = 0;
+                }
+                shader_context->set_viewport_offset(m_viewport_offset);
             }
-            shader_context->set_frontface_depth_overlay_texture_id(material->get_texture_id_by_name("frontface_depth_overlay"));
-            shader_context->set_random_texture_id(                 material->get_texture_id_by_name("random_texture"));
+            shader_context->set_frontface_depth_overlay_texture_id(material->get_texture_slot_index(frontface_depth_overlay_texture));
+            shader_context->set_random_texture_id(                 material->get_texture_slot_index(random_texture));
             shader_context->set_ssao_sample_kernel_pos(NUM_SSAO_SAMPLE_KERNELS, m_ssao_sample_kernel_pos);
             shader_context->set_view_proj_xform(m_camera->get_projection_xform()*m_camera->get_xform());
             shader_context->set_camera_pos(m_camera_pos);

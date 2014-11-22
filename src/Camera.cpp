@@ -158,17 +158,15 @@ const glm::mat4 &Camera::get_projection_xform()
 void Camera::update_projection_xform()
 {
     if(m_projection_mode == PROJECTION_MODE_PERSPECTIVE) {
-        m_projection_xform = glm::perspective(m_fov, 1.0f*m_width/m_height, m_near_plane, m_far_plane);
+        m_projection_xform = glm::perspective(m_fov, static_cast<float>(m_width)/m_height, m_near_plane, m_far_plane);
     } else if(m_projection_mode == PROJECTION_MODE_ORTHO) {
         float aspect_ratio = static_cast<float>(m_width)/m_height;
         float half_width  = m_ortho_width*0.5*m_zoom;
         float half_height = m_ortho_width*0.5*m_zoom;
         if(m_height < m_width) {
-            half_height *= 1;
-            half_width  *= aspect_ratio;
+            half_width *= aspect_ratio;
         }
         if(m_width < m_height) {
-            half_width  *= 1;
             half_height /= aspect_ratio;
         }
         float left   = -half_width;

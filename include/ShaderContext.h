@@ -52,6 +52,7 @@ public:
         var_uniform_type_backface_depth_overlay_texture,
         var_uniform_type_backface_normal_overlay_texture,
         var_uniform_type_viewport_dim,
+        var_uniform_type_viewport_offset,
         var_uniform_type_bloom_kernel,
         var_uniform_type_camera_near,
         var_uniform_type_camera_far,
@@ -99,6 +100,7 @@ public:
     void set_backface_depth_overlay_texture_id(GLint texture_id);
     void set_backface_normal_overlay_texture_id(GLint texture_id);
     void set_viewport_dim(GLfloat* viewport_dim_arr);
+    void set_viewport_offset(GLfloat* viewport_offset_arr);
     void set_bloom_kernel(GLfloat* bloom_kernel_arr);
     void set_camera_near(GLfloat camera_near);
     void set_camera_far(GLfloat camera_far);

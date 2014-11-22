@@ -6,7 +6,7 @@ namespace vt {
 class BindableObjectIFace
 {
 public:
-    virtual void bind() const = 0;
+    virtual void bind() = 0;
 };
 
 }

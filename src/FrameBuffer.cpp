@@ -2,6 +2,7 @@
 #include <Texture.h>
 #include <Camera.h>
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <iostream>
 
 namespace vt {
@@ -48,14 +49,17 @@ FrameBuffer::~FrameBuffer()
     glDeleteFramebuffers(1, &m_id);
 }
 
-void FrameBuffer::bind() const
+void FrameBuffer::bind()
 {
+    m_prev_viewport_dim = glm::vec2(m_camera->get_width(), m_camera->get_height());
+    m_camera->resize_viewport(m_texture->get_width(), m_texture->get_height());
     glBindFramebuffer(GL_FRAMEBUFFER, m_id);
     glViewport(0, 0, m_texture->get_width(), m_texture->get_height());
 }
 
-void FrameBuffer::unbind() const
+void FrameBuffer::unbind()
 {
+    m_camera->resize_viewport(m_prev_viewport_dim.x, m_prev_viewport_dim.y);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, m_camera->get_width(), m_camera->get_height());
 }

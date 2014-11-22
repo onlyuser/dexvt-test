@@ -36,7 +36,7 @@ public:
             std::string png_filename_pos_z,
             std::string png_filename_neg_z);
     virtual ~Texture();
-    void bind() const;
+    void bind();
     size_t get_width() const
     {
         return m_width;

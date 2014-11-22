@@ -25,7 +25,7 @@ void VarAttribute::disable_vertex_attrib_array() const
 }
 
 void VarAttribute::vertex_attrib_pointer(
-        const Buffer* buffer,
+        Buffer* buffer,
         GLint size,
         GLenum type,
         GLboolean normalized,

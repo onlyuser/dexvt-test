@@ -18,13 +18,13 @@ Buffer::~Buffer()
     glDeleteBuffers(1, &m_id);
 }
 
-void Buffer::update() const
+void Buffer::update()
 {
     bind();
     glBufferData(m_target, m_size, m_data, GL_DYNAMIC_DRAW);
 }
 
-void Buffer::bind() const
+void Buffer::bind()
 {
     glBindBuffer(m_target, m_id);
 }

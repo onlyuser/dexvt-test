@@ -12,8 +12,8 @@ class Buffer : public IdentObject, public BindableObjectIFace
 public:
     Buffer(GLenum target, size_t size, void* data);
     virtual ~Buffer();
-    void update() const;
-    void bind() const;
+    void update();
+    void bind();
     size_t size() const
     {
         return m_size;

@@ -17,7 +17,7 @@ public:
     void enable_vertex_attrib_array() const;
     void disable_vertex_attrib_array() const;
     void vertex_attrib_pointer(
-            const Buffer* buffer,
+            Buffer* buffer,
             GLint size,
             GLenum type,
             GLboolean normalized,

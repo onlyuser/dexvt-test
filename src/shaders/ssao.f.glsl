@@ -7,6 +7,7 @@ const float DISCONT_THRESH = SSAO_SAMPLE_RADIUS*4;
 
 uniform sampler2D frontface_depth_overlay_texture;
 uniform vec2      viewport_dim;
+uniform vec2      viewport_offset;
 uniform float     camera_near;
 uniform float     camera_far;
 uniform vec3      ssao_sample_kernel_pos[NUM_SSAO_SAMPLE_KERNELS];
@@ -67,7 +68,7 @@ void main(void) {
     vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1 - lerp_texcoord.y);
 
     //float frontface_depth_world = 0;
-    vec2 overlay_texcoord = vec2(gl_FragCoord.x/viewport_dim.x, gl_FragCoord.y/viewport_dim.y);
+    vec2 overlay_texcoord = vec2((viewport_offset.x + gl_FragCoord.x)/viewport_dim.x, (viewport_offset.y + gl_FragCoord.y)/viewport_dim.y);
     float frontface_ndc_depth = texture2D(frontface_depth_overlay_texture, overlay_texcoord).r;
     //map_ndc_depth_to_world_depth(camera_near, camera_far, frontface_ndc_depth, frontface_depth_world);
     //if(frontface_depth_world >= (camera_far - 0.1)) {

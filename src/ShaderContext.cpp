@@ -45,6 +45,7 @@ ShaderContext::var_uniform_type_to_name_table_t ShaderContext::m_var_uniform_typ
         {ShaderContext::var_uniform_type_backface_depth_overlay_texture,  "backface_depth_overlay_texture"},
         {ShaderContext::var_uniform_type_backface_normal_overlay_texture, "backface_normal_overlay_texture"},
         {ShaderContext::var_uniform_type_viewport_dim,                    "viewport_dim"},
+        {ShaderContext::var_uniform_type_viewport_offset,                 "viewport_offset"},
         {ShaderContext::var_uniform_type_bloom_kernel,                    "bloom_kernel"},
         {ShaderContext::var_uniform_type_camera_near,                     "camera_near"},
         {ShaderContext::var_uniform_type_camera_far,                      "camera_far"},
@@ -300,6 +301,11 @@ void ShaderContext::set_backface_normal_overlay_texture_id(GLint texture_id)
 void ShaderContext::set_viewport_dim(GLfloat* viewport_dim_arr)
 {
     m_var_uniforms[var_uniform_type_viewport_dim]->uniform_2fv(1, viewport_dim_arr);
+}
+
+void ShaderContext::set_viewport_offset(GLfloat* viewport_offset_arr)
+{
+    m_var_uniforms[var_uniform_type_viewport_offset]->uniform_2fv(1, viewport_offset_arr);
 }
 
 void ShaderContext::set_bloom_kernel(GLfloat* bloom_kernel_arr)

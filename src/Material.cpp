@@ -70,10 +70,19 @@ void Material::clear_textures()
     m_texture_lookup_table.clear();
 }
 
-Texture* Material::get_texture_by_index(int index) const
+Texture* Material::get_texture_by_slot_index(int slot_index) const
 {
-    assert(index >= 0 && index < static_cast<int>(m_textures.size()));
-    return m_textures[index];
+    assert(slot_index >= 0 && slot_index < static_cast<int>(m_textures.size()));
+    return m_textures[slot_index];
+}
+
+int Material::get_texture_slot_index(vt::Texture* texture) const
+{
+    textures_t::const_iterator p = std::find(m_textures.begin(), m_textures.end(), texture);
+    if(p == m_textures.end()) {
+        return -1;
+    }
+    return std::distance(m_textures.begin(), p);
 }
 
 Texture* Material::get_texture_by_name(std::string name) const
@@ -85,14 +94,9 @@ Texture* Material::get_texture_by_name(std::string name) const
     return (*p).second;
 }
 
-int Material::get_texture_id_by_name(std::string name) const
+int Material::get_texture_slot_index_by_name(std::string name) const
 {
-    Texture* texture = get_texture_by_name(name);
-    textures_t::const_iterator p = std::find(m_textures.begin(), m_textures.end(), texture);
-    if(p == m_textures.end()) {
-        return -1;
-    }
-    return std::distance(m_textures.begin(), p);
+    return get_texture_slot_index(get_texture_by_name(name));
 }
 
 }

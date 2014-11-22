@@ -76,7 +76,7 @@ public:
     ShaderContext* get_wireframe_shader_context(Material* wireframe_material);
     ShaderContext* get_ssao_shader_context(Material* ssao_material);
 
-    int get_texture_id() const
+    int get_texture_slot_index() const
     {
         return m_texture_id;
     }

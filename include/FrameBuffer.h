@@ -4,6 +4,7 @@
 #include <IdentObject.h>
 #include <BindableObjectIFace.h>
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 
 namespace vt {
 
@@ -15,13 +16,14 @@ class FrameBuffer : public IdentObject, public BindableObjectIFace
 public:
     FrameBuffer(Texture* texture, Camera* camera);
     virtual ~FrameBuffer();
-    void bind() const;
-    void unbind() const;
+    void bind();
+    void unbind();
 
 private:
     Texture* m_texture;
     Camera* m_camera;
     GLuint m_depthrenderbuffer_id;
+    glm::vec2 m_prev_viewport_dim;
 };
 
 }
