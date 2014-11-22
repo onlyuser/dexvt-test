@@ -230,7 +230,8 @@ void Scene::render(
             m_ambient_color[2] = _ambient_color[2];
             shader_context->set_ambient_color(m_ambient_color);
         }
-        shader_context->set_mvp_xform(m_camera->get_projection_xform()*m_camera->get_xform()*mesh->get_xform());
+        glm::mat4 vp_xform = m_camera->get_projection_xform()*m_camera->get_xform();
+        shader_context->set_mvp_xform(vp_xform*mesh->get_xform());
         if(gen_normal_map || use_phong_shading || use_bump_mapping || use_env_mapping || use_ssao) {
             shader_context->set_normal_xform(mesh->get_normal_xform());
             if((!gen_normal_map && use_bump_mapping) || use_env_mapping) {
@@ -264,11 +265,9 @@ void Scene::render(
             shader_context->set_frontface_depth_overlay_texture_index(mesh->get_frontface_depth_overlay_texture_index());
             shader_context->set_backface_depth_overlay_texture_index( mesh->get_backface_depth_overlay_texture_index());
             shader_context->set_backface_normal_overlay_texture_index(mesh->get_backface_normal_overlay_texture_index());
-            shader_context->set_view_proj_xform(m_camera->get_projection_xform()*m_camera->get_xform());
+            shader_context->set_view_proj_xform(vp_xform);
         }
         if(use_ssao) {
-            vt::Texture* frontface_depth_overlay_texture = material->get_texture_by_name("frontface_depth_overlay");
-            vt::Texture* random_texture                  = material->get_texture_by_name("random_texture");
             if(use_material_type != use_material_type_t::USE_SSAO_MATERIAL) {
                 float min_dim = m_camera->get_height();
                 m_viewport_dim[0] = min_dim;
@@ -284,10 +283,10 @@ void Scene::render(
                 }
                 shader_context->set_viewport_offset(m_viewport_offset);
             }
-            shader_context->set_frontface_depth_overlay_texture_index(material->get_texture_index(frontface_depth_overlay_texture));
-            shader_context->set_random_texture_index(                 material->get_texture_index(random_texture));
+            shader_context->set_frontface_depth_overlay_texture_index(material->get_texture_index_by_name("frontface_depth_overlay"));
+            shader_context->set_random_texture_index(                 material->get_texture_index_by_name("random_texture"));
             shader_context->set_ssao_sample_kernel_pos(NUM_SSAO_SAMPLE_KERNELS, m_ssao_sample_kernel_pos);
-            shader_context->set_view_proj_xform(m_camera->get_projection_xform()*m_camera->get_xform());
+            shader_context->set_view_proj_xform(vp_xform);
             shader_context->set_camera_pos(m_camera_pos);
             shader_context->set_camera_dir(m_camera_dir);
         }
