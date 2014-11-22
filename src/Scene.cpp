@@ -149,7 +149,7 @@ void Scene::render(
         ShaderContext* shader_context = m_overlay->get_shader_context();
         Material* material = shader_context->get_material();
         material->get_program()->use();
-        shader_context->set_texture_id(m_overlay->get_texture_slot_index());
+        shader_context->set_texture_index(m_overlay->get_texture_index());
         if(material->use_bloom_kernel()) {
             shader_context->set_viewport_dim(m_viewport_dim);
             shader_context->set_bloom_kernel(m_bloom_kernel);
@@ -163,7 +163,7 @@ void Scene::render(
     if(render_skybox && m_skybox) {
         ShaderContext* shader_context = m_skybox->get_shader_context();
         shader_context->get_material()->get_program()->use();
-        shader_context->set_env_map_texture_id(0);
+        shader_context->set_env_map_texture_index(0);
         shader_context->set_inv_normal_xform(glm::inverse(m_camera->get_normal_xform()));
         shader_context->set_inv_projection_xform(glm::inverse(m_camera->get_projection_xform()));
         shader_context->render();
@@ -244,15 +244,15 @@ void Scene::render(
                 shader_context->set_light_count(m_lights.size());
             }
             if(use_bump_mapping) {
-                shader_context->set_bump_texture_id(mesh->get_bump_texture_id());
+                shader_context->set_bump_texture_index(mesh->get_bump_texture_index());
             }
             if(use_env_mapping) {
-                shader_context->set_env_map_texture_id(0); // skymap texture index
+                shader_context->set_env_map_texture_index(0); // skymap texture index
                 shader_context->set_reflect_to_refract_ratio(mesh->get_reflect_to_refract_ratio());
             }
         }
         if(use_texture_mapping) {
-            shader_context->set_texture_id(mesh->get_texture_slot_index());
+            shader_context->set_texture_index(mesh->get_texture_index());
         }
         if(use_fragment_world_pos) {
             shader_context->set_viewport_dim(m_viewport_dim);
@@ -261,9 +261,9 @@ void Scene::render(
             shader_context->set_inv_view_proj_xform(glm::inverse(m_camera->get_xform())*glm::inverse(m_camera->get_projection_xform()));
         }
         if(use_env_mapping_dbl_refract) {
-            shader_context->set_frontface_depth_overlay_texture_id(mesh->get_frontface_depth_overlay_texture_id());
-            shader_context->set_backface_depth_overlay_texture_id( mesh->get_backface_depth_overlay_texture_id());
-            shader_context->set_backface_normal_overlay_texture_id(mesh->get_backface_normal_overlay_texture_id());
+            shader_context->set_frontface_depth_overlay_texture_index(mesh->get_frontface_depth_overlay_texture_index());
+            shader_context->set_backface_depth_overlay_texture_index( mesh->get_backface_depth_overlay_texture_index());
+            shader_context->set_backface_normal_overlay_texture_index(mesh->get_backface_normal_overlay_texture_index());
             shader_context->set_view_proj_xform(m_camera->get_projection_xform()*m_camera->get_xform());
         }
         if(use_ssao) {
@@ -284,8 +284,8 @@ void Scene::render(
                 }
                 shader_context->set_viewport_offset(m_viewport_offset);
             }
-            shader_context->set_frontface_depth_overlay_texture_id(material->get_texture_slot_index(frontface_depth_overlay_texture));
-            shader_context->set_random_texture_id(                 material->get_texture_slot_index(random_texture));
+            shader_context->set_frontface_depth_overlay_texture_index(material->get_texture_index(frontface_depth_overlay_texture));
+            shader_context->set_random_texture_index(                 material->get_texture_index(random_texture));
             shader_context->set_ssao_sample_kernel_pos(NUM_SSAO_SAMPLE_KERNELS, m_ssao_sample_kernel_pos);
             shader_context->set_view_proj_xform(m_camera->get_projection_xform()*m_camera->get_xform());
             shader_context->set_camera_pos(m_camera_pos);

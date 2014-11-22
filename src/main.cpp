@@ -674,50 +674,50 @@ int init_resources()
     scene->add_light(light3 = new vt::Light("light3", origin + glm::vec3(0, 0, light_distance), glm::vec3(0, 0, 1)));
 
     mesh_skybox->set_material(skybox_material);
-    mesh_skybox->set_texture_id(mesh_skybox->get_material()->get_texture_slot_index_by_name("skybox_texture"));
+    mesh_skybox->set_texture_index(mesh_skybox->get_material()->get_texture_index_by_name("skybox_texture"));
 
     mesh_overlay->set_material(overlay_write_through_material);
-    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_slot_index_by_name("hi_res_color_overlay"));
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
 
     // box
     mesh->set_material(bump_mapped_material);
-    mesh->set_texture_id(     mesh->get_material()->get_texture_slot_index_by_name("chesterfield_color"));
-    mesh->set_bump_texture_id(mesh->get_material()->get_texture_slot_index_by_name("chesterfield_normal"));
+    mesh->set_texture_index(     mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh->set_bump_texture_index(mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
     // grid
     //mesh2->set_material(texture_mapped_material);
     mesh2->set_material(ssao_material);
-    //mesh2->set_texture_id(mesh2->get_material()->get_texture_slot_index_by_name("frontface_depth_overlay"));
-    //mesh2->set_texture_id(mesh2->get_material()->get_texture_slot_index_by_name("backface_depth_overlay"));
-    //mesh2->set_texture_id(mesh2->get_material()->get_texture_slot_index_by_name("backface_normal_overlay"));
-    //mesh2->set_texture_id(mesh2->get_material()->get_texture_slot_index_by_name("hi_res_color_overlay"));
-    //mesh2->set_texture_id(                        mesh2->get_material()->get_texture_slot_index_by_name("random_texture"));
-    //mesh2->set_bump_texture_id(                   mesh2->get_material()->get_texture_slot_index_by_name("random_texture"));
-    mesh2->set_random_texture_id(                 mesh2->get_material()->get_texture_slot_index_by_name("random_texture"));
-    mesh2->set_frontface_depth_overlay_texture_id(mesh2->get_material()->get_texture_slot_index_by_name("frontface_depth_overlay"));
+    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+    //mesh2->set_texture_index(                        mesh2->get_material()->get_texture_index_by_name("random_texture"));
+    //mesh2->set_bump_texture_index(                   mesh2->get_material()->get_texture_index_by_name("random_texture"));
+    mesh2->set_random_texture_index(                 mesh2->get_material()->get_texture_index_by_name("random_texture"));
+    mesh2->set_frontface_depth_overlay_texture_index(mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
 
     // sphere
     mesh3->set_material(env_mapped_dbl_refract_material);
     mesh3->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh3->set_texture_id(                        mesh3->get_material()->get_texture_slot_index_by_name("chesterfield_color"));
-    mesh3->set_bump_texture_id(                   mesh3->get_material()->get_texture_slot_index_by_name("chesterfield_normal"));
-    mesh3->set_frontface_depth_overlay_texture_id(mesh3->get_material()->get_texture_slot_index_by_name("frontface_depth_overlay"));
-    mesh3->set_backface_depth_overlay_texture_id( mesh3->get_material()->get_texture_slot_index_by_name("backface_depth_overlay"));
-    mesh3->set_backface_normal_overlay_texture_id(mesh3->get_material()->get_texture_slot_index_by_name("backface_normal_overlay"));
+    mesh3->set_texture_index(                        mesh3->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh3->set_bump_texture_index(                   mesh3->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh3->set_frontface_depth_overlay_texture_index(mesh3->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    mesh3->set_backface_depth_overlay_texture_index( mesh3->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    mesh3->set_backface_normal_overlay_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // torus
     mesh4->set_material(env_mapped_material);
     mesh4->set_reflect_to_refract_ratio(1); // 100% reflective
-    mesh4->set_texture_id(     mesh4->get_material()->get_texture_slot_index_by_name("chesterfield_color"));
-    mesh4->set_bump_texture_id(mesh4->get_material()->get_texture_slot_index_by_name("chesterfield_normal"));
+    mesh4->set_texture_index(     mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh4->set_bump_texture_index(mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
     // cylinder
     mesh5->set_material(texture_mapped_material);
-    mesh5->set_texture_id(mesh5->get_material()->get_texture_slot_index_by_name("dex3d"));
+    mesh5->set_texture_index(mesh5->get_material()->get_texture_index_by_name("dex3d"));
 
     // cone
     mesh6->set_material(texture_mapped_material);
-    mesh6->set_texture_id(mesh6->get_material()->get_texture_slot_index_by_name("dex3d"));
+    mesh6->set_texture_index(mesh6->get_material()->get_texture_index_by_name("dex3d"));
 
     // hemisphere
     mesh7->set_material(env_mapped_fast_material);
@@ -725,11 +725,11 @@ int init_resources()
     // tetrahedron
     mesh8->set_material(env_mapped_dbl_refract_material);
     mesh8->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh8->set_texture_id(                        mesh8->get_material()->get_texture_slot_index_by_name("chesterfield_color"));
-    mesh8->set_bump_texture_id(                   mesh8->get_material()->get_texture_slot_index_by_name("chesterfield_normal"));
-    mesh8->set_frontface_depth_overlay_texture_id(mesh8->get_material()->get_texture_slot_index_by_name("frontface_depth_overlay"));
-    mesh8->set_backface_depth_overlay_texture_id( mesh8->get_material()->get_texture_slot_index_by_name("backface_depth_overlay"));
-    mesh8->set_backface_normal_overlay_texture_id(mesh8->get_material()->get_texture_slot_index_by_name("backface_normal_overlay"));
+    mesh8->set_texture_index(                        mesh8->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh8->set_bump_texture_index(                   mesh8->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh8->set_frontface_depth_overlay_texture_index(mesh8->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    mesh8->set_backface_depth_overlay_texture_index( mesh8->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    mesh8->set_backface_normal_overlay_texture_index(mesh8->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // diamond
     mesh9->set_material(env_mapped_fast_material);
@@ -738,38 +738,38 @@ int init_resources()
     // box2
     mesh10->set_material(env_mapped_dbl_refract_material);
     mesh10->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    mesh10->set_texture_id(                        mesh10->get_material()->get_texture_slot_index_by_name("chesterfield_color"));
-    mesh10->set_bump_texture_id(                   mesh10->get_material()->get_texture_slot_index_by_name("chesterfield_normal"));
-    mesh10->set_frontface_depth_overlay_texture_id(mesh10->get_material()->get_texture_slot_index_by_name("frontface_depth_overlay"));
-    mesh10->set_backface_depth_overlay_texture_id( mesh10->get_material()->get_texture_slot_index_by_name("backface_depth_overlay"));
-    mesh10->set_backface_normal_overlay_texture_id(mesh10->get_material()->get_texture_slot_index_by_name("backface_normal_overlay"));
+    mesh10->set_texture_index(                        mesh10->get_material()->get_texture_index_by_name("chesterfield_color"));
+    mesh10->set_bump_texture_index(                   mesh10->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh10->set_frontface_depth_overlay_texture_index(mesh10->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    mesh10->set_backface_depth_overlay_texture_index( mesh10->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    mesh10->set_backface_normal_overlay_texture_index(mesh10->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // diamond2
     hidden_mesh->set_material(env_mapped_dbl_refract_material);
     hidden_mesh->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    hidden_mesh->set_texture_id(                        hidden_mesh->get_material()->get_texture_slot_index_by_name("chesterfield_color"));
-    hidden_mesh->set_bump_texture_id(                   hidden_mesh->get_material()->get_texture_slot_index_by_name("chesterfield_normal"));
-    hidden_mesh->set_frontface_depth_overlay_texture_id(hidden_mesh->get_material()->get_texture_slot_index_by_name("frontface_depth_overlay"));
-    hidden_mesh->set_backface_depth_overlay_texture_id( hidden_mesh->get_material()->get_texture_slot_index_by_name("backface_depth_overlay"));
-    hidden_mesh->set_backface_normal_overlay_texture_id(hidden_mesh->get_material()->get_texture_slot_index_by_name("backface_normal_overlay"));
+    hidden_mesh->set_texture_index(                        hidden_mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
+    hidden_mesh->set_bump_texture_index(                   hidden_mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    hidden_mesh->set_frontface_depth_overlay_texture_index(hidden_mesh->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    hidden_mesh->set_backface_depth_overlay_texture_index( hidden_mesh->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    hidden_mesh->set_backface_normal_overlay_texture_index(hidden_mesh->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // sphere2
     hidden_mesh2->set_material(env_mapped_dbl_refract_material);
     hidden_mesh2->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    hidden_mesh2->set_texture_id(                        hidden_mesh2->get_material()->get_texture_slot_index_by_name("chesterfield_color"));
-    hidden_mesh2->set_bump_texture_id(                   hidden_mesh2->get_material()->get_texture_slot_index_by_name("chesterfield_normal"));
-    hidden_mesh2->set_frontface_depth_overlay_texture_id(hidden_mesh2->get_material()->get_texture_slot_index_by_name("frontface_depth_overlay"));
-    hidden_mesh2->set_backface_depth_overlay_texture_id( hidden_mesh2->get_material()->get_texture_slot_index_by_name("backface_depth_overlay"));
-    hidden_mesh2->set_backface_normal_overlay_texture_id(hidden_mesh2->get_material()->get_texture_slot_index_by_name("backface_normal_overlay"));
+    hidden_mesh2->set_texture_index(                        hidden_mesh2->get_material()->get_texture_index_by_name("chesterfield_color"));
+    hidden_mesh2->set_bump_texture_index(                   hidden_mesh2->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    hidden_mesh2->set_frontface_depth_overlay_texture_index(hidden_mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    hidden_mesh2->set_backface_depth_overlay_texture_index( hidden_mesh2->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    hidden_mesh2->set_backface_normal_overlay_texture_index(hidden_mesh2->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // box3
     hidden_mesh3->set_material(env_mapped_dbl_refract_material);
     hidden_mesh3->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    hidden_mesh3->set_texture_id(                        hidden_mesh3->get_material()->get_texture_slot_index_by_name("chesterfield_color"));
-    hidden_mesh3->set_bump_texture_id(                   hidden_mesh3->get_material()->get_texture_slot_index_by_name("chesterfield_normal"));
-    hidden_mesh3->set_frontface_depth_overlay_texture_id(hidden_mesh3->get_material()->get_texture_slot_index_by_name("frontface_depth_overlay"));
-    hidden_mesh3->set_backface_depth_overlay_texture_id( hidden_mesh3->get_material()->get_texture_slot_index_by_name("backface_depth_overlay"));
-    hidden_mesh3->set_backface_normal_overlay_texture_id(hidden_mesh3->get_material()->get_texture_slot_index_by_name("backface_normal_overlay"));
+    hidden_mesh3->set_texture_index(                        hidden_mesh3->get_material()->get_texture_index_by_name("chesterfield_color"));
+    hidden_mesh3->set_bump_texture_index(                   hidden_mesh3->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    hidden_mesh3->set_frontface_depth_overlay_texture_index(hidden_mesh3->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+    hidden_mesh3->set_backface_depth_overlay_texture_index( hidden_mesh3->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+    hidden_mesh3->set_backface_normal_overlay_texture_index(hidden_mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // grid2
     hidden_mesh4->set_material(env_mapped_fast_material);
@@ -868,7 +868,7 @@ void onDisplay()
         hi_res_color_overlay_fb->unbind();
 
         // linear downsample texture from hi-res to med-res
-        mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_slot_index_by_name("hi_res_color_overlay"));
+        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
         med_res_color_overlay_fb->bind();
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -876,7 +876,7 @@ void onDisplay()
         med_res_color_overlay_fb->unbind();
 
         // linear downsample texture from med-res to lo-res
-        mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_slot_index_by_name("med_res_color_overlay"));
+        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("med_res_color_overlay"));
         lo_res_color_overlay_fb->bind();
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -887,7 +887,7 @@ void onDisplay()
         mesh_overlay->set_material(overlay_bloom_filter_material);
 
         // blur texture in low-res
-        mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_slot_index_by_name("lo_res_color_overlay"));
+        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
         for(int i = 0; i < BLUR_ITERS; i++) {
             lo_res_color_overlay_fb->bind();
             // don't clear since we're using same texture for input/output
@@ -899,8 +899,8 @@ void onDisplay()
 
         // switch to max mode to merge blurred low-res texture with hi-res texture
         mesh_overlay->set_material(overlay_max_material);
-        mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_slot_index_by_name("hi_res_color_overlay"));
-        mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_slot_index_by_name("lo_res_color_overlay"));
+        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+        mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
 
         hi_res_color_overlay_fb->bind();
         // don't clear since we're using same texture for input/output
@@ -911,7 +911,7 @@ void onDisplay()
 
         // switch to write-through mode to display final output texture
         mesh_overlay->set_material(overlay_write_through_material);
-        mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_slot_index_by_name("hi_res_color_overlay"));
+        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
     }
 
     glClearColor(0, 0, 0, 1);
@@ -1044,22 +1044,22 @@ void onKeyboard(unsigned char key, int x, int y)
             }
             switch(overlay_mode) {
                 case OVERLAY_MODE_DEFAULT:
-                    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_slot_index_by_name("hi_res_color_overlay"));
+                    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
                     break;
                 case OVERLAY_MODE_FF_DEPTH:
-                    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_slot_index_by_name("frontface_depth_overlay"));
+                    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
                     break;
                 case OVERLAY_MODE_BF_DEPTH:
-                    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_slot_index_by_name("backface_depth_overlay"));
+                    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("backface_depth_overlay"));
                     break;
                 case OVERLAY_MODE_FF_NORMAL:
-                    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_slot_index_by_name("frontface_normal_overlay"));
+                    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("frontface_normal_overlay"));
                     break;
                 case OVERLAY_MODE_BF_NORMAL:
-                    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_slot_index_by_name("backface_normal_overlay"));
+                    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("backface_normal_overlay"));
                     break;
                 case OVERLAY_MODE_SSAO:
-                    mesh_overlay->set_texture_id(mesh_overlay->get_material()->get_texture_slot_index_by_name("ssao_overlay"));
+                    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("ssao_overlay"));
                     break;
                 default:
                     break;
@@ -1082,12 +1082,12 @@ void onKeyboard(unsigned char key, int x, int y)
             } else if(texture_id == 3) {
                 texture_id = 0; // GL_TEXTURE0
             }
-            mesh->set_texture_id( texture_id);
-            //mesh2->set_texture_id(texture_id);
-            //mesh3->set_texture_id(texture_id);
-            //mesh4->set_texture_id(texture_id);
-            //mesh5->set_texture_id(texture_id);
-            //mesh6->set_texture_id(texture_id);
+            mesh->set_texture_index( texture_id);
+            //mesh2->set_texture_index(texture_id);
+            //mesh3->set_texture_index(texture_id);
+            //mesh4->set_texture_index(texture_id);
+            //mesh5->set_texture_index(texture_id);
+            //mesh6->set_texture_index(texture_id);
             break;
         case 'w': // wireframe
             wireframe_mode = !wireframe_mode;

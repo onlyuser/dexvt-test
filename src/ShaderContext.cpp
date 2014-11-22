@@ -210,7 +210,7 @@ void ShaderContext::set_normal_xform(glm::mat4 normal_xform)
     m_var_uniforms[var_uniform_type_normal_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(normal_xform));
 }
 
-void ShaderContext::set_texture_id(GLint texture_id)
+void ShaderContext::set_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
     m_var_uniforms[var_uniform_type_color_texture]->uniform_1i(texture_id);
@@ -222,19 +222,19 @@ void ShaderContext::set_texture2_index(GLint texture_id)
     m_var_uniforms[var_uniform_type_color_texture2]->uniform_1i(texture_id);
 }
 
-void ShaderContext::set_bump_texture_id(GLint texture_id)
+void ShaderContext::set_bump_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
     m_var_uniforms[var_uniform_type_bump_texture]->uniform_1i(texture_id);
 }
 
-void ShaderContext::set_env_map_texture_id(GLint texture_id)
+void ShaderContext::set_env_map_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
     m_var_uniforms[var_uniform_type_env_map_texture]->uniform_1i(texture_id);
 }
 
-void ShaderContext::set_random_texture_id(GLint texture_id)
+void ShaderContext::set_random_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
     m_var_uniforms[var_uniform_type_random_texture]->uniform_1i(texture_id);
@@ -280,19 +280,19 @@ void ShaderContext::set_inv_normal_xform(glm::mat4 inv_normal_xform)
     m_var_uniforms[var_uniform_type_inv_normal_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(inv_normal_xform));
 }
 
-void ShaderContext::set_frontface_depth_overlay_texture_id(GLint texture_id)
+void ShaderContext::set_frontface_depth_overlay_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
     m_var_uniforms[var_uniform_type_frontface_depth_overlay_texture]->uniform_1i(texture_id);
 }
 
-void ShaderContext::set_backface_depth_overlay_texture_id(GLint texture_id)
+void ShaderContext::set_backface_depth_overlay_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
     m_var_uniforms[var_uniform_type_backface_depth_overlay_texture]->uniform_1i(texture_id);
 }
 
-void ShaderContext::set_backface_normal_overlay_texture_id(GLint texture_id)
+void ShaderContext::set_backface_normal_overlay_texture_index(GLint texture_id)
 {
     assert(texture_id >= 0 && texture_id < static_cast<int>(m_textures.size()));
     m_var_uniforms[var_uniform_type_backface_normal_overlay_texture]->uniform_1i(texture_id);

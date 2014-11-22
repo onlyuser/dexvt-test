@@ -113,10 +113,10 @@ public:
         return m_overlay;
     }
 
-    Texture* get_texture_by_slot_index(int slot_index) const;
-    int get_texture_slot_index(vt::Texture* texture) const;
+    Texture* get_texture_by_index(int index) const;
+    int get_texture_index(vt::Texture* texture) const;
     Texture* get_texture_by_name(std::string name) const;
-    int get_texture_slot_index_by_name(std::string name) const;
+    int get_texture_index_by_name(std::string name) const;
 
 private:
     std::unique_ptr<Program> m_program;

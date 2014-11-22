@@ -70,13 +70,13 @@ void Material::clear_textures()
     m_texture_lookup_table.clear();
 }
 
-Texture* Material::get_texture_by_slot_index(int slot_index) const
+Texture* Material::get_texture_by_index(int index) const
 {
-    assert(slot_index >= 0 && slot_index < static_cast<int>(m_textures.size()));
-    return m_textures[slot_index];
+    assert(index >= 0 && index < static_cast<int>(m_textures.size()));
+    return m_textures[index];
 }
 
-int Material::get_texture_slot_index(vt::Texture* texture) const
+int Material::get_texture_index(vt::Texture* texture) const
 {
     textures_t::const_iterator p = std::find(m_textures.begin(), m_textures.end(), texture);
     if(p == m_textures.end()) {
@@ -94,9 +94,9 @@ Texture* Material::get_texture_by_name(std::string name) const
     return (*p).second;
 }
 
-int Material::get_texture_slot_index_by_name(std::string name) const
+int Material::get_texture_index_by_name(std::string name) const
 {
-    return get_texture_slot_index(get_texture_by_name(name));
+    return get_texture_index(get_texture_by_name(name));
 }
 
 }

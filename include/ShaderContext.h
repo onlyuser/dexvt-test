@@ -83,11 +83,11 @@ public:
     void set_model_xform(glm::mat4 model_xform);
     void set_view_proj_xform(glm::mat4 view_proj_xform);
     void set_normal_xform(glm::mat4 normal_xform);
-    void set_texture_id(GLint texture_id);
+    void set_texture_index(GLint texture_id);
     void set_texture2_index(GLint texture_id);
-    void set_bump_texture_id(GLint texture_id);
-    void set_env_map_texture_id(GLint texture_id);
-    void set_random_texture_id(GLint texture_id);
+    void set_bump_texture_index(GLint texture_id);
+    void set_env_map_texture_index(GLint texture_id);
+    void set_random_texture_index(GLint texture_id);
     void set_camera_pos(GLfloat* camera_pos_arr);
     void set_camera_dir(GLfloat* camera_dir_arr);
     void set_light_pos(size_t num_lights, GLfloat* light_pos_arr);
@@ -96,9 +96,9 @@ public:
     void set_light_count(GLint light_count);
     void set_inv_projection_xform(glm::mat4 inv_projection_xform);
     void set_inv_normal_xform(glm::mat4 inv_normal_xform);
-    void set_frontface_depth_overlay_texture_id(GLint texture_id);
-    void set_backface_depth_overlay_texture_id(GLint texture_id);
-    void set_backface_normal_overlay_texture_id(GLint texture_id);
+    void set_frontface_depth_overlay_texture_index(GLint texture_id);
+    void set_backface_depth_overlay_texture_index(GLint texture_id);
+    void set_backface_normal_overlay_texture_index(GLint texture_id);
     void set_viewport_dim(GLfloat* viewport_dim_arr);
     void set_viewport_offset(GLfloat* viewport_offset_arr);
     void set_bloom_kernel(GLfloat* bloom_kernel_arr);
