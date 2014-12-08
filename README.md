@@ -83,6 +83,29 @@ Make targets
     <tr><td> clean  </td><td> remove all intermediate files </td></tr>
 </table>
 
+Controls
+--------
+
+Keyboard:
+
+<table>
+    <tr><th> f   </th><th> toggle frame rate       </th></tr>
+    <tr><td> l   </td><td> show lights             </td></tr>
+    <tr><td> n   </td><td> show normals            </td></tr>
+    <tr><td> o   </td><td> toggle render modes     </td></tr>
+    <tr><th> p   </th><th> toggle ortho projection </th></tr>
+    <tr><td> t   </td><td> toggle texture          </td></tr>
+    <tr><td> w   </td><td> toggle wireframe        </td></tr>
+    <tr><td> Esc </td><td> exit                    </td></tr>
+</table>
+
+Mouse:
+
+<table>
+    <tr><th> left-mouse drag  </th><th> orbit </th></tr>
+    <tr><td> right-mouse drag </td><td> zoom  </td></tr>
+</table>
+
 References
 ----------
 
@@ -125,9 +148,18 @@ References
 
     <dt>"An investigation of fast real-time GPU-based image blur algorithms"</dt>
     <dd>https://software.intel.com/en-us/blogs/2014/07/15/an-investigation-of-fast-real-time-gpu-based-image-blur-algorithms</dd>
+
+    <dt>"john-chapman-graphics SSAO Tutorial"</dt>
+    <dd>http://john-chapman-graphics.blogspot.tw/2013/01/ssao-tutorial.html</dd>
+
+    <dt>"Know your SSAO artifacts"</dt>
+    <dd>http://mtnphil.wordpress.com/2013/06/26/know-your-ssao-artifacts/</dd>
+
+    <dt>"songho.ca OpenGL Projection Matrix"</dt>
+    <dd>http://www.songho.ca/opengl/gl_projectionmatrix.html</dd>
 </dl>
 
 Keywords
 --------
 
-    OpenGL, glsl shader, glm, environment map, cube map, normal map, bitangent, tbn matrix, backface refraction, double refraction, second refraction, backface sampling, Fresnel effect, chromatic dispersion, chromatic aberration, Bloom filter, Beer's law, Snell's law, Newton's method, round brilliant diamond rendering, gemstone rendering
+    OpenGL, glsl shader, glm, environment map, cube map, normal map, bitangent, tbn matrix, ssao, screen space ambient occlusion, backface refraction, double refraction, second refraction, backface sampling, Fresnel effect, chromatic dispersion, chromatic aberration, Bloom filter, Beer's law, Snell's law, Newton's method, round brilliant diamond rendering, gemstone rendering
