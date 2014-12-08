@@ -89,13 +89,13 @@ Controls
 Keyboard:
 
 <table>
-    <tr><th> f   </th><th> toggle frame rate       </th></tr>
-    <tr><td> l   </td><td> show lights             </td></tr>
-    <tr><td> n   </td><td> show normals            </td></tr>
-    <tr><td> o   </td><td> toggle render modes     </td></tr>
-    <tr><th> p   </th><th> toggle ortho projection </th></tr>
-    <tr><td> t   </td><td> toggle texture          </td></tr>
-    <tr><td> w   </td><td> toggle wireframe        </td></tr>
+    <tr><th> 'f' </th><th> toggle frame rate       </th></tr>
+    <tr><td> 'l' </td><td> show lights             </td></tr>
+    <tr><td> 'n' </td><td> show normals            </td></tr>
+    <tr><td> 'o' </td><td> toggle render modes     </td></tr>
+    <tr><th> 'p' </th><th> toggle ortho-projection </th></tr>
+    <tr><td> 't' </td><td> toggle texture          </td></tr>
+    <tr><td> 'w' </td><td> toggle wireframe        </td></tr>
     <tr><td> Esc </td><td> exit                    </td></tr>
 </table>
 
