@@ -89,21 +89,23 @@ Controls
 Keyboard:
 
 <table>
-    <tr><th> 'f' </th><th> toggle frame rate       </th></tr>
-    <tr><td> 'l' </td><td> show lights             </td></tr>
-    <tr><td> 'n' </td><td> show normals            </td></tr>
-    <tr><td> 'o' </td><td> toggle render modes     </td></tr>
-    <tr><th> 'p' </th><th> toggle ortho-projection </th></tr>
-    <tr><td> 't' </td><td> toggle texture          </td></tr>
-    <tr><td> 'w' </td><td> toggle wireframe        </td></tr>
+    <tr><th> key </th><th> purpose                 </th></tr>
+    <tr><td> f   </td><td> toggle frame rate       </td></tr>
+    <tr><td> l   </td><td> show lights             </td></tr>
+    <tr><td> n   </td><td> show normals            </td></tr>
+    <tr><td> o   </td><td> toggle render modes     </td></tr>
+    <tr><td> p   </td><td> toggle ortho-projection </td></tr>
+    <tr><td> t   </td><td> toggle texture          </td></tr>
+    <tr><td> w   </td><td> toggle wireframe        </td></tr>
     <tr><td> Esc </td><td> exit                    </td></tr>
 </table>
 
 Mouse:
 
 <table>
-    <tr><th> left-mouse drag  </th><th> orbit </th></tr>
-    <tr><td> right-mouse drag </td><td> zoom  </td></tr>
+    <tr><th> mouse-button + drag </th><th> purpose </th></tr>
+    <tr><td> left                </td><td> orbit   </td></tr>
+    <tr><td> right               </td><td> zoom    </td></tr>
 </table>
 
 References
