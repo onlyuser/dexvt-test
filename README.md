@@ -3,13 +3,13 @@
 dexvt-test
 ==========
 
-Copyright (C) 2011-2013 Jerry Chen <mailto:onlyuser@gmail.com>
+Copyright (C) 2011-2014 Jerry Chen <mailto:onlyuser@gmail.com>
 
 About
 -----
 
 dexvt-test is a c++/glsl/glm-based 3d engine.
-It features environment-mapped reflection/refraction/double refraction (with Fresnel effect, chromatic dispersion, and Beer's law), bump mapping, Phong shading, Bloom filter, and platonic primitives generation.
+It features environment-mapped reflection/refraction/double refraction (with Fresnel effect, chromatic dispersion, and Beer's law), screen space ambient occlusion, bump mapping, Phong shading, Bloom filter, and platonic primitives generation.
 Platonic primitives supported include sphere, cube, cylinder, cone, grid, tetrahedron, and round brilliant diamond.
 Many features still experimental.
 
@@ -97,7 +97,7 @@ Keyboard:
     <tr><td> p   </td><td> toggle ortho-projection </td></tr>
     <tr><td> t   </td><td> toggle texture          </td></tr>
     <tr><td> w   </td><td> toggle wireframe        </td></tr>
-    <tr><td> Esc </td><td> exit                    </td></tr>
+    <tr><td> esc </td><td> exit                    </td></tr>
 </table>
 
 Mouse:
