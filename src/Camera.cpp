@@ -39,6 +39,7 @@ Camera::Camera(
       m_ortho_width(ortho_width),
       m_ortho_height(ortho_height),
       m_zoom(zoom),
+      m_frame_buffer(NULL),
       m_projection_mode(projection_mode)
 {
     set_need_update_xform();
@@ -136,14 +137,22 @@ void Camera::resize_ortho_viewport(float width, float height)
     set_need_update_xform();
 }
 
-void Camera::set_zoom(float &zoom)
+void Camera::set_zoom(float *zoom)
 {
-    if(zoom < MIN_ORTHO_SCALE) {
-        zoom = MIN_ORTHO_SCALE;
+    if(!zoom) {
+        return;
     }
-    m_zoom = zoom;
+    if(*zoom < MIN_ORTHO_SCALE) {
+        *zoom = MIN_ORTHO_SCALE;
+    }
+    m_zoom = *zoom;
     m_need_update_projection_xform = true;
     set_need_update_xform();
+}
+
+void Camera::set_frame_buffer(FrameBuffer* frame_buffer)
+{
+    m_frame_buffer = frame_buffer;
 }
 
 const glm::mat4 &Camera::get_projection_xform()

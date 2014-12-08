@@ -8,6 +8,8 @@
 
 namespace vt {
 
+class FrameBuffer;
+
 class Camera : public NamedObject, public XformObject
 {
 public:
@@ -93,7 +95,13 @@ public:
     {
         return m_zoom;
     }
-    void set_zoom(float &zoom);
+    void set_zoom(float *zoom);
+
+    FrameBuffer* get_frame_buffer() const
+    {
+        return m_frame_buffer;
+    }
+    void set_frame_buffer(FrameBuffer* frame_buffer);
 
     const glm::mat4 &get_projection_xform();
 
@@ -110,6 +118,7 @@ private:
     float             m_ortho_width;
     float             m_ortho_height;
     float             m_zoom;
+    FrameBuffer*      m_frame_buffer;
     projection_mode_t m_projection_mode;
 
     void update_projection_xform();

@@ -35,6 +35,8 @@ Screenshots
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_ripple_wireframe_normals_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_ripple_wireframe_normals.png)
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_nine_shape_bloom_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_nine_shape_bloom.png)
 [![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_cube_bloom_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_cube_bloom.png)
+[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_ssao_no_blur_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_ssao_no_blur.png)
+[![Screenshot](https://sites.google.com/site/onlyuser/projects/graphics/thumbs/dexvt-test_ssao_no_blur_artifact_thumb.png)](https://sites.google.com/site/onlyuser/projects/graphics/images/dexvt-test_ssao_no_blur_artifact.png)
 
 Requirements
 ------------

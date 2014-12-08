@@ -18,12 +18,17 @@ public:
     virtual ~FrameBuffer();
     void bind();
     void unbind();
+    Texture* get_texture() const {
+        return m_texture;
+    }
+    Camera* get_camera() const {
+        return m_camera;
+    }
 
 private:
     Texture* m_texture;
     Camera* m_camera;
     GLuint m_depthrenderbuffer_id;
-    glm::vec2 m_prev_viewport_dim;
 };
 
 }

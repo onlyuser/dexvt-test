@@ -213,7 +213,6 @@ int init_resources()
     ssao_program->add_var("mvp_xform",                       vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("frontface_depth_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("viewport_dim",                    vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("viewport_offset",                 vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("camera_near",                     vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("camera_far",                      vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("ssao_sample_kernel_pos",          vt::Program::VAR_TYPE_UNIFORM);
@@ -888,14 +887,14 @@ void onDisplay()
 
         // blur texture in low-res
         mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
+        lo_res_color_overlay_fb->bind();
         for(int i = 0; i < BLUR_ITERS; i++) {
-            lo_res_color_overlay_fb->bind();
             // don't clear since we're using same texture for input/output
             //glClearColor(0, 0, 0, 1);
             //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
             scene->render(true);
-            lo_res_color_overlay_fb->unbind();
         }
+        lo_res_color_overlay_fb->unbind();
 
         // switch to max mode to merge blurred low-res texture with hi-res texture
         mesh_overlay->set_material(overlay_max_material);
@@ -1161,7 +1160,7 @@ void onMouse(int button, int state, int x, int y)
 void onMotion(int x, int y)
 {
     if(left_mouse_down || right_mouse_down) {
-        mouse_drag = glm::vec2(x, y)-prev_mouse_coord;
+        mouse_drag = glm::vec2(x, y) - prev_mouse_coord;
     }
     if(left_mouse_down) {
         orient = prev_orient+glm::vec3(0, mouse_drag.y*ORIENT_PITCH(orbit_speed), mouse_drag.x*ORIENT_YAW(orbit_speed));
@@ -1169,11 +1168,11 @@ void onMotion(int x, int y)
     }
     if(right_mouse_down) {
         if(camera->get_projection_mode() == vt::Camera::PROJECTION_MODE_PERSPECTIVE) {
-            orbit_radius = prev_orbit_radius+mouse_drag.y*dolly_speed;
+            orbit_radius = prev_orbit_radius + mouse_drag.y*dolly_speed;
             camera->orbit(orient, orbit_radius);
         } else if (camera->get_projection_mode() == vt::Camera::PROJECTION_MODE_ORTHO) {
-            zoom = prev_zoom+mouse_drag.y*ortho_dolly_speed;
-            camera->set_zoom(zoom);
+            zoom = prev_zoom + mouse_drag.y*ortho_dolly_speed;
+            camera->set_zoom(&zoom);
         }
     }
 }

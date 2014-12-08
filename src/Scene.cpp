@@ -1,6 +1,7 @@
 #include <Scene.h>
 #include <ShaderContext.h>
 #include <Camera.h>
+#include <FrameBuffer.h>
 #include <Light.h>
 #include <Mesh.h>
 #include <Material.h>
@@ -189,6 +190,14 @@ void Scene::render(
         m_light_enabled[i] = (*p)->get_enabled();
         i++;
     }
+    FrameBuffer* frame_buffer = m_camera->get_frame_buffer();
+    if(frame_buffer) {
+        Texture* texture = frame_buffer->get_texture();
+        if(texture) {
+            m_viewport_dim[0] = texture->get_width();
+            m_viewport_dim[1] = texture->get_height();
+        }
+    }
     for(meshes_t::const_iterator q = m_meshes.begin(); q != m_meshes.end(); q++) {
         Mesh* mesh = (*q);
         if(!mesh->get_visible()) {
@@ -268,21 +277,6 @@ void Scene::render(
             shader_context->set_view_proj_xform(vp_xform);
         }
         if(use_ssao) {
-            if(use_material_type != use_material_type_t::USE_SSAO_MATERIAL) {
-                float min_dim = m_camera->get_height();
-                m_viewport_dim[0] = min_dim;
-                m_viewport_dim[1] = min_dim;
-                shader_context->set_viewport_dim(m_viewport_dim);
-                float viewport_x_offset = fabs(m_camera->get_width() - m_camera->get_height())*0.5;
-                if(m_camera->get_width() > m_camera->get_height()) {
-                    m_viewport_offset[0] = -viewport_x_offset;
-                    m_viewport_offset[1] = 0;
-                } else {
-                    m_viewport_offset[0] = viewport_x_offset;
-                    m_viewport_offset[1] = 0;
-                }
-                shader_context->set_viewport_offset(m_viewport_offset);
-            }
             shader_context->set_frontface_depth_overlay_texture_index(material->get_texture_index_by_name("frontface_depth_overlay"));
             shader_context->set_random_texture_index(                 material->get_texture_index_by_name("random_texture"));
             shader_context->set_ssao_sample_kernel_pos(NUM_SSAO_SAMPLE_KERNELS, m_ssao_sample_kernel_pos);

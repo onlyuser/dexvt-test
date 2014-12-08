@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <assert.h>
 
 namespace vt {
 
@@ -51,16 +52,17 @@ FrameBuffer::~FrameBuffer()
 
 void FrameBuffer::bind()
 {
-    m_prev_viewport_dim = glm::vec2(m_camera->get_width(), m_camera->get_height());
-    m_camera->resize_viewport(m_texture->get_width(), m_texture->get_height());
     glBindFramebuffer(GL_FRAMEBUFFER, m_id);
+    assert(!m_camera->get_frame_buffer());
+    m_camera->set_frame_buffer(this);
     glViewport(0, 0, m_texture->get_width(), m_texture->get_height());
 }
 
 void FrameBuffer::unbind()
 {
-    m_camera->resize_viewport(m_prev_viewport_dim.x, m_prev_viewport_dim.y);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    assert(m_camera->get_frame_buffer());
+    m_camera->set_frame_buffer(NULL);
     glViewport(0, 0, m_camera->get_width(), m_camera->get_height());
 }
 
