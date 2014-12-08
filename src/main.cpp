@@ -796,11 +796,11 @@ void onTick()
     }
     if(show_fps && delta_time > 100) {
         std::stringstream ss;
-//        ss << std::setprecision(2) << std::fixed << fps << " FPS, "
-//            << "Mouse: {" << mouse_drag.x << ", " << mouse_drag.y << "}, "
-//            << "Yaw=" << ORIENT_YAW(orient) << ", Pitch=" << ORIENT_PITCH(orient) << ", Radius=" << orbit_radius << ", "
-//            << "Zoom=" << zoom;
-        ss << "Width=" << camera->get_width() << ", Width=" << camera->get_height();
+        ss << std::setprecision(2) << std::fixed << fps << " FPS, "
+            << "Mouse: {" << mouse_drag.x << ", " << mouse_drag.y << "}, "
+            << "Yaw=" << ORIENT_YAW(orient) << ", Pitch=" << ORIENT_PITCH(orient) << ", Radius=" << orbit_radius << ", "
+            << "Zoom=" << zoom;
+        //ss << "Width=" << camera->get_width() << ", Width=" << camera->get_height();
         glutSetWindowTitle(ss.str().c_str());
     }
     frames++;
@@ -921,33 +921,29 @@ void onDisplay()
         scene->render(post_process_blur || overlay_mode);
     }
 
+    //stencil_fb->bind();
+    //glEnable(GL_STENCIL_TEST);
+    //
     //glClearColor(0, 0, 0, 1);
-    //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    //scene->render(false, false, vt::Scene::use_material_type_t::USE_SSAO_MATERIAL);
-
-//    stencil_fb->bind();
-//    glEnable(GL_STENCIL_TEST);
-//
-//    glClearColor(0, 0, 0, 1);
-//    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
-//
-//    glStencilFunc(GL_ALWAYS, 0x1, 0x1);
-//    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-//    scene->render();
-//
-//    glStencilFunc(GL_NOTEQUAL, 0x1, 0x1);
-//    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-//    glDisable(GL_LIGHTING);
-//    glColor3f(0,1,0); // outline color
-//    glLineWidth(5);
-//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe
-//    scene->render();
-//    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // return to fill mode
-//    glLineWidth(1);
-//    glEnable(GL_LIGHTING);
-//
-//    glDisable(GL_STENCIL_TEST);
-//    stencil_fb->unbind();
+    //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+    //
+    //glStencilFunc(GL_ALWAYS, 0x1, 0x1);
+    //glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    //scene->render();
+    //
+    //glStencilFunc(GL_NOTEQUAL, 0x1, 0x1);
+    //glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    //glDisable(GL_LIGHTING);
+    //glColor3f(0,1,0); // outline color
+    //glLineWidth(5);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe
+    //scene->render();
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // return to fill mode
+    //glLineWidth(1);
+    //glEnable(GL_LIGHTING);
+    //
+    //glDisable(GL_STENCIL_TEST);
+    //stencil_fb->unbind();
 
     if(show_vert_normals) {
         scene->render_vert_normals();
