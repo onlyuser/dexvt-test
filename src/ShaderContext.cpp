@@ -10,7 +10,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <assert.h>
 
-#define NUM_LIGHTS 8
+#define NUM_LIGHTS        8
+#define BLOOM_KERNEL_SIZE 5
 
 namespace vt {
 
@@ -304,7 +305,7 @@ void ShaderContext::set_viewport_dim(GLfloat* viewport_dim_arr)
 
 void ShaderContext::set_bloom_kernel(GLfloat* bloom_kernel_arr)
 {
-    m_var_uniforms[var_uniform_type_bloom_kernel]->uniform_1fv(25, bloom_kernel_arr);
+    m_var_uniforms[var_uniform_type_bloom_kernel]->uniform_1fv(BLOOM_KERNEL_SIZE, bloom_kernel_arr);
 }
 
 void ShaderContext::set_camera_near(GLfloat camera_near)
