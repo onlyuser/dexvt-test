@@ -17,6 +17,7 @@
 
 #define NUM_LIGHTS              8
 #define NUM_SSAO_SAMPLE_KERNELS 3
+#define BLOOM_KERNEL_SIZE       5
 
 namespace vt {
 
@@ -39,16 +40,16 @@ Scene::Scene()
     m_camera_dir[2] = 0;
     m_viewport_dim[0] = 0;
     m_viewport_dim[1] = 0;
-    const int bloom_kernel_row[] = {1, 4, 6, 4, 1};
-    for(int i = 0; i < 5; i++) {
+    const int bloom_kernel_row[BLOOM_KERNEL_SIZE] = {1, 4, 6, 4, 1};
+    for(int i = 0; i < BLOOM_KERNEL_SIZE; i++) {
         m_bloom_kernel[i] = bloom_kernel_row[i];
     }
     float sum_weights = 0;
-    for(int j = 0; j < 5; j++) {
+    for(int j = 0; j < BLOOM_KERNEL_SIZE; j++) {
         sum_weights += m_bloom_kernel[j];
     }
     float sum_weights_inv = 1/sum_weights;
-    for(int k = 0; k < 5; k++) {
+    for(int k = 0; k < BLOOM_KERNEL_SIZE; k++) {
         m_bloom_kernel[k] *= sum_weights_inv;
     }
     m_light_pos     = new GLfloat[NUM_LIGHTS*3];
