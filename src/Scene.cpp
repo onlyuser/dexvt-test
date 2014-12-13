@@ -17,7 +17,8 @@
 
 #define NUM_LIGHTS              8
 #define NUM_SSAO_SAMPLE_KERNELS 3
-#define BLOOM_KERNEL_SIZE       5
+//#define BLOOM_KERNEL_SIZE       5
+#define BLOOM_KERNEL_SIZE       7
 
 namespace vt {
 
@@ -40,7 +41,8 @@ Scene::Scene()
     m_camera_dir[2] = 0;
     m_viewport_dim[0] = 0;
     m_viewport_dim[1] = 0;
-    const int bloom_kernel_row[BLOOM_KERNEL_SIZE] = {1, 4, 6, 4, 1};
+    //const int bloom_kernel_row[BLOOM_KERNEL_SIZE] = {1, 4, 6, 4, 1};
+    const int bloom_kernel_row[BLOOM_KERNEL_SIZE] = {1, 6, 15, 20, 15, 6, 1};
     for(int i = 0; i < BLOOM_KERNEL_SIZE; i++) {
         m_bloom_kernel[i] = bloom_kernel_row[i];
     }

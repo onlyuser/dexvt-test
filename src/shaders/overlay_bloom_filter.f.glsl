@@ -1,4 +1,4 @@
-const int   BLOOM_KERNEL_SIZE = 5;
+const int   BLOOM_KERNEL_SIZE = 7;
 const float GLOW_CUTOFF_THRESHOLD = 0.75;
 
 varying vec2      lerp_texcoord;
@@ -14,8 +14,8 @@ void main(void) {
     vec4 sum_color;
     for(int i = 0; i < BLOOM_KERNEL_SIZE; i++) {
         float sample_weight = bloom_kernel[i];
-        ivec2 hblur_kernel_offset_index = ivec2(-2 + i, 0);
-        ivec2 vblur_kernel_offset_index = ivec2(0, -2 + i);
+        ivec2 hblur_kernel_offset_index = ivec2(-3 + i, 0);
+        ivec2 vblur_kernel_offset_index = ivec2(0, -3 + i);
         vec2 hblur_sample_coord = vec2(lerp_texcoord.x + lerp_sample_offset_unit_size.x*hblur_kernel_offset_index.x,
                                        lerp_texcoord.y + lerp_sample_offset_unit_size.y*hblur_kernel_offset_index.y);
         vec2 vblur_sample_coord = vec2(lerp_texcoord.x + lerp_sample_offset_unit_size.x*vblur_kernel_offset_index.x,

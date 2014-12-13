@@ -811,6 +811,51 @@ void onTick()
     hidden_mesh4->update_buffers();
 }
 
+void do_blur(vt::Scene* scene, vt::FrameBuffer* output_fb, int blur_iters)
+{
+    // linear downsample texture from hi-res to med-res
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+    med_res_color_overlay_fb->bind();
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    scene->render(true);
+    med_res_color_overlay_fb->unbind();
+
+    // linear downsample texture from med-res to lo-res
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("med_res_color_overlay"));
+    lo_res_color_overlay_fb->bind();
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    scene->render(true);
+    lo_res_color_overlay_fb->unbind();
+
+    // switch to bloom filter mode
+    mesh_overlay->set_material(overlay_bloom_filter_material);
+
+    // blur texture in low-res
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
+    lo_res_color_overlay_fb->bind();
+    for(int i = 0; i < blur_iters; i++) {
+        // don't clear since we're using same texture for input/output
+        //glClearColor(0, 0, 0, 1);
+        //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        scene->render(true);
+    }
+    lo_res_color_overlay_fb->unbind();
+
+    // switch to max mode to merge blurred low-res texture with hi-res texture
+    mesh_overlay->set_material(overlay_max_material);
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+    mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
+
+    output_fb->bind();
+    // don't clear since we're using same texture for input/output
+    //glClearColor(0, 0, 0, 1);
+    //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    scene->render(true);
+    output_fb->unbind();
+}
+
 void onDisplay()
 {
     onTick();
@@ -866,47 +911,7 @@ void onDisplay()
         scene->render(false, true);
         hi_res_color_overlay_fb->unbind();
 
-        // linear downsample texture from hi-res to med-res
-        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
-        med_res_color_overlay_fb->bind();
-        glClearColor(0, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(true);
-        med_res_color_overlay_fb->unbind();
-
-        // linear downsample texture from med-res to lo-res
-        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("med_res_color_overlay"));
-        lo_res_color_overlay_fb->bind();
-        glClearColor(0, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(true);
-        lo_res_color_overlay_fb->unbind();
-
-        // switch to bloom filter mode
-        mesh_overlay->set_material(overlay_bloom_filter_material);
-
-        // blur texture in low-res
-        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
-        lo_res_color_overlay_fb->bind();
-        for(int i = 0; i < BLUR_ITERS; i++) {
-            // don't clear since we're using same texture for input/output
-            //glClearColor(0, 0, 0, 1);
-            //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-            scene->render(true);
-        }
-        lo_res_color_overlay_fb->unbind();
-
-        // switch to max mode to merge blurred low-res texture with hi-res texture
-        mesh_overlay->set_material(overlay_max_material);
-        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
-        mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
-
-        hi_res_color_overlay_fb->bind();
-        // don't clear since we're using same texture for input/output
-        //glClearColor(0, 0, 0, 1);
-        //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(true);
-        hi_res_color_overlay_fb->unbind();
+        do_blur(scene, hi_res_color_overlay_fb.get(), BLUR_ITERS);
 
         // switch to write-through mode to display final output texture
         mesh_overlay->set_material(overlay_write_through_material);
@@ -980,6 +985,7 @@ void onKeyboard(unsigned char key, int x, int y)
                 overlay_mode = OVERLAY_MODE_DEFAULT; // switch back to default overlay
                 post_process_blur = true;
                 mesh_overlay->set_material(overlay_bloom_filter_material);
+                mesh2->set_visible(false);
                 break;
             }
             post_process_blur = !post_process_blur;
@@ -1059,6 +1065,7 @@ void onKeyboard(unsigned char key, int x, int y)
                 default:
                     break;
             }
+            mesh2->set_visible(overlay_mode == OVERLAY_MODE_SSAO);
             break;
         case 'p': // projection
             if(camera->get_projection_mode() == vt::Camera::PROJECTION_MODE_PERSPECTIVE) {

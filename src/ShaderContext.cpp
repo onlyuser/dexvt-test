@@ -11,7 +11,8 @@
 #include <assert.h>
 
 #define NUM_LIGHTS        8
-#define BLOOM_KERNEL_SIZE 5
+//#define BLOOM_KERNEL_SIZE 5
+#define BLOOM_KERNEL_SIZE 7
 
 namespace vt {
 
