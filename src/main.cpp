@@ -813,6 +813,9 @@ void onTick()
 
 void do_blur(vt::Scene* scene, vt::FrameBuffer* output_fb, int blur_iters)
 {
+    // switch to write-through mode to perform downsampling
+    mesh_overlay->set_material(overlay_write_through_material);
+
     // linear downsample texture from hi-res to med-res
     mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
     med_res_color_overlay_fb->bind();
@@ -836,7 +839,7 @@ void do_blur(vt::Scene* scene, vt::FrameBuffer* output_fb, int blur_iters)
     mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
     lo_res_color_overlay_fb->bind();
     for(int i = 0; i < blur_iters; i++) {
-        // don't clear since we're using same texture for input/output
+        // don't clear since we're using same texture for input again
         //glClearColor(0, 0, 0, 1);
         //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         scene->render(true);
@@ -849,11 +852,15 @@ void do_blur(vt::Scene* scene, vt::FrameBuffer* output_fb, int blur_iters)
     mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
 
     output_fb->bind();
-    // don't clear since we're using same texture for input/output
+    // don't clear since we're using same texture for input again
     //glClearColor(0, 0, 0, 1);
     //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     scene->render(true);
     output_fb->unbind();
+
+    // switch to write-through mode to display final output texture
+    mesh_overlay->set_material(overlay_write_through_material);
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
 }
 
 void onDisplay()
@@ -882,6 +889,15 @@ void onDisplay()
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         scene->render(false, false, vt::Scene::use_material_type_t::USE_SSAO_MATERIAL);
         ssao_overlay_fb->unbind();
+
+        // render-to-texture for initial input texture
+        hi_res_color_overlay_fb->bind();
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        scene->render(false, false, vt::Scene::use_material_type_t::USE_SSAO_MATERIAL);
+        hi_res_color_overlay_fb->unbind();
+
+        do_blur(scene, ssao_overlay_fb.get(), BLUR_ITERS);
     }
 
     glCullFace(GL_FRONT);
@@ -901,9 +917,6 @@ void onDisplay()
     glCullFace(GL_BACK);
 
     if(post_process_blur) {
-        // switch to write-through mode to perform downsampling
-        mesh_overlay->set_material(overlay_write_through_material);
-
         // render-to-texture for initial input texture
         hi_res_color_overlay_fb->bind();
         glClearColor(0, 0, 0, 1);
@@ -912,10 +925,6 @@ void onDisplay()
         hi_res_color_overlay_fb->unbind();
 
         do_blur(scene, hi_res_color_overlay_fb.get(), BLUR_ITERS);
-
-        // switch to write-through mode to display final output texture
-        mesh_overlay->set_material(overlay_write_through_material);
-        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
     }
 
     glClearColor(0, 0, 0, 1);
