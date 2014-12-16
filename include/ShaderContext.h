@@ -58,6 +58,7 @@ public:
         var_uniform_type_view_proj_xform,
         var_uniform_type_reflect_to_refract_ratio,
         var_uniform_type_ssao_sample_kernel_pos,
+        var_uniform_type_glow_cutoff_threshold,
         var_uniform_type_count
     };
 
@@ -100,6 +101,7 @@ public:
     void set_backface_normal_overlay_texture_index(GLint texture_id);
     void set_viewport_dim(GLfloat* viewport_dim_arr);
     void set_bloom_kernel(GLfloat* bloom_kernel_arr);
+    void set_glow_cutoff_threshold(GLfloat glow_cutoff_threshold);
     void set_camera_near(GLfloat camera_near);
     void set_camera_far(GLfloat camera_far);
     void set_reflect_to_refract_ratio(GLfloat reflect_to_refract_ratio);

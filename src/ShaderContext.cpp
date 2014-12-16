@@ -53,6 +53,7 @@ ShaderContext::var_uniform_type_to_name_table_t ShaderContext::m_var_uniform_typ
         {ShaderContext::var_uniform_type_view_proj_xform,                 "view_proj_xform"},
         {ShaderContext::var_uniform_type_reflect_to_refract_ratio,        "reflect_to_refract_ratio"},
         {ShaderContext::var_uniform_type_ssao_sample_kernel_pos,          "ssao_sample_kernel_pos"},
+        {ShaderContext::var_uniform_type_glow_cutoff_threshold,           "glow_cutoff_threshold"},
         {ShaderContext::var_uniform_type_count,                           ""}
     };
 
@@ -307,6 +308,11 @@ void ShaderContext::set_viewport_dim(GLfloat* viewport_dim_arr)
 void ShaderContext::set_bloom_kernel(GLfloat* bloom_kernel_arr)
 {
     m_var_uniforms[var_uniform_type_bloom_kernel]->uniform_1fv(BLOOM_KERNEL_SIZE, bloom_kernel_arr);
+}
+
+void ShaderContext::set_glow_cutoff_threshold(GLfloat glow_cutoff_threshold)
+{
+    m_var_uniforms[var_uniform_type_glow_cutoff_threshold]->uniform_1f(glow_cutoff_threshold);
 }
 
 void ShaderContext::set_camera_near(GLfloat camera_near)

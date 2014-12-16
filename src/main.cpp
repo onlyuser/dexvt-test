@@ -73,6 +73,8 @@ int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
 vt::Mesh *mesh_skybox, *mesh_overlay, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10, *hidden_mesh, *hidden_mesh2, *hidden_mesh3, *hidden_mesh4;
 vt::Light *light, *light2, *light3;
+vt::Texture *texture, *texture2, *texture3, *texture4, *texture5, *frontface_depth_overlay_texture, *backface_depth_overlay_texture, *frontface_normal_overlay_texture, *backface_normal_overlay_texture, *ssao_overlay_texture, *hi_res_color_overlay_texture, *med_res_color_overlay_texture, *lo_res_color_overlay_texture, *random_texture;
+
 std::unique_ptr<vt::FrameBuffer> frontface_depth_overlay_fb, backface_depth_overlay_fb, frontface_normal_overlay_fb, backface_normal_overlay_fb, ssao_overlay_fb, hi_res_color_overlay_fb, med_res_color_overlay_fb, lo_res_color_overlay_fb;
 
 bool left_mouse_down = false, right_mouse_down = false;
@@ -284,9 +286,10 @@ int init_resources()
             false, // skybox
             true); // overlay
     vt::Program* overlay_bloom_filter_program = overlay_bloom_filter_material->get_program();
-    overlay_bloom_filter_program->add_var("color_texture", vt::Program::VAR_TYPE_UNIFORM);
-    overlay_bloom_filter_program->add_var("viewport_dim",  vt::Program::VAR_TYPE_UNIFORM);
-    overlay_bloom_filter_program->add_var("bloom_kernel",  vt::Program::VAR_TYPE_UNIFORM);
+    overlay_bloom_filter_program->add_var("color_texture",         vt::Program::VAR_TYPE_UNIFORM);
+    overlay_bloom_filter_program->add_var("viewport_dim",          vt::Program::VAR_TYPE_UNIFORM);
+    overlay_bloom_filter_program->add_var("bloom_kernel",          vt::Program::VAR_TYPE_UNIFORM);
+    overlay_bloom_filter_program->add_var("glow_cutoff_threshold", vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(overlay_bloom_filter_material);
 
     overlay_max_material = new vt::Material(
@@ -506,7 +509,7 @@ int init_resources()
     ambient_program->add_var("mvp_xform",       vt::Program::VAR_TYPE_UNIFORM);
     scene->set_wireframe_material(ambient_material);
 
-    vt::Texture* texture = new vt::Texture(
+    texture = new vt::Texture(
             "dex3d",
             res_texture.width,
             res_texture.height,
@@ -517,7 +520,7 @@ int init_resources()
     bump_mapped_material->add_texture(   texture);
     texture_mapped_material->add_texture(texture);
 
-    vt::Texture* texture2 = new vt::Texture(
+    texture2 = new vt::Texture(
             "lode_runner",
             res_texture2.width,
             res_texture2.height,
@@ -525,7 +528,7 @@ int init_resources()
     scene->add_texture(               texture2);
     bump_mapped_material->add_texture(texture2);
 
-    vt::Texture* texture3 = new vt::Texture(
+    texture3 = new vt::Texture(
             "chesterfield_color",
             "data/chesterfield_color.png");
     scene->add_texture(                          texture3);
@@ -533,7 +536,7 @@ int init_resources()
     env_mapped_material->add_texture(            texture3);
     env_mapped_dbl_refract_material->add_texture(texture3);
 
-    vt::Texture* texture4 = new vt::Texture(
+    texture4 = new vt::Texture(
             "chesterfield_normal",
             "data/chesterfield_normal.png");
     scene->add_texture(                          texture4);
@@ -542,7 +545,7 @@ int init_resources()
     env_mapped_dbl_refract_material->add_texture(texture4);
     //normal_material->add_texture(texture4);
 
-    vt::Texture* texture5 = new vt::Texture(
+    texture5 = new vt::Texture(
             "skybox_texture",
             "data/SaintPetersSquare2/posx.png",
             "data/SaintPetersSquare2/negx.png",
@@ -556,7 +559,7 @@ int init_resources()
     env_mapped_dbl_refract_material->add_texture(texture5);
     env_mapped_fast_material->add_texture(       texture5);
 
-    vt::Texture* frontface_depth_overlay_texture = new vt::Texture(
+    frontface_depth_overlay_texture = new vt::Texture(
             "frontface_depth_overlay",
             HI_RES_TEX_DIM,
             HI_RES_TEX_DIM,
@@ -568,7 +571,7 @@ int init_resources()
     overlay_bloom_filter_material->add_texture(  frontface_depth_overlay_texture);
     ssao_material->add_texture(                  frontface_depth_overlay_texture);
 
-    vt::Texture* backface_depth_overlay_texture = new vt::Texture(
+    backface_depth_overlay_texture = new vt::Texture(
             "backface_depth_overlay",
             HI_RES_TEX_DIM,
             HI_RES_TEX_DIM,
@@ -579,7 +582,7 @@ int init_resources()
     overlay_write_through_material->add_texture( backface_depth_overlay_texture);
     overlay_bloom_filter_material->add_texture(  backface_depth_overlay_texture);
 
-    vt::Texture* frontface_normal_overlay_texture = new vt::Texture(
+    frontface_normal_overlay_texture = new vt::Texture(
             "frontface_normal_overlay",
             HI_RES_TEX_DIM,
             HI_RES_TEX_DIM,
@@ -590,7 +593,7 @@ int init_resources()
     overlay_write_through_material->add_texture( frontface_normal_overlay_texture);
     overlay_bloom_filter_material->add_texture(  frontface_normal_overlay_texture);
 
-    vt::Texture* backface_normal_overlay_texture = new vt::Texture(
+    backface_normal_overlay_texture = new vt::Texture(
             "backface_normal_overlay",
             HI_RES_TEX_DIM,
             HI_RES_TEX_DIM,
@@ -601,7 +604,7 @@ int init_resources()
     overlay_write_through_material->add_texture( backface_normal_overlay_texture);
     overlay_bloom_filter_material->add_texture(  backface_normal_overlay_texture);
 
-    vt::Texture* ssao_overlay_texture = new vt::Texture(
+    ssao_overlay_texture = new vt::Texture(
             "ssao_overlay",
             HI_RES_TEX_DIM,
             HI_RES_TEX_DIM,
@@ -612,7 +615,7 @@ int init_resources()
     overlay_write_through_material->add_texture( ssao_overlay_texture);
     overlay_bloom_filter_material->add_texture(  ssao_overlay_texture);
 
-    vt::Texture* hi_res_color_overlay_texture = new vt::Texture(
+    hi_res_color_overlay_texture = new vt::Texture(
             "hi_res_color_overlay",
             HI_RES_TEX_DIM,
             HI_RES_TEX_DIM,
@@ -623,7 +626,7 @@ int init_resources()
     overlay_bloom_filter_material->add_texture( hi_res_color_overlay_texture);
     overlay_max_material->add_texture(          hi_res_color_overlay_texture);
 
-    vt::Texture* med_res_color_overlay_texture = new vt::Texture(
+    med_res_color_overlay_texture = new vt::Texture(
             "med_res_color_overlay",
             MED_RES_TEX_DIM,
             MED_RES_TEX_DIM,
@@ -633,7 +636,7 @@ int init_resources()
     overlay_write_through_material->add_texture(med_res_color_overlay_texture);
     overlay_bloom_filter_material->add_texture( med_res_color_overlay_texture);
 
-    vt::Texture* lo_res_color_overlay_texture = new vt::Texture(
+    lo_res_color_overlay_texture = new vt::Texture(
             "lo_res_color_overlay",
             LO_RES_TEX_DIM,
             LO_RES_TEX_DIM,
@@ -644,7 +647,7 @@ int init_resources()
     overlay_bloom_filter_material->add_texture( lo_res_color_overlay_texture);
     overlay_max_material->add_texture(          lo_res_color_overlay_texture);
 
-    vt::Texture* random_texture = new vt::Texture(
+    random_texture = new vt::Texture(
             "random_texture",
             RAND_TEX_DIM,
             RAND_TEX_DIM,
@@ -811,13 +814,21 @@ void onTick()
     hidden_mesh4->update_buffers();
 }
 
-void do_blur(vt::Scene* scene, vt::FrameBuffer* output_fb, int blur_iters)
+void do_blur(
+        vt::Scene*       scene,
+        vt::Texture*     input_texture1,
+        vt::Texture*     input_texture2,
+        vt::FrameBuffer* output_fb,
+        int              blur_iters,
+        float            glow_cutoff_threshold)
 {
+    scene->set_glow_cutoff_threshold(glow_cutoff_threshold);
+
     // switch to write-through mode to perform downsampling
     mesh_overlay->set_material(overlay_write_through_material);
 
     // linear downsample texture from hi-res to med-res
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture1));
     med_res_color_overlay_fb->bind();
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -839,7 +850,7 @@ void do_blur(vt::Scene* scene, vt::FrameBuffer* output_fb, int blur_iters)
     mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
     lo_res_color_overlay_fb->bind();
     for(int i = 0; i < blur_iters; i++) {
-        // don't clear since we're using same texture for input again
+        // don't clear since we're using same texture for input/output
         //glClearColor(0, 0, 0, 1);
         //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         scene->render(true);
@@ -848,19 +859,21 @@ void do_blur(vt::Scene* scene, vt::FrameBuffer* output_fb, int blur_iters)
 
     // switch to max mode to merge blurred low-res texture with hi-res texture
     mesh_overlay->set_material(overlay_max_material);
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture2));
     mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
 
     output_fb->bind();
-    // don't clear since we're using same texture for input again
-    //glClearColor(0, 0, 0, 1);
-    //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    if(output_fb->get_texture() != input_texture1) {
+        // clear if we're using different texture for input/output
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    }
     scene->render(true);
     output_fb->unbind();
 
     // switch to write-through mode to display final output texture
     mesh_overlay->set_material(overlay_write_through_material);
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture1));
 }
 
 void onDisplay()
@@ -894,10 +907,10 @@ void onDisplay()
         hi_res_color_overlay_fb->bind();
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(false, false, vt::Scene::use_material_type_t::USE_SSAO_MATERIAL);
+        scene->render(false, true, vt::Scene::use_material_type_t::USE_MESH_MATERIAL, true);
         hi_res_color_overlay_fb->unbind();
 
-        do_blur(scene, ssao_overlay_fb.get(), BLUR_ITERS);
+        do_blur(scene, ssao_overlay_texture, hi_res_color_overlay_texture, ssao_overlay_fb.get(), BLUR_ITERS, 0);
     }
 
     glCullFace(GL_FRONT);
@@ -924,7 +937,7 @@ void onDisplay()
         scene->render(false, true);
         hi_res_color_overlay_fb->unbind();
 
-        do_blur(scene, hi_res_color_overlay_fb.get(), BLUR_ITERS);
+        do_blur(scene, hi_res_color_overlay_texture, hi_res_color_overlay_texture, hi_res_color_overlay_fb.get(), BLUR_ITERS, 0.75);
     }
 
     glClearColor(0, 0, 0, 1);

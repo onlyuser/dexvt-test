@@ -101,12 +101,18 @@ public:
         return m_ssao_material;
     }
 
+    void set_glow_cutoff_threshold(float glow_cutoff_threshold)
+    {
+        m_glow_cutoff_threshold = glow_cutoff_threshold;
+    }
+
     void reset();
     void use_program();
     void render(
             bool                render_overlay    = false,
             bool                render_skybox     = true,
-            use_material_type_t use_material_type = use_material_type_t::USE_MESH_MATERIAL);
+            use_material_type_t use_material_type = use_material_type_t::USE_MESH_MATERIAL,
+            bool                skip_ssao_mesh    = false);
     void render_vert_normals() const;
     void render_lights() const;
 
@@ -127,6 +133,7 @@ private:
     GLfloat  m_camera_dir[3];
     GLfloat  m_viewport_dim[2];
     GLfloat  m_bloom_kernel[7];
+    GLfloat  m_glow_cutoff_threshold;
     GLfloat* m_light_pos;
     GLfloat* m_light_color;
     GLint*   m_light_enabled;

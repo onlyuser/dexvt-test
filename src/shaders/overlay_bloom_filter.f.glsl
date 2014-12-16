@@ -1,10 +1,10 @@
 const int   BLOOM_KERNEL_SIZE = 7;
-const float GLOW_CUTOFF_THRESHOLD = 0.75;
 
 varying vec2      lerp_texcoord;
 uniform sampler2D color_texture;
 varying vec2      lerp_sample_offset_unit_size;
 uniform float     bloom_kernel[BLOOM_KERNEL_SIZE];
+uniform float     glow_cutoff_threshold;
 
 void sum_components(in vec4 color, out float sum) {
     sum = color.r + color.g + color.b;
@@ -26,10 +26,10 @@ void main(void) {
         float vblur_sum;
         sum_components(hblur_sample_color, hblur_sum);
         sum_components(vblur_sample_color, vblur_sum);
-        if(hblur_sum < GLOW_CUTOFF_THRESHOLD) {
+        if(hblur_sum < glow_cutoff_threshold) {
             hblur_sample_color = vec4(0);
         }
-        if(vblur_sum < GLOW_CUTOFF_THRESHOLD) {
+        if(vblur_sum < glow_cutoff_threshold) {
             vblur_sample_color = vec4(0);
         }
         sum_color += (hblur_sample_color + vblur_sample_color)*sample_weight;

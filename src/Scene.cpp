@@ -54,6 +54,7 @@ Scene::Scene()
     for(int k = 0; k < BLOOM_KERNEL_SIZE; k++) {
         m_bloom_kernel[k] *= sum_weights_inv;
     }
+    m_glow_cutoff_threshold = 0;
     m_light_pos     = new GLfloat[NUM_LIGHTS*3];
     m_light_color   = new GLfloat[NUM_LIGHTS*3];
     m_light_enabled = new GLint[NUM_LIGHTS];
@@ -145,7 +146,8 @@ void Scene::use_program()
 void Scene::render(
         bool                render_overlay,
         bool                render_skybox,
-        use_material_type_t use_material_type)
+        use_material_type_t use_material_type,
+        bool                skip_ssao_mesh)
 {
     m_viewport_dim[0] = m_camera->get_width();
     m_viewport_dim[1] = m_camera->get_height();
@@ -157,6 +159,7 @@ void Scene::render(
         if(material->use_bloom_kernel()) {
             shader_context->set_viewport_dim(m_viewport_dim);
             shader_context->set_bloom_kernel(m_bloom_kernel);
+            shader_context->set_glow_cutoff_threshold(m_glow_cutoff_threshold);
         }
         if(material->use_texture2()) {
             shader_context->set_texture2_index(m_overlay->get_texture2_index());
@@ -234,6 +237,9 @@ void Scene::render(
         bool use_env_mapping_dbl_refract = material->use_env_mapping_dbl_refract();
         bool use_ssao                    = material->use_ssao();
         bool use_fragment_world_pos      = material->use_fragment_world_pos();
+        if(skip_ssao_mesh && use_ssao) {
+            continue;
+        }
         material->get_program()->use();
         if(use_ambient_color) {
             glm::vec3 _ambient_color = material->get_ambient_color();
