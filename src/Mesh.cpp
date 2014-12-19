@@ -69,7 +69,7 @@ void Mesh::set_orient(glm::vec3 orient)
     set_need_update_xform();
 }
 
-glm::vec3 Mesh::get_vert_coord(int index)
+glm::vec3 Mesh::get_vert_coord(int index) const
 {
     int offset = index*3;
     return glm::vec3(
@@ -86,7 +86,7 @@ void Mesh::set_vert_coord(int index, glm::vec3 coord)
     m_vert_coords[offset+2] = coord.z;
 }
 
-glm::vec3 Mesh::get_vert_normal(int index)
+glm::vec3 Mesh::get_vert_normal(int index) const
 {
     int offset = index*3;
     return glm::vec3(
@@ -103,7 +103,7 @@ void Mesh::set_vert_normal(int index, glm::vec3 normal)
     m_vert_normal[offset+2] = normal.z;
 }
 
-glm::vec3 Mesh::get_vert_tangent(int index)
+glm::vec3 Mesh::get_vert_tangent(int index) const
 {
     int offset = index*3;
     return glm::vec3(
@@ -120,7 +120,7 @@ void Mesh::set_vert_tangent(int index, glm::vec3 tangent)
     m_vert_tangent[offset+2] = tangent.z;
 }
 
-glm::vec2 Mesh::get_tex_coord(int index)
+glm::vec2 Mesh::get_tex_coord(int index) const
 {
     int offset = index*2;
     return glm::vec2(
@@ -135,7 +135,7 @@ void Mesh::set_tex_coord(int index, glm::vec2 coord)
     m_tex_coords[offset+1] = coord.y;
 }
 
-glm::uvec3 Mesh::get_tri_indices(int index)
+glm::uvec3 Mesh::get_tri_indices(int index) const
 {
     int offset = index*3;
     return glm::uvec3(

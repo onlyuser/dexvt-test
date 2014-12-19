@@ -46,15 +46,15 @@ public:
         m_visible = visible;
     }
 
-    glm::vec3  get_vert_coord(int index);
+    glm::vec3  get_vert_coord(int index) const;
     void       set_vert_coord(int index, glm::vec3 coord);
-    glm::vec3  get_vert_normal(int index);
+    glm::vec3  get_vert_normal(int index) const;
     void       set_vert_normal(int index, glm::vec3 normal);
-    glm::vec3  get_vert_tangent(int index);
+    glm::vec3  get_vert_tangent(int index) const;
     void       set_vert_tangent(int index, glm::vec3 tangent);
-    glm::vec2  get_tex_coord(int index);
+    glm::vec2  get_tex_coord(int index) const;
     void       set_tex_coord(int index, glm::vec2 coord);
-    glm::uvec3 get_tri_indices(int index);
+    glm::uvec3 get_tri_indices(int index) const;
     void       set_tri_indices(int index, glm::uvec3 indices);
 
     void init_buffers();
