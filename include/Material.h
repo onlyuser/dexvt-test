@@ -49,10 +49,6 @@ public:
         return m_fragment_shader.get();
     }
 
-    glm::vec3 get_ambient_color() const
-    {
-        return m_ambient_color;
-    }
     void add_texture(Texture* texture);
     void clear_textures();
     const textures_t &get_textures() const
@@ -122,7 +118,6 @@ private:
     std::unique_ptr<Program> m_program;
     std::unique_ptr<Shader>  m_vertex_shader;
     std::unique_ptr<Shader>  m_fragment_shader;
-    glm::vec3                m_ambient_color;
     textures_t               m_textures; // TODO: Material has multiple Textures
     bool                     m_use_ambient_color;
     bool                     m_gen_normal_map;

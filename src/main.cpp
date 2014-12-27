@@ -159,7 +159,7 @@ int init_resources()
             "bump_mapped",
             "src/shaders/bump_mapped.v.glsl",
             "src/shaders/bump_mapped.f.glsl",
-            false,  // use_ambient_color
+            true,   // use_ambient_color
             false,  // gen_normal_map
             true,   // use_phong_shading
             true,   // use_texture_mapping
@@ -187,7 +187,39 @@ int init_resources()
     bump_mapped_program->add_var("bump_texture",    vt::Program::VAR_TYPE_UNIFORM);
     bump_mapped_program->add_var("color_texture",   vt::Program::VAR_TYPE_UNIFORM);
     bump_mapped_program->add_var("mvp_xform",       vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var("ambient_color",   vt::Program::VAR_TYPE_UNIFORM);
     scene->add_material(bump_mapped_material);
+
+    vt::Material* phong_material = new vt::Material(
+            "phong",
+            "src/shaders/phong.v.glsl",
+            "src/shaders/phong.f.glsl",
+            true,   // use_ambient_color
+            false,  // gen_normal_map
+            true,   // use_phong_shading
+            false,  // use_texture_mapping
+            false,  // use_bump_mapping
+            false,  // use_env_mapping
+            false,  // use_env_mapping_dbl_refract
+            false,  // use_ssao
+            false,  // use_bloom_kernel
+            false,  // use_texture2
+            false,  // use_fragment_world_pos
+            false,  // skybox
+            false); // overlay
+    vt::Program* phong_program = phong_material->get_program();
+    phong_program->add_var("vertex_normal",   vt::Program::VAR_TYPE_ATTRIBUTE);
+    phong_program->add_var("vertex_position", vt::Program::VAR_TYPE_ATTRIBUTE);
+    phong_program->add_var("normal_xform",    vt::Program::VAR_TYPE_UNIFORM);
+    phong_program->add_var("model_xform",     vt::Program::VAR_TYPE_UNIFORM);
+    phong_program->add_var("camera_pos",      vt::Program::VAR_TYPE_UNIFORM);
+    phong_program->add_var("light_pos",       vt::Program::VAR_TYPE_UNIFORM);
+    phong_program->add_var("light_color",     vt::Program::VAR_TYPE_UNIFORM);
+    phong_program->add_var("light_enabled",   vt::Program::VAR_TYPE_UNIFORM);
+    phong_program->add_var("light_count",     vt::Program::VAR_TYPE_UNIFORM);
+    phong_program->add_var("mvp_xform",       vt::Program::VAR_TYPE_UNIFORM);
+    phong_program->add_var("ambient_color",   vt::Program::VAR_TYPE_UNIFORM);
+    scene->add_material(phong_material);
 
     vt::Material* ssao_material = new vt::Material(
             "ssao",
@@ -685,18 +717,22 @@ int init_resources()
     mesh->set_material(bump_mapped_material);
     mesh->set_texture_index(     mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh->set_bump_texture_index(mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
+    mesh->set_ambient_color(glm::vec3(0,0,0));
 
-    // grid
-    //mesh2->set_material(texture_mapped_material);
-    mesh2->set_material(ssao_material);
-    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("backface_normal_overlay"));
-    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
-    //mesh2->set_texture_index(                        mesh2->get_material()->get_texture_index_by_name("random_texture"));
-    //mesh2->set_bump_texture_index(                   mesh2->get_material()->get_texture_index_by_name("random_texture"));
-    mesh2->set_random_texture_index(                 mesh2->get_material()->get_texture_index_by_name("random_texture"));
-    mesh2->set_frontface_depth_overlay_texture_index(mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+//    // grid
+//    //mesh2->set_material(texture_mapped_material);
+//    mesh2->set_material(ssao_material);
+//    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+//    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+//    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+//    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
+//    //mesh2->set_texture_index(                        mesh2->get_material()->get_texture_index_by_name("random_texture"));
+//    //mesh2->set_bump_texture_index(                   mesh2->get_material()->get_texture_index_by_name("random_texture"));
+//    mesh2->set_random_texture_index(                 mesh2->get_material()->get_texture_index_by_name("random_texture"));
+//    mesh2->set_frontface_depth_overlay_texture_index(mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+
+    mesh2->set_material(ambient_material);
+    mesh2->set_ambient_color(glm::vec3(0,0,0));
 
     // sphere
     mesh3->set_material(env_mapped_dbl_refract_material);

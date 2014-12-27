@@ -31,7 +31,6 @@ Material::Material(
         bool        skybox,
         bool        overlay)
     : NamedObject(name),
-      m_ambient_color(1),
       m_use_ambient_color(use_ambient_color),
       m_gen_normal_map(gen_normal_map),
       m_use_phong_shading(use_phong_shading),
@@ -46,7 +45,7 @@ Material::Material(
       m_skybox(skybox),
       m_overlay(overlay)
 {
-    m_program         = std::unique_ptr<Program>(new Program);
+    m_program         = std::unique_ptr<Program>(new Program(name));
     m_vertex_shader   = std::unique_ptr<Shader>(new Shader(vertex_shader_file,   GL_VERTEX_SHADER));
     m_fragment_shader = std::unique_ptr<Shader>(new Shader(fragment_shader_file, GL_FRAGMENT_SHADER));
     m_program->attach_shader(m_vertex_shader.get());

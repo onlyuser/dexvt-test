@@ -2,6 +2,7 @@
 #define VT_PROGRAM_H_
 
 #include <IdentObject.h>
+#include <NamedObject.h>
 #include <GL/glew.h>
 #include <map>
 #include <string>
@@ -12,7 +13,7 @@ class Shader;
 class VarAttribute;
 class VarUniform;
 
-class Program : public IdentObject
+class Program : public IdentObject, public NamedObject
 {
 public:
     enum var_type_t {
@@ -20,7 +21,7 @@ public:
         VAR_TYPE_UNIFORM
     };
 
-    Program();
+    Program(std::string name);
     virtual ~Program();
     void attach_shader(Shader* shader);
     Shader* get_vertex_shader() const

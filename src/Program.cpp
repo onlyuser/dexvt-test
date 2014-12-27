@@ -8,8 +8,9 @@
 
 namespace vt {
 
-Program::Program()
-    : m_vertex_shader(NULL),
+Program::Program(std::string name)
+    : NamedObject(name),
+      m_vertex_shader(NULL),
       m_fragment_shader(NULL)
 {
     m_id = glCreateProgram();

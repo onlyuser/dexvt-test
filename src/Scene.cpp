@@ -241,13 +241,6 @@ void Scene::render(
             continue;
         }
         material->get_program()->use();
-        if(use_ambient_color) {
-            glm::vec3 _ambient_color = material->get_ambient_color();
-            m_ambient_color[0] = _ambient_color[0];
-            m_ambient_color[1] = _ambient_color[1];
-            m_ambient_color[2] = _ambient_color[2];
-            shader_context->set_ambient_color(m_ambient_color);
-        }
         glm::mat4 vp_xform = m_camera->get_projection_xform()*m_camera->get_xform();
         shader_context->set_mvp_xform(vp_xform*mesh->get_xform());
         if(gen_normal_map || use_phong_shading || use_bump_mapping || use_env_mapping || use_ssao) {
@@ -292,6 +285,13 @@ void Scene::render(
             shader_context->set_view_proj_xform(vp_xform);
             shader_context->set_camera_pos(m_camera_pos);
             shader_context->set_camera_dir(m_camera_dir);
+        }
+        if(use_ambient_color) {
+            glm::vec3 _ambient_color = mesh->get_ambient_color();
+            m_ambient_color[0] = _ambient_color[0];
+            m_ambient_color[1] = _ambient_color[1];
+            m_ambient_color[2] = _ambient_color[2];
+            shader_context->set_ambient_color(m_ambient_color);
         }
         shader_context->render();
     }

@@ -31,11 +31,15 @@ Mesh::Mesh(
       m_frontface_depth_overlay_texture_index(-1),
       m_reflect_to_refract_ratio(1) // 100% reflective
 {
-    m_vert_coords  = new GLfloat[num_vertex*3];
-    m_vert_normal  = new GLfloat[num_vertex*3];
-    m_vert_tangent = new GLfloat[num_vertex*3];
-    m_tex_coords   = new GLfloat[num_vertex*2];
-    m_tri_indices  = new GLushort[num_tri*3];
+    m_vert_coords   = new GLfloat[num_vertex*3];
+    m_vert_normal   = new GLfloat[num_vertex*3];
+    m_vert_tangent  = new GLfloat[num_vertex*3];
+    m_tex_coords    = new GLfloat[num_vertex*2];
+    m_tri_indices   = new GLushort[num_tri*3];
+    m_ambient_color = new GLfloat[3];
+    m_ambient_color[0] = 1;
+    m_ambient_color[1] = 1;
+    m_ambient_color[2] = 1;
 }
 
 Mesh::~Mesh()
@@ -54,6 +58,9 @@ Mesh::~Mesh()
     }
     if(m_tri_indices) {
         delete []m_tri_indices;
+    }
+    if(m_ambient_color) {
+        delete []m_ambient_color;
     }
 }
 
@@ -283,6 +290,21 @@ ShaderContext* Mesh::get_ssao_shader_context(Material* ssao_material)
             get_vbo_tex_coords(),
             get_ibo_tri_indices()));
     return m_ssao_shader_context.get();
+}
+
+glm::vec3 Mesh::get_ambient_color() const
+{
+    return glm::vec3(
+            m_ambient_color[0],
+            m_ambient_color[1],
+            m_ambient_color[2]);
+}
+
+void Mesh::set_ambient_color(glm::vec3 ambient_color)
+{
+    m_ambient_color[0] = ambient_color.r;
+    m_ambient_color[1] = ambient_color.g;
+    m_ambient_color[2] = ambient_color.b;
 }
 
 void Mesh::update_xform()

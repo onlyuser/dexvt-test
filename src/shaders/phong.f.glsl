@@ -1,7 +1,3 @@
-varying vec2      lerp_texcoord;
-uniform sampler2D color_texture;
-uniform sampler2D bump_texture;
-
 const int NUM_LIGHTS = 8;
 uniform int light_count;
 
@@ -13,20 +9,16 @@ uniform vec3 light_color[NUM_LIGHTS];
 uniform int light_enabled[NUM_LIGHTS];
 uniform vec3 ambient_color;
 
-varying mat3 lerp_tbn_transform;
 varying vec3 lerp_camera_vector;
 varying vec3 lerp_light_vector[NUM_LIGHTS];
+
+varying vec3 normal;
 
 void main(void) {
     vec3 diffuse_sum = vec3(0.0, 0.0, 0.0);
     vec3 specular_sum = vec3(0.0, 0.0, 0.0);
 
     vec3 camera_direction = normalize(lerp_camera_vector);
-
-    vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1 - lerp_texcoord.y);
-
-    vec3 normal_surface = normalize(vec3(texture2D(bump_texture, flipped_texcoord)));
-    vec3 normal = normalize(lerp_tbn_transform*normal_surface);
 
     for(int i = 0; i < NUM_LIGHTS && i < light_count; i++) {
         if(light_enabled[i] == 0) {
@@ -46,6 +38,6 @@ void main(void) {
         specular_sum += specular_color*pow(clamp(specular_per_light, 0.0, 1.0), SPECULAR_SHARPNESS)*distance_factor;
     }
 
-    vec4 sample = texture2D(color_texture, flipped_texcoord);
+    vec4 sample = vec4(1);
     gl_FragColor = vec4(clamp(sample.rgb*(diffuse_sum + ambient_color) + specular_sum, 0.0, 1.0), sample.a);
 }

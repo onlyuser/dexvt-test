@@ -157,6 +157,9 @@ public:
         m_reflect_to_refract_ratio = reflect_to_refract_ratio;
     }
 
+    glm::vec3 get_ambient_color() const;
+    void set_ambient_color(glm::vec3 ambient_color);
+
 private:
     std::string                    m_name;
     size_t                         m_num_vertex;
@@ -187,6 +190,7 @@ private:
     int                            m_backface_depth_overlay_texture_index;
     int                            m_backface_normal_overlay_texture_index;
     float                          m_reflect_to_refract_ratio;
+    GLfloat*                       m_ambient_color;
 
     void update_xform();
 };
