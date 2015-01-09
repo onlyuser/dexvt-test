@@ -42,7 +42,6 @@ const int SPECULAR_SHARPNESS = 64;
 
 uniform vec3 light_color[NUM_LIGHTS];
 uniform int light_enabled[NUM_LIGHTS];
-varying vec3 lerp_light_vector[NUM_LIGHTS];
 uniform vec3 light_pos[NUM_LIGHTS];
 
 uniform mat4 inv_view_proj_xform;
