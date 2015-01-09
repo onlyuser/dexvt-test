@@ -9,13 +9,14 @@ const float MAX_DIST = 20;
 const float MAX_DIST_SQUARED = MAX_DIST*MAX_DIST;
 const int SPECULAR_SHARPNESS = 16;
 
+uniform vec3 light_pos[NUM_LIGHTS];
 uniform vec3 light_color[NUM_LIGHTS];
 uniform int light_enabled[NUM_LIGHTS];
 uniform vec3 ambient_color;
 
+varying vec3 lerp_position_world;
 varying mat3 lerp_tbn_transform;
 varying vec3 lerp_camera_vector;
-varying vec3 lerp_light_vector[NUM_LIGHTS];
 
 void main(void) {
     vec3 diffuse_sum = vec3(0.0, 0.0, 0.0);
@@ -32,11 +33,12 @@ void main(void) {
         if(light_enabled[i] == 0) {
             continue;
         }
+        vec3 light_vector = light_pos[i] - lerp_position_world;
 
-        float dist = min(dot(lerp_light_vector[i], lerp_light_vector[i]), MAX_DIST_SQUARED)/MAX_DIST_SQUARED;
+        float dist = min(dot(light_vector, light_vector), MAX_DIST_SQUARED)/MAX_DIST_SQUARED;
         float distance_factor = 1.0 - dist;
 
-        vec3 light_direction = normalize(lerp_light_vector[i]);
+        vec3 light_direction = normalize(light_vector);
         float diffuse_per_light = dot(normal, light_direction);
         diffuse_sum += light_color[i]*clamp(diffuse_per_light, 0.0, 1.0)*distance_factor;
 
