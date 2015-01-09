@@ -245,7 +245,7 @@ void Scene::render(
         shader_context->set_mvp_xform(vp_xform*mesh->get_xform());
         if(gen_normal_map || use_phong_shading || use_bump_mapping || use_env_mapping || use_ssao) {
             shader_context->set_normal_xform(mesh->get_normal_xform());
-            if((!gen_normal_map && use_bump_mapping) || use_env_mapping) {
+            if((!gen_normal_map && use_bump_mapping) || use_phong_shading || use_env_mapping) {
                 shader_context->set_model_xform(mesh->get_xform());
                 shader_context->set_camera_pos(m_camera_pos);
             }

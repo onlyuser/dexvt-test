@@ -150,7 +150,7 @@ int init_resources()
     hidden_mesh3->set_visible(false);
     hidden_mesh4->set_visible(false);
 
-    hidden_mesh->set_scale(glm::vec3(2, 2, 2));  // diamond2
+    hidden_mesh->set_scale(glm::vec3( 2, 2, 2)); // diamond2
     hidden_mesh2->set_scale(glm::vec3(2, 2, 2)); // sphere2
     hidden_mesh3->set_scale(glm::vec3(2, 2, 2)); // box3
     hidden_mesh4->set_scale(glm::vec3(4, 4, 4)); // grid2
@@ -254,6 +254,7 @@ int init_resources()
     ssao_program->add_var("view_proj_xform",                 vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("camera_pos",                      vt::Program::VAR_TYPE_UNIFORM);
     ssao_program->add_var("camera_dir",                      vt::Program::VAR_TYPE_UNIFORM);
+    scene->add_material(ssao_material);
     scene->set_ssao_material(ssao_material);
 
     vt::Material* skybox_material = new vt::Material(
@@ -509,12 +510,12 @@ int init_resources()
             false,  // use_fragment_world_pos
             false,  // skybox
             false); // overlay
-    scene->add_material(normal_fast_material);
     vt::Program* normal_fast_program = normal_fast_material->get_program();
     normal_fast_program->add_var("vertex_normal",   vt::Program::VAR_TYPE_ATTRIBUTE);
     normal_fast_program->add_var("vertex_position", vt::Program::VAR_TYPE_ATTRIBUTE);
     normal_fast_program->add_var("normal_xform",    vt::Program::VAR_TYPE_UNIFORM);
     normal_fast_program->add_var("mvp_xform",       vt::Program::VAR_TYPE_UNIFORM);
+    scene->add_material(normal_fast_material);
     scene->set_normal_material(normal_fast_material);
 
     vt::Material* ambient_material = new vt::Material(
@@ -534,11 +535,11 @@ int init_resources()
             false,  // use_fragment_world_pos
             false,  // skybox
             false); // overlay
-    scene->add_material(ambient_material);
     vt::Program* ambient_program = ambient_material->get_program();
     ambient_program->add_var("vertex_position", vt::Program::VAR_TYPE_ATTRIBUTE);
     ambient_program->add_var("ambient_color",   vt::Program::VAR_TYPE_UNIFORM);
     ambient_program->add_var("mvp_xform",       vt::Program::VAR_TYPE_UNIFORM);
+    scene->add_material(ambient_material);
     scene->set_wireframe_material(ambient_material);
 
     texture = new vt::Texture(
@@ -810,8 +811,10 @@ int init_resources()
     hidden_mesh3->set_backface_normal_overlay_texture_index(hidden_mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // grid2
-    hidden_mesh4->set_material(env_mapped_fast_material);
-    hidden_mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
+    //hidden_mesh4->set_material(env_mapped_fast_material);
+    hidden_mesh4->set_material(phong_material);
+    //hidden_mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
+    hidden_mesh4->set_ambient_color(glm::vec3(0,0,0));
 
     return 1;
 }
