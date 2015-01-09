@@ -7,13 +7,7 @@ uniform   mat4 model_xform;
 uniform   mat4 normal_xform;
 varying   vec2 lerp_texcoord;
 
-const int NUM_LIGHTS = 8;
-uniform int light_count;
-
-uniform int light_enabled[NUM_LIGHTS];
-
 uniform vec3 camera_pos;
-uniform vec3 light_pos[NUM_LIGHTS];
 
 varying vec3 lerp_position_world;
 varying mat3 lerp_tbn_transform;

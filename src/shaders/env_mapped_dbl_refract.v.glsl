@@ -13,12 +13,6 @@ varying mat3 lerp_tbn_xform;
 varying vec3 lerp_vertex_position_world;
 varying vec3 lerp_camera_vector;
 
-const int NUM_LIGHTS = 8;
-uniform int light_count;
-
-uniform int light_enabled[NUM_LIGHTS];
-uniform vec3 light_pos[NUM_LIGHTS];
-
 void main(void) {
     vec3 normal = normalize(vec3(normal_xform*vec4(vertex_normal, 0)));
     vec3 tangent = normalize(vec3(normal_xform*vec4(vertex_tangent, 0)));
