@@ -1,4 +1,4 @@
-varying vec2      lerp_texcoord;
+varying vec2 lerp_texcoord;
 uniform sampler2D bump_texture;
 
 const float AIR_REFRACTIVE_INDEX = 1.0;
@@ -8,7 +8,7 @@ const float GLASS_REFRACTIVE_INDEX_RGB_OFFSET = 0.01;
 const float BUMP_FACTOR = 0.001;
 const float FRESNEL_REFLECTANCE_SHARPNESS = 2.0;
 const float BEERS_LAW_FALLOFF_SHARPNESS = 0.5;
-const vec4  MATERIAL_AMBIENT_COLOR = vec4(0);
+const vec4 MATERIAL_AMBIENT_COLOR = vec4(0);
 
 const int NUM_NEWTONS_METHOD_ITERS = 3;
 
@@ -25,9 +25,9 @@ uniform samplerCube env_map_texture;
 uniform sampler2D frontface_depth_overlay_texture;
 uniform sampler2D backface_depth_overlay_texture;
 uniform sampler2D backface_normal_overlay_texture;
-uniform vec2      viewport_dim;
-uniform float     camera_near;
-uniform float     camera_far;
+uniform vec2 viewport_dim;
+uniform float camera_near;
+uniform float camera_far;
 
 uniform vec3 camera_pos;
 uniform mat4 view_proj_xform;

@@ -1,4 +1,4 @@
-varying vec2      lerp_texcoord;
+varying vec2 lerp_texcoord;
 uniform sampler2D color_texture;
 
 void main(void) {

@@ -1,5 +1,5 @@
 uniform samplerCube env_map_texture;
-uniform float       reflect_to_refract_ratio;
+uniform float reflect_to_refract_ratio;
 
 varying vec3 lerp_reflected_flipped_cubemap_texcoord;
 varying vec3 lerp_refracted_flipped_cubemap_texcoord;

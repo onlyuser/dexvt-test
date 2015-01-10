@@ -1,4 +1,4 @@
-varying vec2      lerp_texcoord;
+varying vec2 lerp_texcoord;
 uniform sampler2D bump_texture;
 
 const float BUMP_FACTOR = 0.001;

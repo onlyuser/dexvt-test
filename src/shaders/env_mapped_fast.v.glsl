@@ -3,10 +3,10 @@ const float WATER_REFRACTIVE_INDEX = 1.333;
 
 attribute vec3 vertex_position;
 attribute vec3 vertex_normal;
-uniform   mat4 mvp_xform;
-uniform   mat4 model_xform;
-uniform   mat4 normal_xform;
-uniform   vec3 camera_pos;
+uniform mat4 mvp_xform;
+uniform mat4 model_xform;
+uniform mat4 normal_xform;
+uniform vec3 camera_pos;
 
 varying vec3 lerp_reflected_flipped_cubemap_texcoord;
 varying vec3 lerp_refracted_flipped_cubemap_texcoord;

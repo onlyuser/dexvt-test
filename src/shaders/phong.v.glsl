@@ -1,8 +1,8 @@
 attribute vec3 vertex_position;
 attribute vec3 vertex_normal;
-uniform   mat4 mvp_xform;
-uniform   mat4 model_xform;
-uniform   mat4 normal_xform;
+uniform mat4 mvp_xform;
+uniform mat4 model_xform;
+uniform mat4 normal_xform;
 
 uniform vec3 camera_pos;
 

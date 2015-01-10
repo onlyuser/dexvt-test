@@ -1,4 +1,4 @@
-varying vec3        lerp_texcoord;
+varying vec3 lerp_texcoord;
 uniform samplerCube env_map_texture;
 
 void main() {
