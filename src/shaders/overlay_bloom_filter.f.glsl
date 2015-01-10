@@ -2,7 +2,7 @@ const int BLOOM_KERNEL_SIZE = 7;
 uniform float bloom_kernel[BLOOM_KERNEL_SIZE];
 uniform float glow_cutoff_threshold;
 uniform sampler2D color_texture;
-//varying vec2 lerp_sample_offset_unit_size; // strange artifact when ordererd before lerp_texcoord
+//varying vec2 lerp_sample_offset_unit_size; // strange artifact when declared before lerp_texcoord
 varying vec2 lerp_texcoord;
 varying vec2 lerp_sample_offset_unit_size;
 
