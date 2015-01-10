@@ -1,10 +1,10 @@
 const int BLOOM_KERNEL_SIZE = 7;
-
-varying vec2 lerp_texcoord;
-uniform sampler2D color_texture;
-varying vec2 lerp_sample_offset_unit_size;
 uniform float bloom_kernel[BLOOM_KERNEL_SIZE];
 uniform float glow_cutoff_threshold;
+uniform sampler2D color_texture;
+//varying vec2 lerp_sample_offset_unit_size; // strange artifact when ordererd before lerp_texcoord
+varying vec2 lerp_texcoord;
+varying vec2 lerp_sample_offset_unit_size;
 
 void sum_components(in vec4 color, out float sum) {
     sum = color.r + color.g + color.b;
@@ -12,6 +12,7 @@ void sum_components(in vec4 color, out float sum) {
 
 void main(void) {
     vec4 sum_color;
+    vec2 sample_offset_unit_size;
     for(int i = 0; i < BLOOM_KERNEL_SIZE; i++) {
         float sample_weight = bloom_kernel[i];
         ivec2 hblur_kernel_offset_index = ivec2(-3 + i, 0);

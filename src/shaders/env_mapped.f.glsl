@@ -1,22 +1,16 @@
-varying vec2 lerp_texcoord;
-uniform sampler2D bump_texture;
-
 const float AIR_REFRACTIVE_INDEX = 1.0;
-const float GLASS_REFRACTIVE_INDEX = 1.5;
-const float GLASS_REFRACTIVE_INDEX_RGB_OFFSET = 0.01;
-
 const float BUMP_FACTOR = 0.001;
 const float FRESNEL_REFLECTANCE_SHARPNESS = 2.0;
-
+const float GLASS_REFRACTIVE_INDEX = 1.5;
+const float GLASS_REFRACTIVE_INDEX_RGB_OFFSET = 0.01;
 uniform float reflect_to_refract_ratio;
-
-varying mat3 lerp_tbn_xform;
-varying vec3 lerp_vertex_position_world;
-varying vec3 lerp_camera_vector;
-
+uniform sampler2D bump_texture;
 uniform samplerCube env_map_texture;
-
 uniform vec3 camera_pos;
+varying mat3 lerp_tbn_xform;
+varying vec2 lerp_texcoord;
+varying vec3 lerp_camera_vector;
+varying vec3 lerp_vertex_position_world;
 
 void sample_env_map(
         in    vec3        ray_direction,

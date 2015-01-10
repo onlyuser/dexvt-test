@@ -1,22 +1,17 @@
-varying vec2 lerp_texcoord;
-uniform sampler2D random_texture;
-
-const int NUM_SSAO_SAMPLE_KERNELS = 3;
 const float SSAO_SAMPLE_RADIUS = 0.5;
 const float DISCONT_THRESH = SSAO_SAMPLE_RADIUS*4;
-
-uniform sampler2D frontface_depth_overlay_texture;
-uniform vec2 viewport_dim;
-uniform float camera_near;
+const int NUM_SSAO_SAMPLE_KERNELS = 3;
 uniform float camera_far;
-uniform vec3 ssao_sample_kernel_pos[NUM_SSAO_SAMPLE_KERNELS];
-
-uniform vec3 camera_pos;
-uniform vec3 camera_dir;
-
-uniform mat4 view_proj_xform;
+uniform float camera_near;
 uniform mat4 inv_view_proj_xform;
-
+uniform mat4 view_proj_xform;
+uniform sampler2D frontface_depth_overlay_texture;
+uniform sampler2D random_texture;
+uniform vec2 viewport_dim;
+uniform vec3 camera_dir;
+uniform vec3 camera_pos;
+uniform vec3 ssao_sample_kernel_pos[NUM_SSAO_SAMPLE_KERNELS];
+varying vec2 lerp_texcoord;
 varying vec3 lerp_normal;
 
 // http://stackoverflow.com/questions/6652253/getting-the-true-z-value-from-the-depth-buffer?answertab=votes#tab-top

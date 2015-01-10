@@ -1,9 +1,7 @@
-varying vec2 lerp_texcoord;
-uniform sampler2D bump_texture;
-
 const float BUMP_FACTOR = 0.001;
-
+uniform sampler2D bump_texture;
 varying mat3 lerp_tbn_xform;
+varying vec2 lerp_texcoord;
 
 void main(void) {
     vec2 flipped_texcoord = vec2(lerp_texcoord.x, 1 - lerp_texcoord.y);

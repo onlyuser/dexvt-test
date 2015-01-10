@@ -1,22 +1,18 @@
-varying vec2 lerp_texcoord;
-uniform sampler2D color_texture;
-uniform sampler2D bump_texture;
-
-const int NUM_LIGHTS = 8;
-uniform int light_count;
-
 const float MAX_DIST = 20;
 const float MAX_DIST_SQUARED = MAX_DIST*MAX_DIST;
+const int NUM_LIGHTS = 8;
 const int SPECULAR_SHARPNESS = 16;
-
-uniform vec3 light_pos[NUM_LIGHTS];
-uniform vec3 light_color[NUM_LIGHTS];
+uniform int light_count;
 uniform int light_enabled[NUM_LIGHTS];
+uniform sampler2D bump_texture;
+uniform sampler2D color_texture;
 uniform vec3 ambient_color;
-
-varying vec3 lerp_position_world;
+uniform vec3 light_color[NUM_LIGHTS];
+uniform vec3 light_pos[NUM_LIGHTS];
 varying mat3 lerp_tbn_transform;
+varying vec2 lerp_texcoord;
 varying vec3 lerp_camera_vector;
+varying vec3 lerp_position_world;
 
 void main(void) {
     vec3 diffuse_sum = vec3(0.0, 0.0, 0.0);

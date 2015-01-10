@@ -1,50 +1,37 @@
-varying vec2 lerp_texcoord;
-uniform sampler2D bump_texture;
-
 const float AIR_REFRACTIVE_INDEX = 1.0;
+const float BEERS_LAW_FALLOFF_SHARPNESS = 0.5;
+const float BUMP_FACTOR = 0.001;
+const float EPSILON = 0.001;
+const float FRESNEL_REFLECTANCE_SHARPNESS = 2.0;
 const float GLASS_REFRACTIVE_INDEX = 1.5;
 const float GLASS_REFRACTIVE_INDEX_RGB_OFFSET = 0.01;
-
-const float BUMP_FACTOR = 0.001;
-const float FRESNEL_REFLECTANCE_SHARPNESS = 2.0;
-const float BEERS_LAW_FALLOFF_SHARPNESS = 0.5;
-const vec4 MATERIAL_AMBIENT_COLOR = vec4(0);
-
-const int NUM_NEWTONS_METHOD_ITERS = 3;
-
-const float EPSILON = 0.001;
-
-uniform float reflect_to_refract_ratio;
-
-varying mat3 lerp_tbn_xform;
-varying vec3 lerp_vertex_position_world;
-varying vec3 lerp_camera_vector;
-
-uniform samplerCube env_map_texture;
-
-uniform sampler2D frontface_depth_overlay_texture;
-uniform sampler2D backface_depth_overlay_texture;
-uniform sampler2D backface_normal_overlay_texture;
-uniform vec2 viewport_dim;
-uniform float camera_near;
-uniform float camera_far;
-
-uniform vec3 camera_pos;
-uniform mat4 view_proj_xform;
-
-const int NUM_LIGHTS = 8;
-uniform int light_count;
-
-const vec3 AMBIENT = vec3(0.1, 0.1, 0.1);
 const float MAX_DIST = 20;
 const float MAX_DIST_SQUARED = MAX_DIST*MAX_DIST;
+const int NUM_LIGHTS = 8;
+const int NUM_NEWTONS_METHOD_ITERS = 3;
 const int SPECULAR_SHARPNESS = 64;
-
-uniform vec3 light_color[NUM_LIGHTS];
+const vec3 AMBIENT = vec3(0.1, 0.1, 0.1);
+const vec4 MATERIAL_AMBIENT_COLOR = vec4(0);
+uniform float camera_far;
+uniform float camera_near;
+uniform float reflect_to_refract_ratio;
+uniform int light_count;
 uniform int light_enabled[NUM_LIGHTS];
-uniform vec3 light_pos[NUM_LIGHTS];
-
 uniform mat4 inv_view_proj_xform;
+uniform mat4 view_proj_xform;
+uniform sampler2D backface_depth_overlay_texture;
+uniform sampler2D backface_normal_overlay_texture;
+uniform sampler2D bump_texture;
+uniform sampler2D frontface_depth_overlay_texture;
+uniform samplerCube env_map_texture;
+uniform vec2 viewport_dim;
+uniform vec3 camera_pos;
+uniform vec3 light_color[NUM_LIGHTS];
+uniform vec3 light_pos[NUM_LIGHTS];
+varying mat3 lerp_tbn_xform;
+varying vec2 lerp_texcoord;
+varying vec3 lerp_camera_vector;
+varying vec3 lerp_vertex_position_world;
 
 // http://stackoverflow.com/questions/6652253/getting-the-true-z-value-from-the-depth-buffer?answertab=votes#tab-top
 void map_depth_to_actual_depth(
