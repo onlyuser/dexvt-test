@@ -12,7 +12,6 @@ void sum_components(in vec4 color, out float sum) {
 
 void main(void) {
     vec4 sum_color;
-    vec2 sample_offset_unit_size;
     for(int i = 0; i < BLOOM_KERNEL_SIZE; i++) {
         float sample_weight = bloom_kernel[i];
         ivec2 hblur_kernel_offset_index = ivec2(-3 + i, 0);
