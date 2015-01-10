@@ -173,21 +173,21 @@ int init_resources()
             false,  // skybox
             false); // overlay
     vt::Program* bump_mapped_program = bump_mapped_material->get_program();
-    bump_mapped_program->add_var("texcoord",        vt::Program::VAR_TYPE_ATTRIBUTE);
-    bump_mapped_program->add_var("vertex_normal",   vt::Program::VAR_TYPE_ATTRIBUTE);
-    bump_mapped_program->add_var("vertex_position", vt::Program::VAR_TYPE_ATTRIBUTE);
-    bump_mapped_program->add_var("vertex_tangent",  vt::Program::VAR_TYPE_ATTRIBUTE);
-    bump_mapped_program->add_var("normal_xform",    vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("model_xform",     vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("camera_pos",      vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("light_pos",       vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("light_color",     vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("light_enabled",   vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("light_count",     vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("bump_texture",    vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("color_texture",   vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("mvp_xform",       vt::Program::VAR_TYPE_UNIFORM);
-    bump_mapped_program->add_var("ambient_color",   vt::Program::VAR_TYPE_UNIFORM);
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "texcoord");
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_position");
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_tangent");
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "normal_xform");
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "model_xform");
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "camera_pos");
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "light_pos");
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "light_color");
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "light_enabled");
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "light_count");
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "bump_texture");
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "color_texture");
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "mvp_xform");
+    bump_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "ambient_color");
     scene->add_material(bump_mapped_material);
 
     vt::Material* phong_material = new vt::Material(
@@ -208,17 +208,17 @@ int init_resources()
             false,  // skybox
             false); // overlay
     vt::Program* phong_program = phong_material->get_program();
-    phong_program->add_var("vertex_normal",   vt::Program::VAR_TYPE_ATTRIBUTE);
-    phong_program->add_var("vertex_position", vt::Program::VAR_TYPE_ATTRIBUTE);
-    phong_program->add_var("normal_xform",    vt::Program::VAR_TYPE_UNIFORM);
-    phong_program->add_var("model_xform",     vt::Program::VAR_TYPE_UNIFORM);
-    phong_program->add_var("camera_pos",      vt::Program::VAR_TYPE_UNIFORM);
-    phong_program->add_var("light_pos",       vt::Program::VAR_TYPE_UNIFORM);
-    phong_program->add_var("light_color",     vt::Program::VAR_TYPE_UNIFORM);
-    phong_program->add_var("light_enabled",   vt::Program::VAR_TYPE_UNIFORM);
-    phong_program->add_var("light_count",     vt::Program::VAR_TYPE_UNIFORM);
-    phong_program->add_var("mvp_xform",       vt::Program::VAR_TYPE_UNIFORM);
-    phong_program->add_var("ambient_color",   vt::Program::VAR_TYPE_UNIFORM);
+    phong_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
+    phong_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_position");
+    phong_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "normal_xform");
+    phong_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "model_xform");
+    phong_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "camera_pos");
+    phong_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "light_pos");
+    phong_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "light_color");
+    phong_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "light_enabled");
+    phong_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "light_count");
+    phong_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "mvp_xform");
+    phong_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "ambient_color");
     scene->add_material(phong_material);
 
     vt::Material* ssao_material = new vt::Material(
@@ -239,21 +239,21 @@ int init_resources()
             false,  // skybox
             false); // overlay
     vt::Program* ssao_program = ssao_material->get_program();
-    ssao_program->add_var("texcoord",                        vt::Program::VAR_TYPE_ATTRIBUTE);
-    ssao_program->add_var("vertex_normal",                   vt::Program::VAR_TYPE_ATTRIBUTE);
-    ssao_program->add_var("vertex_position",                 vt::Program::VAR_TYPE_ATTRIBUTE);
-    ssao_program->add_var("normal_xform",                    vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("random_texture",                  vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("mvp_xform",                       vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("frontface_depth_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("viewport_dim",                    vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("camera_near",                     vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("camera_far",                      vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("ssao_sample_kernel_pos",          vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("inv_view_proj_xform",             vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("view_proj_xform",                 vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("camera_pos",                      vt::Program::VAR_TYPE_UNIFORM);
-    ssao_program->add_var("camera_dir",                      vt::Program::VAR_TYPE_UNIFORM);
+    ssao_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "texcoord");
+    ssao_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
+    ssao_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_position");
+    ssao_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "normal_xform");
+    ssao_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "random_texture");
+    ssao_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "mvp_xform");
+    ssao_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "frontface_depth_overlay_texture");
+    ssao_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "viewport_dim");
+    ssao_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "camera_near");
+    ssao_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "camera_far");
+    ssao_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "ssao_sample_kernel_pos");
+    ssao_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "inv_view_proj_xform");
+    ssao_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "view_proj_xform");
+    ssao_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "camera_pos");
+    ssao_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "camera_dir");
     scene->add_material(ssao_material);
     scene->set_ssao_material(ssao_material);
 
@@ -275,9 +275,9 @@ int init_resources()
             true,   // skybox
             false); // overlay
     vt::Program* skybox_material_program = skybox_material->get_program();
-    skybox_material_program->add_var("env_map_texture",      vt::Program::VAR_TYPE_UNIFORM);
-    skybox_material_program->add_var("inv_projection_xform", vt::Program::VAR_TYPE_UNIFORM);
-    skybox_material_program->add_var("inv_normal_xform",     vt::Program::VAR_TYPE_UNIFORM);
+    skybox_material_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "env_map_texture");
+    skybox_material_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "inv_projection_xform");
+    skybox_material_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "inv_normal_xform");
     scene->add_material(skybox_material);
 
     overlay_write_through_material = new vt::Material(
@@ -298,7 +298,7 @@ int init_resources()
             false, // skybox
             true); // overlay
     vt::Program* overlay_write_through_program = overlay_write_through_material->get_program();
-    overlay_write_through_program->add_var("color_texture", vt::Program::VAR_TYPE_UNIFORM);
+    overlay_write_through_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "color_texture");
     scene->add_material(overlay_write_through_material);
 
     overlay_bloom_filter_material = new vt::Material(
@@ -319,10 +319,10 @@ int init_resources()
             false, // skybox
             true); // overlay
     vt::Program* overlay_bloom_filter_program = overlay_bloom_filter_material->get_program();
-    overlay_bloom_filter_program->add_var("color_texture",         vt::Program::VAR_TYPE_UNIFORM);
-    overlay_bloom_filter_program->add_var("viewport_dim",          vt::Program::VAR_TYPE_UNIFORM);
-    overlay_bloom_filter_program->add_var("bloom_kernel",          vt::Program::VAR_TYPE_UNIFORM);
-    overlay_bloom_filter_program->add_var("glow_cutoff_threshold", vt::Program::VAR_TYPE_UNIFORM);
+    overlay_bloom_filter_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "color_texture");
+    overlay_bloom_filter_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "viewport_dim");
+    overlay_bloom_filter_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "bloom_kernel");
+    overlay_bloom_filter_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "glow_cutoff_threshold");
     scene->add_material(overlay_bloom_filter_material);
 
     overlay_max_material = new vt::Material(
@@ -343,8 +343,8 @@ int init_resources()
             false, // skybox
             true); // overlay
     vt::Program* overlay_max_program = overlay_max_material->get_program();
-    overlay_max_program->add_var("color_texture",  vt::Program::VAR_TYPE_UNIFORM);
-    overlay_max_program->add_var("color_texture2", vt::Program::VAR_TYPE_UNIFORM);
+    overlay_max_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "color_texture");
+    overlay_max_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "color_texture2");
     scene->add_material(overlay_max_material);
 
     vt::Material* texture_mapped_material = new vt::Material(
@@ -365,10 +365,10 @@ int init_resources()
             false,  // skybox
             false); // overlay
     vt::Program* texture_mapped_program = texture_mapped_material->get_program();
-    texture_mapped_program->add_var("texcoord",        vt::Program::VAR_TYPE_ATTRIBUTE);
-    texture_mapped_program->add_var("vertex_position", vt::Program::VAR_TYPE_ATTRIBUTE);
-    texture_mapped_program->add_var("color_texture",   vt::Program::VAR_TYPE_UNIFORM);
-    texture_mapped_program->add_var("mvp_xform",       vt::Program::VAR_TYPE_UNIFORM);
+    texture_mapped_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "texcoord");
+    texture_mapped_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_position");
+    texture_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "color_texture");
+    texture_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "mvp_xform");
     scene->add_material(texture_mapped_material);
 
     vt::Material* env_mapped_material = new vt::Material(
@@ -389,17 +389,17 @@ int init_resources()
             false,  // skybox
             false); // overlay
     vt::Program* env_mapped_program = env_mapped_material->get_program();
-    env_mapped_program->add_var("texcoord",                 vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_program->add_var("vertex_normal",            vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_program->add_var("vertex_position",          vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_program->add_var("vertex_tangent",           vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_program->add_var("normal_xform",             vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_program->add_var("model_xform",              vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_program->add_var("camera_pos",               vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_program->add_var("bump_texture",             vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_program->add_var("env_map_texture",          vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_program->add_var("reflect_to_refract_ratio", vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_program->add_var("mvp_xform",                vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "texcoord");
+    env_mapped_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
+    env_mapped_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_position");
+    env_mapped_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_tangent");
+    env_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "normal_xform");
+    env_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "model_xform");
+    env_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "camera_pos");
+    env_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "bump_texture");
+    env_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "env_map_texture");
+    env_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "reflect_to_refract_ratio");
+    env_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "mvp_xform");
     scene->add_material(env_mapped_material);
 
     vt::Material* env_mapped_dbl_refract_material = new vt::Material(
@@ -420,29 +420,29 @@ int init_resources()
             false,  // skybox
             false); // overlay
     vt::Program* env_mapped_dbl_refract_program = env_mapped_dbl_refract_material->get_program();
-    env_mapped_dbl_refract_program->add_var("texcoord",                        vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_dbl_refract_program->add_var("vertex_normal",                   vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_dbl_refract_program->add_var("vertex_position",                 vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_dbl_refract_program->add_var("vertex_tangent",                  vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_dbl_refract_program->add_var("normal_xform",                    vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("model_xform",                     vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("camera_pos",                      vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("light_pos",                       vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("light_color",                     vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("light_enabled",                   vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("light_count",                     vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("bump_texture",                    vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("env_map_texture",                 vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("reflect_to_refract_ratio",        vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("frontface_depth_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("backface_depth_overlay_texture",  vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("backface_normal_overlay_texture", vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("viewport_dim",                    vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("camera_near",                     vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("camera_far",                      vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("view_proj_xform",                 vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("mvp_xform",                       vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_dbl_refract_program->add_var("inv_view_proj_xform",             vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "texcoord");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_position");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_tangent");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "normal_xform");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "model_xform");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "camera_pos");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "light_pos");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "light_color");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "light_enabled");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "light_count");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "bump_texture");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "env_map_texture");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "reflect_to_refract_ratio");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "frontface_depth_overlay_texture");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "backface_depth_overlay_texture");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "backface_normal_overlay_texture");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "viewport_dim");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "camera_near");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "camera_far");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "view_proj_xform");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "mvp_xform");
+    env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "inv_view_proj_xform");
     scene->add_material(env_mapped_dbl_refract_material);
 
     vt::Material* env_mapped_fast_material = new vt::Material(
@@ -463,14 +463,14 @@ int init_resources()
             false,  // skybox
             false); // overlay
     vt::Program* env_mapped_fast_program = env_mapped_fast_material->get_program();
-    env_mapped_fast_program->add_var("vertex_normal",            vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_fast_program->add_var("vertex_position",          vt::Program::VAR_TYPE_ATTRIBUTE);
-    env_mapped_fast_program->add_var("normal_xform",             vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_fast_program->add_var("model_xform",              vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_fast_program->add_var("camera_pos",               vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_fast_program->add_var("env_map_texture",          vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_fast_program->add_var("reflect_to_refract_ratio", vt::Program::VAR_TYPE_UNIFORM);
-    env_mapped_fast_program->add_var("mvp_xform",                vt::Program::VAR_TYPE_UNIFORM);
+    env_mapped_fast_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
+    env_mapped_fast_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_position");
+    env_mapped_fast_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "normal_xform");
+    env_mapped_fast_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "model_xform");
+    env_mapped_fast_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "camera_pos");
+    env_mapped_fast_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "env_map_texture");
+    env_mapped_fast_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "reflect_to_refract_ratio");
+    env_mapped_fast_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "mvp_xform");
     scene->add_material(env_mapped_fast_material);
 
     //vt::Material* normal_material = new vt::Material(
@@ -511,10 +511,10 @@ int init_resources()
             false,  // skybox
             false); // overlay
     vt::Program* normal_fast_program = normal_fast_material->get_program();
-    normal_fast_program->add_var("vertex_normal",   vt::Program::VAR_TYPE_ATTRIBUTE);
-    normal_fast_program->add_var("vertex_position", vt::Program::VAR_TYPE_ATTRIBUTE);
-    normal_fast_program->add_var("normal_xform",    vt::Program::VAR_TYPE_UNIFORM);
-    normal_fast_program->add_var("mvp_xform",       vt::Program::VAR_TYPE_UNIFORM);
+    normal_fast_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
+    normal_fast_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_position");
+    normal_fast_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "normal_xform");
+    normal_fast_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "mvp_xform");
     scene->add_material(normal_fast_material);
     scene->set_normal_material(normal_fast_material);
 
@@ -536,9 +536,9 @@ int init_resources()
             false,  // skybox
             false); // overlay
     vt::Program* ambient_program = ambient_material->get_program();
-    ambient_program->add_var("vertex_position", vt::Program::VAR_TYPE_ATTRIBUTE);
-    ambient_program->add_var("ambient_color",   vt::Program::VAR_TYPE_UNIFORM);
-    ambient_program->add_var("mvp_xform",       vt::Program::VAR_TYPE_UNIFORM);
+    ambient_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_position");
+    ambient_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "ambient_color");
+    ambient_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "mvp_xform");
     scene->add_material(ambient_material);
     scene->set_wireframe_material(ambient_material);
 

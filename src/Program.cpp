@@ -79,7 +79,7 @@ void Program::get_program_iv(
     glGetProgramiv(m_id, pname, params);
 }
 
-bool Program::add_var(std::string name, var_type_t var_type)
+bool Program::add_var(var_type_t var_type, std::string name)
 {
     switch(var_type)
     {

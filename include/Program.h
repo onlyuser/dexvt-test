@@ -39,7 +39,7 @@ public:
     void get_program_iv(
             GLenum pname,
             GLint* params) const;
-    bool add_var(std::string name, var_type_t var_type);
+    bool add_var(var_type_t var_type, std::string name);
     bool has_var(std::string name, var_type_t* var_type = NULL);
     void clear_vars();
 
