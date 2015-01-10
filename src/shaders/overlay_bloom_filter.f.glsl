@@ -13,7 +13,6 @@ void sum_components(in vec4 color, out float sum) {
 void main(void) {
     vec4 sum_color;
     for(int i = 0; i < BLOOM_KERNEL_SIZE; i++) {
-        float sample_weight = bloom_kernel[i];
         ivec2 hblur_kernel_offset_index = ivec2(-3 + i, 0);
         ivec2 vblur_kernel_offset_index = ivec2(0, -3 + i);
         vec2 hblur_sample_coord = vec2(lerp_texcoord.x + lerp_sample_offset_unit_size.x*hblur_kernel_offset_index.x,
@@ -32,7 +31,7 @@ void main(void) {
         if(vblur_sum < glow_cutoff_threshold) {
             vblur_sample_color = vec4(0);
         }
-        sum_color += (hblur_sample_color + vblur_sample_color)*sample_weight;
+        sum_color += (hblur_sample_color + vblur_sample_color)*bloom_kernel[i];
     }
     gl_FragColor = clamp(sum_color*0.5, 0, 1);
 }
