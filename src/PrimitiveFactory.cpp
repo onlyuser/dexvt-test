@@ -3,7 +3,6 @@
 #include <Util.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/constants.hpp>
 #include <string>
 #include <assert.h>
 
@@ -232,7 +231,7 @@ Mesh* PrimitiveFactory::create_cone(
     // init mesh vertex/normal coords
     // ==============================
 
-    float rim_y_offset = radius*sin(glm::half_pi<float>()-atan(height/radius));
+    float rim_y_offset = radius*sin(HALF_PI-atan(height/radius));
     int vert_index = 0;
     for(int row = 0; row <= rows; row++) {
         for(int col = 0; col <= cols; col++) {
@@ -530,8 +529,8 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
     float lower_girdle_inner_rim_y      = pavilion_depth*(1-lower_girdle_depth_to_pavilion_depth_ratio);
     float lower_girdle_inner_rim_radius = radius*lower_girdle_depth_to_pavilion_depth_ratio;
 
-    upper_girdle_inner_rim_radius /= cos(glm::pi<float>()*0.125);
-    lower_girdle_inner_rim_radius /= cos(glm::pi<float>()*0.125);
+    upper_girdle_inner_rim_radius /= cos(PI*0.125);
+    lower_girdle_inner_rim_radius /= cos(PI*0.125);
 
     int vert_index = 0;
     int tri_index  = 0;

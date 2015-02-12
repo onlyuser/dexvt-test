@@ -3,6 +3,16 @@
 
 #include <glm/glm.hpp>
 
+#ifdef NO_GLM_CONSTANTS
+    #warning "Disabling glm header <glm/gtx/constants.hpp>"
+    #define PI      3.1415926
+    #define HALF_PI (PI*0.5)
+#else
+    #include <glm/gtx/constants.hpp>
+    #define PI      glm::pi<float>()
+    #define HALF_PI glm::half_pi<float>()
+#endif
+
 #define ORIENT_ROLL(v)  v[0]
 #define ORIENT_PITCH(v) v[1]
 #define ORIENT_YAW(v)   v[2]

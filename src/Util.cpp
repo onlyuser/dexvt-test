@@ -3,7 +3,6 @@
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
-#include <glm/gtx/constants.hpp>
 #include <math.h>
 
 #define ROLL(v)  v.x
@@ -70,7 +69,7 @@ void mesh_apply_ripple(Mesh* mesh, glm::vec3 origin, float amplitude, float wave
     for(int i = 0; i < static_cast<int>(mesh->get_num_vertex()); i++) {
         glm::vec3 pos = mesh->get_vert_coord(i);
         glm::vec3 new_pos = pos;
-        new_pos.y = origin.y + static_cast<float>(sin(glm::distance(glm::vec2(origin.x, origin.z), glm::vec2(pos.x, pos.z))/(wavelength/(glm::pi<float>()*2)) + phase))*amplitude;
+        new_pos.y = origin.y + static_cast<float>(sin(glm::distance(glm::vec2(origin.x, origin.z), glm::vec2(pos.x, pos.z))/(wavelength/(PI*2)) + phase))*amplitude;
         mesh->set_vert_coord(i, new_pos);
     }
 
