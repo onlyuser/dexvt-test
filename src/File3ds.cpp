@@ -5,8 +5,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include <iostream>
-
 #define MAKEWORD(a, b) ((uint16_t)(((uint8_t)(a))  | (((uint16_t)((uint8_t)(b))) << 8)))
 #define MAKELONG(a, b) ((uint32_t)(((uint16_t)(a)) | (((uint32_t)((uint16_t)(b))) << 16)))
 
@@ -54,7 +52,6 @@ bool File3ds::load3ds(std::string filename, int index, std::vector<Mesh*>* meshe
                         fseek(stream, meshBase, SEEK_SET);
                         //=========================================================
                         Mesh* mesh = new Mesh(buf, vertCnt, faceCnt);
-                        std::cout << "Found mesh: " << buf << std::endl;
                         //=========================================================
                         enterChunk(stream, TRI_VERTEXL, meshEnd);
                         readVertList(stream, mesh);

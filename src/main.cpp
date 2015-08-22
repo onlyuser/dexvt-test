@@ -43,6 +43,7 @@
 #include <iostream> // std::cout
 #include <sstream> // std::stringstream
 #include <iomanip> // std::setprecision
+#include <unistd.h> // access
 
 #define HI_RES_TEX_DIM  512
 #define MED_RES_TEX_DIM 256
