@@ -82,7 +82,7 @@ Model files not included:
     </tr>
     <tr>
         <td>data/star_wars/TI_Low0.3ds</td>
-        <td>Tie Interceptor model by James R. Bassett</td>
+        <td>3D Studio mesh</td>
     </tr>
 </table>
 
