@@ -73,6 +73,19 @@ Texture files not included:
     </tr>
 </table>
 
+Model files not included:
+
+<table>
+    <tr>
+        <th>model files</th>
+        <th>purpose</th>
+    </tr>
+    <tr>
+        <td>data/star_wars/TI_Low0.3ds</td>
+        <td>Tie Interceptor model by James R. Bassett</td>
+    </tr>
+</table>
+
 Make targets
 ------------
 
@@ -159,6 +172,9 @@ References
 
     <dt>"songho.ca OpenGL Projection Matrix"</dt>
     <dd>http://www.songho.ca/opengl/gl_projectionmatrix.html</dd>
+
+    <dt>"3D MeshWorks"</dt>
+    <dd>http://www.jrbassett.com</dd>
 </dl>
 
 Keywords
