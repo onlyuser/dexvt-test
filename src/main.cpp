@@ -31,6 +31,7 @@
 #include <Material.h>
 #include <Mesh.h>
 #include <PrimitiveFactory.h>
+#include <File3ds.h>
 #include <Program.h>
 #include <Shader.h>
 #include <Scene.h>
@@ -38,6 +39,7 @@
 #include <Util.h>
 #include <VarAttribute.h>
 #include <VarUniform.h>
+#include <vector>
 #include <iostream> // std::cout
 #include <sstream> // std::stringstream
 #include <iomanip> // std::setprecision
@@ -54,6 +56,7 @@ enum demo_mode_t {
     DEMO_MODE_SPHERE,
     DEMO_MODE_BOX,
     DEMO_MODE_GRID,
+    DEMO_MODE_MESHES_IMPORTED,
     DEMO_MODE_COUNT
 };
 
@@ -72,6 +75,7 @@ const char* DEFAULT_CAPTION = "My Textured Cube";
 int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
 vt::Mesh *mesh_skybox, *mesh_overlay, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10, *hidden_mesh, *hidden_mesh2, *hidden_mesh3, *hidden_mesh4;
+std::vector<vt::Mesh*> meshes_imported;
 vt::Light *light, *light2, *light3;
 vt::Texture *texture, *texture2, *texture3, *texture4, *texture5, *frontface_depth_overlay_texture, *backface_depth_overlay_texture, *frontface_normal_overlay_texture, *backface_normal_overlay_texture, *ssao_overlay_texture, *hi_res_color_overlay_texture, *med_res_color_overlay_texture, *lo_res_color_overlay_texture, *random_texture;
 
@@ -124,6 +128,14 @@ int init_resources()
     scene->add_mesh(hidden_mesh2 = vt::PrimitiveFactory::create_sphere(               "sphere2", 16, 16, 0.5));
     scene->add_mesh(hidden_mesh3 = vt::PrimitiveFactory::create_box(                  "box3"));
     scene->add_mesh(hidden_mesh4 = vt::PrimitiveFactory::create_grid(                 "grid2",   32, 32, 1, 1));
+    const char* model_filename = "data/star_wars/TI_Low0.3ds";
+    if(access(model_filename, F_OK) != -1) {
+        vt::File3ds::load3ds(model_filename, -1, &meshes_imported);
+    }
+    for(std::vector<vt::Mesh*>::iterator p = meshes_imported.begin(); p != meshes_imported.end(); p++) {
+        scene->add_mesh(*p);
+        (*p)->center();
+    }
 
     mesh->set_origin(        glm::vec3(-0.5, -0.5, -0.5)); // box
     mesh2->set_origin(       glm::vec3(-5, 5, -1));        // grid
@@ -139,6 +151,9 @@ int init_resources()
     hidden_mesh2->set_origin(glm::vec3(0, 0, 0));          // sphere2
     hidden_mesh3->set_origin(glm::vec3(-1, -1, -1));       // box3
     hidden_mesh4->set_origin(glm::vec3(-2, 0, -2));        // grid2
+    for(std::vector<vt::Mesh*>::iterator p = meshes_imported.begin(); p != meshes_imported.end(); p++) {
+        (*p)->set_origin(glm::vec3(0, 0, 0));
+    }
 
     mesh2->set_orient(glm::vec3(0, -90, 0));
 
@@ -149,11 +164,17 @@ int init_resources()
     hidden_mesh2->set_visible(false);
     hidden_mesh3->set_visible(false);
     hidden_mesh4->set_visible(false);
+    for(std::vector<vt::Mesh*>::iterator p = meshes_imported.begin(); p != meshes_imported.end(); p++) {
+        (*p)->set_visible(false);
+    }
 
     hidden_mesh->set_scale(glm::vec3( 2, 2, 2)); // diamond2
     hidden_mesh2->set_scale(glm::vec3(2, 2, 2)); // sphere2
     hidden_mesh3->set_scale(glm::vec3(2, 2, 2)); // box3
     hidden_mesh4->set_scale(glm::vec3(4, 4, 4)); // grid2
+    for(std::vector<vt::Mesh*>::iterator p = meshes_imported.begin(); p != meshes_imported.end(); p++) {
+        (*p)->set_scale(glm::vec3(0.1, 0.1, 0.1));
+    }
 
     vt::Material* bump_mapped_material = new vt::Material(
             "bump_mapped",
@@ -801,6 +822,16 @@ int init_resources()
     hidden_mesh2->set_backface_depth_overlay_texture_index( hidden_mesh2->get_material()->get_texture_index_by_name("backface_depth_overlay"));
     hidden_mesh2->set_backface_normal_overlay_texture_index(hidden_mesh2->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
+    for(std::vector<vt::Mesh*>::iterator p = meshes_imported.begin(); p != meshes_imported.end(); p++) {
+        (*p)->set_material(env_mapped_dbl_refract_material);
+        (*p)->set_reflect_to_refract_ratio(0.33); // 33% reflective
+        (*p)->set_texture_index(                        (*p)->get_material()->get_texture_index_by_name("chesterfield_color"));
+        (*p)->set_bump_texture_index(                   (*p)->get_material()->get_texture_index_by_name("chesterfield_normal"));
+        (*p)->set_frontface_depth_overlay_texture_index((*p)->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
+        (*p)->set_backface_depth_overlay_texture_index( (*p)->get_material()->get_texture_index_by_name("backface_depth_overlay"));
+        (*p)->set_backface_normal_overlay_texture_index((*p)->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+    }
+
     // box3
     hidden_mesh3->set_material(env_mapped_dbl_refract_material);
     hidden_mesh3->set_reflect_to_refract_ratio(0.33); // 33% reflective
@@ -1036,6 +1067,9 @@ void set_mesh_visibility(bool visible)
     hidden_mesh2->set_visible(visible); // sphere2
     hidden_mesh3->set_visible(visible); // box3
     hidden_mesh4->set_visible(visible); // grid2
+    for(std::vector<vt::Mesh*>::iterator p = meshes_imported.begin(); p != meshes_imported.end(); p++) {
+        (*p)->set_visible(visible);
+    }
 }
 
 void onKeyboard(unsigned char key, int x, int y)
@@ -1065,6 +1099,9 @@ void onKeyboard(unsigned char key, int x, int y)
                     hidden_mesh2->set_visible(false); // sphere2
                     hidden_mesh3->set_visible(false); // box3
                     hidden_mesh4->set_visible(false); // grid2
+                    for(std::vector<vt::Mesh*>::iterator p = meshes_imported.begin(); p != meshes_imported.end(); p++) {
+                        (*p)->set_visible(false);
+                    }
                     break;
                 case DEMO_MODE_DIAMOND:
                     set_mesh_visibility(false);
@@ -1081,6 +1118,12 @@ void onKeyboard(unsigned char key, int x, int y)
                 case DEMO_MODE_GRID:
                     set_mesh_visibility(false);
                     hidden_mesh4->set_visible(true); // grid2
+                    break;
+                case DEMO_MODE_MESHES_IMPORTED:
+                    set_mesh_visibility(false);
+                    for(std::vector<vt::Mesh*>::iterator p = meshes_imported.begin(); p != meshes_imported.end(); p++) {
+                        (*p)->set_visible(true);
+                    }
                     break;
                 default:
                     break;

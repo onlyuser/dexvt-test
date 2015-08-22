@@ -57,6 +57,8 @@ public:
     glm::uvec3 get_tri_indices(int index) const;
     void       set_tri_indices(int index, glm::uvec3 indices);
 
+    void center();
+
     void init_buffers();
     void update_buffers() const;
     Buffer* get_vbo_vert_coords();
