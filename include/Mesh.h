@@ -61,7 +61,7 @@ public:
     void update_bbox();
     void xform_vertices(glm::mat4 xform);
     void center();
-    void calc_normal_tangent();
+    void update_normals_and_tangents();
 
     void init_buffers();
     void update_buffers() const;

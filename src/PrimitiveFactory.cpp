@@ -473,7 +473,7 @@ Mesh* PrimitiveFactory::create_tetrahedron(
     mesh->set_tri_indices(2, glm::uvec3(6, 7,  8));
     mesh->set_tri_indices(3, glm::uvec3(9, 10, 11));
 
-    mesh->calc_normal_tangent();
+    mesh->update_normals_and_tangents();
 
     return mesh;
 }

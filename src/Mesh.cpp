@@ -179,13 +179,11 @@ void Mesh::xform_vertices(glm::mat4 xform)
 void Mesh::center()
 {
     update_bbox();
-    glm::vec3 center = get_center();
-    for(int i = 0; i < static_cast<int>(m_num_vertex); i++) {
-        set_vert_coord(i, get_vert_coord(i) - center);
-    }
+    xform_vertices(glm::translate(glm::mat4(1), -get_center()));
+    update_normals_and_tangents();
 }
 
-void Mesh::calc_normal_tangent()
+void Mesh::update_normals_and_tangents()
 {
     for(int i=0; i<static_cast<int>(m_num_tri); i++) {
         glm::uvec3 tri_indices = get_tri_indices(i);
