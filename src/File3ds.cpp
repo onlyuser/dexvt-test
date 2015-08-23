@@ -1,5 +1,6 @@
 #include <File3ds.h>
 #include <Mesh.h>
+#include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include <string>
 #include <stdint.h>
@@ -25,6 +26,8 @@ bool File3ds::load3ds(std::string filename, int index, std::vector<Mesh*>* meshe
     }
     FILE *stream = fopen(filename.c_str(), "rb");
     if(stream) {
+        glm::vec3 g_min, g_max;
+        bool init_global_bbox = false;
         fseek(stream, 0, SEEK_END);
         uint32_t size = ftell(stream);
         rewind(stream);
@@ -62,6 +65,16 @@ bool File3ds::load3ds(std::string filename, int index, std::vector<Mesh*>* meshe
                         fseek(stream, meshBase, SEEK_SET);
                         //=========================================================
                         mesh->update_bbox();
+                        glm::vec3 min, max;
+                        mesh->get_bbox(&min, &max);
+                        if(init_global_bbox) {
+                            g_min = glm::min(g_min, min);
+                            g_max = glm::max(g_max, max);
+                        } else {
+                            g_min = min;
+                            g_max = max;
+                            init_global_bbox = true;
+                        }
                         meshes->push_back(mesh);
                     }
                     fseek(stream, meshEnd, SEEK_SET);
@@ -73,6 +86,12 @@ bool File3ds::load3ds(std::string filename, int index, std::vector<Mesh*>* meshe
             fseek(stream, objEnd, SEEK_SET);
         }
         fclose(stream);
+        glm::vec3 g_center = g_min;
+        g_center += g_max;
+        g_center *= 0.5;
+        for(std::vector<vt::Mesh*>::iterator p = meshes->begin(); p != meshes->end(); p++) {
+            (*p)->xform_vertices(glm::translate(glm::mat4(1), -g_center));
+        }
     }
     return true;
 }

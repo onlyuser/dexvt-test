@@ -59,6 +59,7 @@ public:
     void       set_tri_indices(int index, glm::uvec3 indices);
 
     void update_bbox();
+    void xform_vertices(glm::mat4 xform);
     void center();
 
     void init_buffers();

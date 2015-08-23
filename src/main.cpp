@@ -135,7 +135,6 @@ int init_resources()
     }
     for(std::vector<vt::Mesh*>::iterator p = meshes_imported.begin(); p != meshes_imported.end(); p++) {
         scene->add_mesh(*p);
-        (*p)->center();
     }
 
     mesh->set_origin(        glm::vec3(-0.5, -0.5, -0.5)); // box
