@@ -159,17 +159,21 @@ void Mesh::set_tri_indices(int index, glm::uvec3 indices)
     m_tri_indices[offset+2] = indices[2];
 }
 
-void Mesh::center()
+void Mesh::update_bbox()
 {
-    glm::vec3 min, max;
-    min = max = get_vert_coord(0);
+    m_min = m_max = get_vert_coord(0);
     for(int i = 1; i < static_cast<int>(m_num_vertex); i++) {
         glm::vec3 cur = get_vert_coord(i);
-        max = glm::max(max, cur);
-        min = glm::min(min, cur);
+        m_max = glm::max(m_max, cur);
+        m_min = glm::min(m_min, cur);
     }
-    glm::vec3 avg = min;
-    avg += max;
+}
+
+void Mesh::center()
+{
+    update_bbox();
+    glm::vec3 avg = m_min;
+    avg += m_max;
     avg *= 0.5;
     for(int j = 0; j < static_cast<int>(m_num_vertex); j++) {
         set_vert_coord(j, get_vert_coord(j) - avg);

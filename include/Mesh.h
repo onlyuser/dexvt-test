@@ -5,6 +5,7 @@
 #include <ShaderContext.h>
 #include <Buffer.h>
 #include <XformObject.h>
+#include <BBoxObject.h>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <string>
@@ -15,7 +16,7 @@ namespace vt {
 
 class Material;
 
-class Mesh : public NamedObject, public XformObject
+class Mesh : public NamedObject, public XformObject, public BBoxObject
 {
 public:
     Mesh(
@@ -57,6 +58,7 @@ public:
     glm::uvec3 get_tri_indices(int index) const;
     void       set_tri_indices(int index, glm::uvec3 indices);
 
+    void update_bbox();
     void center();
 
     void init_buffers();
