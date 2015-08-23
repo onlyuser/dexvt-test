@@ -823,13 +823,8 @@ int init_resources()
     hidden_mesh2->set_backface_normal_overlay_texture_index(hidden_mesh2->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     for(std::vector<vt::Mesh*>::iterator p = meshes_imported.begin(); p != meshes_imported.end(); p++) {
-        (*p)->set_material(env_mapped_dbl_refract_material);
-        (*p)->set_reflect_to_refract_ratio(0.33); // 33% reflective
-        (*p)->set_texture_index(                        (*p)->get_material()->get_texture_index_by_name("chesterfield_color"));
-        (*p)->set_bump_texture_index(                   (*p)->get_material()->get_texture_index_by_name("chesterfield_normal"));
-        (*p)->set_frontface_depth_overlay_texture_index((*p)->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-        (*p)->set_backface_depth_overlay_texture_index( (*p)->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-        (*p)->set_backface_normal_overlay_texture_index((*p)->get_material()->get_texture_index_by_name("backface_normal_overlay"));
+        (*p)->set_material(env_mapped_fast_material);
+        //(*p)->set_reflect_to_refract_ratio(0.33); // 33% reflective
     }
 
     // box3

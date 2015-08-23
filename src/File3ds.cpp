@@ -91,6 +91,7 @@ bool File3ds::load3ds(std::string filename, int index, std::vector<Mesh*>* meshe
         g_center *= 0.5;
         for(std::vector<vt::Mesh*>::iterator p = meshes->begin(); p != meshes->end(); p++) {
             (*p)->xform_vertices(glm::translate(glm::mat4(1), -g_center));
+            (*p)->calc_normal_tangent();
         }
     }
     return true;

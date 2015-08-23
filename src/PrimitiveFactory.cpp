@@ -468,23 +468,12 @@ Mesh* PrimitiveFactory::create_tetrahedron(
     mesh->set_vert_coord(10, glm::vec3(1, 0, 0));
     mesh->set_vert_coord(11, glm::vec3(1, 1, 1));
 
-    for(int i=0; i<static_cast<int>(mesh->get_num_tri()); i++) {
-        glm::vec3 p0 = mesh->get_vert_coord(i*3 + 0);
-        glm::vec3 p1 = mesh->get_vert_coord(i*3 + 1);
-        glm::vec3 p2 = mesh->get_vert_coord(i*3 + 2);
-        glm::vec3 e1 = glm::normalize(p1-p0);
-        glm::vec3 e2 = glm::normalize(p2-p0);
-        glm::vec3 n = glm::normalize(glm::cross(e1, e2));
-        for(int j=0; j<3; j++) {
-            mesh->set_vert_normal( i*3+j, n);
-            mesh->set_vert_tangent(i*3+j, e1);
-        }
-    }
-
     mesh->set_tri_indices(0, glm::uvec3(0, 1,  2));
     mesh->set_tri_indices(1, glm::uvec3(3, 4,  5));
     mesh->set_tri_indices(2, glm::uvec3(6, 7,  8));
     mesh->set_tri_indices(3, glm::uvec3(9, 10, 11));
+
+    mesh->calc_normal_tangent();
 
     return mesh;
 }
