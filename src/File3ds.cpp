@@ -61,6 +61,7 @@ bool File3ds::load3ds(std::string filename, int index, std::vector<Mesh*>* meshe
                         readFaceList(stream, mesh);
                         fseek(stream, meshBase, SEEK_SET);
                         //=========================================================
+                        mesh->update_bbox();
                         meshes->push_back(mesh);
                     }
                     fseek(stream, meshEnd, SEEK_SET);

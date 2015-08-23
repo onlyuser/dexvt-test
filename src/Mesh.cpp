@@ -172,11 +172,9 @@ void Mesh::update_bbox()
 void Mesh::center()
 {
     update_bbox();
-    glm::vec3 avg = m_min;
-    avg += m_max;
-    avg *= 0.5;
-    for(int j = 0; j < static_cast<int>(m_num_vertex); j++) {
-        set_vert_coord(j, get_vert_coord(j) - avg);
+    glm::vec3 center = get_center();
+    for(int i = 0; i < static_cast<int>(m_num_vertex); i++) {
+        set_vert_coord(i, get_vert_coord(i) - center);
     }
 }
 

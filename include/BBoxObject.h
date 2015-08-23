@@ -9,7 +9,8 @@ class BBoxObject
 {
 public:
     void set_bbox(glm::vec3 min, glm::vec3 max);
-    void get_bbox(glm::vec3* min, glm::vec3* max);
+    void get_bbox(glm::vec3* min, glm::vec3* max) const;
+    glm::vec3 get_center() const;
 
 protected:
     glm::vec3 m_min;
