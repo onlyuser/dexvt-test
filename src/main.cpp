@@ -1072,23 +1072,8 @@ void set_mesh_visibility(bool visible)
 void onKeyboard(unsigned char key, int x, int y)
 {
     switch(key) {
-        case 'a': // axis
-            show_axis = !show_axis;
-            break;
-        case 'b': // blur
-            if(overlay_mode != OVERLAY_MODE_DEFAULT) {
-                overlay_mode = OVERLAY_MODE_DEFAULT; // switch back to default overlay
-                post_process_blur = true;
-                mesh_overlay->set_material(overlay_bloom_filter_material);
-                mesh2->set_visible(false);
-                break;
-            }
-            post_process_blur = !post_process_blur;
-            if(post_process_blur) {
-                mesh_overlay->set_material(overlay_bloom_filter_material);
-            } else {
-                mesh_overlay->set_material(overlay_write_through_material);
-            }
+        case 'b': // bbox
+            show_bbox = !show_bbox;
             break;
         case 'd': // demo
             demo_mode = (demo_mode + 1) % DEMO_MODE_COUNT;
@@ -1178,6 +1163,21 @@ void onKeyboard(unsigned char key, int x, int y)
                 camera->set_projection_mode(vt::Camera::PROJECTION_MODE_PERSPECTIVE);
             }
             break;
+        case 'r': // blur
+            if(overlay_mode != OVERLAY_MODE_DEFAULT) {
+                overlay_mode = OVERLAY_MODE_DEFAULT; // switch back to default overlay
+                post_process_blur = true;
+                mesh_overlay->set_material(overlay_bloom_filter_material);
+                mesh2->set_visible(false);
+                break;
+            }
+            post_process_blur = !post_process_blur;
+            if(post_process_blur) {
+                mesh_overlay->set_material(overlay_bloom_filter_material);
+            } else {
+                mesh_overlay->set_material(overlay_write_through_material);
+            }
+            break;
         case 't': // texture
             if(texture_id == 0) {
                 texture_id = 1; // GL_TEXTURE1
@@ -1203,8 +1203,8 @@ void onKeyboard(unsigned char key, int x, int y)
                 glPolygonMode(GL_FRONT, GL_FILL);
             }
             break;
-        case 'x': // bbox
-            show_bbox = !show_bbox;
+        case 'x': // axis
+            show_axis = !show_axis;
             break;
         case 27: // escape
             exit(0);
