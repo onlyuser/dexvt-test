@@ -67,6 +67,8 @@ Mesh* PrimitiveFactory::create_grid(
         }
     }
 
+    mesh->update_bbox();
+
     assert(vert_index == num_vertex);
     assert(tri_index  == num_tri);
     return mesh;
@@ -103,6 +105,8 @@ Mesh* PrimitiveFactory::create_sphere(
             vert_index++;
         }
     }
+
+    mesh->update_bbox();
 
     return mesh;
 }
@@ -149,6 +153,8 @@ Mesh* PrimitiveFactory::create_hemisphere(
             vert_index++;
         }
     }
+
+    mesh->update_bbox();
 
     return mesh;
 }
@@ -214,6 +220,8 @@ Mesh* PrimitiveFactory::create_cylinder(
         }
     }
 
+    mesh->update_bbox();
+
     return mesh;
 }
 
@@ -273,6 +281,8 @@ Mesh* PrimitiveFactory::create_cone(
         }
     }
 
+    mesh->update_bbox();
+
     return mesh;
 }
 
@@ -311,6 +321,8 @@ Mesh* PrimitiveFactory::create_torus(
             vert_index++;
         }
     }
+
+    mesh->update_bbox();
 
     return mesh;
 }
@@ -437,6 +449,8 @@ Mesh* PrimitiveFactory::create_box(
     mesh->set_tri_indices(10, glm::uvec3(20, 21, 22));
     mesh->set_tri_indices(11, glm::uvec3(22, 23, 20));
 
+    mesh->update_bbox();
+
     return mesh;
 }
 
@@ -474,6 +488,7 @@ Mesh* PrimitiveFactory::create_tetrahedron(
     mesh->set_tri_indices(3, glm::uvec3(9, 10, 11));
 
     mesh->update_normals_and_tangents();
+    mesh->update_bbox();
 
     return mesh;
 }
@@ -833,7 +848,8 @@ Mesh* PrimitiveFactory::create_diamond_brilliant_cut(
         vert_index += 3;
     }
 
-    mesh_calc_normals_and_tangents(mesh);
+    mesh->update_normals_and_tangents();
+    mesh->update_bbox();
 
     assert(vert_index == num_vertex);
     assert(tri_index  == num_tri);

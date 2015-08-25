@@ -113,7 +113,7 @@ public:
             bool                render_skybox     = true,
             use_material_type_t use_material_type = use_material_type_t::USE_MESH_MATERIAL,
             bool                skip_ssao_mesh    = false);
-    void render_vert_normals() const;
+    void render_lines(bool draw_axis, bool draw_bbox, bool draw_normals) const;
     void render_lights() const;
 
 private:

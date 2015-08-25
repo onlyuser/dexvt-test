@@ -88,7 +88,9 @@ glm::vec3 prev_orient, orient, orbit_speed = glm::vec3(0, -0.5, -0.5);
 float prev_orbit_radius = 0, orbit_radius = 8, dolly_speed = 0.1, light_distance = 4;
 bool wireframe_mode = false;
 bool show_fps = false;
-bool show_vert_normals = false;
+bool show_axis = false;
+bool show_bbox = false;
+bool show_normals = false;
 bool show_lights = false;
 bool show_diamond = false;
 bool post_process_blur = false;
@@ -1037,8 +1039,8 @@ void onDisplay()
     //glDisable(GL_STENCIL_TEST);
     //stencil_fb->unbind();
 
-    if(show_vert_normals) {
-        scene->render_vert_normals();
+    if(show_axis || show_bbox || show_normals) {
+        scene->render_lines(show_axis, show_bbox, show_normals);
     }
     if(show_lights) {
         scene->render_lights();
@@ -1070,6 +1072,9 @@ void set_mesh_visibility(bool visible)
 void onKeyboard(unsigned char key, int x, int y)
 {
     switch(key) {
+        case 'a': // axis
+            show_axis = !show_axis;
+            break;
         case 'b': // blur
             if(overlay_mode != OVERLAY_MODE_DEFAULT) {
                 overlay_mode = OVERLAY_MODE_DEFAULT; // switch back to default overlay
@@ -1134,7 +1139,7 @@ void onKeyboard(unsigned char key, int x, int y)
             show_lights = !show_lights;
             break;
         case 'n': // normals
-            show_vert_normals = !show_vert_normals;
+            show_normals = !show_normals;
             break;
         case 'o': // overlay
             overlay_mode = (overlay_mode + 1) % OVERLAY_MODE_COUNT;
@@ -1197,6 +1202,9 @@ void onKeyboard(unsigned char key, int x, int y)
             } else {
                 glPolygonMode(GL_FRONT, GL_FILL);
             }
+            break;
+        case 'x': // bbox
+            show_bbox = !show_bbox;
             break;
         case 27: // escape
             exit(0);
