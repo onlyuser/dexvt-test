@@ -346,7 +346,7 @@ void Scene::render_lines(bool draw_axis, bool draw_bbox, bool draw_normals) cons
 
         if(draw_bbox) {
             glm::vec3 min, max;
-            (*q)->get_bbox(&min, &max);
+            (*q)->get_min_max(&min, &max);
             min -= glm::vec3(axis_surface_distance);
             max += glm::vec3(axis_surface_distance);
             glColor3f(1, 0, 0);

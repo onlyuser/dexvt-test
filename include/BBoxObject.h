@@ -8,8 +8,8 @@ namespace vt {
 class BBoxObject
 {
 public:
-    void set_bbox(glm::vec3 min, glm::vec3 max);
-    void get_bbox(glm::vec3* min, glm::vec3* max) const;
+    void set_min_max(glm::vec3 min, glm::vec3 max);
+    void get_min_max(glm::vec3* min, glm::vec3* max) const;
     glm::vec3 get_center() const;
 
 protected:

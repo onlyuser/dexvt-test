@@ -66,7 +66,7 @@ bool File3ds::load3ds(std::string filename, int index, std::vector<Mesh*>* meshe
                         //=========================================================
                         mesh->update_bbox();
                         glm::vec3 min, max;
-                        mesh->get_bbox(&min, &max);
+                        mesh->get_min_max(&min, &max);
                         if(init_global_bbox) {
                             g_min = glm::min(g_min, min);
                             g_max = glm::max(g_max, max);

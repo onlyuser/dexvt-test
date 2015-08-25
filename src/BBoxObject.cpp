@@ -6,13 +6,13 @@ BBoxObject::BBoxObject()
 {
 }
 
-void BBoxObject::set_bbox(glm::vec3 min, glm::vec3 max)
+void BBoxObject::set_min_max(glm::vec3 min, glm::vec3 max)
 {
     m_min = min;
     m_max = max;
 }
 
-void BBoxObject::get_bbox(glm::vec3* min, glm::vec3* max) const
+void BBoxObject::get_min_max(glm::vec3* min, glm::vec3* max) const
 {
     if(!min || !max) {
         return;
