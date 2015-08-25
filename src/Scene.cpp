@@ -349,12 +349,56 @@ void Scene::render_lines(bool draw_axis, bool draw_bbox, bool draw_normals) cons
             (*q)->get_bbox(&min, &max);
             glColor3f(1, 0, 0);
 
-            {
-                glm::vec3 p0(0, 0, 0);
-                glVertex3fv(&p0.x);
-                glm::vec3 p1(1, 0, 0);
-                glVertex3fv(&p1.x);
-            }
+            glm::vec3 llb(min.x, min.y, min.z);
+            glm::vec3 lrb(max.x, min.y, min.z);
+            glm::vec3 urb(max.x, max.y, min.z);
+            glm::vec3 ulb(min.x, max.y, min.z);
+            glm::vec3 llf(min.x, min.y, max.z);
+            glm::vec3 lrf(max.x, min.y, max.z);
+            glm::vec3 urf(max.x, max.y, max.z);
+            glm::vec3 ulf(min.x, max.y, max.z);
+
+            // back quad
+
+            glVertex3fv(&llb.x);
+            glVertex3fv(&lrb.x);
+
+            glVertex3fv(&lrb.x);
+            glVertex3fv(&urb.x);
+
+            glVertex3fv(&urb.x);
+            glVertex3fv(&ulb.x);
+
+            glVertex3fv(&ulb.x);
+            glVertex3fv(&llb.x);
+
+            // front quad
+
+            glVertex3fv(&llf.x);
+            glVertex3fv(&lrf.x);
+
+            glVertex3fv(&lrf.x);
+            glVertex3fv(&urf.x);
+
+            glVertex3fv(&urf.x);
+            glVertex3fv(&ulf.x);
+
+            glVertex3fv(&ulf.x);
+            glVertex3fv(&llf.x);
+
+            // back to front segments
+
+            glVertex3fv(&llb.x);
+            glVertex3fv(&llf.x);
+
+            glVertex3fv(&lrb.x);
+            glVertex3fv(&lrf.x);
+
+            glVertex3fv(&urb.x);
+            glVertex3fv(&urf.x);
+
+            glVertex3fv(&ulb.x);
+            glVertex3fv(&ulf.x);
         }
 
         if(draw_normals) {

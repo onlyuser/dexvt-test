@@ -57,6 +57,7 @@ void mesh_apply_ripple(Mesh* mesh, glm::vec3 origin, float amplitude, float wave
     }
 
     mesh->update_normals_and_tangents();
+    mesh->update_bbox();
 }
 
 }
