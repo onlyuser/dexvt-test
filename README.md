@@ -9,7 +9,7 @@ About
 -----
 
 dexvt-test is a c++/glsl/glm-based 3d engine.
-It features environment-mapped reflection/refraction/double refraction (with Fresnel effect, chromatic dispersion, and Beer's law), screen space ambient occlusion, bump mapping, Phong shading, Bloom filter, and platonic primitives generation.
+It features environment-mapped reflection/refraction/double refraction (with Fresnel effect, chromatic dispersion, and Beer's law), screen space ambient occlusion, bump mapping, Phong shading, Bloom filter, 3ds mesh import, and platonic primitives generation.
 Platonic primitives supported include sphere, cube, cylinder, cone, grid, tetrahedron, and round brilliant diamond.
 Many features still experimental.
 
@@ -102,15 +102,18 @@ Controls
 Keyboard:
 
 <table>
-    <tr><th> key </th><th> purpose                 </th></tr>
-    <tr><td> f   </td><td> toggle frame rate       </td></tr>
-    <tr><td> l   </td><td> show lights             </td></tr>
-    <tr><td> n   </td><td> show normals            </td></tr>
-    <tr><td> o   </td><td> toggle render modes     </td></tr>
-    <tr><td> p   </td><td> toggle ortho-projection </td></tr>
-    <tr><td> t   </td><td> toggle texture          </td></tr>
-    <tr><td> w   </td><td> toggle wireframe        </td></tr>
-    <tr><td> esc </td><td> exit                    </td></tr>
+    <tr><th> key </th><th> purpose                    </th></tr>
+    <tr><td> b   </td><td> toggle bounding-box        </td></tr>
+    <tr><td> d   </td><td> cycle through demos        </td></tr>
+    <tr><td> f   </td><td> toggle frame rate          </td></tr>
+    <tr><td> l   </td><td> toggle lights              </td></tr>
+    <tr><td> n   </td><td> toggle normals             </td></tr>
+    <tr><td> o   </td><td> cycle through render modes </td></tr>
+    <tr><td> p   </td><td> toggle ortho-projection    </td></tr>
+    <tr><td> t   </td><td> toggle texture             </td></tr>
+    <tr><td> w   </td><td> toggle wireframe           </td></tr>
+    <tr><td> x   </td><td> toggle axis                </td></tr>
+    <tr><td> esc </td><td> exit                       </td></tr>
 </table>
 
 Mouse:
@@ -180,4 +183,4 @@ References
 Keywords
 --------
 
-    OpenGL, glsl shader, glm, environment map, cube map, normal map, bitangent, tbn matrix, ssao, screen space ambient occlusion, backface refraction, double refraction, second refraction, backface sampling, Fresnel effect, chromatic dispersion, chromatic aberration, Bloom filter, Beer's law, Snell's law, Newton's method, round brilliant diamond rendering, gemstone rendering
+    OpenGL, glsl shader, glm, environment map, cube map, normal map, bitangent, tbn matrix, ssao, screen space ambient occlusion, backface refraction, double refraction, second refraction, backface sampling, Fresnel effect, chromatic dispersion, chromatic aberration, Bloom filter, Beer's law, Snell's law, Newton's method, 3ds file import, round brilliant diamond rendering, gemstone rendering
