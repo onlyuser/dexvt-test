@@ -8,7 +8,7 @@
     #define PI      3.1415926
     #define HALF_PI (PI*0.5)
 #else
-    #include <glm/gtx/constants.hpp>
+    #include <glm/gtc/constants.hpp>
     #define PI      glm::pi<float>()
     #define HALF_PI glm::half_pi<float>()
 #endif

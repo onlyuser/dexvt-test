@@ -178,6 +178,9 @@ References
 
     <dt>"3D MeshWorks"</dt>
     <dd>http://www.jrbassett.com</dd>
+
+    <dt>"Missing gtc/constants.hpp #12"</dt>
+    <dd>https://github.com/g-truc/glm/issues/12</dd>
 </dl>
 
 Keywords
