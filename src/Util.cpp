@@ -22,10 +22,10 @@ glm::vec3 orient_to_offset(glm::vec3 orient)
     static glm::vec3 forward = glm::vec3(0, 0, 1);
     glm::mat4 pitch = glm::rotate(
             glm::mat4(1),
-            PITCH(orient), left);
+            glm::radians(PITCH(orient)), left); // glm::rotate changed from degrees to radians in GLM 0.9.6
     glm::mat4 yaw = glm::rotate(
             glm::mat4(1),
-            YAW(orient), up);
+			glm::radians(YAW(orient)), up); // glm::rotate changed from degrees to radians in GLM 0.9.6
     return glm::vec3(yaw*pitch*glm::vec4(forward, 1));
 }
 
