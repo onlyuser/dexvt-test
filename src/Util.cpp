@@ -21,21 +21,22 @@ glm::vec3 orient_to_offset(glm::vec3 orient)
     static glm::vec3 up      = glm::vec3(0, 1, 0);
     static glm::vec3 forward = glm::vec3(0, 0, 1);
 
-#if GLM_VERSION_MAJOR > 0 || (GLM_VERSION_MAJOR == 0 && GLM_VERSION_MINOR == 9 && GLM_VERSION_PATCH >= 6)
+#if GLM_VERSION >= 96
     // glm::rotate changed from degrees to radians in GLM 0.9.6
+    // https://glm.g-truc.net/0.9.6/updates.html
     glm::mat4 pitch = glm::rotate(
             glm::mat4(1),
             glm::radians(PITCH(orient)), left);
     glm::mat4 yaw = glm::rotate(
             glm::mat4(1),
-			glm::radians(YAW(orient)), up);
+            glm::radians(YAW(orient)), up);
 #else
     glm::mat4 pitch = glm::rotate(
             glm::mat4(1),
             PITCH(orient), left);
     glm::mat4 yaw = glm::rotate(
             glm::mat4(1),
-			YAW(orient), up);
+            YAW(orient), up);
 #endif
 
     return glm::vec3(yaw*pitch*glm::vec4(forward, 1));
