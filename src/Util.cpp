@@ -5,26 +5,18 @@
 #include <glm/glm.hpp>
 #include <math.h>
 
-#define EPSILON 0.0001
-
-#define SIGN(x) (!(x) ? 0 : (((x) > 0) ? 1 : -1))
-
 namespace vt {
 
 glm::vec3 orient_to_offset(glm::vec3 orient)
 {
-    static glm::vec3 left    = glm::vec3(1, 0, 0);
-    static glm::vec3 up      = glm::vec3(0, 1, 0);
-    static glm::vec3 forward = glm::vec3(0, 0, 1);
-
     glm::mat4 pitch = GLM_ROTATE(
             glm::mat4(1),
-            ORIENT_PITCH(orient), left);
+            ORIENT_PITCH(orient), VEC_LEFT);
     glm::mat4 yaw = GLM_ROTATE(
             glm::mat4(1),
-            ORIENT_YAW(orient), up);
+            ORIENT_YAW(orient), VEC_UP);
 
-    return glm::vec3(yaw*pitch*glm::vec4(forward, 1));
+    return glm::vec3(yaw*pitch*glm::vec4(VEC_FORWARD, 1));
 }
 
 glm::vec3 offset_to_orient(glm::vec3 offset)
@@ -50,7 +42,10 @@ void mesh_apply_ripple(Mesh* mesh, glm::vec3 origin, float amplitude, float wave
     for(int i = 0; i < static_cast<int>(mesh->get_num_vertex()); i++) {
         glm::vec3 pos = mesh->get_vert_coord(i);
         glm::vec3 new_pos = pos;
-        new_pos.y = origin.y + static_cast<float>(sin(glm::distance(glm::vec2(origin.x, origin.z), glm::vec2(pos.x, pos.z))/(wavelength/(PI*2)) + phase))*amplitude;
+        new_pos.y = origin.y +
+                static_cast<float>(sin(glm::distance(
+                        glm::vec2(origin.x, origin.z),
+                        glm::vec2(pos.x, pos.z))/(wavelength/(PI*2)) + phase))*amplitude;
         mesh->set_vert_coord(i, new_pos);
     }
 
