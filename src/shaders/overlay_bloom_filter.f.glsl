@@ -11,7 +11,7 @@ void sum_components(in vec3 color, out float sum) {
 }
 
 void main(void) {
-    vec3 sum_color;
+    vec3 sum_color = vec3(0);
     for(int i = 0; i < BLOOM_KERNEL_SIZE; i++) {
         ivec2 hblur_kernel_offset_index = ivec2(-3 + i, 0);
         ivec2 vblur_kernel_offset_index = ivec2(0, -3 + i);
