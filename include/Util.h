@@ -13,6 +13,14 @@
     #define HALF_PI glm::half_pi<float>()
 #endif
 
+#if GLM_VERSION >= 96
+    // glm::rotate changed from degrees to radians in GLM 0.9.6
+    // https://glm.g-truc.net/0.9.6/updates.html
+    #define GLM_ROTATE(m, a, v) glm::rotate((m), glm::radians(a), (v))
+#else
+    #define GLM_ROTATE(m, a, v) glm::rotate((m), (a), (v))
+#endif
+
 #define ORIENT_ROLL(v)  v[0]
 #define ORIENT_PITCH(v) v[1]
 #define ORIENT_YAW(v)   v[2]

@@ -5,10 +5,6 @@
 #include <glm/glm.hpp>
 #include <math.h>
 
-#define ROLL(v)  v.x
-#define PITCH(v) v.y
-#define YAW(v)   v.z
-
 #define EPSILON 0.0001
 
 #define SIGN(x) (!(x) ? 0 : (((x) > 0) ? 1 : -1))
@@ -21,23 +17,12 @@ glm::vec3 orient_to_offset(glm::vec3 orient)
     static glm::vec3 up      = glm::vec3(0, 1, 0);
     static glm::vec3 forward = glm::vec3(0, 0, 1);
 
-#if GLM_VERSION >= 96
-    // glm::rotate changed from degrees to radians in GLM 0.9.6
-    // https://glm.g-truc.net/0.9.6/updates.html
-    glm::mat4 pitch = glm::rotate(
+    glm::mat4 pitch = GLM_ROTATE(
             glm::mat4(1),
-            glm::radians(PITCH(orient)), left);
-    glm::mat4 yaw = glm::rotate(
+            ORIENT_PITCH(orient), left);
+    glm::mat4 yaw = GLM_ROTATE(
             glm::mat4(1),
-            glm::radians(YAW(orient)), up);
-#else
-    glm::mat4 pitch = glm::rotate(
-            glm::mat4(1),
-            PITCH(orient), left);
-    glm::mat4 yaw = glm::rotate(
-            glm::mat4(1),
-            YAW(orient), up);
-#endif
+            ORIENT_YAW(orient), up);
 
     return glm::vec3(yaw*pitch*glm::vec4(forward, 1));
 }
@@ -51,12 +36,12 @@ glm::vec3 offset_to_orient(glm::vec3 offset)
         glm::angle(t, offset),
         glm::angle(t, forward));
     if(static_cast<float>(fabs(offset.x)) < EPSILON && static_cast<float>(fabs(offset.z)) < EPSILON) {
-        PITCH(r) = -SIGN(offset.y)*glm::radians(90.0f);
-        YAW(r) = 0; // undefined
+        ORIENT_PITCH(r) = -SIGN(offset.y)*glm::radians(90.0f);
+        ORIENT_YAW(r) = 0; // undefined
         return r;
     }
-    if(offset.x < 0) YAW(r)   *= -1;
-    if(offset.y > 0) PITCH(r) *= -1;
+    if(offset.x < 0) ORIENT_YAW(r)   *= -1;
+    if(offset.y > 0) ORIENT_PITCH(r) *= -1;
     return r;
 }
 
