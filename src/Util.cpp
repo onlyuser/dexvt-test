@@ -21,12 +21,11 @@ glm::vec3 orient_to_offset(glm::vec3 orient)
 
 glm::vec3 offset_to_orient(glm::vec3 offset)
 {
-    static glm::vec3 forward = glm::vec3(0, 0, 1);
     glm::vec3 t(offset.x, 0, offset.z); // flattened offset
     glm::vec3 r(
         0,
         glm::angle(t, offset),
-        glm::angle(t, forward));
+        glm::angle(t, VEC_FORWARD));
     if(static_cast<float>(fabs(offset.x)) < EPSILON && static_cast<float>(fabs(offset.z)) < EPSILON) {
         ORIENT_PITCH(r) = -SIGN(offset.y)*glm::radians(90.0f);
         ORIENT_YAW(r) = 0; // undefined
