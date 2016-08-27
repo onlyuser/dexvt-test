@@ -496,25 +496,32 @@ int init_resources()
     env_mapped_fast_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "reflect_to_refract_ratio");
     scene->add_material(env_mapped_fast_material);
 
-    //vt::Material* normal_material = new vt::Material(
-    //        "normal",
-    //        "src/shaders/normal.v.glsl",
-    //        "src/shaders/normal.f.glsl",
-    //        false,  // use_ambient_color
-    //        true,   // gen_normal_map
-    //        false,  // use_phong_shading
-    //        false,  // use_texture_mapping
-    //        true,   // use_bump_mapping
-    //        false,  // use_env_mapping
-    //        false,  // use_env_mapping_dbl_refract
-    //        false,  // use_ssao
-    //        false,  // use_bloom_kernel
-    //        false,  // use_texture2
-    //        false,  // use_fragment_world_pos
-    //        false,  // skybox
-    //        false); // overlay
-    //vt::Program* normal_program = normal_material->get_program();
-    //scene->add_material(normal_material);
+    vt::Material* normal_material = new vt::Material(
+            "normal",
+            "src/shaders/normal.v.glsl",
+            "src/shaders/normal.f.glsl",
+            false,  // use_ambient_color
+            true,   // gen_normal_map
+            false,  // use_phong_shading
+            false,  // use_texture_mapping
+            true,   // use_bump_mapping
+            false,  // use_env_mapping
+            false,  // use_env_mapping_dbl_refract
+            false,  // use_ssao
+            false,  // use_bloom_kernel
+            false,  // use_texture2
+            false,  // use_fragment_world_pos
+            false,  // skybox
+            false); // overlay
+    vt::Program* normal_program = normal_material->get_program();
+    normal_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "texcoord");
+    normal_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "bump_texture");
+    normal_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
+    normal_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_position");
+    normal_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_tangent");
+    normal_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "mvp_xform");
+    normal_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "normal_xform");
+    scene->add_material(normal_material);
 
     vt::Material* normal_fast_material = new vt::Material(
             "normal_fast",
@@ -599,7 +606,7 @@ int init_resources()
     bump_mapped_material->add_texture(           texture4);
     env_mapped_material->add_texture(            texture4);
     env_mapped_dbl_refract_material->add_texture(texture4);
-    //normal_material->add_texture(texture4);
+    normal_material->add_texture(                texture4);
 
     texture5 = new vt::Texture(
             "skybox_texture",
@@ -767,8 +774,8 @@ int init_resources()
     mesh5->set_texture_index(mesh5->get_material()->get_texture_index_by_name("dex3d"));
 
     // cone
-    mesh6->set_material(texture_mapped_material);
-    mesh6->set_texture_index(mesh6->get_material()->get_texture_index_by_name("dex3d"));
+    mesh6->set_material(normal_material);
+    mesh6->set_bump_texture_index(mesh6->get_material()->get_texture_index_by_name("chesterfield_normal"));
 
     // hemisphere
     mesh7->set_material(env_mapped_fast_material);
