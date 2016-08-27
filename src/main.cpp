@@ -743,18 +743,7 @@ int init_resources()
     mesh->set_bump_texture_index(mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
     mesh->set_ambient_color(glm::vec3(0,0,0));
 
-//    // grid
-//    //mesh2->set_material(texture_mapped_material);
-//    mesh2->set_material(ssao_material);
-//    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-//    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("backface_depth_overlay"));
-//    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("backface_normal_overlay"));
-//    //mesh2->set_texture_index(mesh2->get_material()->get_texture_index_by_name("hi_res_color_overlay"));
-//    //mesh2->set_texture_index(                        mesh2->get_material()->get_texture_index_by_name("random_texture"));
-//    //mesh2->set_bump_texture_index(                   mesh2->get_material()->get_texture_index_by_name("random_texture"));
-//    mesh2->set_random_texture_index(                 mesh2->get_material()->get_texture_index_by_name("random_texture"));
-//    mesh2->set_frontface_depth_overlay_texture_index(mesh2->get_material()->get_texture_index_by_name("frontface_depth_overlay"));
-
+    // grid
     mesh2->set_material(ambient_material);
     mesh2->set_ambient_color(glm::vec3(0,0,0));
 
