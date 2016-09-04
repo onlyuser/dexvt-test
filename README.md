@@ -45,7 +45,7 @@ Unix tools and 3rd party components (accessible from $PATH):
 
     gcc (with -std=c++0x support)
 
-Texture files not included:
+Texture files not included (automatically downloaded by "make resources"):
 
 <table>
     <tr>
@@ -86,14 +86,26 @@ Model files not included:
     </tr>
 </table>
 
+**Ubuntu packages:**
+
+* sudo apt-get install mesa-common-dev
+* sudo apt-get install freeglut3-dev
+* sudo apt-get install libglew-dev
+* sudo apt-get install libglm-dev
+* sudo apt-get install libpng-dev
+* sudo apt-get install curl
+* sudo apt-get install imagemagick
+
 Make targets
 ------------
 
 <table>
-    <tr><th> target </th><th> action                        </th></tr>
-    <tr><td> all    </td><td> make binaries                 </td></tr>
-    <tr><td> test   </td><td> all + run tests               </td></tr>
-    <tr><td> clean  </td><td> remove all intermediate files </td></tr>
+    <tr><th> target          </th><th> action                        </th></tr>
+    <tr><td> all             </td><td> make binaries                 </td></tr>
+    <tr><td> test            </td><td> all + run tests               </td></tr>
+    <tr><td> clean           </td><td> remove all intermediate files </td></tr>
+    <tr><td> resources       </td><td> download resource files       </td></tr>
+    <tr><td> clean_resources </td><td> remove resource files         </td></tr>
 </table>
 
 Controls
