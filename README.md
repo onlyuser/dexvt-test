@@ -45,11 +45,11 @@ Unix tools and 3rd party components (accessible from $PATH):
 
     gcc (with -std=c++0x support)
 
-Texture files not included (automatically downloaded by "make resources"):
+Resource files not included:
 
 <table>
     <tr>
-        <th>texture files</th>
+        <th>resource files</th>
         <th>purpose</th>
     </tr>
     <tr>
@@ -70,15 +70,6 @@ Texture files not included (automatically downloaded by "make resources"):
     <tr>
         <td>data/chesterfield_normal.png</td>
         <td>Normal map texture</td>
-    </tr>
-</table>
-
-Model files not included:
-
-<table>
-    <tr>
-        <th>model files</th>
-        <th>purpose</th>
     </tr>
     <tr>
         <td>data/star_wars/TI_Low0.3ds</td>
