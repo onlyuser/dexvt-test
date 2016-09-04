@@ -35,7 +35,7 @@ TEST_PATH = test
 #==================
 
 .DEFAULT_GOAL : all
-all : $(BINARIES)
+all : $(BINARIES) resources
 
 #==================
 # for_travis
@@ -101,9 +101,52 @@ clean_tests :
 	-rm $(TEST_PASS_FILES) $(TEST_FAIL_FILES)
 
 #==================
+# resources
+#==================
+
+RESOURCE_PATH = ./data
+
+CHESTERFIELD_MAP_PATH = $(RESOURCE_PATH)
+CHESTERFIELD_MAP_STEMS = chesterfield_color chesterfield_normal
+CHESTERFIELD_MAP_FILES = $(patsubst %, $(CHESTERFIELD_MAP_PATH)/%.png, $(CHESTERFIELD_MAP_STEMS))
+$(CHESTERFIELD_MAP_FILES) :
+	mkdir -p $(CHESTERFIELD_MAP_PATH)
+	curl "http://4.bp.blogspot.com/-TsdyluFHn6I/ULI2Hzo8BfI/AAAAAAAAAWU/UleYFCG9SQs/s1600/Well+Preserved+Chesterfield.png" > $(CHESTERFIELD_MAP_PATH)/chesterfield_color.png
+	curl "http://2.bp.blogspot.com/-4DZbxSZTWUQ/ULI1vc7GKHI/AAAAAAAAAVo/-vuKDtSxUGY/s1600/Well+Preserved+Chesterfield+-+(Normal+Map_2).png" > $(CHESTERFIELD_MAP_PATH)/chesterfield_normal.png
+
+CUBE_MAP_PATH = $(RESOURCE_PATH)/SaintPetersSquare2
+CUBE_MAP_STEMS = negx negy negz posx posy posz
+CUBE_MAP_FILES = $(patsubst %, $(CUBE_MAP_PATH)/%.png, $(CUBE_MAP_STEMS))
+$(CUBE_MAP_FILES) :
+	mkdir -p $(CUBE_MAP_PATH)
+	curl http://www.humus.name/Textures/SaintPetersSquare2.zip > $(CUBE_MAP_PATH)/SaintPetersSquare2.zip
+	unzip $(CUBE_MAP_PATH)/SaintPetersSquare2.zip -d $(CUBE_MAP_PATH)
+	mogrify -format png $(CUBE_MAP_PATH)/*.jpg
+	rm $(CUBE_MAP_PATH)/SaintPetersSquare2.zip
+	rm $(CUBE_MAP_PATH)/*.jpg
+	rm $(CUBE_MAP_PATH)/*.txt
+
+3DS_MESH_PATH = $(RESOURCE_PATH)/star_wars
+3DS_MESH_STEMS = TI_Low0
+3DS_MESH_FILES = $(patsubst %, $(3DS_MESH_PATH)/%.3ds, $(3DS_MESH_STEMS))
+$(3DS_MESH_FILES) :
+	mkdir -p $(3DS_MESH_PATH)
+	curl "http://www.jrbassett.com/zips/TI_Low0.Zip" > $(3DS_MESH_PATH)/TI_Low0.Zip
+	unzip $(3DS_MESH_PATH)/TI_Low0.Zip -d $(3DS_MESH_PATH)
+	rm $(3DS_MESH_PATH)/TI_Low0.Zip
+	rm $(3DS_MESH_PATH)/*.txt
+
+resources : $(CHESTERFIELD_MAP_FILES) $(CUBE_MAP_FILES) $(3DS_MESH_FILES)
+
+.PHONY : clean_resources
+clean_resources :
+	-rm $(CHESTERFIELD_MAP_FILES) $(CUBE_MAP_FILES) $(3DS_MESH_FILES)
+	-rm -rf $(RESOURCE_PATH)
+
+#==================
 # clean
 #==================
 
 .PHONY : clean
-clean : clean_binaries clean_objects clean_tests
+clean : clean_binaries clean_objects clean_tests clean_resources
 	-rmdir $(BUILD_PATH) $(BIN_PATH)
