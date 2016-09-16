@@ -21,7 +21,9 @@ glm::vec3 orient_to_offset(glm::vec3 orient)
 
 glm::vec3 offset_to_orient(glm::vec3 offset)
 {
+    offset = glm::normalize(offset);
     glm::vec3 t(offset.x, 0, offset.z); // flattened offset
+    t = glm::normalize(t);
     glm::vec3 r(
         0,
         glm::angle(t, offset),
