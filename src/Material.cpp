@@ -9,7 +9,6 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
-#include <memory> // std::unique_ptr
 
 namespace vt {
 

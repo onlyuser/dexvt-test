@@ -206,11 +206,11 @@ void Mesh::init_buffers()
     if(m_buffers_already_init) {
         return;
     }
-    m_vbo_vert_coords  = std::unique_ptr<Buffer>(new Buffer(GL_ARRAY_BUFFER, sizeof(GLfloat)*m_num_vertex*3, m_vert_coords));
-    m_vbo_vert_normal  = std::unique_ptr<Buffer>(new Buffer(GL_ARRAY_BUFFER, sizeof(GLfloat)*m_num_vertex*3, m_vert_normal));
-    m_vbo_vert_tangent = std::unique_ptr<Buffer>(new Buffer(GL_ARRAY_BUFFER, sizeof(GLfloat)*m_num_vertex*3, m_vert_tangent));
-    m_vbo_tex_coords   = std::unique_ptr<Buffer>(new Buffer(GL_ARRAY_BUFFER, sizeof(GLfloat)*m_num_vertex*2, m_tex_coords));
-    m_ibo_tri_indices  = std::unique_ptr<Buffer>(new Buffer(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*m_num_tri*3, m_tri_indices));
+    m_vbo_vert_coords  = new Buffer(GL_ARRAY_BUFFER, sizeof(GLfloat)*m_num_vertex*3, m_vert_coords);
+    m_vbo_vert_normal  = new Buffer(GL_ARRAY_BUFFER, sizeof(GLfloat)*m_num_vertex*3, m_vert_normal);
+    m_vbo_vert_tangent = new Buffer(GL_ARRAY_BUFFER, sizeof(GLfloat)*m_num_vertex*3, m_vert_tangent);
+    m_vbo_tex_coords   = new Buffer(GL_ARRAY_BUFFER, sizeof(GLfloat)*m_num_vertex*2, m_tex_coords);
+    m_ibo_tri_indices  = new Buffer(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*m_num_tri*3, m_tri_indices);
     m_buffers_already_init = true;
 }
 
@@ -229,31 +229,31 @@ void Mesh::update_buffers() const
 Buffer* Mesh::get_vbo_vert_coords()
 {
     init_buffers();
-    return m_vbo_vert_coords.get();
+    return m_vbo_vert_coords;
 }
 
 Buffer* Mesh::get_vbo_vert_normal()
 {
     init_buffers();
-    return m_vbo_vert_normal.get();
+    return m_vbo_vert_normal;
 }
 
 Buffer* Mesh::get_vbo_vert_tangent()
 {
     init_buffers();
-    return m_vbo_vert_tangent.get();
+    return m_vbo_vert_tangent;
 }
 
 Buffer* Mesh::get_vbo_tex_coords()
 {
     init_buffers();
-    return m_vbo_tex_coords.get();
+    return m_vbo_tex_coords;
 }
 
 Buffer* Mesh::get_ibo_tri_indices()
 {
     init_buffers();
-    return m_ibo_tri_indices.get();
+    return m_ibo_tri_indices;
 }
 
 void Mesh::set_material(Material* material)
@@ -269,69 +269,72 @@ void Mesh::set_material(Material* material)
             texture_name = texture->name();
         }
     }
-    m_shader_context.reset();
+    if(m_shader_context) {
+        delete m_shader_context;
+        m_shader_context = NULL;
+    }
     m_material = material;
     m_texture_index = material ? material->get_texture_index_by_name(texture_name) : -1;
 }
 
 ShaderContext* Mesh::get_shader_context()
 {
-    if(m_shader_context.get() || !m_material) { // FIX-ME! -- potential bug if Material not set
-        return m_shader_context.get();
+    if(m_shader_context || !m_material) { // FIX-ME! -- potential bug if Material not set
+        return m_shader_context;
     }
-    m_shader_context = std::unique_ptr<ShaderContext>(new ShaderContext(
+    m_shader_context = new ShaderContext(
             m_material,
             get_vbo_vert_coords(),
             get_vbo_vert_normal(),
             get_vbo_vert_tangent(),
             get_vbo_tex_coords(),
-            get_ibo_tri_indices()));
-    return m_shader_context.get();
+            get_ibo_tri_indices());
+    return m_shader_context;
 }
 
 ShaderContext* Mesh::get_normal_shader_context(Material* normal_material)
 {
-    if(m_normal_shader_context.get() || !normal_material) { // FIX-ME! -- potential bug if Material not set
-        return m_normal_shader_context.get();
+    if(m_normal_shader_context || !normal_material) { // FIX-ME! -- potential bug if Material not set
+        return m_normal_shader_context;
     }
-    m_normal_shader_context = std::unique_ptr<ShaderContext>(new ShaderContext(
+    m_normal_shader_context = new ShaderContext(
             normal_material,
             get_vbo_vert_coords(),
             get_vbo_vert_normal(),
             get_vbo_vert_tangent(),
             get_vbo_tex_coords(),
-            get_ibo_tri_indices()));
-    return m_normal_shader_context.get();
+            get_ibo_tri_indices());
+    return m_normal_shader_context;
 }
 
 ShaderContext* Mesh::get_wireframe_shader_context(Material* wireframe_material)
 {
-    if(m_wireframe_shader_context.get() || !wireframe_material) { // FIX-ME! -- potential bug if Material not set
-        return m_wireframe_shader_context.get();
+    if(m_wireframe_shader_context || !wireframe_material) { // FIX-ME! -- potential bug if Material not set
+        return m_wireframe_shader_context;
     }
-    m_wireframe_shader_context = std::unique_ptr<ShaderContext>(new ShaderContext(
+    m_wireframe_shader_context = new ShaderContext(
             wireframe_material,
             get_vbo_vert_coords(),
             get_vbo_vert_normal(),
             get_vbo_vert_tangent(),
             get_vbo_tex_coords(),
-            get_ibo_tri_indices()));
-    return m_wireframe_shader_context.get();
+            get_ibo_tri_indices());
+    return m_wireframe_shader_context;
 }
 
 ShaderContext* Mesh::get_ssao_shader_context(Material* ssao_material)
 {
-    if(m_ssao_shader_context.get() || !ssao_material) { // FIX-ME! -- potential bug if Material not set
-        return m_ssao_shader_context.get();
+    if(m_ssao_shader_context || !ssao_material) { // FIX-ME! -- potential bug if Material not set
+        return m_ssao_shader_context;
     }
-    m_ssao_shader_context = std::unique_ptr<ShaderContext>(new ShaderContext(
+    m_ssao_shader_context = new ShaderContext(
             ssao_material,
             get_vbo_vert_coords(),
             get_vbo_vert_normal(),
             get_vbo_vert_tangent(),
             get_vbo_tex_coords(),
-            get_ibo_tri_indices()));
-    return m_ssao_shader_context.get();
+            get_ibo_tri_indices());
+    return m_ssao_shader_context;
 }
 
 glm::vec3 Mesh::get_ambient_color() const

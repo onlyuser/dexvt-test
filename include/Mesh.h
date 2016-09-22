@@ -167,36 +167,36 @@ public:
     void set_ambient_color(glm::vec3 ambient_color);
 
 private:
-    std::string                    m_name;
-    size_t                         m_num_vertex;
-    size_t                         m_num_tri;
-    bool                           m_visible;
-    GLfloat*                       m_vert_coords;
-    GLfloat*                       m_vert_normal;
-    GLfloat*                       m_vert_tangent;
-    GLfloat*                       m_tex_coords;
-    GLushort*                      m_tri_indices;
-    std::unique_ptr<Buffer>        m_vbo_vert_coords;
-    std::unique_ptr<Buffer>        m_vbo_vert_normal;
-    std::unique_ptr<Buffer>        m_vbo_vert_tangent;
-    std::unique_ptr<Buffer>        m_vbo_tex_coords;
-    std::unique_ptr<Buffer>        m_ibo_tri_indices;
-    bool                           m_buffers_already_init;
-    Material*                      m_material;                 // TODO: Mesh has one Material
-    std::unique_ptr<ShaderContext> m_shader_context;           // TODO: Mesh has one ShaderContext
-    std::unique_ptr<ShaderContext> m_normal_shader_context;    // TODO: Mesh has one normal ShaderContext
-    std::unique_ptr<ShaderContext> m_wireframe_shader_context; // TODO: Mesh has one wireframe ShaderContext
-    std::unique_ptr<ShaderContext> m_ssao_shader_context;      // TODO: Mesh has one ssao ShaderContext
-    int                            m_texture_index;
-    int                            m_texture2_index;
-    int                            m_bump_texture_index;
-    int                            m_env_map_texture_index;
-    int                            m_random_texture_index;
-    int                            m_frontface_depth_overlay_texture_index;
-    int                            m_backface_depth_overlay_texture_index;
-    int                            m_backface_normal_overlay_texture_index;
-    float                          m_reflect_to_refract_ratio;
-    GLfloat*                       m_ambient_color;
+    std::string    m_name;
+    size_t         m_num_vertex;
+    size_t         m_num_tri;
+    bool           m_visible;
+    GLfloat*       m_vert_coords;
+    GLfloat*       m_vert_normal;
+    GLfloat*       m_vert_tangent;
+    GLfloat*       m_tex_coords;
+    GLushort*      m_tri_indices;
+    Buffer*        m_vbo_vert_coords;
+    Buffer*        m_vbo_vert_normal;
+    Buffer*        m_vbo_vert_tangent;
+    Buffer*        m_vbo_tex_coords;
+    Buffer*        m_ibo_tri_indices;
+    bool           m_buffers_already_init;
+    Material*      m_material;                 // TODO: Mesh has one Material
+    ShaderContext* m_shader_context;           // TODO: Mesh has one ShaderContext
+    ShaderContext* m_normal_shader_context;    // TODO: Mesh has one normal ShaderContext
+    ShaderContext* m_wireframe_shader_context; // TODO: Mesh has one wireframe ShaderContext
+    ShaderContext* m_ssao_shader_context;      // TODO: Mesh has one ssao ShaderContext
+    int            m_texture_index;
+    int            m_texture2_index;
+    int            m_bump_texture_index;
+    int            m_env_map_texture_index;
+    int            m_random_texture_index;
+    int            m_frontface_depth_overlay_texture_index;
+    int            m_backface_depth_overlay_texture_index;
+    int            m_backface_normal_overlay_texture_index;
+    float          m_reflect_to_refract_ratio;
+    GLfloat*       m_ambient_color;
 
     void update_xform();
 };
