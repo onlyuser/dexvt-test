@@ -80,7 +80,7 @@ std::vector<vt::Mesh*> meshes_imported;
 vt::Light *light, *light2, *light3;
 vt::Texture *texture, *texture2, *texture3, *texture4, *texture5, *frontface_depth_overlay_texture, *backface_depth_overlay_texture, *frontface_normal_overlay_texture, *backface_normal_overlay_texture, *ssao_overlay_texture, *hi_res_color_overlay_texture, *med_res_color_overlay_texture, *lo_res_color_overlay_texture, *random_texture;
 
-std::unique_ptr<vt::FrameBuffer> frontface_depth_overlay_fb, backface_depth_overlay_fb, frontface_normal_overlay_fb, backface_normal_overlay_fb, ssao_overlay_fb, hi_res_color_overlay_fb, med_res_color_overlay_fb, lo_res_color_overlay_fb;
+vt::FrameBuffer *frontface_depth_overlay_fb, *backface_depth_overlay_fb, *frontface_normal_overlay_fb, *backface_normal_overlay_fb, *ssao_overlay_fb, *hi_res_color_overlay_fb, *med_res_color_overlay_fb, *lo_res_color_overlay_fb;
 
 bool left_mouse_down = false, right_mouse_down = false;
 glm::vec2 prev_mouse_coord, mouse_drag;
@@ -725,14 +725,14 @@ int init_resources()
     camera = new vt::Camera("camera", origin + glm::vec3(0, 0, orbit_radius), origin);
     scene->set_camera(camera);
 
-    frontface_depth_overlay_fb  = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(frontface_depth_overlay_texture, camera));
-    backface_depth_overlay_fb   = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(backface_depth_overlay_texture, camera));
-    frontface_normal_overlay_fb = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(frontface_normal_overlay_texture, camera));
-    backface_normal_overlay_fb  = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(backface_normal_overlay_texture, camera));
-    ssao_overlay_fb             = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(ssao_overlay_texture, camera));
-    hi_res_color_overlay_fb     = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(hi_res_color_overlay_texture, camera));
-    med_res_color_overlay_fb    = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(med_res_color_overlay_texture, camera));
-    lo_res_color_overlay_fb     = std::unique_ptr<vt::FrameBuffer>(new vt::FrameBuffer(lo_res_color_overlay_texture, camera));
+    frontface_depth_overlay_fb  = new vt::FrameBuffer(frontface_depth_overlay_texture, camera);
+    backface_depth_overlay_fb   = new vt::FrameBuffer(backface_depth_overlay_texture, camera);
+    frontface_normal_overlay_fb = new vt::FrameBuffer(frontface_normal_overlay_texture, camera);
+    backface_normal_overlay_fb  = new vt::FrameBuffer(backface_normal_overlay_texture, camera);
+    ssao_overlay_fb             = new vt::FrameBuffer(ssao_overlay_texture, camera);
+    hi_res_color_overlay_fb     = new vt::FrameBuffer(hi_res_color_overlay_texture, camera);
+    med_res_color_overlay_fb    = new vt::FrameBuffer(med_res_color_overlay_texture, camera);
+    lo_res_color_overlay_fb     = new vt::FrameBuffer(lo_res_color_overlay_texture, camera);
 
     scene->add_light(light  = new vt::Light("light1", origin + glm::vec3(light_distance, 0, 0), glm::vec3(1, 0, 0)));
     scene->add_light(light2 = new vt::Light("light2", origin + glm::vec3(0, light_distance, 0), glm::vec3(0, 1, 0)));
@@ -839,6 +839,20 @@ int init_resources()
     hidden_mesh4->set_material(phong_material);
     //hidden_mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
     hidden_mesh4->set_ambient_color(glm::vec3(0,0,0));
+
+    return 1;
+}
+
+int deinit_resources()
+{
+    delete frontface_depth_overlay_fb;
+    delete backface_depth_overlay_fb;
+    delete frontface_normal_overlay_fb;
+    delete backface_normal_overlay_fb;
+    delete ssao_overlay_fb;
+    delete hi_res_color_overlay_fb;
+    delete med_res_color_overlay_fb;
+    delete lo_res_color_overlay_fb;
 
     return 1;
 }
@@ -973,7 +987,7 @@ void onDisplay()
         scene->render(false, true, vt::Scene::use_material_type_t::USE_MESH_MATERIAL, true);
         hi_res_color_overlay_fb->unbind();
 
-        do_blur(scene, ssao_overlay_texture, hi_res_color_overlay_texture, ssao_overlay_fb.get(), BLUR_ITERS, 0);
+        do_blur(scene, ssao_overlay_texture, hi_res_color_overlay_texture, ssao_overlay_fb, BLUR_ITERS, 0);
     }
 
     glCullFace(GL_FRONT);
@@ -1000,7 +1014,7 @@ void onDisplay()
         scene->render(false, true);
         hi_res_color_overlay_fb->unbind();
 
-        do_blur(scene, hi_res_color_overlay_texture, hi_res_color_overlay_texture, hi_res_color_overlay_fb.get(), BLUR_ITERS, 0.75);
+        do_blur(scene, hi_res_color_overlay_texture, hi_res_color_overlay_texture, hi_res_color_overlay_fb, BLUR_ITERS, 0.75);
     }
 
     glClearColor(0, 0, 0, 1);
