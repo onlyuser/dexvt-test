@@ -119,7 +119,7 @@ CUBE_MAP_STEMS = negx negy negz posx posy posz
 CUBE_MAP_FILES = $(patsubst %, $(CUBE_MAP_PATH)/%.png, $(CUBE_MAP_STEMS))
 $(CUBE_MAP_FILES) :
 	mkdir -p $(CUBE_MAP_PATH)
-	curl "http://www.humus.name/Textures/SaintPetersSquare2.zip > $(CUBE_MAP_PATH)/SaintPetersSquare2.zip"
+	curl "http://www.humus.name/Textures/SaintPetersSquare2.zip" > $(CUBE_MAP_PATH)/SaintPetersSquare2.zip
 	unzip $(CUBE_MAP_PATH)/SaintPetersSquare2.zip -d $(CUBE_MAP_PATH)
 	mogrify -format png $(CUBE_MAP_PATH)/*.jpg
 	rm $(CUBE_MAP_PATH)/SaintPetersSquare2.zip
