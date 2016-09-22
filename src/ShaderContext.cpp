@@ -104,11 +104,17 @@ ShaderContext::ShaderContext(
 
 ShaderContext::~ShaderContext()
 {
-    for(int i = 0; i < var_uniform_type_count; i++) {
-        if(!m_var_uniforms[i]) {
+    for(int i = 0; i < var_attribute_type_count; i++) {
+        if(!m_var_attributes[i]) {
             continue;
         }
-        delete m_var_uniforms[i];
+        delete m_var_attributes[i];
+    }
+    for(int j = 0; j < var_uniform_type_count; j++) {
+        if(!m_var_uniforms[j]) {
+            continue;
+        }
+        delete m_var_uniforms[j];
     }
 }
 

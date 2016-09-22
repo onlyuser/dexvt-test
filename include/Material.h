@@ -36,6 +36,7 @@ public:
             bool        use_fragment_world_pos      = false,
             bool        skybox                      = false,
             bool        overlay                     = false);
+    virtual ~Material();
     Program* get_program() const
     {
         return m_program;

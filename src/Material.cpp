@@ -30,6 +30,9 @@ Material::Material(
         bool        skybox,
         bool        overlay)
     : NamedObject(name),
+      m_program(NULL),
+      m_vertex_shader(NULL),
+      m_fragment_shader(NULL),
       m_use_ambient_color(use_ambient_color),
       m_gen_normal_map(gen_normal_map),
       m_use_phong_shading(use_phong_shading),
@@ -54,6 +57,13 @@ Material::Material(
 //        print_log(m_program->id());
         return;
     }
+}
+
+Material::~Material()
+{
+    if(m_program)         { delete m_program; }
+    if(m_vertex_shader)   { delete m_vertex_shader; }
+    if(m_fragment_shader) { delete m_fragment_shader; }
 }
 
 void Material::add_texture(Texture* texture)

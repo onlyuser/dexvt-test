@@ -845,14 +845,14 @@ int init_resources()
 
 int deinit_resources()
 {
-    delete frontface_depth_overlay_fb;
-    delete backface_depth_overlay_fb;
-    delete frontface_normal_overlay_fb;
-    delete backface_normal_overlay_fb;
-    delete ssao_overlay_fb;
-    delete hi_res_color_overlay_fb;
-    delete med_res_color_overlay_fb;
-    delete lo_res_color_overlay_fb;
+    if(frontface_depth_overlay_fb)  { delete frontface_depth_overlay_fb; }
+    if(backface_depth_overlay_fb)   { delete backface_depth_overlay_fb; }
+    if(frontface_normal_overlay_fb) { delete frontface_normal_overlay_fb; }
+    if(backface_normal_overlay_fb)  { delete backface_normal_overlay_fb; }
+    if(ssao_overlay_fb)             { delete ssao_overlay_fb; }
+    if(hi_res_color_overlay_fb)     { delete hi_res_color_overlay_fb; }
+    if(med_res_color_overlay_fb)    { delete med_res_color_overlay_fb; }
+    if(lo_res_color_overlay_fb)     { delete lo_res_color_overlay_fb; }
 
     return 1;
 }
@@ -1337,6 +1337,7 @@ int main(int argc, char* argv[])
         glEnable(GL_CULL_FACE);
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glutMainLoop();
+        deinit_resources();
     }
 
     return 0;
