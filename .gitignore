@@ -4,3 +4,5 @@
 *.swp
 *.ico
 data
+build
+bin
