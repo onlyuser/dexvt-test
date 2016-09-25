@@ -1209,8 +1209,10 @@ void onKeyboard(unsigned char key, int x, int y)
             wireframe_mode = !wireframe_mode;
             if(wireframe_mode) {
                 glPolygonMode(GL_FRONT, GL_LINE);
+                mesh->set_ambient_color(glm::vec3(1, 1, 1));
             } else {
                 glPolygonMode(GL_FRONT, GL_FILL);
+                mesh->set_ambient_color(glm::vec3(0, 0, 0));
             }
             break;
         case 'x': // axis
