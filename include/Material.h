@@ -25,7 +25,7 @@ public:
             std::string fragment_shader_file        = "",
             bool        use_ambient_color           = false,
             bool        gen_normal_map              = false,
-            bool        use_phong_shading           = false,
+            bool        use_lighting           = false,
             bool        use_texture_mapping         = false,
             bool        use_bump_mapping            = false,
             bool        use_env_mapping             = false,
@@ -65,9 +65,9 @@ public:
     {
         return m_gen_normal_map;
     }
-    bool use_phong_shading() const
+    bool use_lighting() const
     {
-        return m_use_phong_shading;
+        return m_use_lighting;
     }
     bool use_texture_mapping() const
     {
@@ -109,6 +109,18 @@ public:
     {
         return m_overlay;
     }
+    bool use_overlay() const {
+        return (m_skybox || m_overlay);
+    }
+    bool use_vertex_normal() const {
+        return (m_gen_normal_map || m_use_lighting || m_use_bump_mapping || m_use_env_mapping || m_use_ssao);
+    }
+    bool use_vertex_tangent() const {
+        return m_use_bump_mapping;
+    }
+    bool use_texture_coords() const {
+        return (m_use_texture_mapping || m_use_bump_mapping || m_use_ssao);
+    }
 
     Texture* get_texture_by_index(int index) const;
     int get_texture_index(vt::Texture* texture) const;
@@ -122,7 +134,7 @@ private:
     textures_t m_textures; // TODO: Material has multiple Textures
     bool       m_use_ambient_color;
     bool       m_gen_normal_map;
-    bool       m_use_phong_shading;
+    bool       m_use_lighting;
     bool       m_use_texture_mapping;
     bool       m_use_bump_mapping;
     bool       m_use_env_mapping;

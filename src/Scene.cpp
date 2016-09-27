@@ -228,51 +228,59 @@ void Scene::render(
             continue;
         }
         Material* material = shader_context->get_material();
-        bool use_ambient_color           = material->use_ambient_color();
-        bool gen_normal_map              = material->gen_normal_map();
-        bool use_phong_shading           = material->use_phong_shading();
-        bool use_texture_mapping         = material->use_texture_mapping();
-        bool use_bump_mapping            = material->use_bump_mapping();
-        bool use_env_mapping             = material->use_env_mapping();
-        bool use_env_mapping_dbl_refract = material->use_env_mapping_dbl_refract();
-        bool use_ssao                    = material->use_ssao();
-        bool use_fragment_world_pos      = material->use_fragment_world_pos();
+        //bool gen_normal_map   = material->gen_normal_map();
+        bool use_lighting     = material->use_lighting();
+        //bool use_bump_mapping = material->use_bump_mapping();
+        //bool use_env_mapping  = material->use_env_mapping();
+        bool use_ssao         = material->use_ssao();
         if(skip_ssao_mesh && use_ssao) {
             continue;
         }
         material->get_program()->use();
         glm::mat4 vp_xform = m_camera->get_projection_xform()*m_camera->get_xform();
         shader_context->set_mvp_xform(vp_xform*mesh->get_xform());
-        if(gen_normal_map || use_phong_shading || use_bump_mapping || use_env_mapping || use_ssao) {
-            shader_context->set_normal_xform(mesh->get_normal_xform());
-            if((!gen_normal_map && use_bump_mapping) || use_phong_shading || use_env_mapping) {
+        //if(gen_normal_map || use_lighting || use_bump_mapping || use_env_mapping || use_ssao) {
+            if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_normal_xform)) {
+                shader_context->set_normal_xform(mesh->get_normal_xform());
+            }
+        //}
+        //if((!gen_normal_map && use_bump_mapping) || use_lighting || use_env_mapping) {
+            if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_model_xform)) {
                 shader_context->set_model_xform(mesh->get_xform());
+            }
+            if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_camera_pos)) {
                 shader_context->set_camera_pos(m_camera_pos);
             }
-            if(use_phong_shading) {
-                shader_context->set_light_pos(    NUM_LIGHTS, m_light_pos);
-                shader_context->set_light_color(  NUM_LIGHTS, m_light_color);
-                shader_context->set_light_enabled(NUM_LIGHTS, m_light_enabled);
-                shader_context->set_light_count(m_lights.size());
-            }
-            if(use_bump_mapping) {
+        //}
+        if(use_lighting) {
+            shader_context->set_light_pos(    NUM_LIGHTS, m_light_pos);
+            shader_context->set_light_color(  NUM_LIGHTS, m_light_color);
+            shader_context->set_light_enabled(NUM_LIGHTS, m_light_enabled);
+            shader_context->set_light_count(m_lights.size());
+        }
+        //if(use_bump_mapping) {
+            if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_bump_texture)) {
                 shader_context->set_bump_texture_index(mesh->get_bump_texture_index());
             }
-            if(use_env_mapping) {
+        //}
+        //if(use_env_mapping) {
+            if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_env_map_texture)) {
                 shader_context->set_env_map_texture_index(0); // skymap texture index
+            }
+            if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_reflect_to_refract_ratio)) {
                 shader_context->set_reflect_to_refract_ratio(mesh->get_reflect_to_refract_ratio());
             }
-        }
-        if(use_texture_mapping) {
+        //}
+        if(material->use_texture_mapping()) {
             shader_context->set_texture_index(mesh->get_texture_index());
         }
-        if(use_fragment_world_pos) {
+        if(material->use_fragment_world_pos()) {
             shader_context->set_viewport_dim(m_viewport_dim);
             shader_context->set_camera_near( m_camera->get_near_plane());
             shader_context->set_camera_far(  m_camera->get_far_plane());
             shader_context->set_inv_view_proj_xform(glm::inverse(m_camera->get_xform())*glm::inverse(m_camera->get_projection_xform()));
         }
-        if(use_env_mapping_dbl_refract) {
+        if(material->use_env_mapping_dbl_refract()) {
             shader_context->set_frontface_depth_overlay_texture_index(mesh->get_frontface_depth_overlay_texture_index());
             shader_context->set_backface_depth_overlay_texture_index( mesh->get_backface_depth_overlay_texture_index());
             shader_context->set_backface_normal_overlay_texture_index(mesh->get_backface_normal_overlay_texture_index());
@@ -286,7 +294,7 @@ void Scene::render(
             shader_context->set_camera_pos(m_camera_pos);
             shader_context->set_camera_dir(m_camera_dir);
         }
-        if(use_ambient_color) {
+        if(material->use_ambient_color()) {
             glm::vec3 _ambient_color = mesh->get_ambient_color();
             m_ambient_color[0] = _ambient_color[0];
             m_ambient_color[1] = _ambient_color[1];
