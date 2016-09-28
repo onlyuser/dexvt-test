@@ -156,14 +156,22 @@ void Scene::render(
         Material* material = shader_context->get_material();
         material->get_program()->use();
         shader_context->set_texture_index(m_overlay->get_texture_index());
-        if(material->use_bloom_kernel()) {
-            shader_context->set_viewport_dim(m_viewport_dim);
-            shader_context->set_bloom_kernel(m_bloom_kernel);
-            shader_context->set_glow_cutoff_threshold(m_glow_cutoff_threshold);
-        }
-        if(material->use_texture2()) {
-            shader_context->set_texture2_index(m_overlay->get_texture2_index());
-        }
+        //if(material->use_bloom_kernel()) {
+            if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_viewport_dim)) {
+                shader_context->set_viewport_dim(m_viewport_dim);
+            }
+            if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_bloom_kernel)) {
+                shader_context->set_bloom_kernel(m_bloom_kernel);
+            }
+            if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_glow_cutoff_threshold)) {
+                shader_context->set_glow_cutoff_threshold(m_glow_cutoff_threshold);
+            }
+        //}
+        //if(material->use_texture2()) {
+            if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_color_texture2)) {
+                shader_context->set_texture2_index(m_overlay->get_texture2_index());
+            }
+        //}
         shader_context->render();
         return;
     }
@@ -334,13 +342,15 @@ void Scene::render(
                 shader_context->set_camera_dir(m_camera_dir);
             }
         //}
-        if(material->use_ambient_color()) {
-            glm::vec3 _ambient_color = mesh->get_ambient_color();
-            m_ambient_color[0] = _ambient_color[0];
-            m_ambient_color[1] = _ambient_color[1];
-            m_ambient_color[2] = _ambient_color[2];
-            shader_context->set_ambient_color(m_ambient_color);
-        }
+        //if(material->use_ambient_color()) {
+            if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_ambient_color)) {
+                glm::vec3 _ambient_color = mesh->get_ambient_color();
+                m_ambient_color[0] = _ambient_color[0];
+                m_ambient_color[1] = _ambient_color[1];
+                m_ambient_color[2] = _ambient_color[2];
+                shader_context->set_ambient_color(m_ambient_color);
+            }
+        //}
         shader_context->render();
     }
 }

@@ -181,20 +181,7 @@ int init_resources()
     vt::Material* bump_mapped_material = new vt::Material(
             "bump_mapped",
             "src/shaders/bump_mapped.v.glsl",
-            "src/shaders/bump_mapped.f.glsl",
-            true,   // use_ambient_color
-            false,  // gen_normal_map
-            true,   // use_phong_shading
-            true,   // use_texture_mapping
-            true,   // use_bump_mapping
-            false,  // use_env_mapping
-            false,  // use_env_mapping_dbl_refract
-            false,  // use_ssao
-            false,  // use_bloom_kernel
-            false,  // use_texture2
-            false,  // use_fragment_world_pos
-            false,  // skybox
-            false); // overlay
+            "src/shaders/bump_mapped.f.glsl");
     vt::Program* bump_mapped_program = bump_mapped_material->get_program();
     bump_mapped_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "texcoord");
     bump_mapped_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
@@ -216,20 +203,7 @@ int init_resources()
     vt::Material* phong_material = new vt::Material(
             "phong",
             "src/shaders/phong.v.glsl",
-            "src/shaders/phong.f.glsl",
-            true,   // use_ambient_color
-            false,  // gen_normal_map
-            true,   // use_phong_shading
-            false,  // use_texture_mapping
-            false,  // use_bump_mapping
-            false,  // use_env_mapping
-            false,  // use_env_mapping_dbl_refract
-            false,  // use_ssao
-            false,  // use_bloom_kernel
-            false,  // use_texture2
-            false,  // use_fragment_world_pos
-            false,  // skybox
-            false); // overlay
+            "src/shaders/phong.f.glsl");
     vt::Program* phong_program = phong_material->get_program();
     phong_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
     phong_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_position");
@@ -248,19 +222,8 @@ int init_resources()
             "ssao",
             "src/shaders/ssao.v.glsl",
             "src/shaders/ssao.f.glsl",
-            false,  // use_ambient_color
-            false,  // gen_normal_map
-            false,  // use_phong_shading
-            false,  // use_texture_mapping
-            false,  // use_bump_mapping
-            false,  // use_env_mapping
-            false,  // use_env_mapping_dbl_refract
-            true,   // use_ssao
-            false,  // use_bloom_kernel
-            false,  // use_texture2
-            true,   // use_fragment_world_pos
-            false,  // skybox
-            false); // overlay
+            false, // use_overlay
+            true); // use_ssao
     vt::Program* ssao_program = ssao_material->get_program();
     ssao_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "texcoord");
     ssao_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
@@ -284,19 +247,7 @@ int init_resources()
             "skybox",
             "src/shaders/skybox.v.glsl",
             "src/shaders/skybox.f.glsl",
-            false,  // use_ambient_color
-            false,  // gen_normal_map
-            false,  // use_phong_shading
-            false,  // use_texture_mapping
-            false,  // use_bump_mapping
-            false,  // use_env_mapping
-            false,  // use_env_mapping_dbl_refract
-            false,  // use_ssao
-            false,  // use_bloom_kernel
-            false,  // use_texture2
-            false,  // use_fragment_world_pos
-            true,   // skybox
-            false); // overlay
+            true); // use_overlay
     vt::Program* skybox_material_program = skybox_material->get_program();
     skybox_material_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "env_map_texture");
     skybox_material_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "inv_normal_xform");
@@ -307,19 +258,7 @@ int init_resources()
             "overlay_write_through",
             "src/shaders/overlay_write_through.v.glsl",
             "src/shaders/overlay_write_through.f.glsl",
-            false, // use_ambient_color
-            false, // gen_normal_map
-            false, // use_phong_shading
-            false, // use_texture_mapping
-            false, // use_bump_mapping
-            false, // use_env_mapping
-            false, // use_env_mapping_dbl_refract
-            false, // use_ssao
-            false, // use_bloom_kernel
-            false, // use_texture2
-            false, // use_fragment_world_pos
-            false, // skybox
-            true); // overlay
+            true); // use_overlay
     vt::Program* overlay_write_through_program = overlay_write_through_material->get_program();
     overlay_write_through_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "color_texture");
     scene->add_material(overlay_write_through_material);
@@ -328,19 +267,7 @@ int init_resources()
             "overlay_bloom_filter",
             "src/shaders/overlay_bloom_filter.v.glsl",
             "src/shaders/overlay_bloom_filter.f.glsl",
-            false, // use_ambient_color
-            false, // gen_normal_map
-            false, // use_phong_shading
-            false, // use_texture_mapping
-            false, // use_bump_mapping
-            false, // use_env_mapping
-            false, // use_env_mapping_dbl_refract
-            false, // use_ssao
-            true,  // use_bloom_kernel
-            false, // use_texture2
-            false, // use_fragment_world_pos
-            false, // skybox
-            true); // overlay
+            true); // use_overlay
     vt::Program* overlay_bloom_filter_program = overlay_bloom_filter_material->get_program();
     overlay_bloom_filter_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "bloom_kernel");
     overlay_bloom_filter_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "color_texture");
@@ -352,19 +279,7 @@ int init_resources()
             "overlay_max",
             "src/shaders/overlay_max.v.glsl",
             "src/shaders/overlay_max.f.glsl",
-            false, // use_ambient_color
-            false, // gen_normal_map
-            false, // use_phong_shading
-            false, // use_texture_mapping
-            false, // use_bump_mapping
-            false, // use_env_mapping
-            false, // use_env_mapping_dbl_refract
-            false, // use_ssao
-            false, // use_bloom_kernel
-            true,  // use_texture2
-            false, // use_fragment_world_pos
-            false, // skybox
-            true); // overlay
+            true); // use_overlay
     vt::Program* overlay_max_program = overlay_max_material->get_program();
     overlay_max_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "color_texture");
     overlay_max_program->add_var(vt::Program::VAR_TYPE_UNIFORM, "color_texture2");
@@ -373,20 +288,7 @@ int init_resources()
     vt::Material* texture_mapped_material = new vt::Material(
             "texture_mapped",
             "src/shaders/texture_mapped.v.glsl",
-            "src/shaders/texture_mapped.f.glsl",
-            false,  // use_ambient_color
-            false,  // gen_normal_map
-            false,  // use_phong_shading
-            true,   // use_texture_mapping
-            false,  // use_bump_mapping
-            false,  // use_env_mapping
-            false,  // use_env_mapping_dbl_refract
-            false,  // use_ssao
-            false,  // use_bloom_kernel
-            false,  // use_texture2
-            false,  // use_fragment_world_pos
-            false,  // skybox
-            false); // overlay
+            "src/shaders/texture_mapped.f.glsl");
     vt::Program* texture_mapped_program = texture_mapped_material->get_program();
     texture_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "color_texture");
     texture_mapped_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "mvp_xform");
@@ -397,20 +299,7 @@ int init_resources()
     vt::Material* env_mapped_material = new vt::Material(
             "env_mapped",
             "src/shaders/env_mapped.v.glsl",
-            "src/shaders/env_mapped.f.glsl",
-            false,  // use_ambient_color
-            false,  // gen_normal_map
-            false,  // use_phong_shading
-            false,  // use_texture_mapping
-            true,   // use_bump_mapping
-            true,   // use_env_mapping
-            false,  // use_env_mapping_dbl_refract
-            false,  // use_ssao
-            false,  // use_bloom_kernel
-            false,  // use_texture2
-            false,  // use_fragment_world_pos
-            false,  // skybox
-            false); // overlay
+            "src/shaders/env_mapped.f.glsl");
     vt::Program* env_mapped_program = env_mapped_material->get_program();
     env_mapped_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "texcoord");
     env_mapped_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
@@ -428,20 +317,7 @@ int init_resources()
     vt::Material* env_mapped_dbl_refract_material = new vt::Material(
             "env_mapped_dbl_refract",
             "src/shaders/env_mapped_dbl_refract.v.glsl",
-            "src/shaders/env_mapped_dbl_refract.f.glsl",
-            false,  // use_ambient_color
-            false,  // gen_normal_map
-            true,   // use_phong_shading
-            false,  // use_texture_mapping
-            true,   // use_bump_mapping
-            true,   // use_env_mapping
-            true,   // use_env_mapping_dbl_refract
-            false,  // use_ssao
-            false,  // use_bloom_kernel
-            false,  // use_texture2
-            true,   // use_fragment_world_pos
-            false,  // skybox
-            false); // overlay
+            "src/shaders/env_mapped_dbl_refract.f.glsl");
     vt::Program* env_mapped_dbl_refract_program = env_mapped_dbl_refract_material->get_program();
     env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "texcoord");
     env_mapped_dbl_refract_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
@@ -471,20 +347,7 @@ int init_resources()
     vt::Material* env_mapped_fast_material = new vt::Material(
             "env_mapped_fast",
             "src/shaders/env_mapped_fast.v.glsl",
-            "src/shaders/env_mapped_fast.f.glsl",
-            false,  // use_ambient_color
-            false,  // gen_normal_map
-            false,  // use_phong_shading
-            false,  // use_texture_mapping
-            false,  // use_bump_mapping
-            true,   // use_env_mapping
-            false,  // use_env_mapping_dbl_refract
-            false,  // use_ssao
-            false,  // use_bloom_kernel
-            false,  // use_texture2
-            false,  // use_fragment_world_pos
-            false,  // skybox
-            false); // overlay
+            "src/shaders/env_mapped_fast.f.glsl");
     vt::Program* env_mapped_fast_program = env_mapped_fast_material->get_program();
     env_mapped_fast_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
     env_mapped_fast_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_position");
@@ -499,20 +362,7 @@ int init_resources()
     vt::Material* normal_material = new vt::Material(
             "normal",
             "src/shaders/normal.v.glsl",
-            "src/shaders/normal.f.glsl",
-            false,  // use_ambient_color
-            true,   // gen_normal_map
-            false,  // use_phong_shading
-            false,  // use_texture_mapping
-            true,   // use_bump_mapping
-            false,  // use_env_mapping
-            false,  // use_env_mapping_dbl_refract
-            false,  // use_ssao
-            false,  // use_bloom_kernel
-            false,  // use_texture2
-            false,  // use_fragment_world_pos
-            false,  // skybox
-            false); // overlay
+            "src/shaders/normal.f.glsl");
     vt::Program* normal_program = normal_material->get_program();
     normal_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "texcoord");
     normal_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "bump_texture");
@@ -526,20 +376,7 @@ int init_resources()
     vt::Material* normal_fast_material = new vt::Material(
             "normal_fast",
             "src/shaders/normal_fast.v.glsl",
-            "src/shaders/normal_fast.f.glsl",
-            false,  // use_ambient_color
-            true,   // gen_normal_map
-            false,  // use_phong_shading
-            false,  // use_texture_mapping
-            false,  // use_bump_mapping
-            false,  // use_env_mapping
-            false,  // use_env_mapping_dbl_refract
-            false,  // use_ssao
-            false,  // use_bloom_kernel
-            false,  // use_texture2
-            false,  // use_fragment_world_pos
-            false,  // skybox
-            false); // overlay
+            "src/shaders/normal_fast.f.glsl");
     vt::Program* normal_fast_program = normal_fast_material->get_program();
     normal_fast_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
     normal_fast_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_position");
@@ -551,20 +388,7 @@ int init_resources()
     vt::Material* ambient_material = new vt::Material(
             "ambient",
             "src/shaders/ambient.v.glsl",
-            "src/shaders/ambient.f.glsl",
-            true,   // use_ambient_color
-            false,  // gen_normal_map
-            false,  // use_phong_shading
-            false,  // use_texture_mapping
-            false,  // use_bump_mapping
-            false,  // use_env_mapping
-            false,  // use_env_mapping_dbl_refract
-            false,  // use_ssao
-            false,  // use_bloom_kernel
-            false,  // use_texture2
-            false,  // use_fragment_world_pos
-            false,  // skybox
-            false); // overlay
+            "src/shaders/ambient.f.glsl");
     vt::Program* ambient_program = ambient_material->get_program();
     ambient_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_position");
     ambient_program->add_var(vt::Program::VAR_TYPE_UNIFORM,   "ambient_color");
