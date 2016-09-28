@@ -179,12 +179,12 @@ bool Program::add_var(var_type_t var_type, std::string name)
                 int id = -1;
                 for(int i = 0; i < var_attribute_type_count; i++) {
                     if(name == m_var_attribute_type_to_name_table[i].second) {
-                        id = m_var_uniform_type_to_name_table[i].first;
+                        id = m_var_attribute_type_to_name_table[i].first;
                         break;
                     }
                 }
                 if(id != -1) {
-                    m_var_uniform_ids.insert(id);
+                    m_var_attribute_ids.insert(id);
                 }
             }
             break;
@@ -254,6 +254,8 @@ void Program::clear_vars()
 {
     m_var_attribute_names.clear();
     m_var_uniform_names.clear();
+    m_var_attribute_ids.clear();
+    m_var_uniform_ids.clear();
 }
 
 }

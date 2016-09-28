@@ -25,7 +25,7 @@ public:
             std::string fragment_shader_file        = "",
             bool        use_ambient_color           = false,
             bool        gen_normal_map              = false,
-            bool        use_lighting           = false,
+            bool        use_lighting                = false,
             bool        use_texture_mapping         = false,
             bool        use_bump_mapping            = false,
             bool        use_env_mapping             = false,
