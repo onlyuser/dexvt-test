@@ -299,11 +299,13 @@ void Scene::render(
             }
         //}
         //if(material->use_env_mapping_dbl_refract()) {
-            if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_frontface_depth_overlay_texture)) {
-                shader_context->set_frontface_depth_overlay_texture_index(mesh->get_frontface_depth_overlay_texture_index());
-            }
-            if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_backface_depth_overlay_texture)) {
-                shader_context->set_backface_depth_overlay_texture_index(mesh->get_backface_depth_overlay_texture_index());
+            if(use_material_type != use_material_type_t::USE_SSAO_MATERIAL) {
+                if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_frontface_depth_overlay_texture)) {
+                    shader_context->set_frontface_depth_overlay_texture_index(mesh->get_frontface_depth_overlay_texture_index());
+                }
+                if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_backface_depth_overlay_texture)) {
+                    shader_context->set_backface_depth_overlay_texture_index(mesh->get_backface_depth_overlay_texture_index());
+                }
             }
             if(material->get_program()->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_backface_normal_overlay_texture)) {
                 shader_context->set_backface_normal_overlay_texture_index(mesh->get_backface_normal_overlay_texture_index());
