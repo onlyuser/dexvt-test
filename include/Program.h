@@ -92,23 +92,19 @@ private:
     Shader* m_vertex_shader;
     Shader* m_fragment_shader;
 
-    typedef std::set<std::string> var_attribute_names_t;
-    var_attribute_names_t m_var_attribute_names;
-
-    typedef std::set<int> var_attribute_ids_t;
-    var_attribute_ids_t m_var_attribute_ids;
-
-    typedef std::set<std::string> var_uniform_names_t;
-    var_uniform_names_t m_var_uniform_names;
-
-    typedef std::set<int> var_uniform_ids_t;
-    var_uniform_ids_t m_var_uniform_ids;
-
+    // attributes
     typedef std::pair<var_attribute_type_t, const char*> var_attribute_type_to_name_table_t;
     static var_attribute_type_to_name_table_t m_var_attribute_type_to_name_table[];
+    typedef std::set<std::string> var_attribute_names_t;
+    var_attribute_names_t m_var_attribute_names;
+    bool m_var_attribute_ids[var_attribute_type_count];
 
+    // uniforms
     typedef std::pair<var_uniform_type_t, const char*> var_uniform_type_to_name_table_t;
     static var_uniform_type_to_name_table_t m_var_uniform_type_to_name_table[];
+    typedef std::set<std::string> var_uniform_names_t;
+    var_uniform_names_t m_var_uniform_names;
+    bool m_var_uniform_ids[var_uniform_type_count];
 };
 
 }

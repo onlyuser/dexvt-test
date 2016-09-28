@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 #include <stdlib.h>
 #include <iostream>
+#include <memory.h>
 #include <assert.h>
 
 namespace vt {
@@ -56,6 +57,8 @@ Program::Program(std::string name)
       m_fragment_shader(NULL)
 {
     m_id = glCreateProgram();
+    memset(m_var_attribute_ids, 0, sizeof(m_var_attribute_ids));
+    memset(m_var_uniform_ids, 0, sizeof(m_var_uniform_ids));
 }
 
 Program::~Program()
@@ -184,7 +187,7 @@ bool Program::add_var(var_type_t var_type, std::string name)
                     }
                 }
                 if(id != -1) {
-                    m_var_attribute_ids.insert(id);
+                    m_var_attribute_ids[id] = true;
                 }
             }
             break;
@@ -204,7 +207,7 @@ bool Program::add_var(var_type_t var_type, std::string name)
                     }
                 }
                 if(id != -1) {
-                    m_var_uniform_ids.insert(id);
+                    m_var_uniform_ids[id] = true;
                 }
             }
             break;
@@ -235,16 +238,10 @@ bool Program::has_var(var_type_t var_type, int id) const
 {
     switch(var_type) {
         case VAR_TYPE_ATTRIBUTE:
-            {
-                var_attribute_ids_t::const_iterator p = m_var_attribute_ids.find(id);
-                return (p != m_var_attribute_ids.end());
-            }
+            return m_var_attribute_ids[id];
             break;
         case VAR_TYPE_UNIFORM:
-            {
-                var_uniform_ids_t::const_iterator p = m_var_uniform_ids.find(id);
-                return (p != m_var_uniform_ids.end());
-            }
+            return m_var_uniform_ids[id];
             break;
     }
     return false;
@@ -254,8 +251,12 @@ void Program::clear_vars()
 {
     m_var_attribute_names.clear();
     m_var_uniform_names.clear();
-    m_var_attribute_ids.clear();
-    m_var_uniform_ids.clear();
+    for(int i = 0; i < Program::var_attribute_type_count; i++) {
+        m_var_attribute_ids[i] = false;
+    }
+    for(int j = 0; j < Program::var_uniform_type_count; j++) {
+        m_var_uniform_ids[j] = false;
+    }
 }
 
 }
