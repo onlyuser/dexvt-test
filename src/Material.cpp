@@ -16,14 +16,12 @@ Material::Material(
         std::string name,
         std::string vertex_shader_file,
         std::string fragment_shader_file,
-        bool use_overlay,
-        bool use_ssao)
+        bool use_overlay)
     : NamedObject(name),
       m_program(NULL),
       m_vertex_shader(NULL),
       m_fragment_shader(NULL),
-      m_use_overlay(use_overlay),
-      m_use_ssao(use_ssao)
+      m_use_overlay(use_overlay)
 {
     m_program         = new Program(name);
     m_vertex_shader   = new Shader(vertex_shader_file,   GL_VERTEX_SHADER);

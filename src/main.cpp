@@ -222,8 +222,7 @@ int init_resources()
             "ssao",
             "src/shaders/ssao.v.glsl",
             "src/shaders/ssao.f.glsl",
-            false, // use_overlay
-            true); // use_ssao
+            false); // use_overlay
     vt::Program* ssao_program = ssao_material->get_program();
     ssao_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "texcoord");
     ssao_program->add_var(vt::Program::VAR_TYPE_ATTRIBUTE, "vertex_normal");
@@ -808,7 +807,7 @@ void onDisplay()
         hi_res_color_overlay_fb->bind();
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(false, true, vt::Scene::use_material_type_t::USE_MESH_MATERIAL, true);
+        scene->render(false, true, vt::Scene::use_material_type_t::USE_MESH_MATERIAL);
         hi_res_color_overlay_fb->unbind();
 
         do_blur(scene, ssao_overlay_texture, hi_res_color_overlay_texture, ssao_overlay_fb, BLUR_ITERS, 0);

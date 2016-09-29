@@ -23,8 +23,7 @@ public:
             std::string name                 = "",
             std::string vertex_shader_file   = "",
             std::string fragment_shader_file = "",
-            bool use_overlay                 = false,
-            bool use_ssao                    = false);
+            bool use_overlay                 = false);
     virtual ~Material();
     Program* get_program() const
     {
