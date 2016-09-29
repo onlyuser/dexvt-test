@@ -305,10 +305,11 @@ void Scene::render(
         if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_env_map_texture)) {
             shader_context->set_env_map_texture_index(0); // skymap texture index
         }
-        //if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_frontface_depth_overlay_texture)) {
-        //    shader_context->set_frontface_depth_overlay_texture_index(material->get_texture_index_by_name("frontface_depth_overlay"));
-        //}
-        if(use_material_type != use_material_type_t::USE_SSAO_MATERIAL) {
+        if(use_material_type == use_material_type_t::USE_SSAO_MATERIAL) {
+            if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_frontface_depth_overlay_texture)) {
+                shader_context->set_frontface_depth_overlay_texture_index(material->get_texture_index_by_name("frontface_depth_overlay"));
+            }
+        } else {
             if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_frontface_depth_overlay_texture)) {
                 shader_context->set_frontface_depth_overlay_texture_index(mesh->get_frontface_depth_overlay_texture_index());
             }
