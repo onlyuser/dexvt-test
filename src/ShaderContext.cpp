@@ -135,7 +135,7 @@ void ShaderContext::render()
     }
 }
 
-void ShaderContext::set_ambient_color(GLfloat* ambient_color)
+void ShaderContext::set_ambient_color(const float* ambient_color)
 {
     m_var_uniforms[Program::var_uniform_type_ambient_color]->uniform_3fv(1, ambient_color);
 }
@@ -152,7 +152,7 @@ void ShaderContext::set_backface_normal_overlay_texture_index(GLint texture_id)
     m_var_uniforms[Program::var_uniform_type_backface_normal_overlay_texture]->uniform_1i(texture_id);
 }
 
-void ShaderContext::set_bloom_kernel(GLfloat* bloom_kernel_arr)
+void ShaderContext::set_bloom_kernel(const float* bloom_kernel_arr)
 {
     m_var_uniforms[Program::var_uniform_type_bloom_kernel]->uniform_1fv(BLOOM_KERNEL_SIZE, bloom_kernel_arr);
 }
@@ -163,7 +163,7 @@ void ShaderContext::set_bump_texture_index(GLint texture_id)
     m_var_uniforms[Program::var_uniform_type_bump_texture]->uniform_1i(texture_id);
 }
 
-void ShaderContext::set_camera_dir(GLfloat* camera_dir_arr)
+void ShaderContext::set_camera_dir(const float* camera_dir_arr)
 {
     m_var_uniforms[Program::var_uniform_type_camera_dir]->uniform_3fv(1, camera_dir_arr);
 }
@@ -178,7 +178,7 @@ void ShaderContext::set_camera_near(GLfloat camera_near)
     m_var_uniforms[Program::var_uniform_type_camera_near]->uniform_1f(camera_near);
 }
 
-void ShaderContext::set_camera_pos(GLfloat* camera_pos_arr)
+void ShaderContext::set_camera_pos(const float* camera_pos_arr)
 {
     m_var_uniforms[Program::var_uniform_type_camera_pos]->uniform_3fv(1, camera_pos_arr);
 }
@@ -215,7 +215,7 @@ void ShaderContext::set_inv_view_proj_xform(glm::mat4 inv_view_proj_xform)
     m_var_uniforms[Program::var_uniform_type_inv_view_proj_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(inv_view_proj_xform));
 }
 
-void ShaderContext::set_light_color(size_t num_lights, GLfloat* light_color_arr)
+void ShaderContext::set_light_color(size_t num_lights, const float* light_color_arr)
 {
     m_var_uniforms[Program::var_uniform_type_light_color]->uniform_3fv(num_lights, light_color_arr);
 }
@@ -230,7 +230,7 @@ void ShaderContext::set_light_enabled(size_t num_lights, GLint* light_enabled_ar
     m_var_uniforms[Program::var_uniform_type_light_enabled]->uniform_1iv(num_lights, light_enabled_arr);
 }
 
-void ShaderContext::set_light_pos(size_t num_lights, GLfloat* light_pos_arr)
+void ShaderContext::set_light_pos(size_t num_lights, const float* light_pos_arr)
 {
     m_var_uniforms[Program::var_uniform_type_light_pos]->uniform_3fv(num_lights, light_pos_arr);
 }
@@ -261,7 +261,7 @@ void ShaderContext::set_reflect_to_refract_ratio(GLfloat reflect_to_refract_rati
     m_var_uniforms[Program::var_uniform_type_reflect_to_refract_ratio]->uniform_1f(reflect_to_refract_ratio);
 }
 
-void ShaderContext::set_ssao_sample_kernel_pos(size_t num_kernels, GLfloat* kernel_pos_arr)
+void ShaderContext::set_ssao_sample_kernel_pos(size_t num_kernels, const float* kernel_pos_arr)
 {
     m_var_uniforms[Program::var_uniform_type_ssao_sample_kernel_pos]->uniform_3fv(num_kernels, kernel_pos_arr);
 }
@@ -283,7 +283,7 @@ void ShaderContext::set_view_proj_xform(glm::mat4 view_proj_xform)
     m_var_uniforms[Program::var_uniform_type_view_proj_xform]->uniform_matrix_4fv(1, GL_FALSE, glm::value_ptr(view_proj_xform));
 }
 
-void ShaderContext::set_viewport_dim(GLfloat* viewport_dim_arr)
+void ShaderContext::set_viewport_dim(const float* viewport_dim_arr)
 {
     m_var_uniforms[Program::var_uniform_type_viewport_dim]->uniform_2fv(1, viewport_dim_arr);
 }

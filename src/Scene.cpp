@@ -6,6 +6,7 @@
 #include <Mesh.h>
 #include <Material.h>
 #include <Texture.h>
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/compatibility.hpp>
 #include <GL/glew.h>
 #include <GL/glut.h>
@@ -30,15 +31,6 @@ Scene::Scene()
       m_wireframe_material(NULL),
       m_ssao_material(NULL)
 {
-    m_ambient_color[0] = 0;
-    m_ambient_color[1] = 0;
-    m_ambient_color[2] = 0;
-    m_camera_pos[0] = 0;
-    m_camera_pos[1] = 0;
-    m_camera_pos[2] = 0;
-    m_camera_dir[0] = 0;
-    m_camera_dir[1] = 0;
-    m_camera_dir[2] = 0;
     m_viewport_dim[0] = 0;
     m_viewport_dim[1] = 0;
     //const int bloom_kernel_row[BLOOM_KERNEL_SIZE] = {1, 4, 6, 4, 1};
@@ -207,14 +199,6 @@ void Scene::render(
         }
         shader_context->render();
     }
-    glm::vec3 camera_pos = m_camera->get_origin();
-    m_camera_pos[0] = camera_pos.x;
-    m_camera_pos[1] = camera_pos.y;
-    m_camera_pos[2] = camera_pos.z;
-    glm::vec3 camera_dir = m_camera->get_dir();
-    m_camera_dir[0] = camera_dir.x;
-    m_camera_dir[1] = camera_dir.y;
-    m_camera_dir[2] = camera_dir.z;
     int i = 0;
     for(lights_t::const_iterator p = m_lights.begin(); p != m_lights.end(); p++) {
         glm::vec3 light_pos = (*p)->get_origin();
@@ -270,11 +254,7 @@ void Scene::render(
         program->use();
         glm::mat4 vp_xform = m_camera->get_projection_xform()*m_camera->get_xform();
         if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_ambient_color)) {
-            glm::vec3 _ambient_color = mesh->get_ambient_color();
-            m_ambient_color[0] = _ambient_color[0];
-            m_ambient_color[1] = _ambient_color[1];
-            m_ambient_color[2] = _ambient_color[2];
-            shader_context->set_ambient_color(m_ambient_color);
+            shader_context->set_ambient_color(glm::value_ptr(mesh->get_ambient_color()));
         }
         if(use_material_type != use_material_type_t::USE_SSAO_MATERIAL) {
             if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_backface_depth_overlay_texture)) {
@@ -291,7 +271,7 @@ void Scene::render(
             shader_context->set_bump_texture_index(mesh->get_bump_texture_index());
         }
         if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_camera_dir)) {
-            shader_context->set_camera_dir(m_camera_dir);
+            shader_context->set_camera_dir(glm::value_ptr(m_camera->get_dir()));
         }
         if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_camera_far)) {
             shader_context->set_camera_far(m_camera->get_far_plane());
@@ -300,17 +280,15 @@ void Scene::render(
             shader_context->set_camera_near(m_camera->get_near_plane());
         }
         if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_camera_pos)) {
-            shader_context->set_camera_pos(m_camera_pos);
+            shader_context->set_camera_pos(glm::value_ptr(m_camera->get_origin()));
         }
         if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_env_map_texture)) {
             shader_context->set_env_map_texture_index(0); // skymap texture index
         }
-        if(use_material_type == use_material_type_t::USE_SSAO_MATERIAL) {
-            if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_frontface_depth_overlay_texture)) {
+        if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_frontface_depth_overlay_texture)) {
+            if(use_material_type == use_material_type_t::USE_SSAO_MATERIAL) {
                 shader_context->set_frontface_depth_overlay_texture_index(material->get_texture_index_by_name("frontface_depth_overlay"));
-            }
-        } else {
-            if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_frontface_depth_overlay_texture)) {
+            } else {
                 shader_context->set_frontface_depth_overlay_texture_index(mesh->get_frontface_depth_overlay_texture_index());
             }
         }
@@ -379,7 +357,7 @@ void Scene::render_lines(bool draw_axis, bool draw_bbox, bool draw_normals) cons
 
     glUseProgram(0);
     glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(reinterpret_cast<const GLfloat*>(&m_camera->get_projection_xform()));
+    glLoadMatrixf(glm::value_ptr(m_camera->get_projection_xform()));
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     for(meshes_t::const_iterator q = m_meshes.begin(); q != m_meshes.end(); q++) {
@@ -387,7 +365,7 @@ void Scene::render_lines(bool draw_axis, bool draw_bbox, bool draw_normals) cons
             continue;
         }
         glm::mat4 model_xform = m_camera->get_xform()*(*q)->get_xform();
-        glLoadMatrixf(reinterpret_cast<const GLfloat*>(&model_xform[0]));
+        glLoadMatrixf(glm::value_ptr(model_xform));
         glBegin(GL_LINES);
 
         if(draw_axis) {
@@ -522,13 +500,13 @@ void Scene::render_lights() const
 
     glUseProgram(0);
     glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(reinterpret_cast<const GLfloat*>(&m_camera->get_projection_xform()));
+    glLoadMatrixf(glm::value_ptr(m_camera->get_projection_xform()));
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glColor3f(1, 1, 0);
     for(lights_t::const_iterator p = m_lights.begin(); p != m_lights.end(); p++) {
         glm::mat4 model_xform = m_camera->get_xform()*(*p)->get_xform();
-        glLoadMatrixf((const GLfloat*) &model_xform[0]);
+        glLoadMatrixf(glm::value_ptr(model_xform));
         glutWireSphere(light_radius, 4, 2);
     }
 }

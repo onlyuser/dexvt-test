@@ -127,9 +127,6 @@ private:
     Material*   m_wireframe_material;
     Material*   m_ssao_material;
 
-    GLfloat  m_ambient_color[3];
-    GLfloat  m_camera_pos[3];
-    GLfloat  m_camera_dir[3];
     GLfloat  m_viewport_dim[2];
     GLfloat  m_bloom_kernel[7];
     GLfloat  m_glow_cutoff_threshold;
