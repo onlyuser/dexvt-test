@@ -73,6 +73,7 @@ public:
     {
         return m_fragment_shader;
     }
+    bool auto_add_shader_vars();
     bool link();
     void use() const;
     VarAttribute* get_var_attribute(const GLchar* name) const;

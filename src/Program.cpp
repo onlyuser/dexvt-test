@@ -84,16 +84,13 @@ void Program::attach_shader(Shader* shader)
     }
 }
 
-bool Program::link()
+bool Program::auto_add_shader_vars()
 {
-    glLinkProgram(m_id);
-    GLint link_ok = GL_FALSE;
-    get_program_iv(GL_LINK_STATUS, &link_ok);
     for(int i = 0; i<2; i++) {
         std::string filename = (i == 0 ? m_vertex_shader : m_fragment_shader)->get_filename();
         std::string file_data;
         if(!read_file(filename, file_data)) {
-            continue;
+            return false;
         }
         std::stringstream ss;
         ss << file_data;
@@ -121,6 +118,17 @@ bool Program::link()
                 add_var(vt::Program::VAR_TYPE_UNIFORM, var_name);
             }
         }
+    }
+    return true;
+}
+
+bool Program::link()
+{
+    glLinkProgram(m_id);
+    GLint link_ok = GL_FALSE;
+    get_program_iv(GL_LINK_STATUS, &link_ok);
+    if(!auto_add_shader_vars()) {
+        return false;
     }
     return (link_ok == GL_TRUE);
 }
