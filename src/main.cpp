@@ -193,8 +193,7 @@ int init_resources()
     vt::Material* ssao_material = new vt::Material(
             "ssao",
             "src/shaders/ssao.v.glsl",
-            "src/shaders/ssao.f.glsl",
-            false); // use_overlay
+            "src/shaders/ssao.f.glsl");
     scene->add_material(ssao_material);
     scene->set_ssao_material(ssao_material);
 
