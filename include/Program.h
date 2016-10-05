@@ -73,7 +73,7 @@ public:
     {
         return m_fragment_shader;
     }
-    bool link() const;
+    bool link();
     void use() const;
     VarAttribute* get_var_attribute(const GLchar* name) const;
     VarUniform* get_var_uniform(const GLchar* name) const;

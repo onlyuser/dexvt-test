@@ -2,9 +2,13 @@
 #include <Shader.h>
 #include <VarAttribute.h>
 #include <VarUniform.h>
+#include <Util.h>
 #include <GL/glew.h>
 #include <stdlib.h>
 #include <iostream>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
 #include <memory.h>
 #include <assert.h>
 
@@ -80,11 +84,44 @@ void Program::attach_shader(Shader* shader)
     }
 }
 
-bool Program::link() const
+bool Program::link()
 {
     glLinkProgram(m_id);
     GLint link_ok = GL_FALSE;
     get_program_iv(GL_LINK_STATUS, &link_ok);
+    for(int i = 0; i<2; i++) {
+        std::string filename = (i == 0 ? m_vertex_shader : m_fragment_shader)->get_filename();
+        std::string file_data;
+        if(!read_file(filename, file_data)) {
+            continue;
+        }
+        std::stringstream ss;
+        ss << file_data;
+        std::string line;
+        while(getline(ss, line, '\n')) {
+            //std::cout << "LINE: " << line << std::endl;
+            std::string type_name;
+            std::string var_name;
+            if(regexp(line, "attribute[ ]+([^ ]+)[ ]+([^ ;\[]+)[;\[]", 3,
+                    NULL,
+                    &type_name,
+                    &var_name))
+            {
+                //std::cout << "VAR ATTRIBUTE TYPE: " << type_name << std::endl;
+                //std::cout << "VAR ATTRIBUTE NAME: " << var_name << std::endl;
+                add_var(vt::Program::VAR_TYPE_ATTRIBUTE, var_name);
+            }
+            if(regexp(line, "uniform[ ]+([^ ]+)[ ]+([^ ;\[]+)[;\[]", 3,
+                    NULL,
+                    &type_name,
+                    &var_name))
+            {
+                //std::cout << "VAR UNIFORM TYPE: " << type_name << std::endl;
+                //std::cout << "VAR UNIFORM NAME: " << var_name << std::endl;
+                add_var(vt::Program::VAR_TYPE_UNIFORM, var_name);
+            }
+        }
+    }
     return (link_ok == GL_TRUE);
 }
 
@@ -136,6 +173,9 @@ std::string Program::get_var_uniform_name(int id)
 
 bool Program::check_var_exists_in_shader(var_type_t var_type, std::string name) const
 {
+    if(!m_vertex_shader || !m_fragment_shader) {
+        return false;
+    }
     switch(var_type) {
         case VAR_TYPE_ATTRIBUTE:
             {

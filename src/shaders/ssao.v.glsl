@@ -1,7 +1,6 @@
 attribute vec2 texcoord;
 attribute vec3 vertex_normal;
 attribute vec3 vertex_position;
-uniform mat4 model_xform;
 uniform mat4 mvp_xform;
 uniform mat4 normal_xform;
 varying vec2 lerp_texcoord;
