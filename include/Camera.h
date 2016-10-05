@@ -53,13 +53,17 @@ public:
     }
     void set_fov(float fov);
 
+    glm::ivec2 get_dim() const
+    {
+        return m_dim;
+    }
     size_t get_width() const
     {
-        return m_width;
+        return m_dim.x;
     }
     size_t get_height() const
     {
-        return m_height;
+        return m_dim.y;
     }
     void resize_viewport(float width, float height);
 
@@ -109,8 +113,7 @@ private:
     std::string       m_name;
     glm::vec3         m_target;
     float             m_fov;
-    size_t            m_width;
-    size_t            m_height;
+    glm::ivec2        m_dim;
     float             m_near_plane;
     float             m_far_plane;
     glm::mat4         m_projection_xform;

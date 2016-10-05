@@ -1,6 +1,7 @@
 #include <Texture.h>
 #include <NamedObject.h>
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <png.h>
 #include <cstdio>
 #include <string>
@@ -19,8 +20,7 @@ Texture::Texture(
         bool                 smooth,
         bool                 random)
     : NamedObject(name),
-      m_width(width),
-      m_height(height),
+      m_dim(width, height),
       m_skybox(false),
       m_type(type)
 {
@@ -77,8 +77,6 @@ Texture::Texture(
         std::string png_filename,
         bool        smooth)
     : NamedObject(name),
-      m_width(0),
-      m_height(0),
       m_skybox(false),
       m_type(Texture::RGB)
 {
@@ -91,8 +89,8 @@ Texture::Texture(
     if(pixel_data) {
         m_id = gen_texture_internal(width, height, pixel_data, Texture::RGB, smooth);
         delete[] pixel_data;
-        m_width  = width;
-        m_height = height;
+        m_dim.x = width;
+        m_dim.y = height;
     }
 }
 
@@ -105,8 +103,6 @@ Texture::Texture(
         std::string png_filename_pos_z,
         std::string png_filename_neg_z)
     : NamedObject(name),
-      m_width(0),
-      m_height(0),
       m_skybox(true),
       m_type(Texture::RGB)
 {
@@ -159,8 +155,8 @@ Texture::Texture(
                 pixel_data_neg_y,
                 pixel_data_pos_z,
                 pixel_data_neg_z);
-        m_width  = width;
-        m_height = height;
+        m_dim.x = width;
+        m_dim.y = height;
         delete[] pixel_data_pos_x;
         delete[] pixel_data_neg_x;
         delete[] pixel_data_pos_y;

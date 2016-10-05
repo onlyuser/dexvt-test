@@ -6,6 +6,7 @@
 #include <BindableObjectIFace.h>
 #include <GL/glew.h>
 #include <string>
+#include <glm/glm.hpp>
 
 #define DEFAULT_TEXTURE_DIM 256
 
@@ -37,13 +38,17 @@ public:
             std::string png_filename_neg_z);
     virtual ~Texture();
     void bind();
+    glm::ivec2 get_dim() const
+    {
+        return m_dim;
+    }
     size_t get_width() const
     {
-        return m_width;
+        return m_dim.x;
     }
     size_t get_height() const
     {
-        return m_height;
+        return m_dim.y;
     }
     type_t get_type() const
     {
@@ -51,10 +56,9 @@ public:
     }
 
 private:
-    size_t m_width;
-    size_t m_height;
-    bool   m_skybox;
-    type_t m_type;
+    glm::ivec2 m_dim;
+    bool       m_skybox;
+    type_t     m_type;
 
     static GLuint gen_texture_internal(
             size_t      width,
