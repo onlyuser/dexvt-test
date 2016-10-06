@@ -38,7 +38,7 @@ public:
             std::string png_filename_neg_z);
     virtual ~Texture();
     void bind();
-    glm::ivec2 get_dim() const
+    glm::vec2 get_dim() const
     {
         return m_dim;
     }
@@ -56,9 +56,9 @@ public:
     }
 
 private:
-    glm::ivec2 m_dim;
-    bool       m_skybox;
-    type_t     m_type;
+    glm::vec2 m_dim;
+    bool      m_skybox;
+    type_t    m_type;
 
     static GLuint gen_texture_internal(
             size_t      width,

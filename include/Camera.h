@@ -53,7 +53,7 @@ public:
     }
     void set_fov(float fov);
 
-    glm::ivec2 get_dim() const
+    glm::vec2 get_dim() const
     {
         return m_dim;
     }
@@ -113,7 +113,7 @@ private:
     std::string       m_name;
     glm::vec3         m_target;
     float             m_fov;
-    glm::ivec2        m_dim;
+    glm::vec2         m_dim;
     float             m_near_plane;
     float             m_far_plane;
     glm::mat4         m_projection_xform;

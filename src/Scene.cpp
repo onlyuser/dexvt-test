@@ -138,7 +138,6 @@ void Scene::render(
         bool                render_skybox,
         use_material_type_t use_material_type)
 {
-    glm::vec2 viewport_dim(m_camera->get_width(), m_camera->get_height());
     if(render_overlay && m_overlay) {
         ShaderContext* shader_context = m_overlay->get_shader_context();
         if(!shader_context) {
@@ -166,7 +165,7 @@ void Scene::render(
             shader_context->set_texture2_index(m_overlay->get_texture2_index());
         }
         if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_viewport_dim)) {
-            shader_context->set_viewport_dim(glm::value_ptr(viewport_dim));
+            shader_context->set_viewport_dim(glm::value_ptr(m_camera->get_dim()));
         }
         shader_context->render();
         return;
@@ -210,12 +209,9 @@ void Scene::render(
         i++;
     }
     FrameBuffer* frame_buffer = m_camera->get_frame_buffer();
+    Texture* texture = NULL;
     if(frame_buffer) {
-        Texture* texture = frame_buffer->get_texture();
-        if(texture) {
-            viewport_dim.x = texture->get_width();
-            viewport_dim.y = texture->get_height();
-        }
+        texture = frame_buffer->get_texture();
     }
     for(meshes_t::const_iterator q = m_meshes.begin(); q != m_meshes.end(); q++) {
         Mesh* mesh = (*q);
@@ -341,7 +337,7 @@ void Scene::render(
             shader_context->set_view_proj_xform(vp_xform);
         }
         if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_viewport_dim)) {
-            shader_context->set_viewport_dim(glm::value_ptr(viewport_dim));
+            shader_context->set_viewport_dim(glm::value_ptr(texture ? texture->get_dim() : m_camera->get_dim()));
         }
         shader_context->render();
     }
