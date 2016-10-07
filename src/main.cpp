@@ -271,8 +271,7 @@ int init_resources()
 
     texture = new vt::Texture(
             "dex3d",
-            res_texture.width,
-            res_texture.height,
+            glm::ivec2(res_texture.width, res_texture.height),
             res_texture.pixel_data,
             vt::Texture::RGB,
             false);
@@ -282,8 +281,7 @@ int init_resources()
 
     texture2 = new vt::Texture(
             "lode_runner",
-            res_texture2.width,
-            res_texture2.height,
+            glm::ivec2(res_texture2.width, res_texture2.height),
             res_texture2.pixel_data);
     scene->add_texture(               texture2);
     bump_mapped_material->add_texture(texture2);
@@ -321,8 +319,8 @@ int init_resources()
 
     frontface_depth_overlay_texture = new vt::Texture(
             "frontface_depth_overlay",
-            HI_RES_TEX_DIM,
-            HI_RES_TEX_DIM,
+            glm::ivec2(HI_RES_TEX_DIM,
+                       HI_RES_TEX_DIM),
             NULL,
             vt::Texture::DEPTH);
     texture_mapped_material->add_texture(        frontface_depth_overlay_texture);
@@ -333,8 +331,8 @@ int init_resources()
 
     backface_depth_overlay_texture = new vt::Texture(
             "backface_depth_overlay",
-            HI_RES_TEX_DIM,
-            HI_RES_TEX_DIM,
+            glm::ivec2(HI_RES_TEX_DIM,
+                       HI_RES_TEX_DIM),
             NULL,
             vt::Texture::DEPTH);
     texture_mapped_material->add_texture(        backface_depth_overlay_texture);
@@ -344,8 +342,8 @@ int init_resources()
 
     frontface_normal_overlay_texture = new vt::Texture(
             "frontface_normal_overlay",
-            HI_RES_TEX_DIM,
-            HI_RES_TEX_DIM,
+            glm::ivec2(HI_RES_TEX_DIM,
+                       HI_RES_TEX_DIM),
             NULL,
             vt::Texture::RGB);
     texture_mapped_material->add_texture(        frontface_normal_overlay_texture);
@@ -355,8 +353,8 @@ int init_resources()
 
     backface_normal_overlay_texture = new vt::Texture(
             "backface_normal_overlay",
-            HI_RES_TEX_DIM,
-            HI_RES_TEX_DIM,
+            glm::ivec2(HI_RES_TEX_DIM,
+                       HI_RES_TEX_DIM),
             NULL,
             vt::Texture::RGB);
     texture_mapped_material->add_texture(        backface_normal_overlay_texture);
@@ -366,8 +364,8 @@ int init_resources()
 
     ssao_overlay_texture = new vt::Texture(
             "ssao_overlay",
-            HI_RES_TEX_DIM,
-            HI_RES_TEX_DIM,
+            glm::ivec2(HI_RES_TEX_DIM,
+                       HI_RES_TEX_DIM),
             NULL,
             vt::Texture::RGB);
     texture_mapped_material->add_texture(        ssao_overlay_texture);
@@ -377,8 +375,8 @@ int init_resources()
 
     hi_res_color_overlay_texture = new vt::Texture(
             "hi_res_color_overlay",
-            HI_RES_TEX_DIM,
-            HI_RES_TEX_DIM,
+            glm::ivec2(HI_RES_TEX_DIM,
+                       HI_RES_TEX_DIM),
             NULL,
             vt::Texture::RGB);
     texture_mapped_material->add_texture(       hi_res_color_overlay_texture);
@@ -388,8 +386,8 @@ int init_resources()
 
     med_res_color_overlay_texture = new vt::Texture(
             "med_res_color_overlay",
-            MED_RES_TEX_DIM,
-            MED_RES_TEX_DIM,
+            glm::ivec2(MED_RES_TEX_DIM,
+                       MED_RES_TEX_DIM),
             NULL,
             vt::Texture::RGB);
     texture_mapped_material->add_texture(       med_res_color_overlay_texture);
@@ -398,8 +396,8 @@ int init_resources()
 
     lo_res_color_overlay_texture = new vt::Texture(
             "lo_res_color_overlay",
-            LO_RES_TEX_DIM,
-            LO_RES_TEX_DIM,
+            glm::ivec2(LO_RES_TEX_DIM,
+                       LO_RES_TEX_DIM),
             NULL,
             vt::Texture::RGB);
     texture_mapped_material->add_texture(       lo_res_color_overlay_texture);
@@ -409,8 +407,8 @@ int init_resources()
 
     random_texture = new vt::Texture(
             "random_texture",
-            RAND_TEX_DIM,
-            RAND_TEX_DIM,
+            glm::ivec2(RAND_TEX_DIM,
+                       RAND_TEX_DIM),
             NULL,
             vt::Texture::RGB,
             false,
@@ -998,7 +996,7 @@ void onMotion(int x, int y)
 
 void onReshape(int width, int height)
 {
-    camera->resize_viewport(width, height);
+    camera->resize(0, 0, width, height);
 }
 
 int main(int argc, char* argv[])

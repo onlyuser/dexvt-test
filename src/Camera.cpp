@@ -1,5 +1,7 @@
 #include <Camera.h>
 #include <NamedObject.h>
+#include <XformObject.h>
+#include <ViewObject.h>
 #include <Util.h>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -19,23 +21,22 @@ Camera::Camera(
         glm::vec3         origin,
         glm::vec3         target,
         float             fov,
-        size_t            width,
-        size_t            height,
+        glm::vec2         offset,
+        glm::vec2         dim,
         float             near_plane,
         float             far_plane,
-        float             ortho_width,
-        float             ortho_height,
+        glm::vec2         ortho_dim,
         float             zoom,
         projection_mode_t projection_mode)
     : NamedObject(name),
       XformObject(origin),
+      ViewObject(offset, dim),
       m_target(target),
       m_fov(fov),
-      m_dim(width, height),
       m_near_plane(near_plane),
       m_far_plane(far_plane),
       m_need_update_projection_xform(true),
-      m_ortho_dim(ortho_width, ortho_height),
+      m_ortho_dim(ortho_dim),
       m_zoom(zoom),
       m_frame_buffer(NULL),
       m_projection_mode(projection_mode)
@@ -98,10 +99,9 @@ void Camera::set_fov(float fov)
     set_need_update_xform();
 }
 
-void Camera::resize_viewport(float width, float height)
+void Camera::resize(float left, float bottom, float width, float height)
 {
-    m_dim.x = width;
-    m_dim.y = height;
+    ViewObject<glm::vec2, float>::resize(left, bottom, width, height);
     m_need_update_projection_xform = true;
     set_need_update_xform();
 }
@@ -182,6 +182,7 @@ void Camera::update_projection_xform()
         float top    =  half_height;
         m_projection_xform = glm::ortho(left, right, bottom, top, m_near_plane, m_far_plane);
     }
+    //m_projection_xform *= glm::translate(glm::mat4(1), glm::vec3(1, 0, 0));
 }
 
 void Camera::update_xform()

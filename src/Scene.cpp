@@ -337,7 +337,14 @@ void Scene::render(
             shader_context->set_view_proj_xform(vp_xform);
         }
         if(program->has_var(Program::VAR_TYPE_UNIFORM, Program::var_uniform_type_viewport_dim)) {
-            shader_context->set_viewport_dim(glm::value_ptr(texture ? texture->get_dim() : m_camera->get_dim()));
+            if(texture) {
+                float dim[2];
+                dim[0] = static_cast<float>(texture->get_dim().x);
+                dim[1] = static_cast<float>(texture->get_dim().y);
+                shader_context->set_viewport_dim(dim);
+            } else {
+                shader_context->set_viewport_dim(glm::value_ptr(m_camera->get_dim()));
+            }
         }
         shader_context->render();
     }

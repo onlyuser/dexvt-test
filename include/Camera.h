@@ -3,14 +3,20 @@
 
 #include <NamedObject.h>
 #include <XformObject.h>
+#include <ViewObject.h>
 #include <string>
 #include <glm/glm.hpp>
+
+#define DEFAULT_VIEWPORT_WIDTH        800
+#define DEFAULT_VIEWPORT_HEIGHT       600
+#define DEFAULT_ORTHO_VIEWPORT_WIDTH  1
+#define DEFAULT_ORTHO_VIEWPORT_HEIGHT 1
 
 namespace vt {
 
 class FrameBuffer;
 
-class Camera : public NamedObject, public XformObject
+class Camera : public NamedObject, public XformObject, public ViewObject<glm::vec2, float>
 {
 public:
     enum projection_mode_t {
@@ -23,12 +29,13 @@ public:
             glm::vec3         origin          = glm::vec3(0),
             glm::vec3         target          = glm::vec3(-1),
             float             fov             = 45,
-            size_t            width           = 800,
-            size_t            height          = 600,
+            glm::vec2         offset          = glm::vec2(0, 0),
+            glm::vec2         dim             = glm::vec2(DEFAULT_VIEWPORT_WIDTH,
+                                                          DEFAULT_VIEWPORT_HEIGHT),
             float             near_plane      = 4,
             float             far_plane       = 16,
-            float             ortho_width     = 1,
-            float             ortho_height    = 1,
+            glm::vec2         ortho_dim       = glm::vec2(DEFAULT_ORTHO_VIEWPORT_WIDTH,
+                                                          DEFAULT_ORTHO_VIEWPORT_HEIGHT),
             float             zoom            = 1,
             projection_mode_t projection_mode = PROJECTION_MODE_PERSPECTIVE);
     virtual ~Camera();
@@ -53,19 +60,7 @@ public:
     }
     void set_fov(float fov);
 
-    glm::vec2 get_dim() const
-    {
-        return m_dim;
-    }
-    size_t get_width() const
-    {
-        return m_dim.x;
-    }
-    size_t get_height() const
-    {
-        return m_dim.y;
-    }
-    void resize_viewport(float width, float height);
+    void resize(float left, float bottom, float width, float height);
 
     float get_near_plane() const
     {
@@ -113,7 +108,6 @@ private:
     std::string       m_name;
     glm::vec3         m_target;
     float             m_fov;
-    glm::vec2         m_dim;
     float             m_near_plane;
     float             m_far_plane;
     glm::mat4         m_projection_xform;
