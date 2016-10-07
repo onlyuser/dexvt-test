@@ -87,11 +87,11 @@ public:
 
     float get_ortho_width() const
     {
-        return m_ortho_width;
+        return m_ortho_dim.x;
     }
     float get_ortho_height() const
     {
-        return m_ortho_height;
+        return m_ortho_dim.y;
     }
     void resize_ortho_viewport(float width, float height);
 
@@ -118,8 +118,7 @@ private:
     float             m_far_plane;
     glm::mat4         m_projection_xform;
     bool              m_need_update_projection_xform;
-    float             m_ortho_width;
-    float             m_ortho_height;
+    glm::vec2         m_ortho_dim;
     float             m_zoom;
     FrameBuffer*      m_frame_buffer;
     projection_mode_t m_projection_mode;

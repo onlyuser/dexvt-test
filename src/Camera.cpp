@@ -35,8 +35,7 @@ Camera::Camera(
       m_near_plane(near_plane),
       m_far_plane(far_plane),
       m_need_update_projection_xform(true),
-      m_ortho_width(ortho_width),
-      m_ortho_height(ortho_height),
+      m_ortho_dim(ortho_width, ortho_height),
       m_zoom(zoom),
       m_frame_buffer(NULL),
       m_projection_mode(projection_mode)
@@ -130,8 +129,8 @@ void Camera::set_projection_mode(projection_mode_t projection_mode)
 
 void Camera::resize_ortho_viewport(float width, float height)
 {
-    m_ortho_width  = width;
-    m_ortho_height = height;
+    m_ortho_dim.x = width;
+    m_ortho_dim.y = height;
     m_need_update_projection_xform = true;
     set_need_update_xform();
 }
@@ -169,8 +168,8 @@ void Camera::update_projection_xform()
         m_projection_xform = glm::perspective(m_fov, static_cast<float>(m_dim.x)/m_dim.y, m_near_plane, m_far_plane);
     } else if(m_projection_mode == PROJECTION_MODE_ORTHO) {
         float aspect_ratio = static_cast<float>(m_dim.x)/m_dim.y;
-        float half_width  = m_ortho_width*0.5*m_zoom;
-        float half_height = m_ortho_width*0.5*m_zoom;
+        float half_width  = m_ortho_dim.x*0.5*m_zoom;
+        float half_height = m_ortho_dim.x*0.5*m_zoom;
         if(m_dim.y < m_dim.x) {
             half_width *= aspect_ratio;
         }
