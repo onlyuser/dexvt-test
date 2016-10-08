@@ -602,16 +602,12 @@ void do_blur(
     // linear downsample texture from hi-res to med-res
     mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture1));
     med_res_color_overlay_fb->bind();
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     scene->render(true);
     med_res_color_overlay_fb->unbind();
 
     // linear downsample texture from med-res to lo-res
     mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("med_res_color_overlay"));
     lo_res_color_overlay_fb->bind();
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     scene->render(true);
     lo_res_color_overlay_fb->unbind();
 
@@ -623,9 +619,7 @@ void do_blur(
     lo_res_color_overlay_fb->bind();
     for(int i = 0; i < blur_iters; i++) {
         // don't clear since we're using same texture for input/output
-        //glClearColor(0, 0, 0, 1);
-        //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(true);
+        scene->render(true, true, false);
     }
     lo_res_color_overlay_fb->unbind();
 
@@ -637,10 +631,10 @@ void do_blur(
     output_fb->bind();
     if(output_fb->get_texture() != input_texture1) {
         // clear if we're using different texture for input/output
-        glClearColor(0, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        scene->render(true, true, true);
+    } else {
+        scene->render(true, true, false);
     }
-    scene->render(true);
     output_fb->unbind();
 
     // switch to write-through mode to display final output texture
@@ -655,31 +649,23 @@ void onDisplay()
     vt::Scene* scene = vt::Scene::instance();
 
     frontface_depth_overlay_fb->bind();
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     scene->render(false, false);
     frontface_depth_overlay_fb->unbind();
 
     if(overlay_mode == OVERLAY_MODE_FF_NORMAL) {
         frontface_normal_overlay_fb->bind();
-        glClearColor(0, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(false, false, vt::Scene::use_material_type_t::USE_NORMAL_MATERIAL);
+        scene->render(false, false, true, vt::Scene::use_material_type_t::USE_NORMAL_MATERIAL);
         frontface_normal_overlay_fb->unbind();
     }
 
     if(overlay_mode == OVERLAY_MODE_SSAO) {
         ssao_overlay_fb->bind();
-        glClearColor(0, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(false, false, vt::Scene::use_material_type_t::USE_SSAO_MATERIAL);
+        scene->render(false, false, true, vt::Scene::use_material_type_t::USE_SSAO_MATERIAL);
         ssao_overlay_fb->unbind();
 
         // render-to-texture for initial input texture
         hi_res_color_overlay_fb->bind();
-        glClearColor(0, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(false, true, vt::Scene::use_material_type_t::USE_MESH_MATERIAL);
+        scene->render(false, true, true, vt::Scene::use_material_type_t::USE_MESH_MATERIAL);
         hi_res_color_overlay_fb->unbind();
 
         do_blur(scene, ssao_overlay_texture, hi_res_color_overlay_texture, ssao_overlay_fb, BLUR_ITERS, 0);
@@ -688,15 +674,11 @@ void onDisplay()
     glCullFace(GL_FRONT);
 
     backface_depth_overlay_fb->bind();
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    scene->render(false, false);
+    scene->render(false, false, true);
     backface_depth_overlay_fb->unbind();
 
     backface_normal_overlay_fb->bind();
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    scene->render(false, false, vt::Scene::use_material_type_t::USE_NORMAL_MATERIAL);
+    scene->render(false, false, true, vt::Scene::use_material_type_t::USE_NORMAL_MATERIAL);
     backface_normal_overlay_fb->unbind();
 
     glCullFace(GL_BACK);
@@ -704,18 +686,14 @@ void onDisplay()
     if(post_process_blur) {
         // render-to-texture for initial input texture
         hi_res_color_overlay_fb->bind();
-        glClearColor(0, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-        scene->render(false, true);
+        scene->render(false, true, true);
         hi_res_color_overlay_fb->unbind();
 
         do_blur(scene, hi_res_color_overlay_texture, hi_res_color_overlay_texture, hi_res_color_overlay_fb, BLUR_ITERS, 0.75);
     }
 
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     if(wireframe_mode) {
-        scene->render(false, false, vt::Scene::use_material_type_t::USE_WIREFRAME_MATERIAL);
+        scene->render(false, false, true, vt::Scene::use_material_type_t::USE_WIREFRAME_MATERIAL);
     } else {
         scene->render(post_process_blur || overlay_mode);
     }

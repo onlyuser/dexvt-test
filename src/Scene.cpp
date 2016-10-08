@@ -136,8 +136,13 @@ void Scene::use_program()
 void Scene::render(
         bool                render_overlay,
         bool                render_skybox,
+        bool                clear_canvas,
         use_material_type_t use_material_type)
 {
+    if(clear_canvas) {
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    }
     if(render_overlay && m_overlay) {
         ShaderContext* shader_context = m_overlay->get_shader_context();
         if(!shader_context) {
