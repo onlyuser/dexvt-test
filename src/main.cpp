@@ -602,13 +602,13 @@ void do_blur(
     // linear downsample texture from hi-res to med-res
     mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture1));
     med_res_color_overlay_fb->bind();
-    scene->render(true, true, true, vt::Scene::use_material_type_t::USE_MESH_MATERIAL);
+    scene->render(true, true, true);
     med_res_color_overlay_fb->unbind();
 
     // linear downsample texture from med-res to lo-res
     mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("med_res_color_overlay"));
     lo_res_color_overlay_fb->bind();
-    scene->render(true, true, true, vt::Scene::use_material_type_t::USE_MESH_MATERIAL);
+    scene->render(true, true, true);
     lo_res_color_overlay_fb->unbind();
 
     // switch to bloom filter mode
@@ -619,7 +619,7 @@ void do_blur(
     lo_res_color_overlay_fb->bind();
     for(int i = 0; i < blur_iters; i++) {
         // don't clear since we're using same texture for input/output
-        scene->render(false, true, true, vt::Scene::use_material_type_t::USE_MESH_MATERIAL);
+        scene->render(false, true, true);
     }
     lo_res_color_overlay_fb->unbind();
 
@@ -631,9 +631,9 @@ void do_blur(
     output_fb->bind();
     if(output_fb->get_texture() != input_texture1) {
         // clear if we're using different texture for input/output
-        scene->render(true, true, true, vt::Scene::use_material_type_t::USE_MESH_MATERIAL);
+        scene->render(true, true, true);
     } else {
-        scene->render(false, true, true, vt::Scene::use_material_type_t::USE_MESH_MATERIAL);
+        scene->render(false, true, true);
     }
     output_fb->unbind();
 
@@ -649,7 +649,7 @@ void onDisplay()
     vt::Scene* scene = vt::Scene::instance();
 
     frontface_depth_overlay_fb->bind();
-    scene->render(true, false, false, vt::Scene::use_material_type_t::USE_MESH_MATERIAL);
+    scene->render(true, false);
     frontface_depth_overlay_fb->unbind();
 
     if(overlay_mode == OVERLAY_MODE_FF_NORMAL) {
@@ -665,7 +665,7 @@ void onDisplay()
 
         // render-to-texture for initial input texture
         hi_res_color_overlay_fb->bind();
-        scene->render(true, true, false, vt::Scene::use_material_type_t::USE_MESH_MATERIAL);
+        scene->render();
         hi_res_color_overlay_fb->unbind();
 
         do_blur(scene, ssao_overlay_texture, hi_res_color_overlay_texture, ssao_overlay_fb, BLUR_ITERS, 0);
@@ -674,7 +674,7 @@ void onDisplay()
     glCullFace(GL_FRONT);
 
     backface_depth_overlay_fb->bind();
-    scene->render(true, false, false, vt::Scene::use_material_type_t::USE_MESH_MATERIAL);
+    scene->render(true, false);
     backface_depth_overlay_fb->unbind();
 
     backface_normal_overlay_fb->bind();
@@ -686,7 +686,7 @@ void onDisplay()
     if(post_process_blur) {
         // render-to-texture for initial input texture
         hi_res_color_overlay_fb->bind();
-        scene->render(true, true, false, vt::Scene::use_material_type_t::USE_MESH_MATERIAL);
+        scene->render();
         hi_res_color_overlay_fb->unbind();
 
         do_blur(scene, hi_res_color_overlay_texture, hi_res_color_overlay_texture, hi_res_color_overlay_fb, BLUR_ITERS, 0.75);
@@ -695,7 +695,7 @@ void onDisplay()
     if(wireframe_mode) {
         scene->render(true, false, false, vt::Scene::use_material_type_t::USE_WIREFRAME_MATERIAL);
     } else {
-        scene->render(true, true, post_process_blur || overlay_mode, vt::Scene::use_material_type_t::USE_MESH_MATERIAL);
+        scene->render(true, true, post_process_blur || overlay_mode);
     }
 
     //stencil_fb->bind();
