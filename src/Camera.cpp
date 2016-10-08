@@ -182,7 +182,6 @@ void Camera::update_projection_xform()
         float top    =  half_height;
         m_projection_xform = glm::ortho(left, right, bottom, top, m_near_plane, m_far_plane);
     }
-    //m_projection_xform *= glm::translate(glm::mat4(1), glm::vec3(1, 0, 0));
 }
 
 void Camera::update_xform()

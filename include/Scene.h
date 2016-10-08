@@ -17,7 +17,10 @@ class Texture;
 class Scene
 {
 public:
-    typedef enum { USE_MESH_MATERIAL, USE_NORMAL_MATERIAL, USE_WIREFRAME_MATERIAL, USE_SSAO_MATERIAL } use_material_type_t;
+    typedef enum { USE_MESH_MATERIAL,
+                   USE_NORMAL_MATERIAL,
+                   USE_WIREFRAME_MATERIAL,
+                   USE_SSAO_MATERIAL } use_material_type_t;
 
     typedef std::vector<Light*>    lights_t;
     typedef std::vector<Mesh*>     meshes_t;

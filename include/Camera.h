@@ -16,7 +16,9 @@ namespace vt {
 
 class FrameBuffer;
 
-class Camera : public NamedObject, public XformObject, public ViewObject<glm::vec2, float>
+class Camera : public NamedObject,
+               public XformObject,
+               public ViewObject<glm::vec2, float>
 {
 public:
     enum projection_mode_t {

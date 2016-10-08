@@ -14,7 +14,10 @@
 
 namespace vt {
 
-class Texture : public NamedObject, public ViewObject<glm::ivec2, size_t>, public IdentObject, public BindableObjectIFace
+class Texture : public NamedObject,
+                public ViewObject<glm::ivec2, size_t>,
+                public IdentObject,
+                public BindableObjectIFace
 {
 public:
     typedef enum { RGB, DEPTH, STENCIL } type_t;
