@@ -649,7 +649,7 @@ void onDisplay()
     vt::Scene* scene = vt::Scene::instance();
 
     frontface_depth_overlay_fb->bind();
-    scene->render(true, false);
+    scene->render(true, false, false);
     frontface_depth_overlay_fb->unbind();
 
     if(overlay_mode == OVERLAY_MODE_FF_NORMAL) {
@@ -665,7 +665,7 @@ void onDisplay()
 
         // render-to-texture for initial input texture
         hi_res_color_overlay_fb->bind();
-        scene->render();
+        scene->render(true, false, true);
         hi_res_color_overlay_fb->unbind();
 
         do_blur(scene, ssao_overlay_texture, hi_res_color_overlay_texture, ssao_overlay_fb, BLUR_ITERS, 0);
@@ -674,7 +674,7 @@ void onDisplay()
     glCullFace(GL_FRONT);
 
     backface_depth_overlay_fb->bind();
-    scene->render(true, false);
+    scene->render(true, false, false);
     backface_depth_overlay_fb->unbind();
 
     backface_normal_overlay_fb->bind();
@@ -686,7 +686,7 @@ void onDisplay()
     if(post_process_blur) {
         // render-to-texture for initial input texture
         hi_res_color_overlay_fb->bind();
-        scene->render();
+        scene->render(true, false, true);
         hi_res_color_overlay_fb->unbind();
 
         do_blur(scene, hi_res_color_overlay_texture, hi_res_color_overlay_texture, hi_res_color_overlay_fb, BLUR_ITERS, 0.75);
@@ -695,7 +695,7 @@ void onDisplay()
     if(wireframe_mode) {
         scene->render(true, false, false, vt::Scene::use_material_type_t::USE_WIREFRAME_MATERIAL);
     } else {
-        scene->render(true, true, post_process_blur || overlay_mode);
+        scene->render(true, post_process_blur || overlay_mode, true);
     }
 
     //stencil_fb->bind();
