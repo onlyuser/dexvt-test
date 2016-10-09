@@ -152,7 +152,7 @@ void Scene::render(
         if(!material) {
             return;
         }
-        Program * program = material->get_program();
+        Program* program = material->get_program();
         if(!program) {
             return;
         }
@@ -184,7 +184,7 @@ void Scene::render(
         if(!material) {
             return;
         }
-        Program * program = material->get_program();
+        Program* program = material->get_program();
         if(!program) {
             return;
         }
@@ -245,7 +245,7 @@ void Scene::render(
         if(!material) {
             continue;
         }
-        Program * program = material->get_program();
+        Program* program = material->get_program();
         if(!program) {
             continue;
         }
