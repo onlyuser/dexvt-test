@@ -94,6 +94,7 @@ bool show_normals = false;
 bool show_lights = false;
 bool show_diamond = false;
 bool post_process_blur = false;
+bool do_animation = true;
 
 int texture_id = 0;
 float prev_zoom = 0, zoom = 1, ortho_dolly_speed = 0.1;
@@ -644,7 +645,9 @@ void do_blur(
 
 void onDisplay()
 {
-    onTick();
+    if(do_animation) {
+        onTick();
+    }
 
     vt::Scene* scene = vt::Scene::instance();
 
@@ -890,6 +893,9 @@ void onKeyboard(unsigned char key, int x, int y)
             break;
         case 'x': // axis
             show_axis = !show_axis;
+            break;
+        case 32: // space
+            do_animation = !do_animation;
             break;
         case 27: // escape
             exit(0);
