@@ -357,15 +357,35 @@ void Mesh::set_ambient_color(glm::vec3 ambient_color)
     m_ambient_color[2] = ambient_color.b;
 }
 
+void Mesh::set_axis(glm::vec3 axis)
+{
+    glm::vec3 local_axis = glm::vec3(glm::inverse(get_xform()) * glm::vec4(axis, 1));
+    for(int i = 0; i < static_cast<int>(m_num_vertex); i++) {
+        set_vert_coord(i, get_vert_coord(i) - local_axis);
+    }
+    update_bbox();
+    if(get_parent()) {
+        m_origin = glm::vec3(glm::inverse(get_parent()->get_xform()) * glm::vec4(axis, 1));
+    } else {
+        m_origin = axis;
+    }
+    update_xform();
+}
+
+void Mesh::center_axis()
+{
+    set_axis(get_center());
+}
+
 void Mesh::update_xform()
 {
     glm::mat4 translate_xform = glm::translate(glm::mat4(1), m_origin);
     glm::mat4 rotate_xform =
-            GLM_ROTATE(glm::mat4(1), static_cast<float>(ORIENT_PITCH(m_orient)*3), VEC_LEFT) *   // X axis
-            GLM_ROTATE(glm::mat4(1), static_cast<float>(ORIENT_YAW(m_orient)*2),   VEC_UP) *     // Y axis
-            GLM_ROTATE(glm::mat4(1), static_cast<float>(ORIENT_ROLL(m_orient)*4),  VEC_FORWARD); // Z axis
+            GLM_ROTATE(glm::mat4(1), static_cast<float>(ORIENT_PITCH(m_orient)), VEC_LEFT) *   // X axis
+            GLM_ROTATE(glm::mat4(1), static_cast<float>(ORIENT_YAW(m_orient)),   VEC_UP) *     // Y axis
+            GLM_ROTATE(glm::mat4(1), static_cast<float>(ORIENT_ROLL(m_orient)),  VEC_FORWARD); // Z axis
     glm::mat4 scale_xform = glm::scale(glm::mat4(1), m_scale);
-    m_xform = translate_xform*rotate_xform*scale_xform;
+    m_xform = translate_xform * rotate_xform * scale_xform;
 }
 
 }
