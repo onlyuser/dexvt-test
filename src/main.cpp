@@ -93,7 +93,7 @@ bool show_bbox = false;
 bool show_normals = false;
 bool show_lights = false;
 bool show_diamond = false;
-bool post_process_blur = false;
+bool post_process_blur = true;
 bool do_animation = true;
 
 int texture_id = 0;
