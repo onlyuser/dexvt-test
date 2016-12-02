@@ -534,7 +534,7 @@ int init_resources()
     //hidden_mesh4->set_material(env_mapped_fast_material);
     hidden_mesh4->set_material(phong_material);
     //hidden_mesh4->set_reflect_to_refract_ratio(0.33); // 33% reflective
-    hidden_mesh4->set_ambient_color(glm::vec3(0,0,0));
+    hidden_mesh4->set_ambient_color(glm::vec3(0, 0, 0));
 
     return 1;
 }
@@ -886,9 +886,11 @@ void onKeyboard(unsigned char key, int x, int y)
             if(wireframe_mode) {
                 glPolygonMode(GL_FRONT, GL_LINE);
                 mesh->set_ambient_color(glm::vec3(1, 1, 1));
+                hidden_mesh4->set_ambient_color(glm::vec3(1, 1, 1));
             } else {
                 glPolygonMode(GL_FRONT, GL_FILL);
                 mesh->set_ambient_color(glm::vec3(0, 0, 0));
+                hidden_mesh4->set_ambient_color(glm::vec3(0, 0, 0));
             }
             break;
         case 'x': // axis
