@@ -89,6 +89,7 @@ float prev_orbit_radius = 0, orbit_radius = 8, dolly_speed = 0.1, light_distance
 bool wireframe_mode = false;
 bool show_fps = false;
 bool show_axis = false;
+bool show_axis_labels = false;
 bool show_bbox = false;
 bool show_normals = false;
 bool show_lights = false;
@@ -158,7 +159,7 @@ int init_resources()
         (*p)->set_origin(glm::vec3(0, 0, 0));
     }
 
-    mesh2->set_orient(glm::vec3(0, -90, 0));
+    mesh2->set_orient(glm::vec3(0, 90, 0));
 
     mesh2->set_visible(false);
     //mesh5->set_visible(false);
@@ -725,8 +726,8 @@ void onDisplay()
     //glDisable(GL_STENCIL_TEST);
     //stencil_fb->unbind();
 
-    if(show_axis || show_bbox || show_normals) {
-        scene->render_lines(show_axis, show_bbox, show_normals);
+    if(show_axis || show_axis_labels || show_bbox || show_normals) {
+        scene->render_lines(show_axis, show_axis_labels, show_bbox, show_normals);
     }
     if(show_lights) {
         scene->render_lights();
@@ -895,6 +896,9 @@ void onKeyboard(unsigned char key, int x, int y)
             break;
         case 'x': // axis
             show_axis = !show_axis;
+            break;
+        case 'z': // axis_labels
+            show_axis_labels = !show_axis_labels;
             break;
         case 32: // space
             do_animation = !do_animation;
