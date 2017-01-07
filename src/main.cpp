@@ -987,6 +987,7 @@ void onMotion(int x, int y)
 void onReshape(int width, int height)
 {
     camera->resize(0, 0, width, height);
+    glViewport(0, 0, width, height);
 }
 
 int main(int argc, char* argv[])
