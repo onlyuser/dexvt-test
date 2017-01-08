@@ -727,7 +727,7 @@ void onDisplay()
     //stencil_fb->unbind();
 
     if(show_axis || show_axis_labels || show_bbox || show_normals) {
-        scene->render_lines(show_axis, show_axis_labels, show_bbox, show_normals);
+        scene->render_lines_and_text(show_axis, show_axis_labels, show_bbox, show_normals);
     }
     if(show_lights) {
         scene->render_lights();
