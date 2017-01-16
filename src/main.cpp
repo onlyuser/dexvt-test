@@ -88,6 +88,7 @@ glm::vec3 prev_orient, orient, orbit_speed = glm::vec3(0, -0.5, -0.5);
 float prev_orbit_radius = 0, orbit_radius = 8, dolly_speed = 0.1, light_distance = 4;
 bool wireframe_mode = false;
 bool show_fps = false;
+bool show_guide_wires = false;
 bool show_axis = false;
 bool show_axis_labels = false;
 bool show_bbox = false;
@@ -726,8 +727,8 @@ void onDisplay()
     //glDisable(GL_STENCIL_TEST);
     //stencil_fb->unbind();
 
-    if(show_axis || show_axis_labels || show_bbox || show_normals) {
-        scene->render_lines_and_text(show_axis, show_axis_labels, show_bbox, show_normals);
+    if(show_guide_wires || show_axis || show_axis_labels || show_bbox || show_normals) {
+        scene->render_lines_and_text(show_guide_wires, show_axis, show_axis_labels, show_bbox, show_normals);
     }
     if(show_lights) {
         scene->render_lights();
@@ -806,6 +807,9 @@ void onKeyboard(unsigned char key, int x, int y)
             if(!show_fps) {
                 glutSetWindowTitle(DEFAULT_CAPTION);
             }
+            break;
+        case 'g': // guide wires
+            show_guide_wires = !show_guide_wires;
             break;
         case 'l': // lights
             show_lights = !show_lights;
@@ -897,7 +901,7 @@ void onKeyboard(unsigned char key, int x, int y)
         case 'x': // axis
             show_axis = !show_axis;
             break;
-        case 'z': // axis_labels
+        case 'z': // axis labels
             show_axis_labels = !show_axis_labels;
             break;
         case 32: // space
