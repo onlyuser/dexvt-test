@@ -86,14 +86,14 @@ bool left_mouse_down = false, right_mouse_down = false;
 glm::vec2 prev_mouse_coord, mouse_drag;
 glm::vec3 prev_orient, orient, orbit_speed = glm::vec3(0, -0.5, -0.5);
 float prev_orbit_radius = 0, orbit_radius = 8, dolly_speed = 0.1, light_distance = 4;
-bool wireframe_mode = false;
+bool show_bbox = false;
 bool show_fps = false;
+bool show_lights = false;
+bool show_normals = false;
+bool wireframe_mode = false;
 bool show_guide_wires = false;
 bool show_axis = false;
 bool show_axis_labels = false;
-bool show_bbox = false;
-bool show_normals = false;
-bool show_lights = false;
 bool show_diamond = false;
 bool post_process_blur = true;
 bool do_animation = true;
@@ -565,10 +565,10 @@ void onTick()
     static unsigned int prev_tick = 0;
     static unsigned int frames = 0;
     unsigned int tick = glutGet(GLUT_ELAPSED_TIME);
-    unsigned int delta_time = tick-prev_tick;
+    unsigned int delta_time = tick - prev_tick;
     static float fps = 0;
     if(delta_time > 1000) {
-        fps = 1000.0*frames/delta_time;
+        fps = 1000.0 * frames / delta_time;
         frames = 0;
         prev_tick = tick;
     }
@@ -583,9 +583,9 @@ void onTick()
     }
     frames++;
 
-    phase = static_cast<float>(glutGet(GLUT_ELAPSED_TIME))/1000*15; // base 15 degrees per second
+    phase = static_cast<float>(glutGet(GLUT_ELAPSED_TIME)) / 1000 * 15; // base 15 degrees per second
 
-    mesh_apply_ripple(hidden_mesh4, glm::vec3(0.5, 0, 0.5), 0.1, 0.5, -phase*0.1);
+    mesh_apply_ripple(hidden_mesh4, glm::vec3(0.5, 0, 0.5), 0.1, 0.5, -phase * 0.1);
     hidden_mesh4->update_buffers();
 }
 
@@ -707,7 +707,7 @@ void onDisplay()
     //glEnable(GL_STENCIL_TEST);
     //
     //glClearColor(0, 0, 0, 1);
-    //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     //
     //glStencilFunc(GL_ALWAYS, 0x1, 0x1);
     //glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
@@ -716,7 +716,7 @@ void onDisplay()
     //glStencilFunc(GL_NOTEQUAL, 0x1, 0x1);
     //glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     //glDisable(GL_LIGHTING);
-    //glColor3f(0,1,0); // outline color
+    //glColor3f(0, 1, 0); // outline color
     //glLineWidth(5);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe
     //scene->render();
@@ -879,7 +879,7 @@ void onKeyboard(unsigned char key, int x, int y)
             } else if(texture_id == 3) {
                 texture_id = 0; // GL_TEXTURE0
             }
-            mesh->set_texture_index( texture_id);
+            mesh->set_texture_index(texture_id);
             //mesh2->set_texture_index(texture_id);
             //mesh3->set_texture_index(texture_id);
             //mesh4->set_texture_index(texture_id);
@@ -890,12 +890,12 @@ void onKeyboard(unsigned char key, int x, int y)
             wireframe_mode = !wireframe_mode;
             if(wireframe_mode) {
                 glPolygonMode(GL_FRONT, GL_LINE);
-                mesh->set_ambient_color(glm::vec3(1, 1, 1));
-                hidden_mesh4->set_ambient_color(glm::vec3(1, 1, 1));
+                mesh->set_ambient_color(glm::vec3(1));
+                hidden_mesh4->set_ambient_color(glm::vec3(1));
             } else {
                 glPolygonMode(GL_FRONT, GL_FILL);
-                mesh->set_ambient_color(glm::vec3(0, 0, 0));
-                hidden_mesh4->set_ambient_color(glm::vec3(0, 0, 0));
+                mesh->set_ambient_color(glm::vec3(0));
+                hidden_mesh4->set_ambient_color(glm::vec3(0));
             }
             break;
         case 'x': // axis
@@ -974,15 +974,15 @@ void onMotion(int x, int y)
         mouse_drag = glm::vec2(x, y) - prev_mouse_coord;
     }
     if(left_mouse_down) {
-        orient = prev_orient+glm::vec3(0, mouse_drag.y*ORIENT_PITCH(orbit_speed), mouse_drag.x*ORIENT_YAW(orbit_speed));
+        orient = prev_orient + glm::vec3(0, mouse_drag.y * ORIENT_PITCH(orbit_speed), mouse_drag.x * ORIENT_YAW(orbit_speed));
         camera->orbit(orient, orbit_radius);
     }
     if(right_mouse_down) {
         if(camera->get_projection_mode() == vt::Camera::PROJECTION_MODE_PERSPECTIVE) {
-            orbit_radius = prev_orbit_radius + mouse_drag.y*dolly_speed;
+            orbit_radius = prev_orbit_radius + mouse_drag.y * dolly_speed;
             camera->orbit(orient, orbit_radius);
         } else if (camera->get_projection_mode() == vt::Camera::PROJECTION_MODE_ORTHO) {
-            zoom = prev_zoom + mouse_drag.y*ortho_dolly_speed;
+            zoom = prev_zoom + mouse_drag.y * ortho_dolly_speed;
             camera->set_zoom(&zoom);
         }
     }
@@ -997,7 +997,7 @@ void onReshape(int width, int height)
 int main(int argc, char* argv[])
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGBA|GLUT_ALPHA|GLUT_DOUBLE|GLUT_DEPTH/*|GLUT_STENCIL*/);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_ALPHA | GLUT_DOUBLE | GLUT_DEPTH /*| GLUT_STENCIL*/);
     glutInitWindowSize(init_screen_width, init_screen_height);
     glutCreateWindow(DEFAULT_CAPTION);
 
@@ -1012,7 +1012,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    char* s = (char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
+    const char* s = reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
     printf("GLSL version %s\n", s);
 
     if(init_resources()) {
