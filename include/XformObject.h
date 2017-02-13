@@ -39,11 +39,12 @@ public:
     void set_orient_constraints_center(glm::vec3 orient_constraints_center)               { m_orient_constraints_center = orient_constraints_center; }
     const glm::vec3 &get_orient_constraints_max_deviation() const                         { return m_orient_constraints_max_deviation; }
     void set_orient_constraints_max_deviation(glm::vec3 orient_constraints_max_deviation) { m_orient_constraints_max_deviation = orient_constraints_max_deviation; }
+    void apply_constraints();
 
     // coordinate system conversions
-    glm::vec3 map_to_abs_coord(glm::vec3 local_point = glm::vec3(0));
-    glm::vec3 map_to_parent_coord(glm::vec3 abs_point) const;
-    glm::vec3 map_to_origin_in_parent_coord(glm::vec3 abs_point) const;
+    glm::vec3 in_abs_system(glm::vec3 local_point = glm::vec3(0));
+    glm::vec3 in_parent_system(glm::vec3 abs_point) const;
+    glm::vec3 from_origin_in_parent_system(glm::vec3 abs_point) const;
     glm::vec3 get_abs_left_direction();
     glm::vec3 get_abs_up_direction();
     glm::vec3 get_abs_heading();
@@ -55,19 +56,21 @@ public:
     void unlink_children();
 
     // advanced features
-    void point_at(glm::vec3 target, glm::vec3 up_direction = VEC_UP);
+    void point_at_local(glm::vec3 local_target, glm::vec3* up_direction = NULL);
+    void point_at(glm::vec3 target, glm::vec3* up_direction = NULL);
     void rotate(float angle_delta, glm::vec3 pivot);
     bool solve_ik_ccd(XformObject* root,
                       glm::vec3    local_end_effector_tip,
                       glm::vec3    target,
                       int          iters,
-                      float        accept_distance);
+                      float        accept_end_effector_distance,
+                      float        accept_avg_angle_distance);
     void update_boid(glm::vec3 target, float forward_speed, float angle_delta, float avoid_radius);
 
     // basic features
     const glm::mat4 &get_xform(bool trace_down = true);
     const glm::mat4 &get_normal_xform();
-    glm::mat4 get_local_rotate_xform() const;
+    glm::mat4 get_local_orient_xform() const;
 
 protected:
     // basic features
@@ -79,16 +82,15 @@ protected:
 
     // constraints
     glm::ivec3 m_enable_orient_constraints;
-    glm::vec3 m_orient_constraints_center;
-    glm::vec3 m_orient_constraints_max_deviation;
+    glm::vec3  m_orient_constraints_center;
+    glm::vec3  m_orient_constraints_max_deviation;
 
     // hierarchy related
     XformObject* m_parent;
     std::set<XformObject*> m_children;
 
     // caching
-    void mark_dirty_xform()
-    {
+    void mark_dirty_xform() {
         m_is_dirty_xform        = true;
         m_is_dirty_normal_xform = true;
     }

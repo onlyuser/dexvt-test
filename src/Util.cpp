@@ -11,8 +11,6 @@
 #include <stdarg.h>
 #include <GL/glut.h>
 
-#define SIGN(x) (!(x) ? 0 : (((x) > 0) ? 1 : -1))
-
 namespace vt {
 
 void print_bitmap_string(void* font, const char* s)
@@ -29,12 +27,12 @@ glm::vec3 orient_to_offset(glm::vec3  orient,
                            glm::vec3* up_direction) // out
 {
     if(up_direction) {
-        glm::mat4 rotate_xform = GLM_EULER(ORIENT_YAW(orient), ORIENT_PITCH(orient), ORIENT_ROLL(orient));
-        *up_direction = glm::vec3(rotate_xform * glm::vec4(VEC_UP, 1));
-        return glm::vec3(rotate_xform * glm::vec4(VEC_FORWARD, 1));
+        glm::mat4 orient_xform = GLM_EULER_ANGLE(ORIENT_YAW(orient), ORIENT_PITCH(orient), ORIENT_ROLL(orient));
+        *up_direction = glm::vec3(orient_xform * glm::vec4(VEC_UP, 1));
+        return glm::vec3(orient_xform * glm::vec4(VEC_FORWARD, 1));
     }
-    glm::mat4 rotate_xform_sans_roll = GLM_EULER_SANS_ROLL(ORIENT_YAW(orient), ORIENT_PITCH(orient));
-    return glm::vec3(rotate_xform_sans_roll * glm::vec4(VEC_FORWARD, 1));
+    glm::mat4 orient_xform_sans_roll = GLM_EULER_ANGLE_SANS_ROLL(ORIENT_YAW(orient), ORIENT_PITCH(orient));
+    return glm::vec3(orient_xform_sans_roll * glm::vec4(VEC_FORWARD, 1));
 }
 
 glm::vec3 orient_to_offset(glm::vec3 orient)
@@ -73,9 +71,9 @@ glm::vec3 offset_to_orient(glm::vec3  offset,
 
     // roll
     if(up_direction) {
-        glm::mat4 rotate_xform_sans_roll = GLM_EULER_SANS_ROLL(ORIENT_YAW(orient), ORIENT_PITCH(orient));
+        glm::mat4 orient_xform_sans_roll = GLM_EULER_ANGLE_SANS_ROLL(ORIENT_YAW(orient), ORIENT_PITCH(orient));
         glm::vec3 local_up_direction_roll_component =
-                glm::vec3(glm::inverse(rotate_xform_sans_roll) * glm::vec4(*up_direction, 1));
+                glm::vec3(glm::inverse(orient_xform_sans_roll) * glm::vec4(*up_direction, 1));
         ORIENT_ROLL(orient) = glm::degrees(glm::angle(glm::normalize(local_up_direction_roll_component), VEC_UP));
         if(local_up_direction_roll_component.x > 0) {
             ORIENT_ROLL(orient) = -fabs(ORIENT_ROLL(orient));
@@ -92,12 +90,12 @@ glm::vec3 offset_to_orient(glm::vec3 offset)
 
 glm::vec3 orient_modulo(glm::vec3 orient)
 {
-    if(fabs(ORIENT_YAW(orient)) >= 180) {
+    if(fabs(ORIENT_YAW(orient)) > 180) {
         // yaw:  181 ==> -179
         // yaw: -181 ==>  179
         ORIENT_YAW(orient) = -SIGN(ORIENT_YAW(orient)) * (360 - fabs(ORIENT_YAW(orient)));
     }
-    if(fabs(ORIENT_PITCH(orient)) >= 90) {
+    if(fabs(ORIENT_PITCH(orient)) > 90) {
         // pitch:  91 ==>  89
         // pitch: -91 ==> -89
         ORIENT_PITCH(orient) = SIGN(ORIENT_PITCH(orient)) * (180 - fabs(ORIENT_PITCH(orient)));
@@ -105,7 +103,7 @@ glm::vec3 orient_modulo(glm::vec3 orient)
         // yaw: -179 ==>  1
         ORIENT_YAW(orient) = -SIGN(ORIENT_YAW(orient)) * (180 - fabs(ORIENT_YAW(orient)));
     }
-    if(fabs(ORIENT_ROLL(orient)) >= 180) {
+    if(fabs(ORIENT_ROLL(orient)) > 180) {
         // roll:  181 ==> -179
         // roll: -181 ==>  179
         ORIENT_ROLL(orient) = -SIGN(ORIENT_ROLL(orient)) * (360 - fabs(ORIENT_YAW(orient)));
@@ -113,50 +111,13 @@ glm::vec3 orient_modulo(glm::vec3 orient)
     return orient;
 }
 
-float angle_distance(float angle1, float angle2, float min_angle, float max_angle)
+float angle_distance(float angle1, float angle2)
 {
-    float angle_range = max_angle - min_angle;
     float angle_diff = fabs(angle1 - angle2);
-    if(angle_diff > angle_range * 0.5) {
-        return angle_range - angle_diff;
+    if(angle_diff > 180) {
+        return 360 - angle_diff;
     }
     return angle_diff;
-}
-
-glm::vec3 orient_limit(glm::vec3 orient, glm::ivec3 enable_orient_constraints, glm::vec3 orient_constraints_center, glm::vec3 orient_constraints_max_deviation)
-{
-    static glm::vec3 min_orient(-180, -90, -180);
-    static glm::vec3 max_orient( 180,  90,  180);
-    for(int i = 0; i < 3; i++) {
-        if(!enable_orient_constraints[i]) {
-            continue;
-        }
-        if(angle_distance(orient[i], orient_constraints_center[i], min_orient[i], max_orient[i]) > orient_constraints_max_deviation[i]) {
-            float min_angle = orient_constraints_center[i] - orient_constraints_max_deviation[i];
-            float max_angle = orient_constraints_center[i] + orient_constraints_max_deviation[i];
-            float distance_to_lower_bound = angle_distance(orient[i], min_angle, min_orient[i], max_orient[i]);
-            float distance_to_upper_bound = angle_distance(orient[i], max_angle, min_orient[i], max_orient[i]);
-            if(distance_to_lower_bound < distance_to_upper_bound) {
-                orient[i] = min_angle;
-            } else {
-                orient[i] = max_angle;
-            }
-        }
-    }
-    return orient;
-}
-
-void mesh_apply_ripple(Mesh* mesh, glm::vec3 origin, float amplitude, float wavelength, float phase)
-{
-    for(int i = 0; i < static_cast<int>(mesh->get_num_vertex()); i++) {
-        glm::vec3 pos = mesh->get_vert_coord(i);
-        glm::vec3 new_pos = pos;
-        new_pos.y = origin.y + static_cast<float>(sin(glm::distance(glm::vec2(origin.x, origin.z),
-                               glm::vec2(pos.x, pos.z)) / (wavelength / (PI * 2)) + phase)) * amplitude;
-        mesh->set_vert_coord(i, new_pos);
-    }
-    mesh->update_normals_and_tangents();
-    mesh->update_bbox();
 }
 
 bool read_file(std::string filename, std::string &s)

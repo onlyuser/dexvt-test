@@ -1,13 +1,11 @@
 #include <File3ds.h>
 #include <MeshIFace.h>
+#include <Util.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include <string>
 #include <stdint.h>
 #include <stdio.h>
-
-#define MAKEWORD(a, b) ((uint16_t)(((uint8_t)(a))  | (((uint16_t)((uint8_t)(b))) << 8)))
-#define MAKELONG(a, b) ((uint32_t)(((uint16_t)(a)) | (((uint32_t)((uint16_t)(b))) << 16)))
 
 namespace vt {
 
@@ -147,7 +145,7 @@ void File3ds::read_faces(FILE* stream, MeshIFace* mesh)
     size_t num_tri = mesh->get_num_tri();
     for(int i = 0; i < static_cast<int>(num_tri); i++) {
         fread(tri_indices, sizeof(uint16_t), 3, stream);
-        mesh->set_tri_indices(i, glm::uvec3(tri_indices[0], tri_indices[2], tri_indices[1]));
+        mesh->set_tri_indices(i, glm::ivec3(tri_indices[0], tri_indices[2], tri_indices[1]));
         fseek(stream, sizeof(uint16_t), SEEK_CUR); // skip tri_indices info
     }
     delete []tri_indices;

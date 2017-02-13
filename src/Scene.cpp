@@ -410,7 +410,7 @@ void Scene::render_lines_and_text(bool draw_guide_wires,
 
             // white
             glColor3f(1, 1, 1);
-            glm::vec3 abs_origin = (*p)->map_to_abs_coord();
+            glm::vec3 abs_origin = (*p)->in_abs_system();
             glVertex3fv(&abs_origin.x);
             glm::vec3 endpoint = glm::vec3((*p)->get_xform() * glm::vec4(VEC_UP * up_arm_length, 1));
             glVertex3fv(&endpoint.x);
@@ -575,9 +575,11 @@ void Scene::render_lines_and_text(bool draw_guide_wires,
             glLineWidth(normal_line_width);
             glBegin(GL_LINES);
 
+            size_t num_vertex = (*p)->get_num_vertex();
+
             // normal
             glColor3f(0, 0, 1);
-            for (int i = 0; i < static_cast<int>((*p)->get_num_vertex()); i++) {
+            for(int i = 0; i < static_cast<int>(num_vertex); i++) {
                 glm::vec3 v = (*p)->get_vert_coord(i);
                 v += (*p)->get_vert_normal(i) * normal_surface_distance;
                 glVertex3fv(&v.x);
@@ -587,21 +589,21 @@ void Scene::render_lines_and_text(bool draw_guide_wires,
 
             // tangent
             glColor3f(1, 0, 0);
-            for (int i = 0; i < static_cast<int>((*p)->get_num_vertex()); i++) {
-                glm::vec3 v = (*p)->get_vert_coord(i);
-                v += (*p)->get_vert_normal(i) * normal_surface_distance;
+            for(int j = 0; j < static_cast<int>(num_vertex); j++) {
+                glm::vec3 v = (*p)->get_vert_coord(j);
+                v += (*p)->get_vert_normal(j) * normal_surface_distance;
                 glVertex3fv(&v.x);
-                v += (*p)->get_vert_tangent(i) * normal_arm_length;
+                v += (*p)->get_vert_tangent(j) * normal_arm_length;
                 glVertex3fv(&v.x);
             }
 
             // bitangent
             glColor3f(0, 1, 0);
-            for (int i = 0; i < static_cast<int>((*p)->get_num_vertex()); i++) {
-                glm::vec3 v = (*p)->get_vert_coord(i);
-                v += (*p)->get_vert_normal(i) * normal_surface_distance;
+            for(int k = 0; k < static_cast<int>(num_vertex); k++) {
+                glm::vec3 v = (*p)->get_vert_coord(k);
+                v += (*p)->get_vert_normal(k) * normal_surface_distance;
                 glVertex3fv(&v.x);
-                glm::vec3 bitangent = glm::normalize(glm::cross((*p)->get_vert_normal(i), (*p)->get_vert_tangent(i)));
+                glm::vec3 bitangent = glm::normalize(glm::cross((*p)->get_vert_normal(k), (*p)->get_vert_tangent(k)));
                 v += bitangent * normal_arm_length;
                 glVertex3fv(&v.x);
             }
@@ -613,6 +615,7 @@ void Scene::render_lines_and_text(bool draw_guide_wires,
         }
 
         if(draw_axis_labels) {
+            glLoadMatrixf(glm::value_ptr(m_camera->get_xform() * (*p)->get_xform()));
             std::string axis_label;
 #if 1
             axis_label = (*p)->get_name();

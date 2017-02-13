@@ -11,10 +11,9 @@
 
 namespace vt {
 
-Mesh::Mesh(
-        std::string name,
-        size_t      num_vertex,
-        size_t      num_tri)
+Mesh::Mesh(std::string name,
+           size_t      num_vertex,
+           size_t      num_tri)
     : XformObject(name),
       m_num_vertex(num_vertex),
       m_num_tri(num_tri),
@@ -66,6 +65,67 @@ Mesh::~Mesh()
     if(m_normal_shader_context)    { delete m_normal_shader_context; }
     if(m_wireframe_shader_context) { delete m_wireframe_shader_context; }
     if(m_ssao_shader_context)      { delete m_ssao_shader_context; }
+}
+
+void Mesh::resize(size_t num_vertex, size_t num_tri, bool preserve_mesh_geometry)
+{
+    glm::vec3* new_vert_coord  = NULL;
+    glm::vec2* new_tex_coord   = NULL;
+    glm::ivec3* new_tri_indices = NULL;
+    if(preserve_mesh_geometry) {
+        new_vert_coord  = new glm::vec3[num_vertex];
+        new_tex_coord   = new glm::vec2[num_vertex];
+        new_tri_indices = new glm::ivec3[num_tri];
+        if(new_vert_coord && new_tex_coord) {
+            for(int i = 0; i < static_cast<int>(num_vertex); i++) {
+                new_vert_coord[i] = get_vert_coord(i);
+                new_tex_coord[i]  = get_tex_coord(i);
+            }
+        }
+        if(new_tri_indices) {
+            for(int i = 0; i < static_cast<int>(num_tri); i++) {
+                new_tri_indices[i] = get_tri_indices(i);
+            }
+        }
+    }
+    if(m_vert_coords)              { delete []m_vert_coords; }
+    if(m_vert_normal)              { delete []m_vert_normal; }
+    if(m_vert_tangent)             { delete []m_vert_tangent; }
+    if(m_tex_coords)               { delete []m_tex_coords; }
+    if(m_tri_indices)              { delete []m_tri_indices; }
+    if(m_vbo_vert_coords)          { delete m_vbo_vert_coords;          m_vbo_vert_coords = NULL; }
+    if(m_vbo_vert_normal)          { delete m_vbo_vert_normal;          m_vbo_vert_normal = NULL; }
+    if(m_vbo_vert_tangent)         { delete m_vbo_vert_tangent;         m_vbo_vert_tangent = NULL; }
+    if(m_vbo_tex_coords)           { delete m_vbo_tex_coords;           m_vbo_tex_coords = NULL; }
+    if(m_ibo_tri_indices)          { delete m_ibo_tri_indices;          m_ibo_tri_indices = NULL; }
+    if(m_shader_context)           { delete m_shader_context;           m_shader_context = NULL; }
+    if(m_normal_shader_context)    { delete m_normal_shader_context;    m_normal_shader_context = NULL; }
+    if(m_wireframe_shader_context) { delete m_wireframe_shader_context; m_wireframe_shader_context = NULL; }
+    if(m_ssao_shader_context)      { delete m_ssao_shader_context;      m_ssao_shader_context = NULL;}
+    m_vert_coords  = new GLfloat[ num_vertex * 3];
+    m_vert_normal  = new GLfloat[ num_vertex * 3];
+    m_vert_tangent = new GLfloat[ num_vertex * 3];
+    m_tex_coords   = new GLfloat[ num_vertex * 2];
+    m_tri_indices  = new GLushort[num_tri    * 3];
+    m_num_vertex   = num_vertex;
+    m_num_tri      = num_tri;
+    m_buffers_already_init = false;
+    if(preserve_mesh_geometry) {
+        if(new_vert_coord && new_tex_coord) {
+            for(int i = 0; i < static_cast<int>(num_vertex); i++) {
+                set_vert_coord(i, new_vert_coord[i]);
+                set_tex_coord(i, new_tex_coord[i]);
+            }
+            delete []new_vert_coord;
+            delete []new_tex_coord;
+        }
+        if(new_tri_indices) {
+            for(int i = 0; i < static_cast<int>(num_tri); i++) {
+                set_tri_indices(i, new_tri_indices[i]);
+            }
+            delete []new_tri_indices;
+        }
+    }
 }
 
 glm::vec3 Mesh::get_vert_coord(int index) const
@@ -134,16 +194,16 @@ void Mesh::set_tex_coord(int index, glm::vec2 coord)
     m_tex_coords[offset+1] = coord.y;
 }
 
-glm::uvec3 Mesh::get_tri_indices(int index) const
+glm::ivec3 Mesh::get_tri_indices(int index) const
 {
     int offset = index * 3;
-    return glm::uvec3(
+    return glm::ivec3(
             m_tri_indices[offset + 0],
             m_tri_indices[offset + 1],
             m_tri_indices[offset + 2]);
 }
 
-void Mesh::set_tri_indices(int index, glm::uvec3 indices)
+void Mesh::set_tri_indices(int index, glm::ivec3 indices)
 {
     int offset = index * 3;
     m_tri_indices[offset + 0] = indices[0];
@@ -164,7 +224,7 @@ void Mesh::update_bbox()
 void Mesh::update_normals_and_tangents()
 {
     for(int i=0; i<static_cast<int>(m_num_tri); i++) {
-        glm::uvec3 tri_indices = get_tri_indices(i);
+        glm::ivec3 tri_indices = get_tri_indices(i);
         glm::vec3 p0 = get_vert_coord(tri_indices[0]);
         glm::vec3 p1 = get_vert_coord(tri_indices[1]);
         glm::vec3 p2 = get_vert_coord(tri_indices[2]);
@@ -354,7 +414,7 @@ void Mesh::set_axis(glm::vec3 axis)
 {
     glm::vec3 local_axis = glm::vec3(glm::inverse(get_xform()) * glm::vec4(axis, 1));
     xform_vertices(glm::translate(glm::mat4(1), -local_axis));
-    m_origin = map_to_parent_coord(axis);
+    m_origin = in_parent_system(axis);
     mark_dirty_xform();
 }
 
@@ -365,7 +425,7 @@ void Mesh::center_axis(align_t align)
 
 void Mesh::update_xform()
 {
-    m_xform = glm::translate(glm::mat4(1), m_origin) * get_local_rotate_xform() * glm::scale(glm::mat4(1), m_scale);
+    m_xform = glm::translate(glm::mat4(1), m_origin) * get_local_orient_xform() * glm::scale(glm::mat4(1), m_scale);
 }
 
 MeshIFace* alloc_meshiface(std::string name, size_t num_vertex, size_t num_tri)
