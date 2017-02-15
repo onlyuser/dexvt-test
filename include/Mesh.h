@@ -36,13 +36,22 @@ public:
         return m_num_tri;
     }
 
-    bool get_visible() const
+    bool is_visible() const
     {
         return m_visible;
     }
     void set_visible(bool visible)
     {
         m_visible = visible;
+    }
+
+    bool is_smooth() const
+    {
+        return m_smooth;
+    }
+    void set_smooth(bool smooth)
+    {
+        m_smooth = smooth;
     }
 
     glm::vec3  get_vert_coord(int index) const;
@@ -175,6 +184,7 @@ private:
     size_t         m_num_vertex;
     size_t         m_num_tri;
     bool           m_visible;
+    bool           m_smooth;
     GLfloat*       m_vert_coords;
     GLfloat*       m_vert_normal;
     GLfloat*       m_vert_tangent;

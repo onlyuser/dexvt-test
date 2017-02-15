@@ -586,7 +586,7 @@ void onTick()
 
     phase = static_cast<float>(glutGet(GLUT_ELAPSED_TIME)) / 1000 * 15; // base 15 degrees per second
 
-    mesh_apply_ripple(hidden_mesh4, glm::vec3(0.5, 0, 0.5), 0.1, 0.5, -phase * 0.1);
+    mesh_apply_ripple(hidden_mesh4, glm::vec3(0.5, 0, 0.5), 0.1, 0.5, -phase * 0.1, false);
     hidden_mesh4->update_buffers();
 }
 
@@ -918,13 +918,13 @@ void onSpecial(int key, int x, int y)
 {
     switch(key) {
         case GLUT_KEY_F1:
-            light->set_enabled(!light->get_enabled());
+            light->set_enabled(!light->is_enabled());
             break;
         case GLUT_KEY_F2:
-            light2->set_enabled(!light2->get_enabled());
+            light2->set_enabled(!light2->is_enabled());
             break;
         case GLUT_KEY_F3:
-            light3->set_enabled(!light3->get_enabled());
+            light3->set_enabled(!light3->is_enabled());
             break;
         case GLUT_KEY_LEFT:
         case GLUT_KEY_RIGHT:

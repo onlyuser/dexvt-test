@@ -10,6 +10,10 @@ class MeshIFace
 {
 public:
     virtual ~MeshIFace() {}
+    virtual bool       is_visible() const = 0;
+    virtual void       set_visible(bool visible) = 0;
+    virtual bool       is_smooth() const = 0;
+    virtual void       set_smooth(bool smooth) = 0;
     virtual void       resize(size_t num_vertex, size_t num_tri, bool preserve_mesh_geometry = false) = 0;
     virtual size_t     get_num_vertex() const = 0;
     virtual size_t     get_num_tri() const = 0;

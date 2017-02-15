@@ -510,15 +510,13 @@ Mesh* PrimitiveFactory::create_geosphere(
     MeshIFace* mesh = _meshiface(create_sphere(name, 4, 2, radius));
     mesh->center_axis();
     for(int i = 0; i < tessellation_iters; i++) {
-        mesh_tessellate(mesh, TESSELLATION_EDGE_CENTER);
+        mesh_tessellate(mesh, TESSELLATION_EDGE_CENTER, true);
         size_t num_vertex = mesh->get_num_vertex();
         for(int j = 0; j < static_cast<int>(num_vertex); j++) {
             mesh->set_vert_coord(j, glm::normalize(mesh->get_vert_coord(j)) * radius);
         }
-        mesh->update_bbox();
         mesh->center_axis();
     }
-    mesh->update_normals_and_tangents();
     return _mesh(mesh);
 }
 
