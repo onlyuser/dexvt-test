@@ -11,6 +11,11 @@ namespace vt {
 class XformObject : public NamedObject
 {
 public:
+    enum ik_joint_t {
+        IK_JOINT_REVOLUTE,
+        IK_JOINT_PRISMATIC
+    };
+
     // for guide wires
     glm::vec3 m_debug_target_dir;
     glm::vec3 m_debug_end_effector_tip_dir;
@@ -32,14 +37,23 @@ public:
     void set_scale(glm::vec3 scale);
     void reset_xform();
 
-    // constraints
+    // orient constraints
     const glm::ivec3 &get_enable_orient_constraints() const                               { return m_enable_orient_constraints; }
     void set_enable_orient_constraints(glm::ivec3 enable_orient_constraints)              { m_enable_orient_constraints = enable_orient_constraints; }
     const glm::vec3 &get_orient_constraints_center() const                                { return m_orient_constraints_center; }
     void set_orient_constraints_center(glm::vec3 orient_constraints_center)               { m_orient_constraints_center = orient_constraints_center; }
     const glm::vec3 &get_orient_constraints_max_deviation() const                         { return m_orient_constraints_max_deviation; }
     void set_orient_constraints_max_deviation(glm::vec3 orient_constraints_max_deviation) { m_orient_constraints_max_deviation = orient_constraints_max_deviation; }
-    void apply_constraints();
+    void apply_orient_constraints();
+
+    // origin constraints
+    const glm::ivec3 &get_enable_origin_constraints() const                               { return m_enable_origin_constraints; }
+    void set_enable_origin_constraints(glm::ivec3 enable_origin_constraints)              { m_enable_origin_constraints = enable_origin_constraints; }
+    const glm::vec3 &get_origin_constraints_center() const                                { return m_origin_constraints_center; }
+    void set_origin_constraints_center(glm::vec3 origin_constraints_center)               { m_origin_constraints_center = origin_constraints_center; }
+    const glm::vec3 &get_origin_constraints_max_deviation() const                         { return m_origin_constraints_max_deviation; }
+    void set_origin_constraints_max_deviation(glm::vec3 origin_constraints_max_deviation) { m_origin_constraints_max_deviation = origin_constraints_max_deviation; }
+    void apply_origin_constraints();
 
     // coordinate system conversions
     glm::vec3 in_abs_system(glm::vec3 local_point = glm::vec3(0));
@@ -54,6 +68,9 @@ public:
     XformObject* get_parent() const        { return m_parent; }
     std::set<XformObject*> &get_children() { return m_children; }
     void unlink_children();
+
+    void set_ik_joint(ik_joint_t ik_joint) { m_ik_joint = ik_joint; }
+    ik_joint_t get_ik_joint() const        { return m_ik_joint; }
 
     // advanced features
     void point_at_local(glm::vec3 local_target, glm::vec3* up_direction = NULL);
@@ -84,14 +101,22 @@ protected:
     glm::mat4 m_xform;
     glm::mat4 m_normal_xform;
 
-    // constraints
+    // orient constraints
     glm::ivec3 m_enable_orient_constraints;
     glm::vec3  m_orient_constraints_center;
     glm::vec3  m_orient_constraints_max_deviation;
 
+    // origin constraints
+    glm::ivec3 m_enable_origin_constraints;
+    glm::vec3  m_origin_constraints_center;
+    glm::vec3  m_origin_constraints_max_deviation;
+
     // hierarchy related
     XformObject* m_parent;
     std::set<XformObject*> m_children;
+
+    // ik related
+    ik_joint_t m_ik_joint;
 
     // caching
     void mark_dirty_xform() {
