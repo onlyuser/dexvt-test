@@ -17,8 +17,8 @@ uniform float camera_near;
 uniform float reflect_to_refract_ratio;
 uniform int light_count;
 uniform int light_enabled[NUM_LIGHTS];
-uniform mat4 inv_view_proj_xform;
-uniform mat4 view_proj_xform;
+uniform mat4 inv_view_proj_transform;
+uniform mat4 view_proj_transform;
 uniform sampler2D backface_depth_overlay_texture;
 uniform sampler2D backface_normal_overlay_texture;
 uniform sampler2D bump_texture;
@@ -28,7 +28,7 @@ uniform vec2 viewport_dim;
 uniform vec3 camera_pos;
 uniform vec3 light_color[NUM_LIGHTS];
 uniform vec3 light_pos[NUM_LIGHTS];
-varying mat3 lerp_tbn_xform;
+varying mat3 lerp_tbn_transform;
 varying vec2 lerp_texcoord;
 varying vec3 lerp_camera_vector;
 varying vec3 lerp_vertex_position_world;
@@ -124,11 +124,11 @@ void refract_into_env_map_ex(
 // http://www.songho.ca/opengl/gl_projectionmatrix.html
 void unproject_fragment(
         in    vec3  frag_pos,
-        in    mat4  _inv_view_proj_xform,
+        in    mat4  _inv_view_proj_transform,
         inout vec3  world_pos)
 {
     vec4 normalized_device_coord = vec4(frag_pos.x*2 - 1, frag_pos.y*2 - 1 , frag_pos.z*2 - 1, 1);
-    vec4 unprojected_coord = _inv_view_proj_xform*normalized_device_coord;
+    vec4 unprojected_coord = _inv_view_proj_transform*normalized_device_coord;
 
     // http://www.iquilezles.org/blog/?p=1911
     unprojected_coord.xyz /= unprojected_coord.w; // perspective divide
@@ -139,7 +139,7 @@ void unproject_fragment(
 void newtons_method_update(
         in    sampler2D _backface_depth_overlay_texture,
         in    sampler2D _backface_normal_overlay_texture,
-        in    mat4      _view_proj_xform,
+        in    mat4      _view_proj_transform,
         in    vec3      _camera_pos,
         in    vec3      orig,         // point on ray
         in    vec3      dir,          // ray direction
@@ -163,7 +163,7 @@ void newtons_method_update(
 
     vec3 ray_plane_isect = orig + normalize(dir)*orig_intersection_distance;
 
-    vec4 projected_coord = _view_proj_xform*vec4(ray_plane_isect, 1);
+    vec4 projected_coord = _view_proj_transform*vec4(ray_plane_isect, 1);
     projected_coord.xyz /= projected_coord.w; // perspective divide
     vec3 ray_plane_isect_texcoord_raw = projected_coord.xyz;
 
@@ -225,7 +225,7 @@ void main(void) {
 
     vec3 normal_surface =
             mix(vec3(0, 0, 1), normalize(vec3(texture2D(bump_texture, flipped_texcoord))), BUMP_FACTOR);
-    vec3 normal = normalize(lerp_tbn_xform*normal_surface);
+    vec3 normal = normalize(lerp_tbn_transform*normal_surface);
 
     vec4 frontface_light_contrib;
     calculate_light_contrib(
@@ -282,7 +282,7 @@ void main(void) {
     // z-depth is measured in rays parallel to camera, not rays emanating from camera
     //vec3 backface_frag_position_world = camera_pos - camera_direction*backface_depth_actual;
     vec3 backface_frag_position_world;
-    unproject_fragment(vec3(overlay_texcoord, backface_depth), inv_view_proj_xform, backface_frag_position_world);
+    unproject_fragment(vec3(overlay_texcoord, backface_depth), inv_view_proj_transform, backface_frag_position_world);
 
     //vec3 ray_plane_isect = lerp_vertex_position_world + frontface_refracted_camera_dir*???;
 
@@ -298,7 +298,7 @@ void main(void) {
         newtons_method_update(
                 backface_depth_overlay_texture,
                 backface_normal_overlay_texture,
-                view_proj_xform,
+                view_proj_transform,
                 camera_pos,
                 orig,
                 dir,

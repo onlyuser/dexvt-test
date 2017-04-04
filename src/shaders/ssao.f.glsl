@@ -3,8 +3,8 @@ const float DISCONT_THRESH = SSAO_SAMPLE_RADIUS*4;
 const int NUM_SSAO_SAMPLE_KERNELS = 3;
 uniform float camera_far;
 uniform float camera_near;
-uniform mat4 inv_view_proj_xform;
-uniform mat4 view_proj_xform;
+uniform mat4 inv_view_proj_transform;
+uniform mat4 view_proj_transform;
 uniform sampler2D frontface_depth_overlay_texture;
 uniform sampler2D random_texture;
 uniform vec2 viewport_dim;
@@ -33,11 +33,11 @@ void map_range(in float s1, in float e1, in float s2, in float e2, in float x, o
 // http://www.songho.ca/opengl/gl_projectionmatrix.html
 void unproject_fragment(
         in    vec3  frag_pos,
-        in    mat4  _inv_view_proj_xform,
+        in    mat4  _inv_view_proj_transform,
         inout vec3  world_pos)
 {
     vec4 normalized_device_coord = vec4(frag_pos.x*2 - 1, frag_pos.y*2 - 1 , frag_pos.z*2 - 1, 1);
-    vec4 unprojected_coord = _inv_view_proj_xform*normalized_device_coord;
+    vec4 unprojected_coord = _inv_view_proj_transform*normalized_device_coord;
 
     // http://www.iquilezles.org/blog/?p=1911
     unprojected_coord.xyz /= unprojected_coord.w; // perspective divide
@@ -46,15 +46,15 @@ void unproject_fragment(
 }
 
 // http://mtnphil.wordpress.com/2013/06/26/know-your-ssao-artifacts/
-void gen_basis_xform_from_random_vec(
-        inout mat3 tbn_xform,
+void gen_basis_transform_from_random_vec(
+        inout mat3 tbn_transform,
         in    vec3 normal,
         in    vec3 random_vec)
 {
     // Gram–Schmidt process to construct an orthogonal basis.
     vec3 tangent = normalize(random_vec - normal*dot(random_vec, normal)); // ortho-basis x-direction
     vec3 bitangent = cross(normal, tangent);                               // ortho-basis y-direction
-    tbn_xform = mat3(tangent, bitangent, normal);
+    tbn_transform = mat3(tangent, bitangent, normal);
 }
 
 // http://john-chapman-graphics.blogspot.tw/2013/01/ssao-tutorial.html
@@ -77,7 +77,7 @@ void main(void) {
     // z-depth is measured in rays parallel to camera, not rays emanating from camera
     //vec3 frontface_frag_position_world = camera_pos - camera_direction*frontface_depth_world;
     vec3 frontface_frag_position_world;
-    unproject_fragment(vec3(overlay_texcoord, frontface_ndc_depth), inv_view_proj_xform, frontface_frag_position_world);
+    unproject_fragment(vec3(overlay_texcoord, frontface_ndc_depth), inv_view_proj_transform, frontface_frag_position_world);
     //if(frontface_frag_position_world.z < -0.9 && frontface_frag_position_world.z > -1.1 &&
     //        frontface_frag_position_world.x > 0 && frontface_frag_position_world.y > 0)
     //{
@@ -87,15 +87,15 @@ void main(void) {
     //    return;
     //}
 
-    mat3 tbn_xform;
+    mat3 tbn_transform;
     vec3 random_unit_normal =
             normalize(texture2D(random_texture, flipped_texcoord).rgb)*2 - vec3(1); // map from [0,1] to [-1,1];
-    gen_basis_xform_from_random_vec(tbn_xform, lerp_normal, random_unit_normal);
+    gen_basis_transform_from_random_vec(tbn_transform, lerp_normal, random_unit_normal);
 
     float occlusion = 0.0;
     for(int i = 0; i < NUM_SSAO_SAMPLE_KERNELS; i++) {
 
-        vec3 sample_offset_world = normalize(tbn_xform*normalize(ssao_sample_kernel_pos[i]))*SSAO_SAMPLE_RADIUS;
+        vec3 sample_offset_world = normalize(tbn_transform*normalize(ssao_sample_kernel_pos[i]))*SSAO_SAMPLE_RADIUS;
         //vec3 sample_world = frontface_frag_position_world + sample_offset_world*0.001 + vec3(0,0,1);
         vec3 sample_world = frontface_frag_position_world + sample_offset_world;
         //if(sample_world.x > 0 && sample_world.y > 0) {
@@ -103,7 +103,7 @@ void main(void) {
         //    return;
         //}
 
-        vec4 sample_offset_projected = view_proj_xform*vec4(sample_world, 1.0);
+        vec4 sample_offset_projected = view_proj_transform*vec4(sample_world, 1.0);
         sample_offset_projected.xyz /= sample_offset_projected.w;
         sample_offset_projected.xy = sample_offset_projected.xy*0.5 + 0.5; // map from [-1,1] to [0,1]
         //if(sample_offset_projected.x > 0.5 && sample_offset_projected.y > 0.5) {

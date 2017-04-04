@@ -7,7 +7,7 @@ uniform float reflect_to_refract_ratio;
 uniform sampler2D bump_texture;
 uniform samplerCube env_map_texture;
 uniform vec3 camera_pos;
-varying mat3 lerp_tbn_xform;
+varying mat3 lerp_tbn_transform;
 varying vec2 lerp_texcoord;
 varying vec3 lerp_camera_vector;
 varying vec3 lerp_vertex_position_world;
@@ -79,7 +79,7 @@ void main(void) {
 
     vec3 normal_surface =
             mix(vec3(0, 0, 1), normalize(vec3(texture2D(bump_texture, flipped_texcoord))), BUMP_FACTOR);
-    vec3 normal = normalize(lerp_tbn_xform*normal_surface);
+    vec3 normal = normalize(lerp_tbn_transform*normal_surface);
 
     // reflection component
     vec4 reflected_color;
