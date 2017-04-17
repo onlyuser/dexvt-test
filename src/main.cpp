@@ -93,6 +93,7 @@ bool show_lights = false;
 bool show_normals = false;
 bool wireframe_mode = false;
 bool show_guide_wires = false;
+bool show_paths = true;
 bool show_axis = false;
 bool show_axis_labels = false;
 bool show_diamond = false;
@@ -728,8 +729,8 @@ void onDisplay()
     //glDisable(GL_STENCIL_TEST);
     //stencil_fb->unbind();
 
-    if(show_guide_wires || show_axis || show_axis_labels || show_bbox || show_normals) {
-        scene->render_lines_and_text(show_guide_wires, show_axis, show_axis_labels, show_bbox, show_normals);
+    if(show_guide_wires || show_paths || show_axis || show_axis_labels || show_bbox || show_normals) {
+        scene->render_lines_and_text(show_guide_wires, show_paths, show_axis, show_axis_labels, show_bbox, show_normals);
     }
     if(show_lights) {
         scene->render_lights();
@@ -869,6 +870,9 @@ void onKeyboard(unsigned char key, int x, int y)
             } else {
                 mesh_overlay->set_material(overlay_write_through_material);
             }
+            break;
+        case 's': // paths
+            show_paths = !show_paths;
             break;
         case 't': // texture
             if(texture_id == 0) {
