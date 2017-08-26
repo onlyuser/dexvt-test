@@ -9,9 +9,8 @@ About
 -----
 
 dexvt-test is a c++/glsl/glm-based 3d engine.
-It features [3D Cyclic Coordinate Descent Inverse Kinematics with Constraints](https://github.com/onlyuser/dexvt-lite/blob/master/src/TransformObject.cpp#L338), environment-mapped reflection/refraction/double refraction (with Fresnel effect, chromatic dispersion, and Beer's law), screen space ambient occlusion, bump mapping, Phong shading, Bloom filter, 3ds mesh import, and platonic primitives generation.
+It features environment-mapped reflection/refraction/double refraction (with Fresnel effect, chromatic dispersion, and Beer's law), screen space ambient occlusion, bump mapping, Phong shading, Bloom filter, 3ds mesh import, hierarchy linkages, [3D Inverse Kinematics (Cyclic Coordinate Descent)](https://github.com/onlyuser/dexvt-test/blob/master/src/XformObject.cpp#L338), and platonic primitives generation.
 Platonic primitives supported include sphere, cube, cylinder, cone, grid, tetrahedron, and round brilliant diamond.
-Many features still experimental.
 
 Screenshots
 -----------
@@ -174,4 +173,4 @@ References
 Keywords
 --------
 
-    OpenGL, glsl shader, glm, environment map, cube map, normal map, bitangent, tbn matrix, ssao, screen space ambient occlusion, backface refraction, double refraction, second refraction, backface sampling, Fresnel effect, chromatic dispersion, chromatic aberration, Bloom filter, Beer's law, Snell's law, Newton's method, 3ds file import, round brilliant diamond rendering, gemstone rendering, hierarchy linkages, NDOF 3D Inverse Kinematics solver (Cyclic Coordinate Descent)
+    OpenGL, glsl shader, glm, environment map, cube map, normal map, bitangent, tbn matrix, ssao, screen space ambient occlusion, backface refraction, double refraction, second refraction, backface sampling, Fresnel effect, chromatic dispersion, chromatic aberration, Bloom filter, Beer's law, Snell's law, Newton's method, 3ds file import, round brilliant diamond rendering, gemstone rendering, hierarchy linkages, 3D Inverse Kinematics (Cyclic Coordinate Descent)
