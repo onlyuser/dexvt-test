@@ -167,6 +167,8 @@ References
     <dd>http://what-when-how.com/advanced-methods-in-computer-graphics/kinematics-advanced-methods-in-computer-graphics-part-4/</dd>
     <dt>"alfanick's inverse-kinematics repo (ccd.cpp)"</dt>
     <dd>https://github.com/alfanick/inverse-kinematics/blob/master/ccd.cpp</dd>
+    <dt>"Best Inverse kinematics algorithm with constraints on joint angles"</dt>
+    <dd>https://stackoverflow.com/questions/21373012/best-inverse-kinematics-algorithm-with-constraints-on-joint-angles</dd>
 </dl>
 
 Keywords
