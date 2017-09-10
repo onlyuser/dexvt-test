@@ -72,7 +72,7 @@ enum overlay_mode_t {
     OVERLAY_MODE_COUNT
 };
 
-const char* DEFAULT_CAPTION = "My Textured Cube";
+const char* DEFAULT_CAPTION = NULL;
 
 int init_screen_width = 800, init_screen_height = 600;
 vt::Camera* camera;
@@ -705,30 +705,6 @@ void onDisplay()
         scene->render(true, post_process_blur || overlay_mode);
     }
 
-    //stencil_fb->bind();
-    //glEnable(GL_STENCIL_TEST);
-    //
-    //glClearColor(0, 0, 0, 1);
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    //
-    //glStencilFunc(GL_ALWAYS, 0x1, 0x1);
-    //glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-    //scene->render();
-    //
-    //glStencilFunc(GL_NOTEQUAL, 0x1, 0x1);
-    //glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-    //glDisable(GL_LIGHTING);
-    //glColor3f(0, 1, 0); // outline color
-    //glLineWidth(5);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe
-    //scene->render();
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // return to fill mode
-    //glLineWidth(1);
-    //glEnable(GL_LIGHTING);
-    //
-    //glDisable(GL_STENCIL_TEST);
-    //stencil_fb->unbind();
-
     if(show_guide_wires || show_paths || show_axis || show_axis_labels || show_bbox || show_normals) {
         scene->render_lines_and_text(show_guide_wires, show_paths, show_axis, show_axis_labels, show_bbox, show_normals);
     }
@@ -1002,7 +978,7 @@ void onReshape(int width, int height)
 int main(int argc, char* argv[])
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGBA | GLUT_ALPHA | GLUT_DOUBLE | GLUT_DEPTH /*| GLUT_STENCIL*/);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_ALPHA | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(init_screen_width, init_screen_height);
     glutCreateWindow(DEFAULT_CAPTION);
 
