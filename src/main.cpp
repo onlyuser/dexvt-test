@@ -601,6 +601,11 @@ void do_blur(
 {
     scene->set_glow_cutoff_threshold(glow_cutoff_threshold);
 
+    // render-to-texture for initial input texture
+    hi_res_color_overlay_fb->bind();
+    scene->render();
+    hi_res_color_overlay_fb->unbind();
+
     // switch to write-through mode to perform downsampling
     mesh_overlay->set_material(overlay_write_through_material);
 
@@ -670,11 +675,6 @@ void onDisplay()
         scene->render(true, false, false, vt::Scene::use_material_type_t::USE_SSAO_MATERIAL);
         ssao_overlay_fb->unbind();
 
-        // render-to-texture for initial input texture
-        hi_res_color_overlay_fb->bind();
-        scene->render();
-        hi_res_color_overlay_fb->unbind();
-
         do_blur(scene, ssao_overlay_texture, hi_res_color_overlay_texture, ssao_overlay_fb, BLUR_ITERS, 0);
     }
 
@@ -691,11 +691,6 @@ void onDisplay()
     glCullFace(GL_BACK);
 
     if(post_process_blur) {
-        // render-to-texture for initial input texture
-        hi_res_color_overlay_fb->bind();
-        scene->render();
-        hi_res_color_overlay_fb->unbind();
-
         do_blur(scene, hi_res_color_overlay_texture, hi_res_color_overlay_texture, hi_res_color_overlay_fb, BLUR_ITERS, 0.75);
     }
 
