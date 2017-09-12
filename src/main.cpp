@@ -74,43 +74,92 @@ enum overlay_mode_t {
 
 const char* DEFAULT_CAPTION = NULL;
 
-int init_screen_width = 800, init_screen_height = 600;
-vt::Camera* camera;
-vt::Mesh *mesh_skybox, *mesh_overlay, *mesh, *mesh2, *mesh3, *mesh4, *mesh5, *mesh6, *mesh7, *mesh8, *mesh9, *mesh10, *hidden_mesh, *hidden_mesh2, *hidden_mesh3, *hidden_mesh4;
+int init_screen_width  = 800,
+    init_screen_height = 600;
+vt::Camera* camera = NULL;
+vt::Mesh *mesh_skybox  = NULL,
+         *mesh_overlay = NULL,
+         *mesh         = NULL,
+         *mesh2        = NULL,
+         *mesh3        = NULL,
+         *mesh4        = NULL,
+         *mesh5        = NULL,
+         *mesh6        = NULL,
+         *mesh7        = NULL,
+         *mesh8        = NULL,
+         *mesh9        = NULL,
+         *mesh10       = NULL,
+         *hidden_mesh  = NULL,
+         *hidden_mesh2 = NULL,
+         *hidden_mesh3 = NULL,
+         *hidden_mesh4 = NULL;
 std::vector<vt::Mesh*> meshes_imported;
-vt::Light *light, *light2, *light3;
-vt::Texture *texture, *texture2, *texture3, *texture4, *texture5, *frontface_depth_overlay_texture, *backface_depth_overlay_texture, *frontface_normal_overlay_texture, *backface_normal_overlay_texture, *ssao_overlay_texture, *hi_res_color_overlay_texture, *med_res_color_overlay_texture, *lo_res_color_overlay_texture, *random_texture;
+vt::Light *light  = NULL,
+          *light2 = NULL,
+          *light3 = NULL;
+vt::Texture *texture                          = NULL,
+            *texture2                         = NULL,
+            *texture3                         = NULL,
+            *texture4                         = NULL,
+            *texture5                         = NULL,
+            *frontface_depth_overlay_texture  = NULL,
+            *backface_depth_overlay_texture   = NULL,
+            *frontface_normal_overlay_texture = NULL,
+            *backface_normal_overlay_texture  = NULL,
+            *ssao_overlay_texture             = NULL,
+            *hi_res_color_overlay_texture     = NULL,
+            *med_res_color_overlay_texture    = NULL,
+            *lo_res_color_overlay_texture     = NULL,
+            *overlay_sum_texture              = NULL,
+            *random_texture                   = NULL;
 
-vt::FrameBuffer *frontface_depth_overlay_fb, *backface_depth_overlay_fb, *frontface_normal_overlay_fb, *backface_normal_overlay_fb, *ssao_overlay_fb, *hi_res_color_overlay_fb, *med_res_color_overlay_fb, *lo_res_color_overlay_fb;
+vt::FrameBuffer *frontface_depth_overlay_fb  = NULL,
+                *backface_depth_overlay_fb   = NULL,
+                *frontface_normal_overlay_fb = NULL,
+                *backface_normal_overlay_fb  = NULL,
+                *ssao_overlay_fb             = NULL,
+                *hi_res_color_overlay_fb     = NULL,
+                *med_res_color_overlay_fb    = NULL,
+                *lo_res_color_overlay_fb     = NULL;
 
-bool left_mouse_down = false, right_mouse_down = false;
-glm::vec2 prev_mouse_coord, mouse_drag;
-glm::vec3 prev_euler, euler, orbit_speed = glm::vec3(0, -0.5, -0.5);
-float prev_orbit_radius = 0, orbit_radius = 8, dolly_speed = 0.1, light_distance = 4;
-bool show_bbox = false;
-bool show_fps = false;
-bool show_lights = false;
-bool show_normals = false;
-bool wireframe_mode = false;
-bool show_guide_wires = false;
-bool show_paths = true;
-bool show_axis = false;
-bool show_axis_labels = false;
-bool show_diamond = false;
-bool post_process_blur = true;
-bool do_animation = true;
+bool left_mouse_down  = false,
+     right_mouse_down = false;
+glm::vec2 prev_mouse_coord,
+          mouse_drag;
+glm::vec3 prev_euler,
+          euler,
+          orbit_speed = glm::vec3(0, -0.5, -0.5);
+float prev_orbit_radius = 0,
+      orbit_radius      = 8,
+      dolly_speed       = 0.1,
+      light_distance    = 4;
+bool show_bbox         = false,
+     show_fps          = false,
+     show_lights       = false,
+     show_normals      = false,
+     wireframe_mode    = false,
+     show_guide_wires  = false,
+     show_paths        = true,
+     show_axis         = false,
+     show_axis_labels  = false,
+     show_diamond      = false,
+     post_process_blur = true,
+     do_animation      = true;
 
 int texture_id = 0;
-float prev_zoom = 0, zoom = 1, ortho_dolly_speed = 0.1;
+float prev_zoom         = 0,
+      zoom              = 1,
+      ortho_dolly_speed = 0.1;
 
-int overlay_mode = OVERLAY_MODE_DEFAULT;
-int demo_mode = DEMO_MODE_DEFAULT;
+int overlay_mode = OVERLAY_MODE_DEFAULT,
+    demo_mode    = DEMO_MODE_DEFAULT;
 
 float phase = 0;
 
-vt::Material* overlay_write_through_material;
-vt::Material* overlay_bloom_filter_material;
-vt::Material* overlay_max_material;
+vt::Material *overlay_write_through_material = NULL,
+             *overlay_bloom_filter_material  = NULL,
+             *overlay_max_material           = NULL,
+             *overlay_sum_material           = NULL;
 
 int init_resources()
 {
@@ -229,6 +278,13 @@ int init_resources()
             "src/shaders/overlay_max.f.glsl",
             true); // use_overlay
     scene->add_material(overlay_max_material);
+
+    overlay_sum_material = new vt::Material(
+            "overlay_sum",
+            "src/shaders/overlay_sum.v.glsl",
+            "src/shaders/overlay_sum.f.glsl",
+            true); // use_overlay
+    scene->add_material(overlay_sum_material);
 
     vt::Material* texture_mapped_material = new vt::Material(
             "texture_mapped",
@@ -410,6 +466,15 @@ int init_resources()
     overlay_bloom_filter_material->add_texture( lo_res_color_overlay_texture);
     overlay_max_material->add_texture(          lo_res_color_overlay_texture);
 
+    overlay_sum_texture = new vt::Texture(
+            "overlay_sum",
+            glm::ivec2(LO_RES_TEX_DIM,
+                       LO_RES_TEX_DIM),
+            NULL,
+            vt::Texture::RGB);
+    texture_mapped_material->add_texture(overlay_sum_texture);
+    overlay_max_material->add_texture(   overlay_sum_texture);
+
     random_texture = new vt::Texture(
             "random_texture",
             glm::ivec2(RAND_TEX_DIM,
@@ -589,6 +654,20 @@ void onTick()
 
     mesh_apply_ripple(hidden_mesh4, glm::vec3(0.5, 0, 0.5), 0.1, 0.5, -phase * 0.1, false);
     hidden_mesh4->update_buffers();
+}
+
+void do_sum(
+        vt::Scene*       scene,
+        vt::Texture*     input_texture1,
+        vt::Texture*     input_texture2,
+        vt::FrameBuffer* output_fb)
+{
+    mesh_overlay->set_material(overlay_sum_material);
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture1));
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture2));
+    output_fb->bind();
+    scene->render(true, true);
+    output_fb->unbind();
 }
 
 void do_blur(
