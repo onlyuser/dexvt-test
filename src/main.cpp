@@ -726,6 +726,27 @@ void do_blur(
     }
     output_fb->unbind();
 
+#if 0
+    // draw big green 'x'
+    glm::ivec2 dim = input_texture1->get_dim();
+    size_t n = dim.x * dim.y * sizeof(unsigned char) * 3;
+    unsigned char* _pixel_data = new unsigned char[n];
+    memset(_pixel_data, 0, n);
+    input_texture1->refresh(_pixel_data);
+    for(int i = 0; i < static_cast<int>(std::min(dim.x, dim.y)); i++) {
+        int pixel_offset_scanline_start = (i * dim.x + i) * 3;
+        int pixel_offset_scanline_end   = (i * dim.x + (dim.x - i)) * 3;
+        //_pixel_data[pixel_offset_scanline_start + 0] = 0;
+        _pixel_data[pixel_offset_scanline_start + 1] = 255;
+        //_pixel_data[pixel_offset_scanline_start + 2] = 0;
+        //_pixel_data[pixel_offset_scanline_end   + 0] = 0;
+        _pixel_data[pixel_offset_scanline_end   + 1] = 255;
+        //_pixel_data[pixel_offset_scanline_end   + 2] = 0;
+    }
+    input_texture1->update(_pixel_data);
+    delete[] _pixel_data;
+#endif
+
     // switch to write-through mode to display final output texture
     mesh_overlay->set_material(overlay_write_through_material);
     mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture1));
