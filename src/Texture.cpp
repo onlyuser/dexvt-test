@@ -285,6 +285,22 @@ size_t Texture::get_pixel_data_size() const
     return 0;
 }
 
+glm::ivec3 Texture::get_pixel(glm::ivec2 pos) const
+{
+    int pixel_offset = (pos.y * m_dim.x + pos.x) * 3;
+    return glm::ivec3(m_pixel_data[pixel_offset + 0],
+                      m_pixel_data[pixel_offset + 1],
+                      m_pixel_data[pixel_offset + 2]);
+}
+
+void Texture::set_pixel(glm::ivec2 pos, glm::ivec3 color)
+{
+    int pixel_offset = (pos.y * m_dim.x + pos.x) * 3;
+    m_pixel_data[pixel_offset + 0] = color.r;
+    m_pixel_data[pixel_offset + 1] = color.g;
+    m_pixel_data[pixel_offset + 2] = color.b;
+}
+
 void Texture::update()
 {
     bind();

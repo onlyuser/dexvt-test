@@ -734,14 +734,8 @@ void do_blur(
     input_texture1->refresh();
     size_t min_dim = std::min(dim.x, dim.y);
     for(int i = 0; i < static_cast<int>(min_dim); i++) {
-        int pixel_offset_scanline_start = (i * dim.x + i) * 3;
-        int pixel_offset_scanline_end   = (i * dim.x + (dim.x - i)) * 3;
-        //pixel_data[pixel_offset_scanline_start + 0] = 0;
-        pixel_data[pixel_offset_scanline_start + 1] = 255;
-        //pixel_data[pixel_offset_scanline_start + 2] = 0;
-        //pixel_data[pixel_offset_scanline_end   + 0] = 0;
-        pixel_data[pixel_offset_scanline_end   + 1] = 255;
-        //pixel_data[pixel_offset_scanline_end   + 2] = 0;
+        input_texture1->set_pixel(glm::ivec2(i, i),         glm::ivec3(0, 255, 0));
+        input_texture1->set_pixel(glm::ivec2(dim.x - i, i), glm::ivec3(0, 255, 0));
     }
     input_texture1->update();
 #endif
