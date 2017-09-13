@@ -732,7 +732,8 @@ void do_blur(
     unsigned char* pixel_data = input_texture1->get_pixel_data();
     memset(pixel_data, 0, input_texture1->get_pixel_data_size());
     input_texture1->refresh();
-    for(int i = 0; i < static_cast<int>(std::min(dim.x, dim.y)); i++) {
+    size_t min_dim = std::min(dim.x, dim.y);
+    for(int i = 0; i < static_cast<int>(min_dim); i++) {
         int pixel_offset_scanline_start = (i * dim.x + i) * 3;
         int pixel_offset_scanline_end   = (i * dim.x + (dim.x - i)) * 3;
         //pixel_data[pixel_offset_scanline_start + 0] = 0;
