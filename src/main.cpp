@@ -737,6 +737,8 @@ void do_blur(
         input_texture1->set_pixel(glm::ivec2(i, i),         glm::ivec3(0, 255, 0));
         input_texture1->set_pixel(glm::ivec2(dim.x - i, i), glm::ivec3(0, 255, 0));
     }
+    //input_texture1->set_solid_color(glm::ivec3(255, 0, 0));
+    //input_texture1->randomize();
     input_texture1->update();
 #endif
 
