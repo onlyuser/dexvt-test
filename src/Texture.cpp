@@ -310,7 +310,6 @@ void Texture::set_solid_color(glm::ivec3 color)
 
 void Texture::randomize()
 {
-    size_t size_buf = get_pixel_data_size();
     if(m_skybox) {
         return;
     }
