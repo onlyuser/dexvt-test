@@ -481,8 +481,8 @@ int init_resources()
                        RAND_TEX_DIM),
             NULL,
             vt::Texture::RGB,
-            false,
-            true);
+            false);
+    random_texture->randomize();
     texture_mapped_material->add_texture(random_texture);
     ssao_material->add_texture(          random_texture);
 
