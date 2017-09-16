@@ -731,7 +731,7 @@ void do_blur(
     glm::ivec2 dim = input_texture1->get_dim();
     unsigned char* pixel_data = input_texture1->get_pixel_data();
     memset(pixel_data, 0, input_texture1->get_pixel_data_size());
-    input_texture1->refresh();
+    input_texture1->download_from_gpu();
     size_t min_dim = std::min(dim.x, dim.y);
     for(int i = 0; i < static_cast<int>(min_dim); i++) {
         input_texture1->set_pixel(glm::ivec2(i, i),         glm::ivec3(0, 255, 0));
@@ -739,7 +739,7 @@ void do_blur(
     }
     //input_texture1->set_solid_color(glm::ivec3(255, 0, 0));
     //input_texture1->randomize();
-    input_texture1->update();
+    input_texture1->upload_to_gpu();
 #endif
 
     // switch to write-through mode to display final output texture
