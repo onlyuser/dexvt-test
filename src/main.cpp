@@ -110,7 +110,6 @@ vt::Texture *texture                          = NULL,
             *hi_res_color_overlay_texture     = NULL,
             *med_res_color_overlay_texture    = NULL,
             *lo_res_color_overlay_texture     = NULL,
-            *overlay_sum_texture              = NULL,
             *random_texture                   = NULL;
 
 vt::FrameBuffer *frontface_depth_overlay_fb  = NULL,
@@ -159,7 +158,8 @@ float phase = 0;
 vt::Material *overlay_write_through_material = NULL,
              *overlay_bloom_filter_material  = NULL,
              *overlay_max_material           = NULL,
-             *overlay_sum_material           = NULL;
+             *overlay_sum_material           = NULL,
+             *overlay_forward_prop_material  = NULL;
 
 int init_resources()
 {
@@ -285,6 +285,13 @@ int init_resources()
             "src/shaders/overlay_sum.f.glsl",
             true); // use_overlay
     scene->add_material(overlay_sum_material);
+
+    overlay_forward_prop_material = new vt::Material(
+            "overlay_forward_prop",
+            "src/shaders/overlay_forward_prop.v.glsl",
+            "src/shaders/overlay_forward_prop.f.glsl",
+            true); // use_overlay
+    scene->add_material(overlay_forward_prop_material);
 
     vt::Material* texture_mapped_material = new vt::Material(
             "texture_mapped",
@@ -465,15 +472,6 @@ int init_resources()
     overlay_write_through_material->add_texture(lo_res_color_overlay_texture);
     overlay_bloom_filter_material->add_texture( lo_res_color_overlay_texture);
     overlay_max_material->add_texture(          lo_res_color_overlay_texture);
-
-    overlay_sum_texture = new vt::Texture(
-            "overlay_sum",
-            glm::ivec2(LO_RES_TEX_DIM,
-                       LO_RES_TEX_DIM),
-            NULL,
-            vt::Texture::RGB);
-    texture_mapped_material->add_texture(overlay_sum_texture);
-    overlay_max_material->add_texture(   overlay_sum_texture);
 
     random_texture = new vt::Texture(
             "random_texture",
@@ -726,25 +724,31 @@ void do_blur(
     }
     output_fb->unbind();
 
-#if 0
-    // draw big green 'x'
-    glm::ivec2 dim = input_texture1->get_dim();
-    unsigned char* pixel_data = input_texture1->get_pixel_data();
-    memset(pixel_data, 0, input_texture1->get_pixel_data_size());
-    input_texture1->download_from_gpu();
-    size_t min_dim = std::min(dim.x, dim.y);
-    for(int i = 0; i < static_cast<int>(min_dim); i++) {
-        input_texture1->set_pixel(glm::ivec2(i, i),         glm::ivec3(0, 255, 0));
-        input_texture1->set_pixel(glm::ivec2(dim.x - i, i), glm::ivec3(0, 255, 0));
-    }
-    //input_texture1->set_solid_color(glm::ivec3(255, 0, 0));
-    //input_texture1->randomize();
-    input_texture1->upload_to_gpu();
-#endif
-
     // switch to write-through mode to display final output texture
     mesh_overlay->set_material(overlay_write_through_material);
     mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture1));
+}
+
+void do_forward_prop(
+        vt::Scene*   scene,
+        vt::Texture* output_texture,
+        vt::FrameBuffer* output_fb)
+{
+    // render-to-texture for initial input texture
+    output_fb->bind();
+    scene->render();
+    output_fb->unbind();
+
+    // draw big green 'x'
+    output_texture->download_from_gpu();
+    output_texture->draw_big_x(glm::ivec3(0, 255, 0));
+    //output_texture->set_solid_color(glm::ivec3(255, 0, 0));
+    //output_texture->randomize();
+    //output_texture->upload_to_gpu();
+
+    // switch to write-through mode to display final output texture
+    mesh_overlay->set_material(overlay_write_through_material);
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(output_texture));
 }
 
 void onDisplay()
@@ -788,6 +792,8 @@ void onDisplay()
     if(post_process_blur) {
         do_blur(scene, hi_res_color_overlay_texture, hi_res_color_overlay_texture, hi_res_color_overlay_fb, BLUR_ITERS, 0.75);
     }
+
+    do_forward_prop(scene, hi_res_color_overlay_texture, hi_res_color_overlay_fb);
 
     if(wireframe_mode) {
         scene->render(true, false, false, vt::Scene::use_material_type_t::USE_WIREFRAME_MATERIAL);
