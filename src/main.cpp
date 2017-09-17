@@ -793,7 +793,7 @@ void onDisplay()
         do_blur(scene, hi_res_color_overlay_texture, hi_res_color_overlay_texture, hi_res_color_overlay_fb, BLUR_ITERS, 0.75);
     }
 
-    do_forward_prop(scene, hi_res_color_overlay_texture, hi_res_color_overlay_fb);
+    //do_forward_prop(scene, hi_res_color_overlay_texture, hi_res_color_overlay_fb);
 
     if(wireframe_mode) {
         scene->render(true, false, false, vt::Scene::use_material_type_t::USE_WIREFRAME_MATERIAL);
