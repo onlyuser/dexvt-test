@@ -20,7 +20,7 @@ namespace vt {
 class FrameBuffer;
 
 class Camera : public TransformObject,
-               public FrameObject<glm::vec2, float>
+               public FrameObject<glm::ivec2, int>
 {
 public:
     enum projection_mode_t {
@@ -63,7 +63,7 @@ public:
     }
     void set_fov(float fov);
 
-    void resize(float left, float bottom, float width, float height);
+    void resize(int left, int bottom, int width, int height);
 
     float get_near_plane() const
     {

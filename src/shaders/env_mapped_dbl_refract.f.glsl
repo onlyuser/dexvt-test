@@ -24,7 +24,7 @@ uniform sampler2D backface_normal_overlay_texture;
 uniform sampler2D bump_texture;
 uniform sampler2D frontface_depth_overlay_texture;
 uniform samplerCube env_map_texture;
-uniform vec2 viewport_dim;
+uniform ivec2 viewport_dim;
 uniform vec3 camera_pos;
 uniform vec3 light_color[NUM_LIGHTS];
 uniform vec3 light_pos[NUM_LIGHTS];

@@ -7,7 +7,7 @@ uniform mat4 inv_view_proj_transform;
 uniform mat4 view_proj_transform;
 uniform sampler2D frontface_depth_overlay_texture;
 uniform sampler2D random_texture;
-uniform vec2 viewport_dim;
+uniform ivec2 viewport_dim;
 uniform vec3 camera_dir;
 uniform vec3 camera_pos;
 uniform vec3 ssao_sample_kernel_pos[NUM_SSAO_SAMPLE_KERNELS];

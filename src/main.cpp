@@ -158,7 +158,6 @@ float phase = 0;
 vt::Material *overlay_write_through_material = NULL,
              *overlay_bloom_filter_material  = NULL,
              *overlay_max_material           = NULL,
-             *overlay_sum_material           = NULL,
              *overlay_forward_prop_material  = NULL;
 
 int init_resources()
@@ -278,13 +277,6 @@ int init_resources()
             "src/shaders/overlay_max.f.glsl",
             true); // use_overlay
     scene->add_material(overlay_max_material);
-
-    overlay_sum_material = new vt::Material(
-            "overlay_sum",
-            "src/shaders/overlay_sum.v.glsl",
-            "src/shaders/overlay_sum.f.glsl",
-            true); // use_overlay
-    scene->add_material(overlay_sum_material);
 
     overlay_forward_prop_material = new vt::Material(
             "overlay_forward_prop",
@@ -654,20 +646,6 @@ void onTick()
     hidden_mesh4->update_buffers();
 }
 
-void do_sum(
-        vt::Scene*       scene,
-        vt::Texture*     input_texture1,
-        vt::Texture*     input_texture2,
-        vt::FrameBuffer* output_fb)
-{
-    mesh_overlay->set_material(overlay_sum_material);
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture1));
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture2));
-    output_fb->bind();
-    scene->render(true, true);
-    output_fb->unbind();
-}
-
 void do_blur(
         vt::Scene*       scene,
         vt::Texture*     input_texture1,
@@ -730,8 +708,8 @@ void do_blur(
 }
 
 void do_forward_prop(
-        vt::Scene*   scene,
-        vt::Texture* output_texture,
+        vt::Scene*       scene,
+        vt::Texture*     output_texture,
         vt::FrameBuffer* output_fb)
 {
     // render-to-texture for initial input texture

@@ -108,9 +108,9 @@ void Camera::set_fov(float fov)
     mark_dirty_transform();
 }
 
-void Camera::resize(float left, float bottom, float width, float height)
+void Camera::resize(int left, int bottom, int width, int height)
 {
-    FrameObject<glm::vec2, float>::resize(left, bottom, width, height);
+    FrameObject<glm::ivec2, int>::resize(left, bottom, width, height);
     m_is_dirty_projection_transform = true;
     mark_dirty_transform();
 }
