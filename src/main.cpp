@@ -344,7 +344,8 @@ int init_resources()
     texture2 = new vt::Texture(
             "lode_runner",
             glm::ivec2(res_texture2.width, res_texture2.height),
-            res_texture2.pixel_data);
+            res_texture2.pixel_data,
+            vt::Texture::RGB);
     scene->add_texture(               texture2);
     bump_mapped_material->add_texture(texture2);
 
@@ -396,7 +397,7 @@ int init_resources()
             glm::ivec2(HI_RES_TEX_DIM,
                        HI_RES_TEX_DIM),
             NULL,
-            vt::Texture::RGB);
+            vt::Texture::RGBA);
     overlay_forward_prop_material->add_texture(forward_prop_col_values_texture);
     overlay_write_through_material->add_texture(forward_prop_col_values_texture);
 
@@ -416,7 +417,7 @@ int init_resources()
             glm::ivec2(HI_RES_TEX_DIM,
                        HI_RES_TEX_DIM),
             NULL,
-            vt::Texture::RGB);
+            vt::Texture::RGBA);
     texture_mapped_material->add_texture(        frontface_normal_overlay_texture);
     env_mapped_dbl_refract_material->add_texture(frontface_normal_overlay_texture);
     overlay_write_through_material->add_texture( frontface_normal_overlay_texture);
@@ -427,7 +428,7 @@ int init_resources()
             glm::ivec2(HI_RES_TEX_DIM,
                        HI_RES_TEX_DIM),
             NULL,
-            vt::Texture::RGB);
+            vt::Texture::RGBA);
     texture_mapped_material->add_texture(        backface_normal_overlay_texture);
     env_mapped_dbl_refract_material->add_texture(backface_normal_overlay_texture);
     overlay_write_through_material->add_texture( backface_normal_overlay_texture);
@@ -438,7 +439,7 @@ int init_resources()
             glm::ivec2(HI_RES_TEX_DIM,
                        HI_RES_TEX_DIM),
             NULL,
-            vt::Texture::RGB);
+            vt::Texture::RGBA);
     texture_mapped_material->add_texture(        ssao_overlay_texture);
     env_mapped_dbl_refract_material->add_texture(ssao_overlay_texture);
     overlay_write_through_material->add_texture( ssao_overlay_texture);
@@ -449,7 +450,7 @@ int init_resources()
             glm::ivec2(HI_RES_TEX_DIM,
                        HI_RES_TEX_DIM),
             NULL,
-            vt::Texture::RGB);
+            vt::Texture::RGBA);
     texture_mapped_material->add_texture(       hi_res_color_overlay_texture);
     overlay_write_through_material->add_texture(hi_res_color_overlay_texture);
     overlay_bloom_filter_material->add_texture( hi_res_color_overlay_texture);
@@ -460,7 +461,7 @@ int init_resources()
             glm::ivec2(MED_RES_TEX_DIM,
                        MED_RES_TEX_DIM),
             NULL,
-            vt::Texture::RGB);
+            vt::Texture::RGBA);
     texture_mapped_material->add_texture(       med_res_color_overlay_texture);
     overlay_write_through_material->add_texture(med_res_color_overlay_texture);
     overlay_bloom_filter_material->add_texture( med_res_color_overlay_texture);
@@ -470,7 +471,7 @@ int init_resources()
             glm::ivec2(LO_RES_TEX_DIM,
                        LO_RES_TEX_DIM),
             NULL,
-            vt::Texture::RGB);
+            vt::Texture::RGBA);
     texture_mapped_material->add_texture(       lo_res_color_overlay_texture);
     overlay_write_through_material->add_texture(lo_res_color_overlay_texture);
     overlay_bloom_filter_material->add_texture( lo_res_color_overlay_texture);
@@ -481,7 +482,7 @@ int init_resources()
             glm::ivec2(RAND_TEX_DIM,
                        RAND_TEX_DIM),
             NULL,
-            vt::Texture::RGB,
+            vt::Texture::RGBA,
             false);
     random_texture->randomize();
     texture_mapped_material->add_texture(random_texture);
