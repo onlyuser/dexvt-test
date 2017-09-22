@@ -13,7 +13,8 @@ vec4 float_to_rgb(in float value,
                   in float min_float,
                   in float max_float)
 {
-    float x = (value - min_float) / (max_float - min_float);
+    //float x = (value - min_float) / (max_float - min_float);
+    return vec4(0, 0, 0, 0);
 }
 
 void main(void) {
