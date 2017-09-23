@@ -233,259 +233,211 @@ int init_resources()
         (*p)->set_scale(glm::vec3(0.1, 0.1, 0.1));
     }
 
-    vt::Material* bump_mapped_material = new vt::Material(
-            "bump_mapped",
-            "src/shaders/bump_mapped.v.glsl",
-            "src/shaders/bump_mapped.f.glsl");
+    vt::Material* bump_mapped_material = new vt::Material("bump_mapped",
+                                                          "src/shaders/bump_mapped.v.glsl",
+                                                          "src/shaders/bump_mapped.f.glsl");
     scene->add_material(bump_mapped_material);
 
-    vt::Material* phong_material = new vt::Material(
-            "phong",
-            "src/shaders/phong.v.glsl",
-            "src/shaders/phong.f.glsl");
+    vt::Material* phong_material = new vt::Material("phong",
+                                                    "src/shaders/phong.v.glsl",
+                                                    "src/shaders/phong.f.glsl");
     scene->add_material(phong_material);
 
-    vt::Material* ssao_material = new vt::Material(
-            "ssao",
-            "src/shaders/ssao.v.glsl",
-            "src/shaders/ssao.f.glsl");
+    vt::Material* ssao_material = new vt::Material("ssao",
+                                                   "src/shaders/ssao.v.glsl",
+                                                   "src/shaders/ssao.f.glsl");
     scene->add_material(ssao_material);
     scene->set_ssao_material(ssao_material);
 
-    vt::Material* skybox_material = new vt::Material(
-            "skybox",
-            "src/shaders/skybox.v.glsl",
-            "src/shaders/skybox.f.glsl",
-            true); // use_overlay
+    vt::Material* skybox_material = new vt::Material("skybox",
+                                                     "src/shaders/skybox.v.glsl",
+                                                     "src/shaders/skybox.f.glsl",
+                                                     true); // use_overlay
     scene->add_material(skybox_material);
 
-    overlay_write_through_material = new vt::Material(
-            "overlay_write_through",
-            "src/shaders/overlay_write_through.v.glsl",
-            "src/shaders/overlay_write_through.f.glsl",
-            true); // use_overlay
+    overlay_write_through_material = new vt::Material("overlay_write_through",
+                                                      "src/shaders/overlay_write_through.v.glsl",
+                                                      "src/shaders/overlay_write_through.f.glsl",
+                                                      true); // use_overlay
     scene->add_material(overlay_write_through_material);
 
-    overlay_bloom_filter_material = new vt::Material(
-            "overlay_bloom_filter",
-            "src/shaders/overlay_bloom_filter.v.glsl",
-            "src/shaders/overlay_bloom_filter.f.glsl",
-            true); // use_overlay
+    overlay_bloom_filter_material = new vt::Material("overlay_bloom_filter",
+                                                     "src/shaders/overlay_bloom_filter.v.glsl",
+                                                     "src/shaders/overlay_bloom_filter.f.glsl",
+                                                     true); // use_overlay
     scene->add_material(overlay_bloom_filter_material);
 
-    overlay_max_material = new vt::Material(
-            "overlay_max",
-            "src/shaders/overlay_max.v.glsl",
-            "src/shaders/overlay_max.f.glsl",
-            true); // use_overlay
+    overlay_max_material = new vt::Material("overlay_max",
+                                            "src/shaders/overlay_max.v.glsl",
+                                            "src/shaders/overlay_max.f.glsl",
+                                            true); // use_overlay
     scene->add_material(overlay_max_material);
 
-    overlay_forward_prop_material = new vt::Material(
-            "overlay_forward_prop",
-            "src/shaders/overlay_forward_prop.v.glsl",
-            "src/shaders/overlay_forward_prop.f.glsl",
-            true); // use_overlay
+    overlay_forward_prop_material = new vt::Material("overlay_forward_prop",
+                                                     "src/shaders/overlay_forward_prop.v.glsl",
+                                                     "src/shaders/overlay_forward_prop.f.glsl",
+                                                     true); // use_overlay
     scene->add_material(overlay_forward_prop_material);
 
-    vt::Material* texture_mapped_material = new vt::Material(
-            "texture_mapped",
-            "src/shaders/texture_mapped.v.glsl",
-            "src/shaders/texture_mapped.f.glsl");
+    vt::Material* texture_mapped_material = new vt::Material("texture_mapped",
+                                                             "src/shaders/texture_mapped.v.glsl",
+                                                             "src/shaders/texture_mapped.f.glsl");
     scene->add_material(texture_mapped_material);
 
-    vt::Material* env_mapped_material = new vt::Material(
-            "env_mapped",
-            "src/shaders/env_mapped.v.glsl",
-            "src/shaders/env_mapped.f.glsl");
+    vt::Material* env_mapped_material = new vt::Material("env_mapped",
+                                                         "src/shaders/env_mapped.v.glsl",
+                                                         "src/shaders/env_mapped.f.glsl");
     scene->add_material(env_mapped_material);
 
-    vt::Material* env_mapped_dbl_refract_material = new vt::Material(
-            "env_mapped_dbl_refract",
-            "src/shaders/env_mapped_dbl_refract.v.glsl",
-            "src/shaders/env_mapped_dbl_refract.f.glsl");
+    vt::Material* env_mapped_dbl_refract_material = new vt::Material("env_mapped_dbl_refract",
+                                                                     "src/shaders/env_mapped_dbl_refract.v.glsl",
+                                                                     "src/shaders/env_mapped_dbl_refract.f.glsl");
     scene->add_material(env_mapped_dbl_refract_material);
 
-    vt::Material* env_mapped_fast_material = new vt::Material(
-            "env_mapped_fast",
-            "src/shaders/env_mapped_fast.v.glsl",
-            "src/shaders/env_mapped_fast.f.glsl");
+    vt::Material* env_mapped_fast_material = new vt::Material("env_mapped_fast",
+                                                              "src/shaders/env_mapped_fast.v.glsl",
+                                                              "src/shaders/env_mapped_fast.f.glsl");
     scene->add_material(env_mapped_fast_material);
 
-    vt::Material* normal_material = new vt::Material(
-            "normal",
-            "src/shaders/normal.v.glsl",
-            "src/shaders/normal.f.glsl");
+    vt::Material* normal_material = new vt::Material("normal",
+                                                     "src/shaders/normal.v.glsl",
+                                                     "src/shaders/normal.f.glsl");
     scene->add_material(normal_material);
 
-    vt::Material* normal_fast_material = new vt::Material(
-            "normal_fast",
-            "src/shaders/normal_fast.v.glsl",
-            "src/shaders/normal_fast.f.glsl");
+    vt::Material* normal_fast_material = new vt::Material("normal_fast",
+                                                          "src/shaders/normal_fast.v.glsl",
+                                                          "src/shaders/normal_fast.f.glsl");
     scene->add_material(normal_fast_material);
     scene->set_normal_material(normal_fast_material);
 
-    vt::Material* ambient_material = new vt::Material(
-            "ambient",
-            "src/shaders/ambient.v.glsl",
-            "src/shaders/ambient.f.glsl");
+    vt::Material* ambient_material = new vt::Material("ambient",
+                                                      "src/shaders/ambient.v.glsl",
+                                                      "src/shaders/ambient.f.glsl");
     scene->add_material(ambient_material);
     scene->set_wireframe_material(ambient_material);
 
-    texture = new vt::Texture(
-            "dex3d",
-            vt::Texture::RGBA,
-            glm::ivec2(res_texture.width, res_texture.height),
-            vt::Texture::RGB,
-            res_texture.pixel_data,
-            false);
+    texture = new vt::Texture("dex3d",
+                              vt::Texture::RGBA,
+                              glm::ivec2(res_texture.width, res_texture.height),
+                              vt::Texture::RGB,
+                              res_texture.pixel_data,
+                              false);
     scene->add_texture(                  texture);
     bump_mapped_material->add_texture(   texture);
     texture_mapped_material->add_texture(texture);
 
-    texture2 = new vt::Texture(
-            "lode_runner",
-            vt::Texture::RGBA,
-            glm::ivec2(res_texture2.width, res_texture2.height),
-            vt::Texture::RGB,
-            res_texture2.pixel_data);
+    texture2 = new vt::Texture("lode_runner",
+                               vt::Texture::RGBA,
+                               glm::ivec2(res_texture2.width, res_texture2.height),
+                               vt::Texture::RGB,
+                               res_texture2.pixel_data);
     scene->add_texture(               texture2);
     bump_mapped_material->add_texture(texture2);
 
-    texture3 = new vt::Texture(
-            "chesterfield_color",
-            "data/chesterfield_color.png");
+    texture3 = new vt::Texture("chesterfield_color",
+                               "data/chesterfield_color.png");
     scene->add_texture(                          texture3);
     bump_mapped_material->add_texture(           texture3);
     env_mapped_material->add_texture(            texture3);
     env_mapped_dbl_refract_material->add_texture(texture3);
 
-    texture4 = new vt::Texture(
-            "chesterfield_normal",
-            "data/chesterfield_normal.png");
+    texture4 = new vt::Texture("chesterfield_normal",
+                               "data/chesterfield_normal.png");
     scene->add_texture(                          texture4);
     bump_mapped_material->add_texture(           texture4);
     env_mapped_material->add_texture(            texture4);
     env_mapped_dbl_refract_material->add_texture(texture4);
     normal_material->add_texture(                texture4);
 
-    texture5 = new vt::Texture(
-            "skybox_texture",
-            "data/SaintPetersSquare2/posx.png",
-            "data/SaintPetersSquare2/negx.png",
-            "data/SaintPetersSquare2/posy.png",
-            "data/SaintPetersSquare2/negy.png",
-            "data/SaintPetersSquare2/posz.png",
-            "data/SaintPetersSquare2/negz.png");
+    texture5 = new vt::Texture("skybox_texture",
+                               "data/SaintPetersSquare2/posx.png",
+                               "data/SaintPetersSquare2/negx.png",
+                               "data/SaintPetersSquare2/posy.png",
+                               "data/SaintPetersSquare2/negy.png",
+                               "data/SaintPetersSquare2/posz.png",
+                               "data/SaintPetersSquare2/negz.png");
     scene->add_texture(                          texture5);
     skybox_material->add_texture(                texture5);
     env_mapped_material->add_texture(            texture5);
     env_mapped_dbl_refract_material->add_texture(texture5);
     env_mapped_fast_material->add_texture(       texture5);
 
-    frontface_depth_overlay_texture = new vt::Texture(
-            "frontface_depth_overlay",
-            vt::Texture::DEPTH,
-            glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM),
-            vt::Texture::RGBA,
-            NULL);
+    frontface_depth_overlay_texture = new vt::Texture("frontface_depth_overlay",
+                                                      vt::Texture::DEPTH,
+                                                      glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM));
     texture_mapped_material->add_texture(        frontface_depth_overlay_texture);
     env_mapped_dbl_refract_material->add_texture(frontface_depth_overlay_texture);
     overlay_write_through_material->add_texture( frontface_depth_overlay_texture);
     overlay_bloom_filter_material->add_texture(  frontface_depth_overlay_texture);
     ssao_material->add_texture(                  frontface_depth_overlay_texture);
 
-    forward_prop_col_values_texture = new vt::Texture(
-            "forward_prop_col_values",
-            vt::Texture::RGBA,
-            glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM),
-            vt::Texture::RGBA,
-            NULL);
+    forward_prop_col_values_texture = new vt::Texture("forward_prop_col_values",
+                                                      vt::Texture::RGBA,
+                                                      glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM));
     overlay_forward_prop_material->add_texture(forward_prop_col_values_texture);
     overlay_write_through_material->add_texture(forward_prop_col_values_texture);
 
-    backface_depth_overlay_texture = new vt::Texture(
-            "backface_depth_overlay",
-            vt::Texture::DEPTH,
-            glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM),
-            vt::Texture::RGBA,
-            NULL);
+    backface_depth_overlay_texture = new vt::Texture("backface_depth_overlay",
+                                                     vt::Texture::DEPTH,
+                                                     glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM));
     texture_mapped_material->add_texture(        backface_depth_overlay_texture);
     env_mapped_dbl_refract_material->add_texture(backface_depth_overlay_texture);
     overlay_write_through_material->add_texture( backface_depth_overlay_texture);
     overlay_bloom_filter_material->add_texture(  backface_depth_overlay_texture);
 
-    frontface_normal_overlay_texture = new vt::Texture(
-            "frontface_normal_overlay",
-            vt::Texture::RGBA,
-            glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM),
-            vt::Texture::RGBA,
-            NULL);
+    frontface_normal_overlay_texture = new vt::Texture("frontface_normal_overlay",
+                                                       vt::Texture::RGBA,
+                                                       glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM));
     texture_mapped_material->add_texture(        frontface_normal_overlay_texture);
     env_mapped_dbl_refract_material->add_texture(frontface_normal_overlay_texture);
     overlay_write_through_material->add_texture( frontface_normal_overlay_texture);
     overlay_bloom_filter_material->add_texture(  frontface_normal_overlay_texture);
 
-    backface_normal_overlay_texture = new vt::Texture(
-            "backface_normal_overlay",
-            vt::Texture::RGBA,
-            glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM),
-            vt::Texture::RGBA,
-            NULL);
+    backface_normal_overlay_texture = new vt::Texture("backface_normal_overlay",
+                                                      vt::Texture::RGBA,
+                                                      glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM));
     texture_mapped_material->add_texture(        backface_normal_overlay_texture);
     env_mapped_dbl_refract_material->add_texture(backface_normal_overlay_texture);
     overlay_write_through_material->add_texture( backface_normal_overlay_texture);
     overlay_bloom_filter_material->add_texture(  backface_normal_overlay_texture);
 
-    ssao_overlay_texture = new vt::Texture(
-            "ssao_overlay",
-            vt::Texture::RGBA,
-            glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM),
-            vt::Texture::RGBA,
-            NULL);
+    ssao_overlay_texture = new vt::Texture("ssao_overlay",
+                                           vt::Texture::RGBA,
+                                           glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM));
     texture_mapped_material->add_texture(        ssao_overlay_texture);
     env_mapped_dbl_refract_material->add_texture(ssao_overlay_texture);
     overlay_write_through_material->add_texture( ssao_overlay_texture);
     overlay_bloom_filter_material->add_texture(  ssao_overlay_texture);
 
-    hi_res_color_overlay_texture = new vt::Texture(
-            "hi_res_color_overlay",
-            vt::Texture::RGBA,
-            glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM),
-            vt::Texture::RGBA,
-            NULL);
+    hi_res_color_overlay_texture = new vt::Texture("hi_res_color_overlay",
+                                                   vt::Texture::RGBA,
+                                                   glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM));
     texture_mapped_material->add_texture(       hi_res_color_overlay_texture);
     overlay_write_through_material->add_texture(hi_res_color_overlay_texture);
     overlay_bloom_filter_material->add_texture( hi_res_color_overlay_texture);
     overlay_max_material->add_texture(          hi_res_color_overlay_texture);
 
-    med_res_color_overlay_texture = new vt::Texture(
-            "med_res_color_overlay",
-            vt::Texture::RGBA,
-            glm::ivec2(MED_RES_TEX_DIM, MED_RES_TEX_DIM),
-            vt::Texture::RGBA,
-            NULL);
+    med_res_color_overlay_texture = new vt::Texture("med_res_color_overlay",
+                                                    vt::Texture::RGBA,
+                                                    glm::ivec2(MED_RES_TEX_DIM, MED_RES_TEX_DIM));
     texture_mapped_material->add_texture(       med_res_color_overlay_texture);
     overlay_write_through_material->add_texture(med_res_color_overlay_texture);
     overlay_bloom_filter_material->add_texture( med_res_color_overlay_texture);
 
-    lo_res_color_overlay_texture = new vt::Texture(
-            "lo_res_color_overlay",
-            vt::Texture::RGBA,
-            glm::ivec2(LO_RES_TEX_DIM, LO_RES_TEX_DIM),
-            vt::Texture::RGBA,
-            NULL);
+    lo_res_color_overlay_texture = new vt::Texture("lo_res_color_overlay",
+                                                   vt::Texture::RGBA,
+                                                   glm::ivec2(LO_RES_TEX_DIM, LO_RES_TEX_DIM));
     texture_mapped_material->add_texture(       lo_res_color_overlay_texture);
     overlay_write_through_material->add_texture(lo_res_color_overlay_texture);
     overlay_bloom_filter_material->add_texture( lo_res_color_overlay_texture);
     overlay_max_material->add_texture(          lo_res_color_overlay_texture);
 
-    random_texture = new vt::Texture(
-            "random_texture",
-            vt::Texture::RGBA,
-            glm::ivec2(RAND_TEX_DIM, RAND_TEX_DIM),
-            vt::Texture::RGBA,
-            NULL,
-            false);
+    random_texture = new vt::Texture("random_texture",
+                                     vt::Texture::RGBA,
+                                     glm::ivec2(RAND_TEX_DIM, RAND_TEX_DIM),
+                                     vt::Texture::RGBA,
+                                     NULL,
+                                     false);
     random_texture->randomize();
     texture_mapped_material->add_texture(random_texture);
     ssao_material->add_texture(          random_texture);
