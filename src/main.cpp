@@ -72,7 +72,7 @@ enum overlay_mode_t {
     OVERLAY_MODE_COUNT
 };
 
-const char* DEFAULT_CAPTION = NULL;
+const char* DEFAULT_CAPTION = "";
 
 int init_screen_width  = 800,
     init_screen_height = 600;
@@ -335,6 +335,7 @@ int init_resources()
             "dex3d",
             glm::ivec2(res_texture.width, res_texture.height),
             res_texture.pixel_data,
+            vt::Texture::RGBA,
             vt::Texture::RGB,
             false);
     scene->add_texture(                  texture);
@@ -345,6 +346,7 @@ int init_resources()
             "lode_runner",
             glm::ivec2(res_texture2.width, res_texture2.height),
             res_texture2.pixel_data,
+            vt::Texture::RGBA,
             vt::Texture::RGB);
     scene->add_texture(               texture2);
     bump_mapped_material->add_texture(texture2);
@@ -482,6 +484,7 @@ int init_resources()
             glm::ivec2(RAND_TEX_DIM,
                        RAND_TEX_DIM),
             NULL,
+            vt::Texture::RGBA,
             vt::Texture::RGBA,
             false);
     random_texture->randomize();
