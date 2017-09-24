@@ -319,9 +319,9 @@ int init_resources()
     texture = new vt::Texture("dex3d",
                               vt::Texture::RGBA,
                               glm::ivec2(res_texture.width, res_texture.height),
+                              false,
                               vt::Texture::RGB,
-                              res_texture.pixel_data,
-                              false);
+                              res_texture.pixel_data);
     scene->add_texture(                  texture);
     bump_mapped_material->add_texture(   texture);
     texture_mapped_material->add_texture(texture);
@@ -329,6 +329,7 @@ int init_resources()
     texture2 = new vt::Texture("lode_runner",
                                vt::Texture::RGBA,
                                glm::ivec2(res_texture2.width, res_texture2.height),
+                               true,
                                vt::Texture::RGB,
                                res_texture2.pixel_data);
     scene->add_texture(               texture2);
@@ -435,9 +436,9 @@ int init_resources()
     random_texture = new vt::Texture("random_texture",
                                      vt::Texture::RGBA,
                                      glm::ivec2(RAND_TEX_DIM, RAND_TEX_DIM),
+                                     false,
                                      vt::Texture::RGBA,
-                                     NULL,
-                                     false);
+                                     NULL);
     random_texture->randomize();
     texture_mapped_material->add_texture(random_texture);
     ssao_material->add_texture(          random_texture);
