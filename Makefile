@@ -27,8 +27,7 @@ DEBUG = -g
 CXXFLAGS = -Wall $(DEBUG) $(INCLUDE_PATH_FLAGS) -std=c++0x
 LDFLAGS = -Wall $(DEBUG) $(LIB_PATH_FLAGS) $(LIB_FLAGS)
 
-SCRIPT_PATH = test
-TEST_PATH = test
+SCRIPT_PATH = scripts
 
 #==================
 # all
@@ -74,8 +73,34 @@ clean_objects :
 # binaries
 #==================
 
-CPP_STEMS = BBoxObject Buffer Camera File3ds FrameBuffer IdentObject KeyframeMgr Light Modifiers main Material Mesh NamedObject Octree PrimitiveFactory Program res_texture res_texture2 Scene Shader ShaderContext shader_utils Texture Util VarAttribute VarUniform TransformObject
-OBJECTS = $(patsubst %, $(BUILD_PATH)/%.o, $(CPP_STEMS))
+SHARED_CPP_STEMS = BBoxObject \
+                   Buffer \
+                   Camera \
+                   File3ds \
+                   FrameBuffer \
+                   IdentObject \
+                   KeyframeMgr \
+                   Light \
+                   Modifiers \
+                   main \
+                   Material \
+                   Mesh \
+                   NamedObject \
+                   Octree \
+                   PrimitiveFactory \
+                   Program \
+                   Scene \
+                   Shader \
+                   ShaderContext \
+                   shader_utils \
+                   Texture \
+                   Util \
+                   VarAttribute \
+                   VarUniform \
+                   TransformObject
+CPP_STEMS = $(SHARED_CPP_STEMS) main res_texture res_texture2
+OBJECTS    = $(patsubst %, $(BUILD_PATH)/%.o, $(CPP_STEMS))
+LINT_FILES = $(patsubst %, $(BUILD_PATH)/%.lint, $(SHARED_CPP_STEMS))
 
 $(BIN_PATH)/main : $(OBJECTS)
 	mkdir -p $(BIN_PATH)
@@ -106,6 +131,46 @@ test : $(TEST_PASS_FILES)
 .PHONY : clean_tests
 clean_tests :
 	-rm $(TEST_PASS_FILES) $(TEST_FAIL_FILES)
+
+#==================
+# lint
+#==================
+
+LINT_PASS_FILES = $(patsubst %, %.pass, $(LINT_FILES))
+LINT_FAIL_FILES = $(patsubst %, %.fail, $(LINT_FILES))
+LINT_SH = $(SCRIPT_PATH)/lint.sh
+
+$(BUILD_PATH)/%.lint.pass : $(SRC_PATH)/%.c*
+	mkdir -p $(BUILD_PATH)
+	-$(LINT_SH) $< $(BUILD_PATH)/$*.lint $(INCLUDE_PATH_FLAGS)
+
+.PHONY : lint
+lint : $(LINT_PASS_FILES)
+
+.PHONY : clean_lint
+clean_lint :
+	-rm $(LINT_PASS_FILES) $(LINT_FAIL_FILES)
+
+#==================
+# doc
+#==================
+
+DOC_PATH = doc
+DOC_CONFIG_FILE = dexvt-test.config
+DOC_CONFIG_PATCH_FILE = $(DOC_CONFIG_FILE).patch
+DOC_TOOL = doxygen
+
+.PHONY : doc
+doc :
+	mkdir -p $(BUILD_PATH)
+	doxygen -g $(BUILD_PATH)/$(DOC_CONFIG_FILE)
+	patch $(BUILD_PATH)/$(DOC_CONFIG_FILE) < $(DOC_PATH)/$(DOC_CONFIG_PATCH_FILE)
+	cd $(BUILD_PATH); $(DOC_TOOL) $(DOC_CONFIG_FILE)
+
+.PHONY : clean_docs
+clean_docs :
+	rm -rf $(BUILD_PATH)/html
+	rm -rf $(BUILD_PATH)/$(DOC_CONFIG_FILE)
 
 #==================
 # resources
@@ -151,30 +216,9 @@ clean_resources :
 	-rm -rf $(RESOURCE_PATH)
 
 #==================
-# doc
-#==================
-
-DOC_PATH = doc
-DOC_CONFIG_FILE = dexvt-test.config
-DOC_CONFIG_PATCH_FILE = $(DOC_CONFIG_FILE).patch
-DOC_TOOL = doxygen
-
-.PHONY : doc
-doc :
-	mkdir -p $(BUILD_PATH)
-	doxygen -g $(BUILD_PATH)/$(DOC_CONFIG_FILE)
-	patch $(BUILD_PATH)/$(DOC_CONFIG_FILE) < $(DOC_PATH)/$(DOC_CONFIG_PATCH_FILE)
-	cd $(BUILD_PATH); $(DOC_TOOL) $(DOC_CONFIG_FILE)
-
-.PHONY : clean_docs
-clean_docs :
-	rm -rf $(BUILD_PATH)/html
-	rm -rf $(BUILD_PATH)/$(DOC_CONFIG_FILE)
-
-#==================
 # clean
 #==================
 
 .PHONY : clean
-clean : clean_binaries clean_objects clean_tests #clean_docs #clean_resources
+clean : clean_binaries clean_objects clean_tests clean_lint #clean_docs #clean_resources
 	-rmdir $(BUILD_PATH) $(BIN_PATH)
