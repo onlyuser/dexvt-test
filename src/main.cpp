@@ -103,7 +103,7 @@ vt::Texture *texture                          = NULL,
             *texture4                         = NULL,
             *texture5                         = NULL,
             *frontface_depth_overlay_texture  = NULL,
-            *forward_prop_col_values_texture  = NULL,
+            *forward_prop_texture             = NULL,
             *backface_depth_overlay_texture   = NULL,
             *frontface_normal_overlay_texture = NULL,
             *backface_normal_overlay_texture  = NULL,
@@ -114,7 +114,7 @@ vt::Texture *texture                          = NULL,
             *random_texture                   = NULL;
 
 vt::FrameBuffer *frontface_depth_overlay_fb  = NULL,
-                *forward_prop_col_values_fb  = NULL,
+                *forward_prop_fb             = NULL,
                 *backface_depth_overlay_fb   = NULL,
                 *frontface_normal_overlay_fb = NULL,
                 *backface_normal_overlay_fb  = NULL,
@@ -372,11 +372,11 @@ int init_resources()
     overlay_bloom_filter_material->add_texture(  frontface_depth_overlay_texture);
     ssao_material->add_texture(                  frontface_depth_overlay_texture);
 
-    forward_prop_col_values_texture = new vt::Texture("forward_prop_col_values",
-                                                      vt::Texture::RGBA,
-                                                      glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM));
-    overlay_forward_prop_material->add_texture(forward_prop_col_values_texture);
-    overlay_write_through_material->add_texture(forward_prop_col_values_texture);
+    forward_prop_texture = new vt::Texture("forward_prop",
+                                           vt::Texture::RED,
+                                           glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM));
+    overlay_forward_prop_material->add_texture(forward_prop_texture);
+    overlay_write_through_material->add_texture(forward_prop_texture);
 
     backface_depth_overlay_texture = new vt::Texture("backface_depth_overlay",
                                                      vt::Texture::DEPTH,
@@ -448,7 +448,7 @@ int init_resources()
     scene->set_camera(camera);
 
     frontface_depth_overlay_fb  = new vt::FrameBuffer(frontface_depth_overlay_texture, camera);
-    forward_prop_col_values_fb  = new vt::FrameBuffer(forward_prop_col_values_texture, camera);
+    forward_prop_fb             = new vt::FrameBuffer(forward_prop_texture, camera);
     backface_depth_overlay_fb   = new vt::FrameBuffer(backface_depth_overlay_texture, camera);
     frontface_normal_overlay_fb = new vt::FrameBuffer(frontface_normal_overlay_texture, camera);
     backface_normal_overlay_fb  = new vt::FrameBuffer(backface_normal_overlay_texture, camera);
@@ -569,7 +569,7 @@ int init_resources()
 int deinit_resources()
 {
     if(frontface_depth_overlay_fb)  { delete frontface_depth_overlay_fb; }
-    if(forward_prop_col_values_fb)  { delete forward_prop_col_values_fb; }
+    if(forward_prop_fb)             { delete forward_prop_fb; }
     if(backface_depth_overlay_fb)   { delete backface_depth_overlay_fb; }
     if(frontface_normal_overlay_fb) { delete frontface_normal_overlay_fb; }
     if(backface_normal_overlay_fb)  { delete backface_normal_overlay_fb; }
@@ -686,11 +686,23 @@ void do_forward_prop(
     scene->render();
     output_fb->unbind();
 
-    output_texture->download_from_gpu();
-    output_texture->draw_big_x();
-    //output_texture->set_solid_color(glm::ivec3(255, 0, 0));
+    output_texture->refresh(); // download from gpu
+    //output_texture->set_color_r32f(0.3);
     //output_texture->randomize();
-    //output_texture->upload_to_gpu();
+    output_texture->draw_x();
+    for(int x = 0; x < output_texture->get_dim().x; x++) {
+        for(int y = 0; y < output_texture->get_dim().y; y++) {
+            if(x > output_texture->get_dim().x * 0.5) {
+                if(y < output_texture->get_dim().y * 0.5) {
+                    output_texture->set_pixel_r32f(glm::ivec2(x, y), 0.4);
+                }
+                if(y > output_texture->get_dim().y * 0.5) {
+                    output_texture->set_pixel_r32f(glm::ivec2(x, y), 0.6);
+                }
+            }
+        }
+    }
+    output_texture->update(); // upload to gpu
 
     // switch to write-through mode to display final output texture
     mesh_overlay->set_material(overlay_forward_prop_material);
@@ -739,7 +751,7 @@ void onDisplay()
         do_blur(scene, hi_res_color_overlay_texture, hi_res_color_overlay_texture, hi_res_color_overlay_fb, BLUR_ITERS, 0.75);
     }
 
-    //do_forward_prop(scene, forward_prop_col_values_texture, forward_prop_col_values_fb);
+    //do_forward_prop(scene, forward_prop_texture, forward_prop_fb);
 
     if(wireframe_mode) {
         scene->render(true, false, false, vt::Scene::use_material_type_t::USE_WIREFRAME_MATERIAL);

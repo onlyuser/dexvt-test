@@ -25,5 +25,11 @@ void main(void) {
         return;
     }
 
+    vec4 color = texture2D(in_texture, lerp_texcoord);
+    if(color.r > 0.5) {
+        gl_FragColor = vec4(1, 0, 0, 0);
+        return;
+    }
+
     gl_FragColor = texture2D(in_texture, lerp_texcoord);
 }
