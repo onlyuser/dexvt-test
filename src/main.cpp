@@ -615,83 +615,77 @@ void onTick()
     hidden_mesh4->update_buffers();
 }
 
-void do_blur(
-        vt::Scene*       scene,
-        vt::Texture*     input_texture1,
-        vt::Texture*     input_texture2,
-        vt::FrameBuffer* output_fb,
-        int              blur_iters,
-        float            glow_cutoff_threshold)
+void do_blur(vt::Scene*       scene,
+             vt::Texture*     input_texture_to_blur,
+             int              blur_iters,
+             vt::Texture*     input_texture_sharp,
+             float            glow_cutoff_threshold,
+             vt::FrameBuffer* output_fb)
 {
-    scene->set_glow_cutoff_threshold(glow_cutoff_threshold);
-
-    // render-to-texture for initial input texture
-    hi_res_color_overlay_fb->bind();
-    scene->render();
-    hi_res_color_overlay_fb->unbind();
+    vt::Mesh* mesh_overlay = scene->get_overlay();
 
     // switch to write-through mode to perform downsampling
     mesh_overlay->set_material(overlay_write_through_material);
 
     // linear downsample texture from hi-res to med-res
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture1));
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture_to_blur));
     med_res_color_overlay_fb->bind();
-    scene->render(true, true);
+    scene->render(false, true);
     med_res_color_overlay_fb->unbind();
 
     // linear downsample texture from med-res to lo-res
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("med_res_color_overlay"));
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(med_res_color_overlay_fb->get_texture()));
     lo_res_color_overlay_fb->bind();
-    scene->render(true, true);
+    scene->render(false, true);
     lo_res_color_overlay_fb->unbind();
 
     // switch to bloom filter mode
     mesh_overlay->set_material(overlay_bloom_filter_material);
 
     // blur texture in low-res
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(lo_res_color_overlay_fb->get_texture()));
     lo_res_color_overlay_fb->bind();
     for(int i = 0; i < blur_iters; i++) {
-        // don't clear since we're using same texture for input/output
         scene->render(false, true);
     }
     lo_res_color_overlay_fb->unbind();
 
     // switch to max mode to merge blurred low-res texture with hi-res texture
     mesh_overlay->set_material(overlay_max_material);
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture2));
-    mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index_by_name("lo_res_color_overlay"));
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(lo_res_color_overlay_fb->get_texture()));
+    mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index(input_texture_sharp));
 
     output_fb->bind();
-    if(output_fb->get_texture() != input_texture1) {
-        // clear if we're using different texture for input/output
-        scene->render(true, true);
-    } else {
-        scene->render(false, true);
-    }
+    scene->set_glow_cutoff_threshold(glow_cutoff_threshold);
+    scene->render(false, true);
     output_fb->unbind();
 
     // switch to write-through mode to display final output texture
     mesh_overlay->set_material(overlay_write_through_material);
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture1));
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(output_fb->get_texture()));
 }
 
-void do_forward_prop(
-        vt::Scene*       scene,
-        vt::Texture*     output_texture,
-        vt::FrameBuffer* output_fb)
+// v[i] = sigmoid(sum(v[i-1] * w[i-1]))
+void do_forward_prop(vt::Scene*       scene,
+                     vt::Texture*     input_texture_vec,
+                     vt::Texture*     input_texture_weights,
+                     vt::FrameBuffer* output_fb)
 {
+    vt::Mesh* mesh_overlay = scene->get_overlay();
+
+#if 1
     // render-to-texture for initial input texture
     output_fb->bind();
     scene->render();
     output_fb->unbind();
 
+    vt::Texture* output_texture = output_fb->get_texture();
     output_texture->refresh(); // download from gpu
     //output_texture->set_color_r32f(0.3);
     //output_texture->randomize();
     output_texture->draw_x();
-    for(int x = 0; x < output_texture->get_dim().x; x++) {
-        for(int y = 0; y < output_texture->get_dim().y; y++) {
+    for(int y = 0; y < output_texture->get_dim().y; y++) {
+        for(int x = 0; x < output_texture->get_dim().x; x++) {
             if(x > output_texture->get_dim().x * 0.5) {
                 if(y < output_texture->get_dim().y * 0.5) {
                     output_texture->set_pixel_r32f(glm::ivec2(x, y), 0.4);
@@ -704,9 +698,25 @@ void do_forward_prop(
     }
     output_texture->update(); // upload to gpu
 
-    // switch to write-through mode to display final output texture
+    output_fb->bind();
     mesh_overlay->set_material(overlay_forward_prop_material);
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(output_texture));
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(output_fb->get_texture()));
+    scene->render(false, true);
+    output_fb->unbind();
+
+    return;
+#endif
+
+    output_fb->bind();
+    mesh_overlay->set_material(overlay_forward_prop_material);
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture_vec));
+    mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index(input_texture_weights));
+    scene->render(false, true);
+    output_fb->unbind();
+
+    // switch to write-through mode to display final output texture
+    mesh_overlay->set_material(overlay_write_through_material);
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(output_fb->get_texture()));
 }
 
 void onDisplay()
@@ -728,11 +738,22 @@ void onDisplay()
     }
 
     if(overlay_mode == OVERLAY_MODE_SSAO) {
+        // prepare input_texture_to_blur
         ssao_overlay_fb->bind();
         scene->render(true, false, false, vt::Scene::use_material_type_t::USE_SSAO_MATERIAL);
         ssao_overlay_fb->unbind();
 
-        do_blur(scene, ssao_overlay_texture, hi_res_color_overlay_texture, ssao_overlay_fb, BLUR_ITERS, 0);
+        // prepare input_texture_sharp
+        hi_res_color_overlay_fb->bind();
+        scene->render();
+        hi_res_color_overlay_fb->unbind();
+
+        do_blur(scene,
+                ssao_overlay_fb->get_texture(),         // input_texture_to_blur
+                BLUR_ITERS,                             // blur_iters
+                hi_res_color_overlay_fb->get_texture(), // input_texture_sharp
+                0,                                      // glow_cutoff_threshold
+                ssao_overlay_fb);                       // output_fb
     }
 
     glCullFace(GL_FRONT);
@@ -748,10 +769,25 @@ void onDisplay()
     glCullFace(GL_BACK);
 
     if(post_process_blur) {
-        do_blur(scene, hi_res_color_overlay_texture, hi_res_color_overlay_texture, hi_res_color_overlay_fb, BLUR_ITERS, 0.75);
+        // prepare input_texture_to_blur and input_texture_sharp
+        hi_res_color_overlay_fb->bind();
+        scene->render();
+        hi_res_color_overlay_fb->unbind();
+
+        do_blur(scene,
+                hi_res_color_overlay_fb->get_texture(), // input_texture_to_blur
+                BLUR_ITERS,                             // blur_iters
+                hi_res_color_overlay_fb->get_texture(), // input_texture_sharp
+                0.75,                                   // glow_cutoff_threshold
+                hi_res_color_overlay_fb);               // output_fb
     }
 
-    //do_forward_prop(scene, forward_prop_texture, forward_prop_fb);
+#if 0
+    do_forward_prop(scene,
+                    NULL,             // input_texture_vec
+                    NULL,             // input_texture_weights
+                    forward_prop_fb); // output_fb
+#endif
 
     if(wireframe_mode) {
         scene->render(true, false, false, vt::Scene::use_material_type_t::USE_WIREFRAME_MATERIAL);
