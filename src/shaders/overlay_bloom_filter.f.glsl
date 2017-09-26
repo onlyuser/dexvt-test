@@ -1,3 +1,5 @@
+// Based on Matt DesLauriers' tutorial: https://github.com/mattdesl/lwjgl-basics/wiki/ShaderLesson5
+
 const int BLOOM_KERNEL_SIZE = 7;
 uniform float bloom_kernel[BLOOM_KERNEL_SIZE];
 uniform float glow_cutoff_threshold;
@@ -18,8 +20,8 @@ void main(void) {
                                        lerp_texcoord.y + lerp_sample_offset_unit_size.y*hblur_kernel_offset_index.y);
         vec2 vblur_sample_coord = vec2(lerp_texcoord.x + lerp_sample_offset_unit_size.x*vblur_kernel_offset_index.x,
                                        lerp_texcoord.y + lerp_sample_offset_unit_size.y*vblur_kernel_offset_index.y);
-        vec3 hblur_sample_color = texture2D(color_texture, hblur_sample_coord).xyz;
-        vec3 vblur_sample_color = texture2D(color_texture, vblur_sample_coord).xyz;
+        vec3 hblur_sample_color = texture2D(color_texture, hblur_sample_coord).rgb;
+        vec3 vblur_sample_color = texture2D(color_texture, vblur_sample_coord).rgb;
         float hblur_sum;
         float vblur_sum;
         sum_components(hblur_sample_color, hblur_sum);

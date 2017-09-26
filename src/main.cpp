@@ -97,24 +97,26 @@ std::vector<vt::Mesh*> meshes_imported;
 vt::Light *light  = NULL,
           *light2 = NULL,
           *light3 = NULL;
-vt::Texture *texture                          = NULL,
-            *texture2                         = NULL,
-            *texture3                         = NULL,
-            *texture4                         = NULL,
-            *texture5                         = NULL,
-            *frontface_depth_overlay_texture  = NULL,
-            *forward_prop_texture             = NULL,
-            *backface_depth_overlay_texture   = NULL,
-            *frontface_normal_overlay_texture = NULL,
-            *backface_normal_overlay_texture  = NULL,
-            *ssao_overlay_texture             = NULL,
-            *hi_res_color_overlay_texture     = NULL,
-            *med_res_color_overlay_texture    = NULL,
-            *lo_res_color_overlay_texture     = NULL,
-            *random_texture                   = NULL;
+vt::Texture *texture                            = NULL,
+            *texture2                           = NULL,
+            *texture3                           = NULL,
+            *texture4                           = NULL,
+            *texture5                           = NULL,
+            *frontface_depth_overlay_texture    = NULL,
+            *forward_prop_overlay_texture       = NULL,
+            *forward_prop_input_vec_texture     = NULL,
+            *forward_prop_input_weights_texture = NULL,
+            *backface_depth_overlay_texture     = NULL,
+            *frontface_normal_overlay_texture   = NULL,
+            *backface_normal_overlay_texture    = NULL,
+            *ssao_overlay_texture               = NULL,
+            *hi_res_color_overlay_texture       = NULL,
+            *med_res_color_overlay_texture      = NULL,
+            *lo_res_color_overlay_texture       = NULL,
+            *random_texture                     = NULL;
 
 vt::FrameBuffer *frontface_depth_overlay_fb  = NULL,
-                *forward_prop_fb             = NULL,
+                *forward_prop_overlay_fb     = NULL,
                 *backface_depth_overlay_fb   = NULL,
                 *frontface_normal_overlay_fb = NULL,
                 *backface_normal_overlay_fb  = NULL,
@@ -372,11 +374,23 @@ int init_resources()
     overlay_bloom_filter_material->add_texture(  frontface_depth_overlay_texture);
     ssao_material->add_texture(                  frontface_depth_overlay_texture);
 
-    forward_prop_texture = new vt::Texture("forward_prop",
-                                           vt::Texture::RED,
-                                           glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM));
-    overlay_forward_prop_material->add_texture(forward_prop_texture);
-    overlay_write_through_material->add_texture(forward_prop_texture);
+    forward_prop_overlay_texture = new vt::Texture("forward_prop",
+                                                   vt::Texture::RED,
+                                                   glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM));
+    overlay_forward_prop_material->add_texture(forward_prop_overlay_texture);
+    overlay_write_through_material->add_texture(forward_prop_overlay_texture);
+
+    forward_prop_input_vec_texture = new vt::Texture("forward_prop_input_vec",
+                                                     vt::Texture::RED,
+                                                     glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM));
+    overlay_forward_prop_material->add_texture(forward_prop_input_vec_texture);
+    overlay_write_through_material->add_texture(forward_prop_input_vec_texture);
+
+    forward_prop_input_weights_texture = new vt::Texture("forward_prop_input_weights",
+                                                         vt::Texture::RED,
+                                                         glm::ivec2(HI_RES_TEX_DIM, HI_RES_TEX_DIM));
+    overlay_forward_prop_material->add_texture(forward_prop_input_weights_texture);
+    overlay_write_through_material->add_texture(forward_prop_input_weights_texture);
 
     backface_depth_overlay_texture = new vt::Texture("backface_depth_overlay",
                                                      vt::Texture::DEPTH,
@@ -448,7 +462,7 @@ int init_resources()
     scene->set_camera(camera);
 
     frontface_depth_overlay_fb  = new vt::FrameBuffer(frontface_depth_overlay_texture, camera);
-    forward_prop_fb             = new vt::FrameBuffer(forward_prop_texture, camera);
+    forward_prop_overlay_fb     = new vt::FrameBuffer(forward_prop_overlay_texture, camera);
     backface_depth_overlay_fb   = new vt::FrameBuffer(backface_depth_overlay_texture, camera);
     frontface_normal_overlay_fb = new vt::FrameBuffer(frontface_normal_overlay_texture, camera);
     backface_normal_overlay_fb  = new vt::FrameBuffer(backface_normal_overlay_texture, camera);
@@ -569,7 +583,7 @@ int init_resources()
 int deinit_resources()
 {
     if(frontface_depth_overlay_fb)  { delete frontface_depth_overlay_fb; }
-    if(forward_prop_fb)             { delete forward_prop_fb; }
+    if(forward_prop_overlay_fb)     { delete forward_prop_overlay_fb; }
     if(backface_depth_overlay_fb)   { delete backface_depth_overlay_fb; }
     if(frontface_normal_overlay_fb) { delete frontface_normal_overlay_fb; }
     if(backface_normal_overlay_fb)  { delete backface_normal_overlay_fb; }
@@ -615,12 +629,12 @@ void onTick()
     hidden_mesh4->update_buffers();
 }
 
-void do_blur(vt::Scene*       scene,
-             vt::Texture*     input_texture_to_blur,
-             int              blur_iters,
-             vt::Texture*     input_texture_sharp,
-             float            glow_cutoff_threshold,
-             vt::FrameBuffer* output_fb)
+void apply_bloom_filter(vt::Scene*       scene,
+                        vt::Texture*     input_to_blur_texture,
+                        int              blur_iters,
+                        vt::Texture*     input_sharp_texture,
+                        float            glow_cutoff_threshold,
+                        vt::FrameBuffer* output_fb)
 {
     vt::Mesh* mesh_overlay = scene->get_overlay();
 
@@ -628,7 +642,7 @@ void do_blur(vt::Scene*       scene,
     mesh_overlay->set_material(overlay_write_through_material);
 
     // linear downsample texture from hi-res to med-res
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture_to_blur));
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_to_blur_texture));
     med_res_color_overlay_fb->bind();
     scene->render(false, true);
     med_res_color_overlay_fb->unbind();
@@ -653,10 +667,10 @@ void do_blur(vt::Scene*       scene,
     // switch to max mode to merge blurred low-res texture with hi-res texture
     mesh_overlay->set_material(overlay_max_material);
     mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(lo_res_color_overlay_fb->get_texture()));
-    mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index(input_texture_sharp));
+    mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index(input_sharp_texture));
 
     output_fb->bind();
-    scene->set_glow_cutoff_threshold(glow_cutoff_threshold);
+    scene->set_glow_cutoff_threshold(glow_cutoff_threshold); // allow bloom only if summed rgb brighter than glow cutoff threshold
     scene->render(false, true);
     output_fb->unbind();
 
@@ -665,58 +679,225 @@ void do_blur(vt::Scene*       scene,
     mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(output_fb->get_texture()));
 }
 
-// v[i] = sigmoid(sum(v[i-1] * w[i-1]))
-void do_forward_prop(vt::Scene*       scene,
-                     vt::Texture*     input_texture_vec,
-                     vt::Texture*     input_texture_weights,
-                     vt::FrameBuffer* output_fb)
+void bpnet_prop_forward(vt::Scene*       scene,
+                        vt::Texture*     vin_texture,     // IN
+                        vt::Texture*     weights_texture, // IN
+                        vt::FrameBuffer* vout_fb)         // OUT
 {
     vt::Mesh* mesh_overlay = scene->get_overlay();
+    vt::Texture* output_texture = vout_fb->get_texture();
 
-#if 1
-    // render-to-texture for initial input texture
-    output_fb->bind();
-    scene->render();
-    output_fb->unbind();
+    vin_texture->set_color_r32f(0.5);
+    vin_texture->update(); // upload to gpu
 
-    vt::Texture* output_texture = output_fb->get_texture();
+    weights_texture->set_color_r32f(1.5);
+    weights_texture->update(); // upload to gpu
+
+    //            layer0            layer1                layer2
+    //
+    // input0 --> [v00]------w00----[v01|e01]------w00----[v02|e02] --> target0
+    //                \             / |     \             / |
+    //                 \  *--w01---* w02     \  *--w01---* w02
+    //                  \/           /        \/           /
+    //                  /\          /         /\          /
+    //                 /  *--w10---/         /  *--w10---/
+    //                /           / \       /           / \
+    // input1 --> [v10]------w11----[v11|e11]------w11----[v12|e12] --> target1
+    //                          /     |               /     |
+    //                    *----*     w12        *----*     w12
+    //                   /           /         /           /
+    //                  /   *-------*         /   *-------*
+    //                 /   /                 /   /
+    //                /   /                 /   /
+    //            [v20]--*              [v21]--*
+    //
+    //            bias==1               bias==1
+
+    // step 1. first layer // step 2+. any other layer
+    // =================== // ========================
+    // v00 = input1        // v01 = sigmoid(v00*w00 + v10*w01 + 1*w02)
+    // v10 = input2        // v11 = sigmoid(v00*w10 + v10*w11 + 1*w12)
+    // v20 = 1             // v21 = 1
+
+    // input[3x1]
+    //   |  layer0       layer0-1          layer1
+    //   |
+    //  \|/ v[3x1]       w[3x3]            v[3x1]
+    // +---+---+---+     +---+---+---+     +---+---+---+
+    // |v00|   |   |     |w00|w01|w02|--+  |   |v01|   |
+    // +---+---+---+     +---+---+---+  |  +---+---+---+
+    // |v10|   |   |     |w10|w11|w12|--+  |   |v11|   |
+    // +---+---+---+     +---+---+---+  |  +---+---+---+
+    // | 1 |   |   |     |   |   |   |  |  |   | 1 |   |<-bias row
+    // +---+---+---+     +---+---+---+  |  +---+---+---+
+    //   |                              |        ^
+    //   +------------------------------+--------+
+    //     step 2+
+
+    // enter gpu kernel
+    vout_fb->bind();
+    mesh_overlay->set_material(overlay_forward_prop_material);
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(vin_texture));
+    mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index(weights_texture));
+    scene->render(false, true);
+    vout_fb->unbind();
+
     output_texture->refresh(); // download from gpu
-    //output_texture->set_color_r32f(0.3);
-    //output_texture->randomize();
-    output_texture->draw_x();
-    for(int y = 0; y < output_texture->get_dim().y; y++) {
-        for(int x = 0; x < output_texture->get_dim().x; x++) {
-            if(x > output_texture->get_dim().x * 0.5) {
-                if(y < output_texture->get_dim().y * 0.5) {
-                    output_texture->set_pixel_r32f(glm::ivec2(x, y), 0.4);
-                }
-                if(y > output_texture->get_dim().y * 0.5) {
-                    output_texture->set_pixel_r32f(glm::ivec2(x, y), 0.6);
-                }
-            }
-        }
-    }
-    output_texture->update(); // upload to gpu
-
-    output_fb->bind();
-    mesh_overlay->set_material(overlay_forward_prop_material);
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(output_fb->get_texture()));
-    scene->render(false, true);
-    output_fb->unbind();
-
-    return;
-#endif
-
-    output_fb->bind();
-    mesh_overlay->set_material(overlay_forward_prop_material);
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_texture_vec));
-    mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index(input_texture_weights));
-    scene->render(false, true);
-    output_fb->unbind();
+    std::cout << output_texture->get_pixel_r32f(glm::ivec2(0, 0)) << std::endl;
 
     // switch to write-through mode to display final output texture
     mesh_overlay->set_material(overlay_write_through_material);
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(output_fb->get_texture()));
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(vout_fb->get_texture()));
+}
+
+void bpnet_prop_backward(vt::Scene*       scene,
+                         vt::Texture*     ein_texture,     // IN
+                         vt::Texture*     weights_texture, // IN
+                         vt::FrameBuffer* eout_fb)         // OUT
+{
+    vt::Mesh* mesh_overlay = scene->get_overlay();
+    vt::Texture* output_texture = eout_fb->get_texture();
+
+    ein_texture->set_color_r32f(0.5);
+    ein_texture->update(); // upload to gpu
+
+    weights_texture->set_color_r32f(1.5);
+    weights_texture->update(); // upload to gpu
+
+    //            layer0            layer1                layer2
+    //
+    // input0 --> [v00]------w00----[v01|e01]------w00----[v02|e02] --> target0
+    //                \             / |     \             / |
+    //                 \  *--w01---* w02     \  *--w01---* w02
+    //                  \/           /        \/           /
+    //                  /\          /         /\          /
+    //                 /  *--w10---/         /  *--w10---/
+    //                /           / \       /           / \
+    // input1 --> [v10]------w11----[v11|e11]------w11----[v12|e12] --> target1
+    //                          /     |               /     |
+    //                    *----*     w12        *----*     w12
+    //                   /           /         /           /
+    //                  /   *-------*         /   *-------*
+    //                 /   /                 /   /
+    //                /   /                 /   /
+    //            [v20]--*              [v21]--*
+    //
+    //            bias==1               bias==1
+
+    // step 2+. any other layer                            // step 1. last layer
+    // ========================                            // ==================
+    // e01 = sigmoidPri(v01) * (e02*w00 + e02*w01 + 1*w02) // e02 = sigmoidPri(v02) * (target0 - v02)
+    // e11 = sigmoidPri(v11) * (e12*w10 + e12*w11 + 1*w12) // e12 = sigmoidPri(v12) * (target1 - v12)
+
+    // layer1            layer1-2          layer2    +-------------+
+    //                                               |             |
+    // e[3x1]            w[3x3]            e[3x1]   \|/            | step 1
+    // +---+---+---+     +---+---+---+     +---+---+---+           |
+    // |   |e01|   |  +--|w00|w01|w02|     |   |   |e02|           |
+    // +---+---+---+  |  +---+---+---+     +---+---+---+           |
+    // |   |e11|   |  +--|w10|w11|w12|     |   |   |e12|           |
+    // +---+---+---+  |  +---+---+---+     +---+---+---+           |
+    // |   |   |   |  |  |   |   |   |     |   |   |   |<-bias row |
+    // +---+---+---+  |  +---+---+---+     +---+---+---+           |
+    //       ^        |                              |             |
+    //       +--------+--------------------------+---+             |
+    //          step 2+                          |                 |
+    //                                     r3,2  |   +-------------+--target[3x1]
+    //                                     [3x1] |   |
+    //                                     +---+---+---+
+    //                                     |   |v01|v02|
+    //                                     +---+---+---+
+    //                                     |   |v11|v12|
+    //                                     +---+---+---+
+    //                                     |   | 1 | 1 |<-bias row
+    //                                     +---+---+---+
+
+    // enter gpu kernel
+    eout_fb->bind();
+    mesh_overlay->set_material(overlay_forward_prop_material);
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(ein_texture));
+    mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index(weights_texture));
+    scene->render(false, true);
+    eout_fb->unbind();
+
+    output_texture->refresh(); // download from gpu
+    std::cout << output_texture->get_pixel_r32f(glm::ivec2(0, 0)) << std::endl;
+
+    // switch to write-through mode to display final output texture
+    mesh_overlay->set_material(overlay_write_through_material);
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(eout_fb->get_texture()));
+}
+
+void bpnet_adjust_weights(vt::Scene*       scene,
+                          vt::Texture*     vin_texture,  // IN
+                          vt::Texture*     eout_texture, // IN
+                          vt::FrameBuffer* weights_fb)   // OUT
+{
+    vt::Mesh* mesh_overlay = scene->get_overlay();
+    vt::Texture* output_texture = weights_fb->get_texture();
+
+    vin_texture->set_color_r32f(0.5);
+    vin_texture->update(); // upload to gpu
+
+    eout_texture->set_color_r32f(1.5);
+    eout_texture->update(); // upload to gpu
+
+    //            layer0            layer1                layer2
+    //
+    // input0 --> [v00]------w00----[v01|e01]------w00----[v02|e02] --> target0
+    //                \             / |     \             / |
+    //                 \  *--w01---* w02     \  *--w01---* w02
+    //                  \/           /        \/           /
+    //                  /\          /         /\          /
+    //                 /  *--w10---/         /  *--w10---/
+    //                /           / \       /           / \
+    // input1 --> [v10]------w11----[v11|e11]------w11----[v12|e12] --> target1
+    //                          /     |               /     |
+    //                    *----*     w12        *----*     w12
+    //                   /           /         /           /
+    //                  /   *-------*         /   *-------*
+    //                 /   /                 /   /
+    //                /   /                 /   /
+    //            [v20]--*              [v21]--*
+    //
+    //            bias==1               bias==1
+
+    // for all layers
+    // ==============
+    // w00 += v01 * e02
+    // w01 += v11 * e02
+    // w02 += 1   * e02
+    // w10 += v01 * e12
+    // w11 += v11 * e12
+    // w12 += 1   * e12
+
+    // layer1            layer1-2          layer2
+    //
+    // v[3x1]            w[3x3]            v[3x1]
+    // +---+---+---+     +---+---+---+     +---+---+---+
+    // |   |v01|   |     |w00|w01|w02|<-+  |   |   |e02|
+    // +---+---+---+     +---+---+---+  |  +---+---+---+
+    // |   |v11|   |     |w10|w11|w12|<-+  |   |   |e12|
+    // +---+---+---+     +---+---+---+  |  +---+---+---+
+    // |   | 1 |   |     |   |   |   |  |  |   |   |   |<-bias row
+    // +---+---+---+     +---+---+---+  |  +---+---+---+
+    //       |                          |            |
+    //       +--------------------------+------------+
+
+    // enter gpu kernel
+    weights_fb->bind();
+    mesh_overlay->set_material(overlay_forward_prop_material);
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(vin_texture));
+    mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index(eout_texture));
+    scene->render(false, true);
+    weights_fb->unbind();
+
+    output_texture->refresh(); // download from gpu
+    std::cout << output_texture->get_pixel_r32f(glm::ivec2(0, 0)) << std::endl;
+
+    // switch to write-through mode to display final output texture
+    mesh_overlay->set_material(overlay_write_through_material);
+    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(weights_fb->get_texture()));
 }
 
 void onDisplay()
@@ -738,22 +919,22 @@ void onDisplay()
     }
 
     if(overlay_mode == OVERLAY_MODE_SSAO) {
-        // prepare input_texture_to_blur
+        // prepare input_to_blur_texture
         ssao_overlay_fb->bind();
         scene->render(true, false, false, vt::Scene::use_material_type_t::USE_SSAO_MATERIAL);
         ssao_overlay_fb->unbind();
 
-        // prepare input_texture_sharp
+        // prepare input_sharp_texture
         hi_res_color_overlay_fb->bind();
         scene->render();
         hi_res_color_overlay_fb->unbind();
 
-        do_blur(scene,
-                ssao_overlay_fb->get_texture(),         // input_texture_to_blur
-                BLUR_ITERS,                             // blur_iters
-                hi_res_color_overlay_fb->get_texture(), // input_texture_sharp
-                0,                                      // glow_cutoff_threshold
-                ssao_overlay_fb);                       // output_fb
+        apply_bloom_filter(scene,
+                           ssao_overlay_fb->get_texture(),         // input_to_blur_texture
+                           BLUR_ITERS,                             // blur_iters
+                           hi_res_color_overlay_fb->get_texture(), // input_sharp_texture
+                           0,                                      // glow_cutoff_threshold
+                           ssao_overlay_fb);                       // output_fb
     }
 
     glCullFace(GL_FRONT);
@@ -769,24 +950,24 @@ void onDisplay()
     glCullFace(GL_BACK);
 
     if(post_process_blur) {
-        // prepare input_texture_to_blur and input_texture_sharp
+        // prepare input_to_blur_texture and input_sharp_texture
         hi_res_color_overlay_fb->bind();
         scene->render();
         hi_res_color_overlay_fb->unbind();
 
-        do_blur(scene,
-                hi_res_color_overlay_fb->get_texture(), // input_texture_to_blur
-                BLUR_ITERS,                             // blur_iters
-                hi_res_color_overlay_fb->get_texture(), // input_texture_sharp
-                0.75,                                   // glow_cutoff_threshold
-                hi_res_color_overlay_fb);               // output_fb
+        apply_bloom_filter(scene,
+                           hi_res_color_overlay_fb->get_texture(), // input_to_blur_texture
+                           BLUR_ITERS,                             // blur_iters
+                           hi_res_color_overlay_fb->get_texture(), // input_sharp_texture
+                           0.75,                                   // glow_cutoff_threshold
+                           hi_res_color_overlay_fb);               // output_fb
     }
 
 #if 0
-    do_forward_prop(scene,
-                    NULL,             // input_texture_vec
-                    NULL,             // input_texture_weights
-                    forward_prop_fb); // output_fb
+    bpnet_prop_forward(scene,
+                    forward_prop_input_vec_texture,     // input_vec_texture
+                    forward_prop_input_weights_texture, // input_weights_texture
+                    forward_prop_overlay_fb);           // output_fb
 #endif
 
     if(wireframe_mode) {

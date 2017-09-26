@@ -74,6 +74,7 @@ clean_objects :
 #==================
 
 SHARED_CPP_STEMS = BBoxObject \
+                   BPNet \
                    Buffer \
                    Camera \
                    File3ds \
