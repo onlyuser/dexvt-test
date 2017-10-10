@@ -79,7 +79,7 @@ Resource files not included:
     </tr>
 </table>
 
-Make targets
+Make Targets
 ------------
 
 <table>

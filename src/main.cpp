@@ -786,8 +786,8 @@ void bpnet_prop_backward(vt::Scene*       scene,
 
     // step 2+. any other layer                            // step 1. last layer
     // ========================                            // ==================
-    // e01 = sigmoidPri(v01) * (e02*w00 + e02*w01 + 1*w02) // e02 = sigmoidPri(v02) * (target0 - v02)
-    // e11 = sigmoidPri(v11) * (e12*w10 + e12*w11 + 1*w12) // e12 = sigmoidPri(v12) * (target1 - v12)
+    // e01 = dsigmoid_dx(v01) * (e02*w00 + e02*w01 + 1*w02) // e02 = dsigmoid_dx(v02) * (target0 - v02)
+    // e11 = dsigmoid_dx(v11) * (e12*w10 + e12*w11 + 1*w12) // e12 = dsigmoid_dx(v12) * (target1 - v12)
 
     // layer1            layer1-2          layer2    +-------------+
     //                                               |             |
