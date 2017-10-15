@@ -153,16 +153,16 @@ clean_lint :
 	-rm $(LINT_PASS_FILES) $(LINT_FAIL_FILES)
 
 #==================
-# doc
+# docs
 #==================
 
-DOC_PATH = doc
+DOC_PATH = docs
 DOC_CONFIG_FILE = dexvt-test.config
 DOC_CONFIG_PATCH_FILE = $(DOC_CONFIG_FILE).patch
 DOC_TOOL = doxygen
 
-.PHONY : doc
-doc :
+.PHONY : docs
+docs :
 	mkdir -p $(BUILD_PATH)
 	doxygen -g $(BUILD_PATH)/$(DOC_CONFIG_FILE)
 	patch $(BUILD_PATH)/$(DOC_CONFIG_FILE) < $(DOC_PATH)/$(DOC_CONFIG_PATCH_FILE)
