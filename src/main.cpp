@@ -2,7 +2,7 @@
  * From the OpenGL Programming wikibook: http://en.wikibooks.org/wiki/OpenGL_Programming
  * This file is in the public domain.
  * Contributors: Sylvain Beucler
- * Enhanced by: Jerry Chen
+ * Enhanced by: onlyuser
  */
 #include <stdio.h>
 #include <stdlib.h>

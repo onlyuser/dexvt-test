@@ -1,3 +1,20 @@
+// This file is part of dexvt-lite.
+// -- 3D Inverse Kinematics (Cyclic Coordinate Descent) with Constraints
+// Copyright (C) 2018 onlyuser <mailto:onlyuser@gmail.com>
+//
+// dexvt-lite is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// dexvt-lite is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with dexvt-lite.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef VT_TRANSFORM_OBJECT_H_
 #define VT_TRANSFORM_OBJECT_H_
 
@@ -64,12 +81,12 @@ public:
     const glm::vec3 &get_joint_constraints_center() const        { return m_joint_constraints_center; }
     const glm::vec3 &get_joint_constraints_max_deviation() const { return m_joint_constraints_max_deviation; }
     euler_index_t get_hinge_type() const                         { return m_hinge_type; }
-    void set_joint_type(joint_type_t joint_type)                                        { m_joint_type                      = joint_type; }
-    void set_enable_joint_constraints(glm::ivec3 enable_joint_constraints)              { m_enable_joint_constraints        = enable_joint_constraints; }
+    void set_joint_type(joint_type_t joint_type)                 { m_joint_type = joint_type; }
+    void set_enable_joint_constraints(glm::ivec3 enable_joint_constraints);
     void set_joint_constraints_center(glm::vec3 joint_constraints_center)               { m_joint_constraints_center        = joint_constraints_center; }
     void set_joint_constraints_max_deviation(glm::vec3 joint_constraints_max_deviation) { m_joint_constraints_max_deviation = joint_constraints_max_deviation; }
-    void set_hinge_type(euler_index_t hinge_type)                                       { m_hinge_type                      = hinge_type; }
-    bool is_hinge() const                                                               { return m_hinge_type != EULER_INDEX_UNDEF; }
+    void set_hinge_type(euler_index_t hinge_type);
+    bool is_hinge() const { return m_hinge_type != EULER_INDEX_UNDEF; }
     void apply_hinge_constraints_perpendicular_to_plane_of_free_rotation();
     void apply_hinge_constraints_within_plane_of_free_rotation();
     void apply_joint_constraints();
@@ -105,16 +122,16 @@ protected:
     glm::mat4 m_transform;
     glm::mat4 m_normal_transform;
 
+    // hierarchy related
+    TransformObject*           m_parent;
+    std::set<TransformObject*> m_children;
+
     // joint constraints
     joint_type_t  m_joint_type;
     glm::ivec3    m_enable_joint_constraints;
     glm::vec3     m_joint_constraints_center;
     glm::vec3     m_joint_constraints_max_deviation;
     euler_index_t m_hinge_type;
-
-    // hierarchy related
-    TransformObject*           m_parent;
-    std::set<TransformObject*> m_children;
 
     // caching
     void mark_dirty_transform() {
@@ -127,6 +144,9 @@ private:
     // caching
     bool m_is_dirty_transform;
     bool m_is_dirty_normal_transform;
+
+    // joint constraints
+    void check_roll_hinge();
 
     // optional advanced features
     virtual void flatten(glm::mat4* basis = NULL) {}

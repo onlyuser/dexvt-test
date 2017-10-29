@@ -1,3 +1,20 @@
+// This file is part of dexvt-lite.
+// -- 3D Inverse Kinematics (Cyclic Coordinate Descent) with Constraints
+// Copyright (C) 2018 onlyuser <mailto:onlyuser@gmail.com>
+//
+// dexvt-lite is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// dexvt-lite is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with dexvt-lite.  If not, see <http://www.gnu.org/licenses/>.
+
 #include <TransformObject.h>
 #include <NamedObject.h>
 #include <Util.h>
@@ -18,12 +35,12 @@ TransformObject::TransformObject(std::string name,
       m_origin(origin),
       m_euler(euler),
       m_scale(scale),
+      m_parent(NULL),
       m_joint_type(                     JOINT_TYPE_REVOLUTE),
       m_enable_joint_constraints(       glm::ivec3(0)),
       m_joint_constraints_center(       glm::vec3(0)),
       m_joint_constraints_max_deviation(glm::vec3(0)),
       m_hinge_type(EULER_INDEX_UNDEF),
-      m_parent(NULL),
       m_is_dirty_transform(true),
       m_is_dirty_normal_transform(true)
 {
@@ -200,10 +217,29 @@ void TransformObject::unlink_children()
 // joint constraints
 //==================
 
+void TransformObject::check_roll_hinge()
+{
+    if(m_hinge_type == EULER_INDEX_ROLL && !m_enable_joint_constraints[1]) {
+        std::cout << "Info: Object \"" << m_name << "\": Roll hinge requires enabling joint constraints for roll axis" << std::endl;
+    }
+}
+
+void TransformObject::set_hinge_type(euler_index_t hinge_type)
+{
+    m_hinge_type = hinge_type;
+    check_roll_hinge();
+}
+
+void TransformObject::set_enable_joint_constraints(glm::ivec3 enable_joint_constraints)
+{
+    m_enable_joint_constraints = enable_joint_constraints;
+    check_roll_hinge();
+}
+
 void TransformObject::apply_hinge_constraints_perpendicular_to_plane_of_free_rotation()
 {
     static bool disable_recursion = false;
-    if(!is_hinge() || disable_recursion) {
+    if(!is_hinge() || m_hinge_type == EULER_INDEX_ROLL || disable_recursion) { // NOTE: roll hinge joints too unstable
         return;
     }
     glm::vec3 local_heading;
@@ -259,19 +295,19 @@ void TransformObject::apply_hinge_constraints_perpendicular_to_plane_of_free_rot
 
 void TransformObject::apply_hinge_constraints_within_plane_of_free_rotation()
 {
-    if(!is_hinge()) {
+    if(!is_hinge() || m_hinge_type == EULER_INDEX_ROLL) { // NOTE: roll hinge joints too unstable
         return;
     }
     glm::vec3 parent_abs_origin;
     glm::mat4 parent_transform;
     glm::vec3 parent_abs_up_direction;
     if(m_parent) {
-        parent_abs_origin = m_parent->in_abs_system();
-        parent_transform  = m_parent->get_transform();
+        parent_abs_origin       = m_parent->in_abs_system();
+        parent_transform        = m_parent->get_transform();
         parent_abs_up_direction = m_parent->get_abs_up_direction();
     } else {
-        parent_abs_origin = glm::vec3(0);
-        parent_transform  = glm::mat4(1);
+        parent_abs_origin       = glm::vec3(0);
+        parent_transform        = glm::mat4(1);
         parent_abs_up_direction = VEC_UP;
     }
     glm::vec3 abs_heading            = get_abs_heading();
@@ -279,7 +315,10 @@ void TransformObject::apply_hinge_constraints_within_plane_of_free_rotation()
     center_local_euler[m_hinge_type] = m_joint_constraints_center[m_hinge_type];
     glm::vec3 center_dir             = dir_from_point_as_offset_in_other_system(center_local_euler, parent_transform, parent_abs_origin);
     // if pointing backwards and not yet suppressed roll and yaw
-    if(glm::dot(get_abs_up_direction(), parent_abs_up_direction) < 0 && !(m_euler[EULER_INDEX_ROLL] == 0 && m_euler[EULER_INDEX_YAW] == 0)) {
+    if(m_hinge_type == EULER_INDEX_PITCH &&
+       glm::dot(get_abs_up_direction(), parent_abs_up_direction) < 0 &&
+       !(m_euler[EULER_INDEX_ROLL] == 0 && m_euler[EULER_INDEX_YAW] == 0))
+    {
         // suppress roll and yaw and remap pitch from [-90, 90] to [-90, -270]
         m_euler[EULER_INDEX_ROLL]  = 0;
         m_euler[EULER_INDEX_PITCH] = -180 - m_euler[EULER_INDEX_PITCH];
@@ -290,6 +329,9 @@ void TransformObject::apply_hinge_constraints_within_plane_of_free_rotation()
         center_local_euler               = m_euler;
         center_local_euler[m_hinge_type] = m_joint_constraints_center[m_hinge_type];
         center_dir                       = dir_from_point_as_offset_in_other_system(center_local_euler, parent_transform, parent_abs_origin);
+    }
+    if(fabs(m_euler[vt::EULER_INDEX_ROLL]) > 90) { // if upside down for some reason, right it
+        m_euler[vt::EULER_INDEX_ROLL] = 0;
     }
     if(glm::degrees(glm::angle(abs_heading, center_dir)) <= m_joint_constraints_max_deviation[m_hinge_type]) { // if not violating constraints, leave it
         return;
@@ -311,7 +353,7 @@ void TransformObject::apply_joint_constraints()
 {
     switch(m_joint_type) {
         case JOINT_TYPE_REVOLUTE:
-            if(is_hinge()) {
+            if(is_hinge() && m_hinge_type != EULER_INDEX_ROLL) { // NOTE: roll hinge joints too unstable
                 apply_hinge_constraints_perpendicular_to_plane_of_free_rotation(); // provides stability; prevents numerical errors from accumulating
                 apply_hinge_constraints_within_plane_of_free_rotation();           // enforces joint limits
                 break;

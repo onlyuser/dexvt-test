@@ -74,7 +74,6 @@ clean_objects :
 #==================
 
 SHARED_CPP_STEMS = BBoxObject \
-                   BPNet \
                    Buffer \
                    Camera \
                    File3ds \
@@ -83,7 +82,6 @@ SHARED_CPP_STEMS = BBoxObject \
                    KeyframeMgr \
                    Light \
                    Modifiers \
-                   main \
                    Material \
                    Mesh \
                    NamedObject \

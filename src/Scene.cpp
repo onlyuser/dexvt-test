@@ -1,3 +1,20 @@
+// This file is part of dexvt-lite.
+// -- 3D Inverse Kinematics (Cyclic Coordinate Descent) with Constraints
+// Copyright (C) 2018 onlyuser <mailto:onlyuser@gmail.com>
+//
+// dexvt-lite is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// dexvt-lite is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with dexvt-lite.  If not, see <http://www.gnu.org/licenses/>.
+
 #include <Scene.h>
 #include <ShaderContext.h>
 #include <Camera.h>
@@ -40,6 +57,9 @@
         glVertex3fv(&m2.x); \
         glVertex3fv(&p2.x);
 
+#define CONSTRAINT_SWIPE_STEP_ANGLE 5
+#define CONSTRAINT_SWIPE_RADIUS     1.0f
+
 namespace vt {
 
 Scene::Scene()
@@ -68,25 +88,18 @@ Scene::Scene()
     m_light_pos     = new GLfloat[NUM_LIGHTS * 3];
     m_light_color   = new GLfloat[NUM_LIGHTS * 3];
     m_light_enabled = new GLint[NUM_LIGHTS];
-    for(int q = 0; q < NUM_LIGHTS; q++) {
-        m_light_pos[q * 3 + 0]   = 0;
-        m_light_pos[q * 3 + 1]   = 0;
-        m_light_pos[q * 3 + 2]   = 0;
-        m_light_color[q * 3 + 0] = 0;
-        m_light_color[q * 3 + 1] = 0;
-        m_light_color[q * 3 + 2] = 0;
-        m_light_enabled[q]       = 0;
-    }
+    memset(m_light_pos,     0, sizeof(GLfloat) * 3 * NUM_LIGHTS);
+    memset(m_light_color,   0, sizeof(GLfloat) * 3 * NUM_LIGHTS);
+    memset(m_light_enabled, 0, sizeof(GLint)       * NUM_LIGHTS);
 
     // http://john-chapman-graphics.blogspot.tw/2013/01/ssao-tutorial.html
     m_ssao_sample_kernel_pos = new GLfloat[NUM_SSAO_SAMPLE_KERNELS * 3];
     for(int r = 0; r < NUM_SSAO_SAMPLE_KERNELS; r++) {
         glm::vec3 offset;
         do {
-            offset = glm::vec3(
-                    m_ssao_sample_kernel_pos[r * 3 + 0] = (static_cast<float>(rand()) / RAND_MAX) * 2 - 1,
-                    m_ssao_sample_kernel_pos[r * 3 + 1] = (static_cast<float>(rand()) / RAND_MAX) * 2 - 1,
-                    m_ssao_sample_kernel_pos[r * 3 + 2] =  static_cast<float>(rand()) / RAND_MAX);
+            offset = glm::vec3(m_ssao_sample_kernel_pos[r * 3 + 0] = (static_cast<float>(rand()) / RAND_MAX) * 2 - 1,
+                               m_ssao_sample_kernel_pos[r * 3 + 1] = (static_cast<float>(rand()) / RAND_MAX) * 2 - 1,
+                               m_ssao_sample_kernel_pos[r * 3 + 2] =  static_cast<float>(rand()) / RAND_MAX);
         } while(glm::dot(glm::vec3(0, 0, 1), offset) < 0.15);
         float scale = static_cast<float>(r) / NUM_SSAO_SAMPLE_KERNELS;
         scale = glm::lerp(0.1f, 1.0f, scale * scale);
@@ -740,6 +753,7 @@ void Scene::render_lines_and_text(bool  draw_guide_wires,
 
             // x-axis
             {
+                // red
                 glColor3f(1, 0, 0);
                 glm::vec3 v;
                 glVertex3fv(&v.x);
@@ -749,6 +763,7 @@ void Scene::render_lines_and_text(bool  draw_guide_wires,
 
             // y-axis
             {
+                // green
                 glColor3f(0, 1, 0);
                 glm::vec3 v;
                 glVertex3fv(&v.x);
@@ -758,11 +773,128 @@ void Scene::render_lines_and_text(bool  draw_guide_wires,
 
             // z-axis
             {
+                // blue
                 glColor3f(0, 0, 1);
                 glm::vec3 v;
                 glVertex3fv(&v.x);
                 v += glm::vec3(0, 0, axis_arm_length);
                 glVertex3fv(&v.x);
+            }
+
+            glEnd();
+            glLineWidth(1);
+        }
+
+        if(draw_guide_wires && (*p)->is_hinge()) {
+            glm::mat4 parent_transform;
+            TransformObject* parent = (*p)->get_parent();
+            if(parent) {
+                parent_transform = parent->get_transform();
+            } else {
+                parent_transform = glm::mat4(1);
+            }
+
+            euler_index_t hinge_type = (*p)->get_hinge_type();
+
+            glm::mat4 euler_transform_sans_hinge_rotate;
+            glm::vec3 euler = (*p)->get_euler();
+            switch(hinge_type) {
+                case vt::EULER_INDEX_ROLL:
+                    euler_transform_sans_hinge_rotate = GLM_EULER_TRANSFORM(EULER_YAW(euler), EULER_PITCH(euler), 0.0f);
+                    break;
+                case vt::EULER_INDEX_PITCH:
+                    euler_transform_sans_hinge_rotate = GLM_EULER_TRANSFORM(EULER_YAW(euler), 0.0f, EULER_ROLL(euler));
+                    break;
+                case vt::EULER_INDEX_YAW:
+                    euler_transform_sans_hinge_rotate = GLM_EULER_TRANSFORM(0.0f, EULER_PITCH(euler), EULER_ROLL(euler));
+                    break;
+                default:
+                    break;
+            }
+
+            glLoadMatrixf(glm::value_ptr(m_camera->get_transform() * euler_transform_sans_hinge_rotate * parent_transform));
+            glLineWidth(guide_wire_width);
+            glBegin(GL_LINES);
+
+            {
+                // yellow
+                glColor3f(1, 1, 0);
+
+                glm::vec3 joint_constraints_center        = (*p)->get_joint_constraints_center();
+                glm::vec3 joint_constraints_max_deviation = (*p)->get_joint_constraints_max_deviation();
+                float min_value    = joint_constraints_center[hinge_type] - joint_constraints_max_deviation[hinge_type];
+                float center_value = joint_constraints_center[hinge_type];
+                float max_value    = joint_constraints_center[hinge_type] + joint_constraints_max_deviation[hinge_type];
+
+                glm::vec3 swipe_vec;
+                glm::vec3 rotate_axis;
+                switch(hinge_type) {
+                    case vt::EULER_INDEX_ROLL:
+                        swipe_vec   = VEC_UP;
+                        rotate_axis = VEC_FORWARD;
+                        break;
+                    case vt::EULER_INDEX_PITCH:
+                        swipe_vec   = VEC_FORWARD;
+                        rotate_axis = VEC_LEFT;
+                        break;
+                    case vt::EULER_INDEX_YAW:
+                        swipe_vec   = VEC_FORWARD;
+                        rotate_axis = VEC_UP;
+                        break;
+                    default:
+                        break;
+                }
+                swipe_vec *= CONSTRAINT_SWIPE_RADIUS;
+
+                // min edge
+                {
+                    glm::mat4 local_arc_rotation_transform = GLM_ROTATION_TRANSFORM(glm::mat4(1), min_value, rotate_axis);
+                    glm::vec3 local_heading = glm::vec3(local_arc_rotation_transform * glm::vec4(swipe_vec, 1));
+                    glm::vec3 v((*p)->get_origin());
+                    glVertex3fv(&v.x);
+                    v += local_heading;
+                    glVertex3fv(&v.x);
+                }
+
+                // center edge
+                {
+                    glm::mat4 local_arc_rotation_transform = GLM_ROTATION_TRANSFORM(glm::mat4(1), center_value, rotate_axis);
+                    glm::vec3 local_heading = glm::vec3(local_arc_rotation_transform * glm::vec4(swipe_vec, 1));
+                    glm::vec3 v((*p)->get_origin());
+                    glVertex3fv(&v.x);
+                    v += local_heading;
+                    glVertex3fv(&v.x);
+                }
+
+                // max edge
+                {
+                    glm::mat4 local_arc_rotation_transform = GLM_ROTATION_TRANSFORM(glm::mat4(1), max_value, rotate_axis);
+                    glm::vec3 local_heading = glm::vec3(local_arc_rotation_transform * glm::vec4(swipe_vec, 1));
+                    glm::vec3 v((*p)->get_origin());
+                    glVertex3fv(&v.x);
+                    v += local_heading;
+                    glVertex3fv(&v.x);
+                }
+
+                // arc rim
+                {
+                    glm::vec3 prev_endpoint;
+                    for(float angle = min_value; angle < max_value; angle += CONSTRAINT_SWIPE_STEP_ANGLE) {
+                        glm::mat4 local_arc_rotation_transform = GLM_ROTATION_TRANSFORM(glm::mat4(1), angle, rotate_axis);
+                        glm::vec3 local_heading = glm::vec3(local_arc_rotation_transform * glm::vec4(swipe_vec, 1));
+                        glm::vec3 v((*p)->get_origin() + local_heading);
+                        if(angle != min_value) {
+                            glVertex3fv(&prev_endpoint.x);
+                            glVertex3fv(&v.x);
+                        }
+                        prev_endpoint = v;
+                    }
+                    glm::mat4 local_arc_rotation_transform = GLM_ROTATION_TRANSFORM(glm::mat4(1), max_value, rotate_axis);
+                    glm::vec3 local_heading = glm::vec3(local_arc_rotation_transform * glm::vec4(swipe_vec, 1));
+                    glm::vec3 v((*p)->get_origin() + local_heading);
+                    glVertex3fv(&prev_endpoint.x);
+                    glVertex3fv(&v.x);
+                }
             }
 
             glEnd();
