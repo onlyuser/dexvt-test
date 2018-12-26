@@ -22,6 +22,8 @@
 
 namespace vt {
 
+class TransformObject;
+
 class BBoxObject
 {
 public:
@@ -35,15 +37,37 @@ public:
         ALIGN_Z_MAX
     };
 
+    BBoxObject();
+    BBoxObject(glm::vec3 min, glm::vec3 max);
     void set_min_max(glm::vec3 min, glm::vec3 max);
     void get_min_max(glm::vec3* min, glm::vec3* max) const;
+    glm::vec3 get_dim() const;
     glm::vec3 get_center(align_t align = ALIGN_CENTER) const;
+    bool is_within(glm::vec3 pos) const;
+    glm::vec3 limit(glm::vec3 pos) const;
+    glm::vec3 wrap(glm::vec3 pos) const;
+    bool is_bbox_collide(TransformObject* self_transform_object,
+                         TransformObject* other_transform_object,
+                         BBoxObject*      other_bbox_object);
+    bool is_sphere_collide(TransformObject* self_transform_object,
+                           glm::vec3        other_abs_point,
+                           float            other_sphere_radius);
+    bool is_ray_intersect(TransformObject* self_transform_object,
+                          glm::vec3        ray_origin,
+                          glm::vec3        ray_dir,
+                          float*           intersection_distance = NULL,
+                          glm::vec3*       reflected_ray         = NULL,
+                          glm::vec3*       intersection_normal   = NULL);
+    bool as_sphere_is_ray_intersect(TransformObject* self_transform_object,
+                                    glm::vec3        ray_origin,
+                                    glm::vec3        ray_dir,
+                                    float*           intersection_distance = NULL,
+                                    glm::vec3*       reflected_ray         = NULL,
+                                    glm::vec3*       intersection_normal   = NULL);
 
 protected:
     glm::vec3 m_min;
     glm::vec3 m_max;
-
-    BBoxObject();
 };
 
 }

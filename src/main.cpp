@@ -46,6 +46,8 @@
 #include <iomanip> // std::setprecision
 #include <unistd.h> // access
 
+#include <cfenv>
+
 #define HI_RES_TEX_DIM  512
 #define MED_RES_TEX_DIM 256
 #define LO_RES_TEX_DIM  128
@@ -275,10 +277,10 @@ int init_resources()
                                                              "src/shaders/texture_mapped.f.glsl");
     scene->add_material(texture_mapped_material);
 
-    vt::Material* env_mapped_material = new vt::Material("env_mapped",
-                                                         "src/shaders/env_mapped.v.glsl",
-                                                         "src/shaders/env_mapped.f.glsl");
-    scene->add_material(env_mapped_material);
+    vt::Material* env_mapped_chroma_disp_material = new vt::Material("env_mapped_chroma_disp",
+                                                                     "src/shaders/env_mapped_chroma_disp.v.glsl",
+                                                                     "src/shaders/env_mapped_chroma_disp.f.glsl");
+    scene->add_material(env_mapped_chroma_disp_material);
 
     vt::Material* env_mapped_dbl_refract_material = new vt::Material("env_mapped_dbl_refract",
                                                                      "src/shaders/env_mapped_dbl_refract.v.glsl",
@@ -330,14 +332,14 @@ int init_resources()
                                "data/chesterfield_color.png");
     scene->add_texture(                          texture3);
     bump_mapped_material->add_texture(           texture3);
-    env_mapped_material->add_texture(            texture3);
+    env_mapped_chroma_disp_material->add_texture(texture3);
     env_mapped_dbl_refract_material->add_texture(texture3);
 
     texture4 = new vt::Texture("chesterfield_normal",
                                "data/chesterfield_normal.png");
     scene->add_texture(                          texture4);
     bump_mapped_material->add_texture(           texture4);
-    env_mapped_material->add_texture(            texture4);
+    env_mapped_chroma_disp_material->add_texture(texture4);
     env_mapped_dbl_refract_material->add_texture(texture4);
     normal_material->add_texture(                texture4);
 
@@ -350,7 +352,7 @@ int init_resources()
                                "data/SaintPetersSquare2/negz.png");
     scene->add_texture(                          texture5);
     skybox_material->add_texture(                texture5);
-    env_mapped_material->add_texture(            texture5);
+    env_mapped_chroma_disp_material->add_texture(texture5);
     env_mapped_dbl_refract_material->add_texture(texture5);
     env_mapped_fast_material->add_texture(       texture5);
 
@@ -455,11 +457,11 @@ int init_resources()
     mesh->set_material(bump_mapped_material);
     mesh->set_texture_index(     mesh->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh->set_bump_texture_index(mesh->get_material()->get_texture_index_by_name("chesterfield_normal"));
-    mesh->set_ambient_color(glm::vec3(0,0,0));
+    mesh->set_ambient_color(glm::vec3(0, 0, 0));
 
     // grid
     mesh2->set_material(ambient_material);
-    mesh2->set_ambient_color(glm::vec3(0,0,0));
+    mesh2->set_ambient_color(glm::vec3(0, 0, 0));
 
     // sphere
     mesh3->set_material(env_mapped_dbl_refract_material);
@@ -471,7 +473,7 @@ int init_resources()
     mesh3->set_backface_normal_overlay_texture_index(mesh3->get_material()->get_texture_index_by_name("backface_normal_overlay"));
 
     // torus
-    mesh4->set_material(env_mapped_material);
+    mesh4->set_material(env_mapped_chroma_disp_material);
     mesh4->set_reflect_to_refract_ratio(1); // 100% reflective
     mesh4->set_texture_index(     mesh4->get_material()->get_texture_index_by_name("chesterfield_color"));
     mesh4->set_bump_texture_index(mesh4->get_material()->get_texture_index_by_name("chesterfield_normal"));
@@ -605,19 +607,17 @@ void apply_bloom_filter(vt::Scene*       scene,
                         float            glow_cutoff_threshold,
                         vt::FrameBuffer* output_fb)
 {
-    vt::Mesh* mesh_overlay = scene->get_overlay();
-
     // switch to write-through mode to perform downsampling
     mesh_overlay->set_material(overlay_write_through_material);
 
     // linear downsample texture from hi-res to med-res
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(input_to_blur_texture));
+    mesh_overlay->set_texture_index(overlay_write_through_material->get_texture_index(input_to_blur_texture));
     med_res_color_overlay_fb->bind();
     scene->render(false, true);
     med_res_color_overlay_fb->unbind();
 
     // linear downsample texture from med-res to lo-res
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(med_res_color_overlay_fb->get_texture()));
+    mesh_overlay->set_texture_index(overlay_write_through_material->get_texture_index(med_res_color_overlay_fb->get_texture()));
     lo_res_color_overlay_fb->bind();
     scene->render(false, true);
     lo_res_color_overlay_fb->unbind();
@@ -626,7 +626,7 @@ void apply_bloom_filter(vt::Scene*       scene,
     mesh_overlay->set_material(overlay_bloom_filter_material);
 
     // blur texture in low-res
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(lo_res_color_overlay_fb->get_texture()));
+    mesh_overlay->set_texture_index(overlay_bloom_filter_material->get_texture_index(lo_res_color_overlay_fb->get_texture()));
     lo_res_color_overlay_fb->bind();
     for(int i = 0; i < blur_iters; i++) {
         scene->render(false, true);
@@ -635,17 +635,13 @@ void apply_bloom_filter(vt::Scene*       scene,
 
     // switch to max mode to merge blurred low-res texture with hi-res texture
     mesh_overlay->set_material(overlay_max_material);
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(lo_res_color_overlay_fb->get_texture()));
-    mesh_overlay->set_texture2_index(mesh_overlay->get_material()->get_texture_index(input_sharp_texture));
+    mesh_overlay->set_texture_index(overlay_max_material->get_texture_index(lo_res_color_overlay_fb->get_texture()));
+    mesh_overlay->set_texture2_index(overlay_max_material->get_texture_index(input_sharp_texture));
 
     output_fb->bind();
     scene->set_glow_cutoff_threshold(glow_cutoff_threshold); // allow bloom only if summed rgb brighter than glow cutoff threshold
     scene->render(false, true);
     output_fb->unbind();
-
-    // switch to write-through mode to display final output texture
-    mesh_overlay->set_material(overlay_write_through_material);
-    mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(output_fb->get_texture()));
 }
 
 void onDisplay()
@@ -683,6 +679,10 @@ void onDisplay()
                            hi_res_color_overlay_fb->get_texture(), // input_sharp_texture
                            0,                                      // glow_cutoff_threshold
                            ssao_overlay_fb);                       // output_fb
+
+        // switch to write-through mode to display final output texture
+        mesh_overlay->set_material(overlay_write_through_material);
+        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(ssao_overlay_fb->get_texture()));
     }
 
     glCullFace(GL_FRONT);
@@ -709,6 +709,10 @@ void onDisplay()
                            hi_res_color_overlay_fb->get_texture(), // input_sharp_texture
                            0.75,                                   // glow_cutoff_threshold
                            hi_res_color_overlay_fb);               // output_fb
+
+        // switch to write-through mode to display final output texture
+        mesh_overlay->set_material(overlay_write_through_material);
+        mesh_overlay->set_texture_index(mesh_overlay->get_material()->get_texture_index(hi_res_color_overlay_fb->get_texture()));
     }
 
     if(wireframe_mode) {
@@ -989,6 +993,14 @@ void onReshape(int width, int height)
 
 int main(int argc, char* argv[])
 {
+// NOTE: still something wrong with depth map loading; crashes on Texture.cpp:688 in vt::Texture::update
+//       throws SIGFPE in glTexImage2D when use GL_DEPTH_COMPONENT
+//       causes rendering artifacts in SSAO when use GL_R32F
+#if 0
+    // https://stackoverflow.com/questions/5393997/stopping-the-debugger-when-a-nan-floating-point-number-is-produced/5394095
+    feenableexcept(FE_INVALID | FE_OVERFLOW);
+#endif
+
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_ALPHA | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(init_screen_width, init_screen_height);

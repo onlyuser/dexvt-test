@@ -54,11 +54,6 @@ glm::vec3 euler_to_offset(glm::vec3  euler,
     return glm::vec3(euler_transform_sans_roll * glm::vec4(VEC_FORWARD, 1));
 }
 
-glm::vec3 euler_to_offset(glm::vec3 euler)
-{
-    return euler_to_offset(euler, NULL);
-}
-
 glm::vec3 offset_to_euler(glm::vec3  offset,
                           glm::vec3* up_direction) // in
 {
@@ -67,8 +62,8 @@ glm::vec3 offset_to_euler(glm::vec3  offset,
     // pitch
     if(static_cast<float>(fabs(offset.x)) > EPSILON || static_cast<float>(fabs(offset.z)) > EPSILON) {
         // non-vertical
-        flattened_offset   = glm::normalize(glm::vec3(offset.x, 0, offset.z));
-        EULER_PITCH(euler) = glm::degrees(glm::angle(flattened_offset, glm::normalize(offset)));
+        flattened_offset   = safe_normalize(glm::vec3(offset.x, 0, offset.z));
+        EULER_PITCH(euler) = glm::degrees(glm::angle(flattened_offset, safe_normalize(offset)));
     } else {
         // vertical
         if(up_direction) {
@@ -93,7 +88,7 @@ glm::vec3 offset_to_euler(glm::vec3  offset,
     if(up_direction) {
         glm::mat4 euler_transform_sans_roll         = GLM_EULER_TRANSFORM_SANS_ROLL(EULER_YAW(euler), EULER_PITCH(euler));
         glm::vec3 local_up_direction_roll_component = glm::vec3(glm::inverse(euler_transform_sans_roll) * glm::vec4(*up_direction, 1));
-        EULER_ROLL(euler)                           = glm::degrees(glm::angle(glm::normalize(local_up_direction_roll_component), VEC_UP));
+        EULER_ROLL(euler)                           = glm::degrees(glm::angle(safe_normalize(local_up_direction_roll_component), VEC_UP));
         if(local_up_direction_roll_component.x > 0) {
             EULER_ROLL(euler) = -fabs(EULER_ROLL(euler));
         }
@@ -102,19 +97,20 @@ glm::vec3 offset_to_euler(glm::vec3  offset,
     return euler;
 }
 
-glm::vec3 offset_to_euler(glm::vec3 offset)
+glm::vec3 as_offset_in_other_system(glm::vec3 euler, glm::mat4 transform, bool as_up_direction)
 {
-    return offset_to_euler(offset, NULL);
+    glm::vec3 offset;
+    if(as_up_direction) {
+        euler_to_offset(euler, &offset);
+    } else {
+        offset = euler_to_offset(euler);
+    }
+    return glm::vec3(transform * glm::vec4(offset, 1));
 }
 
-glm::vec3 as_offset_in_other_system(glm::vec3 euler, glm::mat4 transform)
+glm::vec3 dir_from_point_as_offset_in_other_system(glm::vec3 euler, glm::mat4 transform, glm::vec3 point, bool as_up_direction)
 {
-    return glm::vec3(transform * glm::vec4(euler_to_offset(euler), 1));
-}
-
-glm::vec3 dir_from_point_as_offset_in_other_system(glm::vec3 euler, glm::mat4 transform, glm::vec3 point)
-{
-    return glm::normalize(as_offset_in_other_system(euler, transform) - point);
+    return safe_normalize(as_offset_in_other_system(euler, transform, as_up_direction) - point);
 }
 
 glm::vec3 euler_modulo(glm::vec3 euler)
@@ -165,6 +161,68 @@ glm::vec3 nearest_point_on_plane(glm::vec3 plane_origin, glm::vec3 plane_normal,
     return point - plane_normal * (glm::dot(point, plane_normal) - glm::dot(plane_origin, plane_normal));
 }
 
+// https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-plane-and-ray-disk-intersection
+float ray_plane_intersection(glm::vec3  plane_origin,
+                             glm::vec3  plane_normal,
+                             glm::vec3  ray_origin,
+                             glm::vec3  ray_dir,
+                             glm::vec3* reflected_ray)
+{
+    float denom = glm::dot(ray_dir, plane_normal);
+    if(fabs(denom) < EPSILON) {
+        return BIG_NUMBER;
+    }
+    float result = (glm::dot(plane_origin - ray_origin, plane_normal)) / denom;
+    if(result < 0) {
+        return BIG_NUMBER;
+    }
+    if(reflected_ray) {
+        *reflected_ray = glm::reflect(ray_dir, plane_normal);
+    }
+    return result;
+}
+
+// https://en.wikipedia.org/wiki/Vector_projection
+glm::vec3 projection_onto(glm::vec3 a, glm::vec3 b)
+{
+    glm::vec3 norm_b = safe_normalize(b);
+    return norm_b * glm::dot(a, norm_b);
+}
+
+// https://en.wikipedia.org/wiki/Vector_projection
+glm::vec3 rejection_from(glm::vec3 a, glm::vec3 b)
+{
+    return a - projection_onto(a, b);
+}
+
+float ray_sphere_intersection(glm::vec3  sphere_origin,
+                              float      sphere_radius,
+                              glm::vec3  ray_origin,
+                              glm::vec3  ray_dir,
+                              glm::vec3* reflected_ray,
+                              glm::vec3* intersection_normal)
+{
+    glm::vec3 ray_origin_to_sphere_origin = sphere_origin - ray_origin;
+    glm::vec3 ray_nearest_point_to_sphere = ray_origin + projection_onto(ray_origin_to_sphere_origin, ray_dir);
+    glm::vec3 to_ray_from_sphere = ray_nearest_point_to_sphere - sphere_origin;
+    float distance_to_ray_from_sphere = glm::length(to_ray_from_sphere);
+    if(distance_to_ray_from_sphere > sphere_radius ||                    // ray entirely misses sphere
+       glm::dot(sphere_origin, ray_dir) < glm::dot(ray_origin, ray_dir)) // ray points away from sphere
+    {
+        return BIG_NUMBER;
+    }
+    float half_length_inside_sphere = pow(pow(sphere_radius, 2) - pow(distance_to_ray_from_sphere, 2), 0.5);
+    glm::vec3 intersection = ray_nearest_point_to_sphere + safe_normalize(ray_origin - ray_nearest_point_to_sphere) * half_length_inside_sphere;
+    glm::vec3 _intersection_normal = safe_normalize(intersection - sphere_origin);
+    if(reflected_ray) {
+        *reflected_ray = glm::reflect(ray_dir, _intersection_normal);
+    }
+    if(intersection_normal) {
+        *intersection_normal = _intersection_normal;
+    }
+    return glm::distance(ray_origin, intersection);
+}
+
 // https://en.wikipedia.org/wiki/Bernstein_polynomial
 glm::vec3 bezier_interpolate(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4, float alpha)
 {
@@ -204,7 +262,7 @@ bool read_file(std::string filename, std::string &s)
     return true;
 }
 
-bool regexp(std::string &s, std::string pattern, std::vector<std::string*> &cap_groups, size_t* start_pos)
+bool regexp(const std::string& s, const std::string& pattern, std::vector<std::string*> &cap_groups, size_t* start_pos)
 {
     int nmatch = cap_groups.size();
     if(!nmatch) {
@@ -242,12 +300,12 @@ bool regexp(std::string &s, std::string pattern, std::vector<std::string*> &cap_
     return true;
 }
 
-bool regexp(std::string &s, std::string pattern, std::vector<std::string*> &cap_groups)
+bool regexp(const std::string& s, const std::string& pattern, std::vector<std::string*> &cap_groups)
 {
     return regexp(s, pattern, cap_groups, NULL);
 }
 
-bool regexp(std::string &s, std::string pattern, int nmatch, ...)
+bool regexp(const std::string& s, const std::string& pattern, int nmatch, ...)
 {
     if(!nmatch) {
         return false;
@@ -260,187 +318,6 @@ bool regexp(std::string &s, std::string pattern, int nmatch, ...)
     }
     va_end(ap);
     return regexp(s, pattern, args);
-}
-
-bool read_png(std::string png_filename,
-              void**      pixel_data,
-              size_t*     width,
-              size_t*     height)
-{
-    if(!pixel_data || !width || !height) {
-        return false;
-    }
-    unsigned char* src_pixel_data = NULL;
-    size_t src_width  = 0;
-    size_t src_height = 0;
-    int color_type = 0;
-    if(!read_png_impl(png_filename,
-                      reinterpret_cast<void**>(&src_pixel_data),
-                      &src_width,
-                      &src_height,
-                      &color_type) || !src_pixel_data)
-    {
-        return false;
-    }
-    unsigned char* dest_pixel_data = NULL;
-    size_t size_buf = src_width * src_height * sizeof(unsigned char) * 4;
-    dest_pixel_data = new unsigned char[size_buf];
-    if(!dest_pixel_data) {
-        return false;
-    }
-    switch(color_type) {
-        case PNG_COLOR_MASK_COLOR:
-            for(int y = 0; y < static_cast<int>(src_height); y++) {
-                for(int x = 0; x < static_cast<int>(src_width); x++) {
-                    int src_pixel_offset_scanline_start  = (y * src_width + x) * 3;
-                    int dest_pixel_offset_scanline_start = (y * src_width + x) * 4;
-                    dest_pixel_data[dest_pixel_offset_scanline_start + 0] = src_pixel_data[src_pixel_offset_scanline_start + 0];
-                    dest_pixel_data[dest_pixel_offset_scanline_start + 1] = src_pixel_data[src_pixel_offset_scanline_start + 1];
-                    dest_pixel_data[dest_pixel_offset_scanline_start + 2] = src_pixel_data[src_pixel_offset_scanline_start + 2];
-                    dest_pixel_data[dest_pixel_offset_scanline_start + 3] = 1;
-                }
-            }
-            break;
-        case PNG_COLOR_TYPE_RGB_ALPHA:
-        case PNG_COLOR_TYPE_GRAY:
-            for(int y = 0; y < static_cast<int>(src_height); y++) {
-                for(int x = 0; x < static_cast<int>(src_width); x++) {
-                    int src_pixel_offset_scanline_start  = (y * src_width + x) * 4;
-                    int dest_pixel_offset_scanline_start = (y * src_width + x) * 4;
-                    dest_pixel_data[dest_pixel_offset_scanline_start + 0] = src_pixel_data[src_pixel_offset_scanline_start + 0];
-                    dest_pixel_data[dest_pixel_offset_scanline_start + 1] = src_pixel_data[src_pixel_offset_scanline_start + 1];
-                    dest_pixel_data[dest_pixel_offset_scanline_start + 2] = src_pixel_data[src_pixel_offset_scanline_start + 2];
-                    dest_pixel_data[dest_pixel_offset_scanline_start + 3] = src_pixel_data[src_pixel_offset_scanline_start + 3];
-                }
-            }
-            break;
-    }
-    delete []src_pixel_data;
-    *pixel_data = dest_pixel_data;
-    *width      = src_width;
-    *height     = src_height;
-    return true;
-}
-
-bool read_png_impl(std::string png_filename,
-                   void**      pixel_data,
-                   size_t*     width,
-                   size_t*     height,
-                   int*        color_type)
-{
-    if(!pixel_data || !width || !height) {
-        return false;
-    }
-
-    // header for testing if it is a png
-    png_byte header[8];
-
-    // open file as binary
-    FILE* fp = fopen(png_filename.c_str(), "rb");
-    if(!fp) {
-        return false;
-    }
-
-    // read the header
-    fread(header, 1, 8, fp);
-
-    // test if png
-    int is_png = !png_sig_cmp(header, 0, 8);
-    if(!is_png) {
-        fclose(fp);
-        return false;
-    }
-
-    // create png struct
-    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if(!png_ptr) {
-        fclose(fp);
-        return false;
-    }
-
-    // create png info struct
-    png_infop info_ptr = png_create_info_struct(png_ptr);
-    if(!info_ptr) {
-        png_destroy_read_struct(&png_ptr, (png_infopp) NULL, (png_infopp) NULL);
-        fclose(fp);
-        return false;
-    }
-
-    // create png info struct
-    png_infop end_info = png_create_info_struct(png_ptr);
-    if(!end_info) {
-        png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) NULL);
-        fclose(fp);
-        return false;
-    }
-
-    // png error stuff, not sure libpng man suggests this
-    if(setjmp(png_jmpbuf(png_ptr))) {
-        png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-        fclose(fp);
-        return false;
-    }
-
-    // init png reading
-    png_init_io(png_ptr, fp);
-
-    // let libpng know you already read the first 8 bytes
-    png_set_sig_bytes(png_ptr, 8);
-
-    // read all the info up to the image data
-    png_read_info(png_ptr, info_ptr);
-
-    // variables to pass to get info
-    int bit_depth;//, color_type;
-    png_uint_32 twidth, theight;
-
-    // get info about png
-    png_get_IHDR(png_ptr, info_ptr, &twidth, &theight, &bit_depth, color_type, NULL, NULL, NULL);
-
-    // update the png info struct.
-    png_read_update_info(png_ptr, info_ptr);
-
-    // row size in bytes.
-    int rowbytes = png_get_rowbytes(png_ptr, info_ptr);
-
-    // allocate the image_data as a big block, to be given to opengl
-    png_byte* image_data = new png_byte[rowbytes * theight];
-    if(!image_data) {
-        // clean up memory and close stuff
-        png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-        fclose(fp);
-        return false;
-    }
-
-    // row_pointers is for pointing to image_data for reading the png with libpng
-    png_bytep* row_pointers = new png_bytep[theight];
-    if(!row_pointers) {
-        //clean up memory and close stuff
-        png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-        delete[] image_data;
-        fclose(fp);
-        return false;
-    }
-    // set the individual row_pointers to point at the correct offsets of image_data
-    for(int i = 0; i < static_cast<int>(theight); i++) {
-        row_pointers[theight - 1 - i] = image_data + i * rowbytes;
-    }
-
-    // read the png into image_data through row_pointers
-    png_read_image(png_ptr, row_pointers);
-
-    delete[] row_pointers;
-    fclose(fp);
-
-    // clean up memory and close stuff
-    png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-
-    // update width and height based on png info
-    *pixel_data = image_data;
-    *width      = twidth;
-    *height     = theight;
-
-    return true;
 }
 
 }

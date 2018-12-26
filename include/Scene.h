@@ -35,17 +35,28 @@ class Octree;
 
 struct DebugObjectContext
 {
-    glm::mat4 m_transform;
+    glm::mat4              m_transform;
     std::vector<glm::vec3> m_debug_origin_frame_values;
     std::vector<glm::vec3> m_debug_origin_keyframe_values;
+
+    DebugObjectContext();
 };
 
 class Scene
 {
 public:
+    typedef enum { DEBUG_TARGET_ORIGIN,
+                   DEBUG_TARGET_COLOR,
+                   DEBUG_TARGET_RADIUS,
+                   DEBUG_TARGET_LINEWIDTH } debug_target_attr_t;
+    typedef enum { DEBUG_LINE_P1,
+                   DEBUG_LINE_P2,
+                   DEBUG_LINE_COLOR,
+                   DEBUG_LINE_LINEWIDTH } debug_line_attr_t;
+
     // for guide wires
-    glm::vec3 m_debug_target;
-    std::vector<glm::vec3> m_debug_targets;
+    std::vector<std::tuple<glm::vec3, glm::vec3, float, float>>     m_debug_targets;
+    std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3, float>> m_debug_lines;
 
     std::map<long, DebugObjectContext> m_debug_object_context;
 
@@ -74,13 +85,13 @@ public:
         return m_camera;
     }
 
-    void set_oct_tree(Octree* oct_tree)
+    void set_octree(Octree* octree)
     {
-        m_oct_tree = oct_tree;
+        m_octree = octree;
     }
-    Octree* get_oct_tree() const
+    Octree* get_octree() const
     {
-        return m_oct_tree;
+        return m_octree;
     }
 
     Light* find_light(std::string name);
@@ -155,20 +166,19 @@ public:
                 bool                render_overlay    = false,
                 bool                render_skybox     = true,
                 use_material_type_t use_material_type = use_material_type_t::USE_MESH_MATERIAL);
-    void render_oct_tree(Octree* oct_tree, glm::mat4 camera_transform) const;
-    void render_lines_and_text(bool  draw_guide_wires,
-                               bool  draw_paths,
-                               bool  draw_axis,
-                               bool  draw_axis_labels,
-                               bool  draw_bbox,
-                               bool  draw_normals,
-                               bool  draw_hud_text = false,
-                               char* hud_text      = const_cast<char*>("")) const;
+    void render_lines_and_text(bool  _draw_guide_wires,
+                               bool  _draw_paths,
+                               bool  _draw_axis,
+                               bool  _draw_axis_labels,
+                               bool  _draw_bbox,
+                               bool  _draw_normals,
+                               bool  _draw_hud_text = false,
+                               char* hud_text       = const_cast<char*>("")) const;
     void render_lights() const;
 
 private:
     Camera*     m_camera;
-    Octree*     m_oct_tree;
+    Octree*     m_octree;
     Mesh*       m_skybox;
     Mesh*       m_overlay;
     lights_t    m_lights;
@@ -188,6 +198,19 @@ private:
 
     Scene();
     ~Scene();
+
+    void draw_targets() const;
+    void draw_octree(Octree* octree, glm::mat4 camera_transform) const;
+    void draw_paths() const;
+    void draw_debug_lines(Mesh* mesh) const;
+    void draw_up_vector(Mesh* mesh) const;
+    void draw_ik_guide_wires(Mesh* mesh) const;
+    void draw_axis(Mesh* mesh) const;
+    void draw_hinge_constraints(Mesh* mesh) const;
+    void draw_bbox(Mesh* mesh) const;
+    void draw_normals(Mesh* mesh) const;
+    void draw_axis_labels(Mesh* mesh) const;
+    void draw_hud(std::string hud_text) const;
 };
 
 }

@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with dexvt-lite.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef H_FILE_3DS
-#define H_FILE_3DS
+#ifndef VT_FILE_3DS_H_
+#define VT_FILE_3DS_H_
 
 #include <stdio.h>
 #include <vector>
@@ -37,10 +37,10 @@ class MeshBase;
 class File3ds
 {
 public:
-    static bool load3ds(std::string filename, int index, std::vector<Mesh*>* meshes);
+    static bool load3ds(const std::string& filename, int index, std::vector<Mesh*>* meshes);
 
 private:
-    static bool load3ds_impl(std::string filename, int index, std::vector<MeshBase*>* meshes);
+    static bool load3ds_impl(const std::string& filename, int index, std::vector<MeshBase*>* meshes);
 	static uint32_t enter_chunk(FILE* stream, uint32_t chunk_id, uint32_t chunk_end);
 	static void read_vertices(FILE* stream, MeshBase* mesh);
 	static void read_faces(FILE* stream, MeshBase* mesh);

@@ -80,7 +80,7 @@ public:
         var_uniform_type_count
     };
 
-    Program(std::string name);
+    explicit Program(const std::string& name);
     virtual ~Program();
     void attach_shader(Shader* shader);
     Shader* get_vertex_shader() const
@@ -101,7 +101,7 @@ public:
             GLint* params) const;
     static std::string get_var_attribute_name(int id);
     static std::string get_var_uniform_name(int id);
-    bool check_var_exists_in_shader(var_type_t var_type, std::string name) const;
+    bool check_var_exists_in_shader(var_type_t var_type, const std::string& name) const;
     bool add_var(var_type_t var_type, std::string name);
     bool has_var(var_type_t var_type, std::string name) const;
     bool has_var(var_type_t var_type, int id) const;

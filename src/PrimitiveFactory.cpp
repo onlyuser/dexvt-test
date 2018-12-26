@@ -26,20 +26,55 @@
 
 namespace vt {
 
-MeshBase* alloc_mesh_base(std::string name, size_t num_vertex, size_t num_tri);
+MeshBase* alloc_mesh_base(const std::string& name, size_t num_vertex, size_t num_tri);
 
 class Mesh;
 
 Mesh* cast_mesh(MeshBase* mesh);
 MeshBase* cast_mesh_base(Mesh* mesh);
 
-Mesh* PrimitiveFactory::create_grid(std::string name,
-                                    int         cols,
-                                    int         rows,
-                                    float       width,
-                                    float       length,
-                                    float       tex_width_scale,
-                                    float       tex_length_scale)
+void PrimitiveFactory::get_box_corners(glm::vec3        (&points)[8],
+                                       const glm::vec3* origin,
+                                       const glm::vec3* dim)
+{
+    // points
+    //
+    //     y
+    //     4-------7
+    //    /|      /|
+    //   / |     / |
+    //  5-------6  |
+    //  |  0----|--3 x
+    //  | /     | /
+    //  |/      |/
+    //  1-------2
+    // z
+
+    points[0] = glm::vec3(0, 0, 0);
+    points[1] = glm::vec3(0, 0, 1);
+    points[2] = glm::vec3(1, 0, 1);
+    points[3] = glm::vec3(1, 0, 0);
+    points[4] = glm::vec3(0, 1, 0);
+    points[5] = glm::vec3(0, 1, 1);
+    points[6] = glm::vec3(1, 1, 1);
+    points[7] = glm::vec3(1, 1, 0);
+    if(!origin && !dim) {
+        return;
+    }
+    glm::vec3 _origin = origin ? *origin : glm::vec3(0);
+    glm::vec3 _dim    = dim    ? *dim    : glm::vec3(1);
+    for(int i = 0; i < 8; i++) {
+        points[i] = _origin + points[i] * _dim;
+    }
+}
+
+Mesh* PrimitiveFactory::create_grid(const std::string& name,
+                                          int          cols,
+                                          int          rows,
+                                          float        width,
+                                          float        length,
+                                          float        tex_width_scale,
+                                          float        tex_length_scale)
 {
     int       num_vertex = (rows + 1) * (cols + 1);
     int       num_tri    = rows * cols * 2;
@@ -98,10 +133,10 @@ Mesh* PrimitiveFactory::create_grid(std::string name,
     return cast_mesh(mesh);
 }
 
-Mesh* PrimitiveFactory::create_sphere(std::string name,
-                                      int         slices,
-                                      int         stacks,
-                                      float       radius)
+Mesh* PrimitiveFactory::create_sphere(const std::string& name,
+                                            int          slices,
+                                            int          stacks,
+                                            float        radius)
 {
     int       cols = slices;
     int       rows = stacks;
@@ -120,7 +155,7 @@ Mesh* PrimitiveFactory::create_sphere(std::string name,
                     static_cast<float>(col) / cols * 360));       // yaw
             glm::vec3 offset = normal * radius;
             mesh->set_vert_coord(  vert_index, offset);
-            mesh->set_vert_normal( vert_index, glm::normalize(offset));
+            mesh->set_vert_normal( vert_index, safe_normalize(offset));
             mesh->set_vert_tangent(vert_index, euler_to_offset(glm::vec3(
                     0,
                     0,                                            // pitch
@@ -134,10 +169,10 @@ Mesh* PrimitiveFactory::create_sphere(std::string name,
     return cast_mesh(mesh);
 }
 
-Mesh* PrimitiveFactory::create_hemisphere(std::string name,
-                                          int         slices,
-                                          int         stacks,
-                                          float       radius)
+Mesh* PrimitiveFactory::create_hemisphere(const std::string& name,
+                                                int          slices,
+                                                int          stacks,
+                                                float        radius)
 {
     int       cols = slices;
     int       rows = stacks * 0.5 + 2;
@@ -164,7 +199,7 @@ Mesh* PrimitiveFactory::create_hemisphere(std::string name,
                                 *radius;
                         mesh->set_vert_coord( vert_index, offset);
                         mesh->set_vert_normal(vert_index, (row == 1) ?
-                                glm::vec3(0, -1, 0) : glm::normalize(offset));
+                                glm::vec3(0, -1, 0) : safe_normalize(offset));
                     }
                     break;
             }
@@ -181,10 +216,10 @@ Mesh* PrimitiveFactory::create_hemisphere(std::string name,
     return cast_mesh(mesh);
 }
 
-Mesh* PrimitiveFactory::create_cylinder(std::string name,
-                                        int         slices,
-                                        float       radius,
-                                        float       height)
+Mesh* PrimitiveFactory::create_cylinder(const std::string& name,
+                                              int          slices,
+                                              float        radius,
+                                              float        height)
 {
     int       cols = slices;
     int       rows = 5;
@@ -212,7 +247,7 @@ Mesh* PrimitiveFactory::create_cylinder(std::string name,
                                 *radius;
                         mesh->set_vert_coord( vert_index, glm::vec3(offset.x, 0, offset.z));
                         mesh->set_vert_normal(vert_index, (row == 1) ?
-                                glm::vec3(0, -1, 0) : glm::normalize(offset));
+                                glm::vec3(0, -1, 0) : safe_normalize(offset));
                     }
                     break;
                 case 3: // top side rim
@@ -225,7 +260,7 @@ Mesh* PrimitiveFactory::create_cylinder(std::string name,
                                 *radius;
                         mesh->set_vert_coord( vert_index, glm::vec3(offset.x, height, offset.z));
                         mesh->set_vert_normal(vert_index, (row == 4) ?
-                                glm::vec3(0, 1, 0) : glm::normalize(offset));
+                                glm::vec3(0, 1, 0) : safe_normalize(offset));
                     }
                     break;
                 case 5: // top
@@ -246,10 +281,10 @@ Mesh* PrimitiveFactory::create_cylinder(std::string name,
     return cast_mesh(mesh);
 }
 
-Mesh* PrimitiveFactory::create_cone(std::string name,
-                                    int         slices,
-                                    float       radius,
-                                    float       height)
+Mesh* PrimitiveFactory::create_cone(const std::string& name,
+                                          int          slices,
+                                          float        radius,
+                                          float        height)
 {
     int       cols = slices;
     int       rows = 3;
@@ -278,7 +313,7 @@ Mesh* PrimitiveFactory::create_cone(std::string name,
                                 *radius;
                         mesh->set_vert_coord( vert_index, offset);
                         mesh->set_vert_normal(vert_index, (row == 1) ?
-                                glm::vec3(0, -1, 0) : glm::normalize(offset + glm::vec3(0, rim_y_offset, 0)));
+                                glm::vec3(0, -1, 0) : safe_normalize(offset + glm::vec3(0, rim_y_offset, 0)));
                     }
                     break;
                 case 3: // tip
@@ -289,7 +324,7 @@ Mesh* PrimitiveFactory::create_cone(std::string name,
                                 static_cast<float>(col) / cols * 360)) // yaw
                                 *radius;
                         mesh->set_vert_coord( vert_index, glm::vec3(0, height, 0));
-                        mesh->set_vert_normal(vert_index, glm::normalize(offset + glm::vec3(0, rim_y_offset, 0)));
+                        mesh->set_vert_normal(vert_index, safe_normalize(offset + glm::vec3(0, rim_y_offset, 0)));
                     }
                     break;
             }
@@ -306,11 +341,11 @@ Mesh* PrimitiveFactory::create_cone(std::string name,
     return cast_mesh(mesh);
 }
 
-Mesh* PrimitiveFactory::create_torus(std::string name,
-                                     int         slices,
-                                     int         stacks,
-                                     float       radius_major,
-                                     float       radius_minor)
+Mesh* PrimitiveFactory::create_torus(const std::string& name,
+                                           int          slices,
+                                           int          stacks,
+                                           float        radius_major,
+                                           float        radius_minor)
 {
     int       cols = slices;
     int       rows = stacks;
@@ -346,10 +381,10 @@ Mesh* PrimitiveFactory::create_torus(std::string name,
     return cast_mesh(mesh);
 }
 
-Mesh* PrimitiveFactory::create_box(std::string name,
-                                   float       width,
-                                   float       height,
-                                   float       length)
+Mesh* PrimitiveFactory::create_box(const std::string& name,
+                                         float        width,
+                                         float        height,
+                                         float        length)
 {
     MeshBase* mesh = alloc_mesh_base(name, 24, 12);
 
@@ -357,70 +392,155 @@ Mesh* PrimitiveFactory::create_box(std::string name,
     // init mesh vertex/normal coords
     // ==============================
 
+    glm::vec3 points[8];
+
+    // points
+    //
+    //     y
+    //     4-------7
+    //    /|      /|
+    //   / |     / |
+    //  5-------6  |
+    //  |  0----|--3 x
+    //  | /     | /
+    //  |/      |/
+    //  1-------2
+    // z
+
+    glm::vec3 dim(width, height, length);
+    get_box_corners(points, NULL, &dim);
+
+    int tri_indices[6][4];
+    glm::vec3 tri_normals[6];
+    glm::vec3 tri_tangents[6];
+
     // right
-    mesh->set_vert_coord(0, glm::vec3(0, 0, 0));
-    mesh->set_vert_coord(1, glm::vec3(0, 0, 1));
-    mesh->set_vert_coord(2, glm::vec3(0, 1, 1));
-    mesh->set_vert_coord(3, glm::vec3(0, 1, 0));
-    for(int i = 0; i < 4; i++) {
-        mesh->set_vert_normal( 0 * 4 + i, glm::vec3(-1, 0, 0));
-        mesh->set_vert_tangent(0 * 4 + i, glm::vec3( 0, 0, 1));
-    }
+    //
+    //     y
+    //     3-------*
+    //    /|      /|
+    //   / |     / |
+    //  2-------*  |
+    //  |  0----|--* x
+    //  | /     | /
+    //  |/      |/
+    //  1-------*
+    // z
+
+    tri_indices[0][0] = 0;
+    tri_indices[0][1] = 1;
+    tri_indices[0][2] = 5;
+    tri_indices[0][3] = 4;
+    tri_normals[0]  = glm::vec3(-1, 0, 0);
+    tri_tangents[0] = glm::vec3(0, 0, 1);
 
     // front
-    mesh->set_vert_coord(4, glm::vec3(0, 0, 1));
-    mesh->set_vert_coord(5, glm::vec3(1, 0, 1));
-    mesh->set_vert_coord(6, glm::vec3(1, 1, 1));
-    mesh->set_vert_coord(7, glm::vec3(0, 1, 1));
-    for(int j = 0; j < 4; j++) {
-        mesh->set_vert_normal( 1 * 4 + j, glm::vec3(0, 0, 1));
-        mesh->set_vert_tangent(1 * 4 + j, glm::vec3(1, 0, 0));
-    }
+    //
+    //     y
+    //     *-------*
+    //    /|      /|
+    //   / |     / |
+    //  3-------2  |
+    //  |  *----|--* x
+    //  | /     | /
+    //  |/      |/
+    //  0-------1
+    // z
+
+    tri_indices[1][0] = 1;
+    tri_indices[1][1] = 2;
+    tri_indices[1][2] = 6;
+    tri_indices[1][3] = 5;
+    tri_normals[1]  = glm::vec3(0, 0, 1);
+    tri_tangents[1] = glm::vec3(1, 0, 0);
 
     // left
-    mesh->set_vert_coord( 8, glm::vec3(1, 0, 1));
-    mesh->set_vert_coord( 9, glm::vec3(1, 0, 0));
-    mesh->set_vert_coord(10, glm::vec3(1, 1, 0));
-    mesh->set_vert_coord(11, glm::vec3(1, 1, 1));
-    for(int k = 0; k < 4; k++) {
-        mesh->set_vert_normal( 2 * 4 + k, glm::vec3(1, 0,  0));
-        mesh->set_vert_tangent(2 * 4 + k, glm::vec3(0, 0, -1));
-    }
+    //
+    //     y
+    //     *-------2
+    //    /|      /|
+    //   / |     / |
+    //  *-------3  |
+    //  |  *----|--1 x
+    //  | /     | /
+    //  |/      |/
+    //  *-------0
+    // z
+
+    tri_indices[2][0] = 2;
+    tri_indices[2][1] = 3;
+    tri_indices[2][2] = 7;
+    tri_indices[2][3] = 6;
+    tri_normals[2]  = glm::vec3(1, 0, 0);
+    tri_tangents[2] = glm::vec3(0, 0, -1);
 
     // back
-    mesh->set_vert_coord(12, glm::vec3(1, 0, 0));
-    mesh->set_vert_coord(13, glm::vec3(0, 0, 0));
-    mesh->set_vert_coord(14, glm::vec3(0, 1, 0));
-    mesh->set_vert_coord(15, glm::vec3(1, 1, 0));
-    for(int p = 0; p < 4; p++) {
-        mesh->set_vert_normal( 3 * 4 + p, glm::vec3( 0, 0, -1));
-        mesh->set_vert_tangent(3 * 4 + p, glm::vec3(-1, 0,  0));
-    }
+    //
+    //     y
+    //     2-------3
+    //    /|      /|
+    //   / |     / |
+    //  *-------*  |
+    //  |  1----|--0 x
+    //  | /     | /
+    //  |/      |/
+    //  *-------*
+    // z
+
+    tri_indices[3][0] = 3;
+    tri_indices[3][1] = 0;
+    tri_indices[3][2] = 4;
+    tri_indices[3][3] = 7;
+    tri_normals[3]  = glm::vec3(0, 0, -1);
+    tri_tangents[3] = glm::vec3(-1, 0, 0);
 
     // top
-    mesh->set_vert_coord(16, glm::vec3(1, 1, 0));
-    mesh->set_vert_coord(17, glm::vec3(0, 1, 0));
-    mesh->set_vert_coord(18, glm::vec3(0, 1, 1));
-    mesh->set_vert_coord(19, glm::vec3(1, 1, 1));
-    for(int q = 0; q < 4; q++) {
-        mesh->set_vert_normal( 4 * 4 + q, glm::vec3( 0, 1, 0));
-        mesh->set_vert_tangent(4 * 4 + q, glm::vec3(-1, 0, 0));
-    }
+    //
+    //     y
+    //     1-------0
+    //    /|      /|
+    //   / |     / |
+    //  2-------3  |
+    //  |  *----|--* x
+    //  | /     | /
+    //  |/      |/
+    //  *-------*
+    // z
+
+    tri_indices[4][0] = 7;
+    tri_indices[4][1] = 4;
+    tri_indices[4][2] = 5;
+    tri_indices[4][3] = 6;
+    tri_normals[4]  = glm::vec3(0, 1, 0);
+    tri_tangents[4] = glm::vec3(-1, 0, 0);
 
     // bottom
-    mesh->set_vert_coord(20, glm::vec3(0, 0, 0));
-    mesh->set_vert_coord(21, glm::vec3(1, 0, 0));
-    mesh->set_vert_coord(22, glm::vec3(1, 0, 1));
-    mesh->set_vert_coord(23, glm::vec3(0, 0, 1));
-    for(int r = 0; r < 4; r++) {
-        mesh->set_vert_normal( 5 * 4 + r, glm::vec3(0, -1, 0));
-        mesh->set_vert_tangent(5 * 4 + r, glm::vec3(1,  0, 0));
-    }
+    //
+    //     y
+    //     *-------*
+    //    /|      /|
+    //   / |     / |
+    //  *-------*  |
+    //  |  0----|--1 x
+    //  | /     | /
+    //  |/      |/
+    //  3-------2
+    // z
 
-    glm::mat4 scale_transform = glm::scale(glm::mat4(1), glm::vec3(width, height, length));
-    size_t num_vertex = mesh->get_num_vertex();
-    for(int t = 1; t < static_cast<int>(num_vertex); t++) {
-        mesh->set_vert_coord(t, glm::vec3(glm::vec4(mesh->get_vert_coord(t), 1) * scale_transform));
+    tri_indices[5][0] = 0;
+    tri_indices[5][1] = 3;
+    tri_indices[5][2] = 2;
+    tri_indices[5][3] = 1;
+    tri_normals[5]  = glm::vec3(0, -1, 0);
+    tri_tangents[5] = glm::vec3(1, 0, 0);
+
+    for(int i = 0; i < 6; i++) {
+        for(int j = 0; j < 4; j++) {
+            int vert_index = i * 4 + j;
+            mesh->set_vert_coord(  vert_index, points[tri_indices[i][j]]);
+            mesh->set_vert_normal( vert_index, tri_normals[i]);
+            mesh->set_vert_tangent(vert_index, tri_tangents[i]);
+        }
     }
 
     // ========================
@@ -433,11 +553,8 @@ Mesh* PrimitiveFactory::create_box(std::string name,
     mesh->set_tex_coord(2, glm::vec2(1, 1));
     mesh->set_tex_coord(3, glm::vec2(0, 1));
 
-    for(int u = 1; u < 6; u++) {
-        mesh->set_tex_coord(u * 4 + 0, mesh->get_tex_coord(0));
-        mesh->set_tex_coord(u * 4 + 1, mesh->get_tex_coord(1));
-        mesh->set_tex_coord(u * 4 + 2, mesh->get_tex_coord(2));
-        mesh->set_tex_coord(u * 4 + 3, mesh->get_tex_coord(3));
+    for(int i = 4; i < 24; i++) {
+        mesh->set_tex_coord(i, mesh->get_tex_coord(i % 4));
     }
 
     // ==========================
@@ -473,10 +590,10 @@ Mesh* PrimitiveFactory::create_box(std::string name,
     return cast_mesh(mesh);
 }
 
-Mesh* PrimitiveFactory::create_tetrahedron(std::string name,
-                                           float       width,
-                                           float       height,
-                                           float       length)
+Mesh* PrimitiveFactory::create_tetrahedron(const std::string& name,
+                                                 float        width,
+                                                 float        height,
+                                                 float        length)
 {
     MeshBase* mesh = alloc_mesh_base(name, 12, 4);
 
@@ -511,9 +628,9 @@ Mesh* PrimitiveFactory::create_tetrahedron(std::string name,
     return cast_mesh(mesh);
 }
 
-Mesh* PrimitiveFactory::create_geosphere(std::string name,
-                                         float       radius,
-                                         int         tessellation_iters)
+Mesh* PrimitiveFactory::create_geosphere(const std::string& name,
+                                               float        radius,
+                                               int          tessellation_iters)
 {
     MeshBase* mesh = cast_mesh_base(create_sphere(name, 4, 2, radius));
     mesh->center_axis();
@@ -521,22 +638,22 @@ Mesh* PrimitiveFactory::create_geosphere(std::string name,
         mesh_tessellate(mesh, TESSELLATION_TYPE_EDGE_CENTER, true);
         size_t num_vertex = mesh->get_num_vertex();
         for(int j = 0; j < static_cast<int>(num_vertex); j++) {
-            mesh->set_vert_coord(j, glm::normalize(mesh->get_vert_coord(j)) * radius);
+            mesh->set_vert_coord(j, safe_normalize(mesh->get_vert_coord(j)) * radius);
         }
         mesh->center_axis();
     }
     return cast_mesh(mesh);
 }
 
-Mesh* PrimitiveFactory::create_diamond_brilliant_cut(std::string name,
-                                                     float       radius,
-                                                     float       table_radius,
-                                                     float       height,
-                                                     float       crown_height_to_total_height_ratio,
-                                                     float       upper_girdle_height_to_crown_height_ratio,
-                                                     float       lower_girdle_depth_to_pavilion_depth_ratio,
-                                                     float       girdle_thick_part_thickness,
-                                                     float       girdle_thin_part_thickness)
+Mesh* PrimitiveFactory::create_diamond_brilliant_cut(const std::string& name,
+                                                           float        radius,
+                                                           float        table_radius,
+                                                           float        height,
+                                                           float        crown_height_to_total_height_ratio,
+                                                           float        upper_girdle_height_to_crown_height_ratio,
+                                                           float        lower_girdle_depth_to_pavilion_depth_ratio,
+                                                           float        girdle_thick_part_thickness,
+                                                           float        girdle_thin_part_thickness)
 {
     // table:         8      triangles
     // star:          8      triangles

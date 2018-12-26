@@ -15,45 +15,24 @@
 // You should have received a copy of the GNU General Public License
 // along with dexvt-lite.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef VT_NAMED_OBJECT_H_
-#define VT_NAMED_OBJECT_H_
+#ifndef VT_FILE_PNG_H_
+#define VT_FILE_PNG_H_
 
 #include <string>
+#include <stddef.h>
 
 namespace vt {
 
-class NamedObject
-{
-public:
-    const std::string get_name() const
-    {
-        return m_name;
-    }
-    void set_name(const std::string& name)
-    {
-        m_name = name;
-    }
+bool read_png(const std::string& png_filename,
+                    void**       pixel_data,
+                    size_t*      width,
+                    size_t*      height);
 
-protected:
-    std::string m_name;
-
-    explicit NamedObject(const std::string& name);
-};
-
-struct FindByName : std::unary_function<NamedObject*, std::string>
-{
-    std::string m_key;
-
-    explicit FindByName(const std::string& key)
-        : m_key(key)
-    {
-    }
-
-    bool operator()(const NamedObject* x) const
-    {
-        return x->get_name() == m_key;
-    }
-};
+bool read_png_impl(const std::string& png_filename,
+                         void**       pixel_data,
+                         size_t*      width,
+                         size_t*      height,
+                         int*         color_type);
 
 }
 

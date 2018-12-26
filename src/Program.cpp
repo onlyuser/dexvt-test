@@ -73,7 +73,7 @@ Program::var_uniform_type_to_name_table_t Program::m_var_uniform_type_to_name_ta
         {Program::var_uniform_type_count,                           ""}
     };
 
-Program::Program(std::string name)
+Program::Program(const std::string& name)
     : NamedObject(name),
       m_vertex_shader(NULL),
       m_fragment_shader(NULL)
@@ -117,7 +117,7 @@ bool Program::auto_add_shader_vars()
             std::string type_name;
             std::string var_name;
             if(regexp(line, "attribute[ ]+([^ ]+)[ ]+([^ ;\[]+)[;\[]", 3,
-                      NULL,
+                      reinterpret_cast<char*>(NULL),
                       &type_name,
                       &var_name))
             {
@@ -126,7 +126,7 @@ bool Program::auto_add_shader_vars()
                 add_var(Program::VAR_TYPE_ATTRIBUTE, var_name);
             }
             if(regexp(line, "uniform[ ]+([^ ]+)[ ]+([^ ;\[]+)[;\[]", 3,
-                      NULL,
+                      reinterpret_cast<char*>(NULL),
                       &type_name,
                       &var_name))
             {
@@ -194,7 +194,7 @@ std::string Program::get_var_uniform_name(int id)
     return m_var_uniform_type_to_name_table[id].second;
 }
 
-bool Program::check_var_exists_in_shader(var_type_t var_type, std::string name) const
+bool Program::check_var_exists_in_shader(var_type_t var_type, const std::string& name) const
 {
     if(!m_vertex_shader || !m_fragment_shader) {
         return false;

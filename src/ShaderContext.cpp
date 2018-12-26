@@ -86,7 +86,7 @@ void ShaderContext::render()
 {
     m_material->get_program()->use();
     int i = 0;
-    for(ShaderContext::textures_t::const_iterator p = m_textures.begin(); p != m_textures.end(); p++) {
+    for(ShaderContext::textures_t::const_iterator p = m_textures.begin(); p != m_textures.end(); ++p) {
         glActiveTexture(GL_TEXTURE0 + i);
         (*p)->bind();
         i++;
@@ -104,7 +104,7 @@ void ShaderContext::render()
     }
     m_var_attributes[Program::var_attribute_type_vertex_position]->enable_vertex_attrib_array();
     m_var_attributes[Program::var_attribute_type_vertex_position]->vertex_attrib_pointer(m_vbo_vert_coords,
-                                                                                         3,        // number of elements per vertex, here (x,y,z)
+                                                                                         3,        // number of elements per vertex, here (x, y, z)
                                                                                          GL_FLOAT, // the type of each element
                                                                                          GL_FALSE, // take our values as-is
                                                                                          0,        // no extra data between each position
@@ -112,7 +112,7 @@ void ShaderContext::render()
     if(m_material->get_program()->has_var(Program::VAR_TYPE_ATTRIBUTE, Program::var_attribute_type_vertex_normal)) {
         m_var_attributes[Program::var_attribute_type_vertex_normal]->enable_vertex_attrib_array();
         m_var_attributes[Program::var_attribute_type_vertex_normal]->vertex_attrib_pointer(m_vbo_vert_normal,
-                                                                                           3,        // number of elements per vertex, here (x,y,z)
+                                                                                           3,        // number of elements per vertex, here (x, y, z)
                                                                                            GL_FLOAT, // the type of each element
                                                                                            GL_FALSE, // take our values as-is
                                                                                            0,        // no extra data between each position
@@ -121,7 +121,7 @@ void ShaderContext::render()
     if(m_material->get_program()->has_var(Program::VAR_TYPE_ATTRIBUTE, Program::var_attribute_type_vertex_tangent)) {
         m_var_attributes[Program::var_attribute_type_vertex_tangent]->enable_vertex_attrib_array();
         m_var_attributes[Program::var_attribute_type_vertex_tangent]->vertex_attrib_pointer(m_vbo_vert_tangent,
-                                                                                            3,        // number of elements per vertex, here (x,y,z)
+                                                                                            3,        // number of elements per vertex, here (x, y, z)
                                                                                             GL_FLOAT, // the type of each element
                                                                                             GL_FALSE, // take our values as-is
                                                                                             0,        // no extra data between each position
@@ -130,7 +130,7 @@ void ShaderContext::render()
     if(m_material->get_program()->has_var(Program::VAR_TYPE_ATTRIBUTE, Program::var_attribute_type_texcoord)) {
         m_var_attributes[Program::var_attribute_type_texcoord]->enable_vertex_attrib_array();
         m_var_attributes[Program::var_attribute_type_texcoord]->vertex_attrib_pointer(m_vbo_tex_coords,
-                                                                                      2,        // number of elements per vertex, here (x,y)
+                                                                                      2,        // number of elements per vertex, here (x, y)
                                                                                       GL_FLOAT, // the type of each element
                                                                                       GL_FALSE, // take our values as-is
                                                                                       0,        // no extra data between each position

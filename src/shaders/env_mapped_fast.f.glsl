@@ -3,7 +3,8 @@ uniform samplerCube env_map_texture;
 varying vec3 lerp_reflected_flipped_cubemap_texcoord;
 varying vec3 lerp_refracted_flipped_cubemap_texcoord;
 
-void main(void) {
+void main()
+{
     vec4 reflected_color = textureCube(env_map_texture, lerp_reflected_flipped_cubemap_texcoord);
     vec4 refracted_color = textureCube(env_map_texture, lerp_refracted_flipped_cubemap_texcoord);
 

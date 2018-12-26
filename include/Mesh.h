@@ -38,9 +38,9 @@ class Mesh : public TransformObject,
              public MeshBase
 {
 public:
-    Mesh(std::string name,
-         size_t      num_vertex,
-         size_t      num_tri);
+    Mesh(const std::string& name,
+               size_t       num_vertex,
+               size_t       num_tri);
     virtual ~Mesh();
     void resize(size_t num_vertex, size_t num_tri, bool preserve_mesh_geometry = false);
     void merge(const MeshBase* other, bool copy_tex_coords = false);
@@ -82,6 +82,8 @@ public:
     void       set_tex_coord(int index, glm::vec2 coord);
     glm::ivec3 get_tri_indices(int index) const;
     void       set_tri_indices(int index, glm::ivec3 indices);
+
+    glm::vec3 get_vert_bitangent(int index) const;
 
     void update_bbox();
     void update_normals_and_tangents();
@@ -236,7 +238,7 @@ private:
     void update_transform();
 };
 
-MeshBase* alloc_mesh_base(std::string name, size_t num_vertex, size_t num_tri);
+MeshBase* alloc_mesh_base(const std::string& name, size_t num_vertex, size_t num_tri);
 Mesh* cast_mesh(MeshBase* mesh);
 MeshBase* cast_mesh_base(Mesh* mesh);
 

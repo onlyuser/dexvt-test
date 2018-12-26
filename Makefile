@@ -24,7 +24,7 @@ LIB_FLAGS = $(patsubst %, -l%, $(LIB_STEMS))
 
 CXX = g++
 DEBUG = -g
-CXXFLAGS = -Wall $(DEBUG) $(INCLUDE_PATH_FLAGS) -std=c++0x
+CXXFLAGS = -Wall $(DEBUG) $(INCLUDE_PATH_FLAGS) -std=c++0x -DGLM_ENABLE_EXPERIMENTAL=1
 LDFLAGS = -Wall $(DEBUG) $(LIB_PATH_FLAGS) $(LIB_FLAGS)
 
 SCRIPT_PATH = scripts
@@ -77,6 +77,7 @@ SHARED_CPP_STEMS = BBoxObject \
                    Buffer \
                    Camera \
                    File3ds \
+                   FilePng \
                    FrameBuffer \
                    IdentObject \
                    KeyframeMgr \

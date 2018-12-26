@@ -26,13 +26,20 @@
 #include <string>
 #include <iostream>
 
-#define EPSILON 0.0001
+#define EPSILON    0.0001f
+#define BIG_NUMBER 10000
 
-#define SIGN(x)             (!(x) ? 0 : (((x) > 0) ? 1 : -1))
-#define LERP(p1, p2, alpha) ((p1) + ((p2) - (p1)) * (alpha))
+#define SIGN(x)              (!(x) ? 0 : (((x) > 0) ? 1 : -1))
+#define MIX(a, b, alpha)     ((a) + ((b) - (a)) * (alpha))
+#define CLAMP(x, _min, _max) std::min(std::max((x), (_min)), (_max))
 
-#define MAKEWORD(a, b) ((uint16_t)(((uint8_t)(a))  | (((uint16_t)((uint8_t)(b))) << 8)))
-#define MAKELONG(a, b) ((uint32_t)(((uint16_t)(a)) | (((uint32_t)((uint16_t)(b))) << 16)))
+#define MAKEWORD(lo, hi) ((uint16_t)(((uint8_t)(lo)) | (((uint16_t)((uint8_t)(hi))) << 8)))
+#define HIBYTE(x)        (((uint16_t)(x)) >> 8)
+#define LOBYTE(x)        ((((uint16_t)(x)) << 8) >> 8)
+
+#define MAKELONG(lo, hi) ((uint32_t)(((uint16_t)(lo)) | (((uint32_t)((uint16_t)(hi))) << 16)))
+#define HIWORD(x)        (((uint32_t)(x)) >> 16)
+#define LOWORD(x)        ((((uint32_t)(x)) << 16) >> 16)
 
 #ifdef NO_GLM_CONSTANTS
     #warning "Disabling glm header <glm/gtx/constants.hpp>"
@@ -73,33 +80,49 @@ enum euler_index_t {
     EULER_INDEX_YAW
 };
 
+template<class T>
+T safe_normalize(T v)
+{
+#if 1
+    float l = glm::length(v);
+    if(l < EPSILON) {
+        return T(1);
+    }
+    return v * (1 / l);
+#else
+    return glm::normalize(v);
+#endif
+}
+
 void print_bitmap_string(void* font, const char* s);
 glm::vec3 euler_to_offset(glm::vec3  euler,
-                          glm::vec3* up_direction); // out
-glm::vec3 euler_to_offset(glm::vec3 euler);
+                          glm::vec3* up_direction = NULL); // out
 glm::vec3 offset_to_euler(glm::vec3  offset,
-                          glm::vec3* up_direction); // in
-glm::vec3 offset_to_euler(glm::vec3 offset);
-glm::vec3 as_offset_in_other_system(glm::vec3 euler, glm::mat4 transform);
-glm::vec3 dir_from_point_as_offset_in_other_system(glm::vec3 euler, glm::mat4 transform, glm::vec3 point);
+                          glm::vec3* up_direction = NULL); // in
+glm::vec3 as_offset_in_other_system(glm::vec3 euler, glm::mat4 transform, bool as_up_direction = false);
+glm::vec3 dir_from_point_as_offset_in_other_system(glm::vec3 euler, glm::mat4 transform, glm::vec3 point, bool as_up_direction = false);
 glm::vec3 euler_modulo(glm::vec3 euler);
 float angle_modulo(float angle);
 float angle_distance(float angle1, float angle2);
 glm::vec3 nearest_point_on_plane(glm::vec3 plane_origin, glm::vec3 plane_normal, glm::vec3 point);
-glm::vec3 bezier_interpolate(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, float alpha);
+float ray_plane_intersection(glm::vec3  plane_origin,
+                             glm::vec3  plane_normal,
+                             glm::vec3  ray_origin,
+                             glm::vec3  ray_dir,
+                             glm::vec3* reflected_ray = NULL);
+glm::vec3 projection_onto(glm::vec3 a, glm::vec3 b);
+glm::vec3 rejection_from(glm::vec3 a, glm::vec3 b);
+float ray_sphere_intersection(glm::vec3  sphere_origin,
+                              float      sphere_radius,
+                              glm::vec3  ray_origin,
+                              glm::vec3  ray_dir,
+                              glm::vec3* reflected_ray       = NULL,
+                              glm::vec3* intersection_normal = NULL);
+glm::vec3 bezier_interpolate(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4, float alpha);
 bool read_file(std::string filename, std::string &s);
-bool regexp(std::string &s, std::string pattern, std::vector<std::string*> &cap_groups, size_t* start_pos);
-bool regexp(std::string &s, std::string pattern, std::vector<std::string*> &cap_groups);
-bool regexp(std::string &s, std::string pattern, int nmatch, ...);
-bool read_png(std::string png_filename,
-              void**      pixel_data,
-              size_t*     width,
-              size_t*     height);
-bool read_png_impl(std::string png_filename,
-                   void**      pixel_data,
-                   size_t*     width,
-                   size_t*     height,
-                   int*        color_type);
+bool regexp(const std::string &s, const std::string& pattern, std::vector<std::string*> &cap_groups, size_t* start_pos);
+bool regexp(const std::string &s, const std::string& pattern, std::vector<std::string*> &cap_groups);
+bool regexp(const std::string &s, const std::string& pattern, int nmatch, ...);
 
 }
 
